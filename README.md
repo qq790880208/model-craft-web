@@ -1,5 +1,5 @@
-# pic voice labeling tool
+# Pic Voice or Point Cloud Labeling Tool
 
-使用Vue.js开发
+by Vue.js
 ## quick start
 ## 
