@@ -7,7 +7,7 @@
 
 ```  bash
 # 克隆项目
-git clone https://github.com/PanJiaChen/vue-element-admin.git
+git clone http://219.147.13.6:50000/biance/datamarker.git
 
 # 进入项目目录
 cd vue-element-admin
