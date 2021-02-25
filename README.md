@@ -1,3 +1,5 @@
-# datamarker
+# pic voice labeling tool
 
-西电青岛研究院 AI应用开发平台项目 前端
+使用Vue.js开发
+## quick start
+## 
