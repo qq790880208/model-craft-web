@@ -54,7 +54,52 @@ export const constantRoutes = [
       meta: { title: 'Dashboard', icon: 'dashboard' }
     }]
   },
-
+  {
+    path: '/label',
+    component: Layout,
+    redirect: '/label/rectangle',
+    name: 'label',
+    meta: {
+      title: '数据集标注',
+      icon: 'form'
+    },
+    children: [
+      {
+        path: '/label/d2',
+        component: ()=>import('@/views/label/d2/index'),
+        name: 'd2',
+        meta: { title: '图片标注', icon: 'excel'}
+      },
+      {
+        path: '/label/d3',
+        component: ()=>import('@/views/label/d3/index'),
+        name: 'd3',
+        meta: { title: '3D目标标注', icon: 'excel'}
+      },
+      {
+        path: '/label/voice',
+        component: ()=>import('@/views/label/voice/index'),
+        name: 'voice',
+        meta: { title: '语音标注', icon: 'excel'}
+      },
+      {
+        path: '/label/pointcloud',
+        component: ()=>import('@/views/label/pointcloud/index'),
+        name: 'pointcloud',
+        meta: { title: '点云数据标注', icon: 'excel'}
+      }
+    ]
+  },
+  {
+    path: 'external-link',
+    component: Layout,
+    children: [
+      {
+        path: 'https://panjiachen.github.io/vue-element-admin-site/zh/',
+        meta: { title: 'vue-element-admin文档', icon: 'link' }
+      }
+    ]
+  },
   {
     path: '/example',
     component: Layout,
