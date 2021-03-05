@@ -42,7 +42,6 @@ export const constantRoutes = [
     component: () => import('@/views/404'),
     hidden: true
   },
-
   {
     path: '/',
     component: Layout,
@@ -66,27 +65,50 @@ export const constantRoutes = [
     children: [
       {
         path: '/label/d2',
-        component: ()=>import('@/views/label/d2/index'),
+        component: () => import('@/views/label/d2/index'),
         name: 'd2',
-        meta: { title: '图片标注', icon: 'excel'}
+        meta: { title: '图片标注', icon: 'excel' }
       },
       {
         path: '/label/d3',
-        component: ()=>import('@/views/label/d3/index'),
+        component: () => import ('@/views/label/d3/index'),
         name: 'd3',
-        meta: { title: '3D目标标注', icon: 'excel'}
+        meta: { title: '3D目标标注', icon: 'excel' }
       },
       {
         path: '/label/voice',
-        component: ()=>import('@/views/label/voice/index'),
+        component: () => import ('@/views/label/voice/index'),
         name: 'voice',
-        meta: { title: '语音标注', icon: 'excel'}
+        meta: { title: '语音标注', icon: 'excel' }
       },
       {
         path: '/label/pointcloud',
-        component: ()=>import('@/views/label/pointcloud/index'),
+        component: () => import ('@/views/label/pointcloud/index'),
         name: 'pointcloud',
-        meta: { title: '点云数据标注', icon: 'excel'}
+        meta: { title: '点云数据标注', icon: 'excel' }
+      }
+    ]
+  },
+  {
+    path: '/model',
+    component: Layout,
+    name: 'model',
+    meta: {
+      title: '模型管理',
+      icon: 'form'
+    },
+    children: [
+      {
+        path: '/model',
+        component: () => import('@/views/model/index'),
+        name: 'model admin',
+        meta: { title: '模型', icon: 'nested'}
+      },
+      {
+        path: '/model-eval',
+        component: () => import('@/views/model/index'),
+        name: 'model eval',
+        meta: { title: '模型评估', icon: 'excel' }
       }
     ]
   },
@@ -97,6 +119,16 @@ export const constantRoutes = [
       {
         path: 'https://panjiachen.github.io/vue-element-admin-site/zh/',
         meta: { title: 'vue-element-admin文档', icon: 'link' }
+      }
+    ]
+  },
+  {
+    path: 'external-link',
+    component: Layout,
+    children: [
+      {
+        path: 'https://element.eleme.cn/#/zh-CN/component/layout',
+        meta: { title: 'element-ui文档', icon: 'link' }
       }
     ]
   },
