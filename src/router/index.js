@@ -90,7 +90,7 @@ export const constantRoutes = [
     ]
   },
   {
-    path: '/model',
+    path: '/models',
     component: Layout,
     name: 'model',
     meta: {
@@ -102,7 +102,7 @@ export const constantRoutes = [
         path: '/model',
         component: () => import('@/views/model/index'),
         name: 'model admin',
-        meta: { title: '模型', icon: 'nested'}
+        meta: { title: '模型', icon: 'nested' }
       },
       {
         path: '/model-eval',
@@ -123,7 +123,7 @@ export const constantRoutes = [
     ]
   },
   {
-    path: 'external-link',
+    path: 'external-link2',
     component: Layout,
     children: [
       {
@@ -225,18 +225,6 @@ export const constantRoutes = [
       }
     ]
   },
-
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
-      }
-    ]
-  },
-
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
