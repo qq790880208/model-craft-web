@@ -1,17 +1,42 @@
-import axios from 'axios'
+import request from '@/utils/request'
 
-let base = ''
+export function getMoneyIncomePay(params) {
+  return request({
+    url: '/money/get',
+    method: 'get',
+    params: params
+  })
+}
 
-export const requestLogin = params => { return axios.post(`${base}/login`, params).then(res => res.data) }
+export function addMoney(params) {
+  return request({
+    url: '/money/add',
+    method: 'get',
+    params: params
+  })
+}
 
-export const getUserList = params => { return axios.get(`${base}/user/list`, { params: params }) }
+export function removeMoney(params) {
+  return request({
+    url: '/money/remove',
+    method: 'get',
+    params: params
+  })
+}
 
-export const getUserListPage = params => { return axios.get(`${base}/user/listpage`, { params: params }) }
 
-export const removeUser = params => { return axios.get(`${base}/user/remove`, { params: params }) }
+export function batchremoveMoney(params) {
+  return request({
+    url: '/money/batchremove',
+    method: 'get',
+    params: params
+  })
+}
 
-export const batchRemoveUser = params => { return axios.get(`${base}/user/batchremove`, { params: params }) }
-
-export const editUser = params => { return axios.get(`${base}/user/edit`, { params: params }) }
-
-export const addUser = params => { return axios.get(`${base}/user/add`, { params: params }) }
+export function updateMoney(params) {
+  return request({
+    url: '/money/edit',
+    method: 'get',
+    params: params
+  })
+}
