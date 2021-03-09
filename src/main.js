@@ -10,7 +10,7 @@ import '@/styles/index.scss' // global css
 
 import App from './App'
 import store from './store'
-import router from './router'
+import router from './router' /* 自动寻找index */
 
 import '@/icons' // icon
 import '@/permission' // permission control
@@ -36,8 +36,9 @@ Vue.use(ElementUI, { locale })
 Vue.config.productionTip = false
 
 new Vue({
-  el: '#app',
+  el: '#app', /* render替换他 他指向App.vue 中的div */
   router,
   store,
   render: h => h(App)
 })
+
