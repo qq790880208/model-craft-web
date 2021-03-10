@@ -66,27 +66,27 @@ export const constantRoutes = [
     children: [
       {
         path: '/label/d2',
-        component: ()=>import('@/views/label/d2/index'),
+        component: () => import('@/views/label/d2/index'),
         name: 'd2',
-        meta: { title: '图片标注', icon: 'excel'}
+        meta: { title: '图片标注', icon: 'excel' }
       },
       {
         path: '/label/d3',
-        component: ()=>import('@/views/label/d3/index'),
+        component: () => import('@/views/label/d3/index'),
         name: 'd3',
-        meta: { title: '3D目标标注', icon: 'excel'}
+        meta: { title: '3D目标标注', icon: 'excel' }
       },
       {
         path: '/label/voice',
-        component: ()=>import('@/views/label/voice/index'),
+        component: () => import('@/views/label/voice/index'),
         name: 'voice',
-        meta: { title: '语音标注', icon: 'excel'}
+        meta: { title: '语音标注', icon: 'excel' }
       },
       {
         path: '/label/pointcloud',
-        component: ()=>import('@/views/label/pointcloud/index'),
+        component: () => import('@/views/label/pointcloud/index'),
         name: 'pointcloud',
-        meta: { title: '点云数据标注', icon: 'excel'}
+        meta: { title: '点云数据标注', icon: 'excel' }
       }
     ]
   },
