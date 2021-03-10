@@ -1,6 +1,6 @@
 <template>
-  <div id="app" >
-    <router-view />
+  <div id="app">
+    <router-view />  <!-- 显示目录 -->
   </div>
 </template>
 

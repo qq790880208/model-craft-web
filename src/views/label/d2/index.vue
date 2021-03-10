@@ -11,13 +11,13 @@
 <script>
 import { mapGetters } from 'vuex'
 import imageselect from '@/components/imageselect.vue'
-import labelinfo from '@/components/labelinfo.vue'
+// import labelinfo from '@/components/labelinfo.vue'
 export default {
   name: 'Imageselect',
   boxArry: [],
   components: {
     imageselect,
-    labelinfo
+    // labelinfo
   },
   methods: {
     markarray: function(childboxArry) {

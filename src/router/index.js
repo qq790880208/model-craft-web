@@ -33,7 +33,7 @@ import Layout from '@/layout'
 export const constantRoutes = [
   {
     path: '/login',
-    component: () => import('@/views/login/index'),
+    component: () => import('@/views/login/index'), /* 懒加载 */
     hidden: true
   },
 
@@ -42,11 +42,10 @@ export const constantRoutes = [
     component: () => import('@/views/404'),
     hidden: true
   },
-
   {
     path: '/',
     component: Layout,
-    redirect: '/dashboard',
+    redirect: '/dashboard', /* chong */
     children: [{
       path: 'dashboard',
       name: 'Dashboard',
@@ -72,21 +71,116 @@ export const constantRoutes = [
       },
       {
         path: '/label/d3',
-        component: () => import('@/views/label/d3/index'),
+        component: () => import ('@/views/label/d3/index'),
         name: 'd3',
         meta: { title: '3D目标标注', icon: 'excel' }
       },
       {
         path: '/label/voice',
-        component: () => import('@/views/label/voice/index'),
+        component: () => import ('@/views/label/voice/index'),
         name: 'voice',
         meta: { title: '语音标注', icon: 'excel' }
       },
       {
         path: '/label/pointcloud',
-        component: () => import('@/views/label/pointcloud/index'),
+        component: () => import ('@/views/label/pointcloud/index'),
         name: 'pointcloud',
         meta: { title: '点云数据标注', icon: 'excel' }
+      }
+    ]
+  },
+  {
+    path: '/models',
+    component: Layout,
+    name: 'model',
+    meta: {
+      title: '模型管理',
+      icon: 'form'
+    },
+    children: [
+      {
+        path: '/model',
+        component: () => import('@/views/model/index'),
+        name: 'model admin',
+        meta: { title: '模型', icon: 'nested' }
+      },
+      {
+        path: '/model-eval',
+        component: () => import('@/views/model/index'),
+        name: 'model eval',
+        meta: { title: '模型评估', icon: 'excel' }
+      }
+    ]
+  },
+  {
+    path: '/teamManagement',
+    component: Layout,
+    redirect: '/teamManagement/rectangle',
+    name: 'teamManagement',
+    meta: {
+      title: '团队管理',
+      icon: 'form'
+    },
+    children: [
+      {
+        path: '/teamManagement/annotateTeamManagement',
+        component: () => import('@/views/teamManagement/annotateTeamManagement/index'),
+        name: 'annotateTeamManagement',
+        meta: { title: '标注团队管理', icon: 'excel' }
+      },
+      {
+        path: '/teamManagement/annotateMemberManagement',
+        component: () => import('@/views/teamManagement/annotateMemberManagement/index'),
+        name: 'annotateMemberManagement',
+        meta: { title: '标注成员管理', icon: 'excel' }
+      }
+    ]
+  },
+  {
+    path: '/system_management',
+    component: Layout,
+    redirect: '/system_management/rectangle',
+    name: 'system_management',
+    meta: {
+      title: '系统设置',
+      icon: 'form'
+    },
+    children: [
+      {
+        path: '/systemManagement/authorityManagement',
+        component: () => import('@/views/systemManagement/authorityManagement/index'),
+        name: 'authorityManagement',
+        meta: { title: '权限管理', icon: 'excel'}
+      },
+      {
+        path: '/systemManagement/userManagement',
+        component: () => import('@/views/systemManagement/userManagement/index'),
+        name: 'userManagement',
+        meta: { title: '用户管理', icon: 'excel'}
+      },
+      {
+        path: '/systemManagement/systemResourceManagement',
+        component: () => import('@/views/systemManagement/systemResourceManagement/index'),
+        name: 'systemResourceManagement',
+        meta: { title: '系统资源管理', icon: 'excel'}
+      },
+      {
+        path: '/systemManagement/platformOperation',
+        component: () => import('@/views/systemManagement/platformOperation/index'),
+        name: 'platformOperation',
+        meta: { title: '平台运行情况', icon: 'excel'}
+      },
+      {
+        path: '/systemManagement/systemLogManagement',
+        component: () => import('@/views/systemManagement/systemLogManagement/index'),
+        name: 'systemLogManagement',
+        meta: { title: '系统日志管理', icon: 'excel'}
+      },
+      {
+        path: '/systemManagement/userOperatingSystemManagement',
+        component: () => import('@/views/systemManagement/userOperatingSystemManagement/index'),
+        name: 'userOperatingSystemManagement',
+        meta: { title: '用户操作日志', icon: 'excel'}
       }
     ]
   },
@@ -97,6 +191,16 @@ export const constantRoutes = [
       {
         path: 'https://panjiachen.github.io/vue-element-admin-site/zh/',
         meta: { title: 'vue-element-admin文档', icon: 'link' }
+      }
+    ]
+  },
+  {
+    path: 'external-link2',
+    component: Layout,
+    children: [
+      {
+        path: 'https://element.eleme.cn/#/zh-CN/component/layout',
+        meta: { title: 'element-ui文档', icon: 'link' }
       }
     ]
   },
@@ -193,18 +297,6 @@ export const constantRoutes = [
       }
     ]
   },
-
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
-      }
-    ]
-  },
-
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
@@ -212,7 +304,8 @@ export const constantRoutes = [
 const createRouter = () => new Router({
   // mode: 'history', // require service support
   scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
+  routes: constantRoutes,
+  model: 'history'
 })
 
 const router = createRouter()
