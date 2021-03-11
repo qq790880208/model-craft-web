@@ -58,19 +58,22 @@
        />
      </div>
    </div>
-   <div id="label" v-for="(items, index) in boxArry" :key=index>
-    <el-row>
-    <el-input placeholder="请输入内容" style="width:600px"></el-input>
-    <el-button type="primary">保存</el-button>
-    <el-button @click="deletelabel(index)" type="danger">删除</el-button>
-    </el-row>
+   <div id=labelfather>
+    <div v-for="(items, index) in boxArry" :key=index>
+      <!-- <el-row> -->
+      <labelinfo :inputname="boxArry[index].info" @deletelabel="deletelabel(index)" @changeinfo='changeinfo($event,index)'></labelinfo>
+      <!-- <el-input placeholder="请输入内容" style="width:600px" clearable></el-input>
+      <el-button type="primary">保存</el-button> -->
+      <!-- <el-button @click="deletelabel(index)" type="danger">删除</el-button> -->
+      <!-- </el-row> -->
+    </div>
    </div>
  </div>
 </template>
 <script>
   import labelinfo from '@/components/labelinfo.vue'
 export default {
-  input: 1,
+  //input: 1,
   components: {
     labelinfo
     },
@@ -100,6 +103,24 @@ export default {
      this.$store.commit("changeTreeData", { a: 1, b: 2 });
      
    },
+  //  open() {
+  //       this.$prompt('请输入邮箱', '提示', {
+  //         confirmButtonText: '确定',
+  //         cancelButtonText: '取消',
+  //         inputPattern: /[\w!#$%&'*+/=?^_`{|}~-]+(?:\.[\w!#$%&'*+/=?^_`{|}~-]+)*@(?:[\w](?:[\w-]*[\w])?\.)+[\w](?:[\w-]*[\w])?/,
+  //         inputErrorMessage: '邮箱格式不正确'
+  //       }).then(({ value }) => {
+  //         this.$message({
+  //           type: 'success',
+  //           message: '你的邮箱是: ' + value
+  //         });
+  //       }).catch(() => {
+  //         this.$message({
+  //           type: 'info',
+  //           message: '取消输入'
+  //         });       
+  //       });
+  //     },
    mouseOver2(e) {
      document.onmousedown = (e) => {
        let odiv = e.target; //获取目标元素
@@ -160,7 +181,11 @@ export default {
    },
    deletelabel(i) {
      this.boxArry.splice(i,1)
-     //console.log(boxArry)
+     console.log(this.boxArry)
+   },
+   changeinfo(input,i) {
+     //console.log("father"+input,i)
+     this.boxArry[i].info=input
    },
    gai() {
      this.isTrue = !this.isTrue;
@@ -222,12 +247,14 @@ export default {
            this.height = (e.clientY - disY) / this.num;
 
            console.log(e.target.getBoundingClientRect(), disX, disY);
+           
            if (this.width > 5 && this.height > 5) {
              this.boxArry.push({
                width: this.width,
                height: this.height,
                left: left,
                top: top,
+               info:"default"
              });
              //完成标注
              console.log(this.boxArry)
