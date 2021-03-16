@@ -2,6 +2,7 @@
  <div id="test" style="user-select: none;">
    <el-button @click="fangda">放大</el-button>
    <el-button @click="suoxiao">缩小</el-button>
+   <el-button @click="saveinfo">保存 </el-button>
    <el-button @click="gai" v-show="isTrue">添加</el-button>
 
 
@@ -38,7 +39,7 @@
          }"
        >
          <!-- <div class="r_b" @mousedown="mouseMove11" v-if="b_i == index"></div> -->
-         <div class="r_b" @mousedown.stop="move(false,$event)" v-if="b_i == index"></div>
+         <div class="r_b" @mousedown.stop="move(false,$event)" v-if="b_i == index">{{index+1}}</div>
        </div>
        <div
          :style="{
@@ -52,7 +53,7 @@
        ></div>
        <img
          style="width: 100%; height: 100%; pointer-events: none;"
-         src="https://ss0.bdstatic.com/70cFuHSh_Q1YnxGkpoWK1HF6hhy/it/u=3479844176,2436830052&fm=26&gp=0.jpg"
+         :src=imagesrc
          alt=""
          @mousedown="isTrue ? null : alter"
        />
@@ -73,14 +74,29 @@
 <script>
   import labelinfo from '@/components/labelinfo.vue'
 export default {
-  //input: 1,
+  //input: 1
+  props:{
+    fatherimagesrc:String,
+    imageindex:Number
+  },
   components: {
     labelinfo
+    },
+    computed: {
+      imagesrc:function(){
+        //return require('@/image/'+this.fatherimagesrc)
+        //return require('http://192.168.19.237:18080/images/abc.png')
+        //return require('@/'+'image/微信图片_20200927191717'+'.jpg')
+        return this.fatherimagesrc
+      }
     },
  data() {
    return {
      num: 1,
      boxArry: [],
+     tempArry:[],
+     //testsc:"image/test2",
+     //imagesrc:require('@/'+this.fatherimagesrc+'.jpg'),
      isTrue: false,
      isTrue2:false,
      width: "",
@@ -179,6 +195,20 @@ export default {
      this.isTrue2=false;
      console.log("setfalse")
    },
+   saveinfo(){
+     console.log("start!!!",this.boxArry)
+     //变为深拷贝
+     this.tempArry.push(JSON.parse(JSON.stringify(this.boxArry)))
+     //this.tempArry[0]=this.boxArry
+     this.tempArry.push(this.fatherimagesrc)
+     this.tempArry.push(this.imageindex)
+     this.$emit('saveimageinfo',this.tempArry,this.imageindex)
+     console.log("11111",this.tempArry,this.tempArry[0],this.tempArry[1],this.tempArry[2])
+     this.tempArry=[]
+     console.log("22222",this.tempArry)
+    //  this.$emit('saveimageinfo',this.boxArry,this.fatherimagesrc,this.imageindex)
+    //  console.log(this.boxArry,this.fatherimagesrc,this.imageindex)
+   },
    deletelabel(i) {
      this.boxArry.splice(i,1)
      console.log(this.boxArry)
@@ -252,8 +282,8 @@ export default {
              this.boxArry.push({
                width: this.width,
                height: this.height,
-               left: left,
-               top: top,
+              //  left: left,
+              //  top: top,
                info:"default"
              });
              //完成标注
@@ -262,7 +292,7 @@ export default {
             //  console.log(this.top)
             //  console.log(this.width)
             //  console.log("111"+this.boxArry)
-            //  this.$emit('markarray',this.boxArry)
+              this.$emit('markarray',this.boxArry)
            }
 
            this.biaozhuWidth = 0;
@@ -340,8 +370,9 @@ export default {
       console.log(this.boxArry)
    },
    fangda() {
-     this.num += 0.1;
-     console.log(this)
+     //this.num += 0.1;
+     //imagesrc=require(this.testsc)
+     console.log(this.fatherimagesrc,this.imageindex)
    },
    suoxiao() {
      if(this.num>0.2)
