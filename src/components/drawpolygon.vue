@@ -1,29 +1,66 @@
 <template>
   <div>
-    <el-button type="primary" icon="el-icon-edit" circle id="poly" title="Draw Polygon" @click="start">{{buttonstate}}</el-button>
-    <label style="color:blue"
+    <el-button
+      type="primary"
+      icon="el-icon-edit"
+      circle
+      id="poly"
+      title="Draw Polygon"
+      @click="start"
+      >{{ buttonstate }}</el-button
+    >
+    <label style="color: blue"
       ><b>Press double click to close shape and stop</b></label
     >
-    <canvas id="label-canvas" class="canvas" width="800" height="800  "></canvas>
+    <div style="margin:0 auto;width:800px;">
+    <canvas
+      id="label-canvas"
+      class="canvas"
+      :width="imagewidth"
+      :height="imageheight"
+    ></canvas>
+    </div>
+    <div style="text-align: center; margin:0 auto;">
+    <label style="color: blue;"
+      ><b style="text-align: center;"
+        >输入一个不大于标注个数的数字，鼠标放在删除上能看到将要删除的对象</b
+      ></label>
+    
     <el-row>
-    <el-input 
-    v-model="input" 
-    placeholder="请输入内容" 
-    style="width:300px" 
-    clearable
-    ></el-input>
-        <!-- <el-button @mouseover="infotip" @mousedown="deletemarked" type="danger">删除</el-button> -->
-        <el-button @mouseover.native="infotip" @mouseout.native="removetip" type="danger">删除</el-button>
+      <el-input
+        v-model="input"
+        placeholder="请输入内容"
+        style="width: 300px"
+        clearable
+      ></el-input>
+      <!-- <el-button @mouseover="infotip" @mousedown="deletemarked" type="danger">删除</el-button> -->
+      <el-button
+        @mouseover.native="infotip"
+        @mouseout.native="removetip"
+        @mousedown.native="deletemarked"
+        type="danger"
+        >删除</el-button
+      >
     </el-row>
+    </div>
   </div>
 </template>
 <script>
 import { fabric } from "fabric";
 export default {
+  props: {
+    fatherimagesrc: String,
+    imageindex: Number,
+  },
   data() {
     return {
       input: null,
+      temproof: null,
       roof: null,
+      imagewidth: 800,
+      imageheight: 800,
+      scalewidth: null, //图片宽度缩放倍数
+      scaleheight: null, //图片高度缩放倍数
       roofPoints: [],
       lines: [],
       lineCounter: 0,
@@ -33,119 +70,199 @@ export default {
       drawingObject: {
         type: "",
         background: "",
-        border: ""
+        border: "",
       },
       fabricObj: null,
+      fabricimageObj: null,
       mouseFrom: {},
       canvas: null,
       Point: {},
       markcolor: "rgba(0,128,128,0.5)",
-      isCanSelect : false,
-      buttonstate : "开始标注",
-      buttonmouseoveflag : false
+      isCanSelect: false,
+      buttonstate: "开始标注",
+      buttonmouseoveflag: false,
       //imageurl:'http://localhost:9528/static/img/QQ%E5%9B%BE%E7%89%8720201120101655.ff1d6fd1.jpg',
       //localimage:'D:/VueProject/modelcraft-web/src/image/test2.jpg'
     };
   },
-  computed: {},
+  computed: {
+    imagesrc: function () {
+      //return require('@/image/'+this.fatherimagesrc)
+      //return require('http://192.168.19.237:18080/images/abc.png')
+      //return require('@/'+'image/微信图片_20200927191717'+'.jpg')
+      return this.fatherimagesrc;
+    },
+  },
   mounted() {
     this.$nextTick(() => {
       setTimeout(() => {
         this.fabricObj = new fabric.Canvas("label-canvas");
-        //this.fabricObj.setBackgroundImage(this.imageurl,this.fabricObj.renderAll.bind(this.fabricObj));
+        this.createBackgroundImage();
         this.fabricEvent();
       }, 500);
     });
   },
+  watch :{
+    //监听图片变化
+    imagesrc(){
+      console.log("watch!!!!!!!!")
+      this.createBackgroundImage();
+    }
+  },
   methods: {
-    infotip(){
-      if(!this.buttonmouseoveflag){
-      console.log(this.polygonaxisArray[this.input-1])
-      this.buttonmouseoveflag=true;
+    createBackgroundImage(){
+          let _this=this
+          this.fabricimageObj = new fabric.Image.fromURL(this.imagesrc,function(img){
+          // console.log(_this.fabricObj)
+          console.log(_this.fabricObj.width)
+          console.log(_this.fabricObj.height)
+          console.log(img.width)
+          console.log(img.height)
+          _this.scalewidth=_this.fabricObj.width / img.width
+          _this.scaleheight=_this.fabricObj.height / img.height
+          console.log(_this.scalewidth)
+          console.log(_this.scaleheight)
+          // _this.imagewidth=_this.fabricObj.width=img.width
+          // _this.imageheight=_this.fabricObj.height=img.height
+            img.set({
+            scaleX: _this.scalewidth,
+            scaleY: _this.scaleheight,
+            left: 0,
+            top: 0
+            });
+          _this.fabricObj.setBackgroundImage(img, _this.fabricObj.renderAll.bind(_this.fabricObj));
+        })
+    },
+    infotip() {
+      //防止输入数字以外的字符的响应
+      var reg = /^[1-9]+[0-9]*]*$/;
+      console.log(reg.test(this.input));
+      if (
+        this.input > this.polygonArray.length ||
+        this.input <= 0 ||
+        !reg.test(this.input)
+      ) {
+        return;
+      }
+      if (!this.buttonmouseoveflag) {
+        console.log(this.polygonaxisArray[this.input - 1]);
+        this.temproof = this.polygonArray[this.input - 1];
+        this.fabricObj.add(this.temproof);
+        this.buttonmouseoveflag = true;
       }
     },
-    removetip(){
-      if(this.buttonmouseoveflag){
-        console.log("remove!")
-        this.buttonmouseoveflag=false;
+    removetip() {
+      if (this.input > this.polygonArray.length || this.input <= 0) {
+        return;
+      }
+      if (this.buttonmouseoveflag) {
+        console.log("remove!");
+        if (this.temproof != null) {
+          this.fabricObj.remove(this.temproof);
+          this.temproof = null;
+        }
+        this.buttonmouseoveflag = false;
       }
     },
-    deletemarked(){
-
+    deletemarked() {
+      if (this.input > this.polygonArray.length || this.input <= 0) {
+        return;
+      }
+      console.log("input", this.input);
+      if (this.temproof != null) {
+        this.fabricObj.remove(this.temproof);
+        this.temproof = null;
+      }
+      this.fabricObj.remove(this.polygonArray[this.input - 1]);
+      this.polygonArray.splice(this.input - 1, 1);
+      this.polygonaxisArray.splice(this.input - 1, 1);
     },
     start() {
+      //切换画板上是否能标注的按钮
       if (this.drawingObject.type == "roof") {
         this.drawingObject.type = "";
         // this.lines.forEach(function(value, index, ar) {
         //   this.fabricObj.remove(value);
         // });
-        this.lines.forEach(item => this.fabricObj.remove(item));
-        if(this.roofPoints.length>2){
-        this.makeRoof();
-        this.fabricObj.add(this.roof);
-        this.polygonArray.push(this.roof);
-        this.polygonaxisArray.push(this.roofPoints);
-      }
+        //移除画的连续直线
+        this.lines.forEach((item) => this.fabricObj.remove(item));
+        //手动画的多边形存储的点数大于2时再生成图片
+        if (this.roofPoints.length > 2) {
+          this.makeRoof();
+          this.fabricObj.add(this.roof);
+          this.polygonArray.push(this.roof);
+          this.polygonaxisArray.push(this.roofPoints);
+        }
         this.fabricObj.renderAll();
+        //清空直线和点数组和他们的计数
         this.roofPoints = [];
         this.lines = [];
         this.lineCounter = 0;
-        this.buttonstate="开始标注"
+        this.buttonstate = "开始标注";
         //this.polygonArray.forEach(item => item.selectable=true)
         // this.fabricObj.selectable=true;
         // this.isCanSelect=true;
       } else {
         this.drawingObject.type = "roof"; // roof type
-        this.buttonstate="(正在标注)停止标注"
+        this.buttonstate = "(正在标注)停止标注";
         //this.polygonArray.forEach(item => item.selectable=false)
         // this.isCanSelect=false;
         // this.fabricObj.selectable=false;
       }
-      console.log(this.polygonArray)
-      console.log(this.polygonaxisArray)
+      console.log(this.polygonArray);
+      console.log(this.polygonaxisArray);
     },
-    
-          // &&e.pointer.x!=this.roofPoints[this.roofPoints.length-1].x
-          // &&e.pointer.y!=this.roofPoints[this.roofPoints.length-1].y
+
+    // &&e.pointer.x!=this.roofPoints[this.roofPoints.length-1].x
+    // &&e.pointer.y!=this.roofPoints[this.roofPoints.length-1].y
     fabricEvent() {
       this.fabricObj.on({
         // "object:selected":e =>{
         //   console.log("selected")
         // },
-        "mouse:down": e => {
+        "mouse:down": (e) => {
+          //点击生成多边形的边框并且将点加入数组
           //console.log(e)
           //console.log(e)
-          if (this.drawingObject.type == "roof"){
+          if (this.drawingObject.type == "roof") {
             //防止过长时间重复点一个点时点入栈
-            if(this.roofPoints.length<1||(this.roofPoints.length>=1
-            &&e.pointer.x!=this.roofPoints[this.roofPoints.length-1].x
-            &&e.pointer.y!=this.roofPoints[this.roofPoints.length-1].y)){
-            this.fabricObj.selection = false;
-            // this.mouseFrom.x = e.pointer.x;
-            // this.mouseFrom.y = e.pointer.y
-            let a = {}
+            if (
+              this.roofPoints.length < 1 ||
+              (this.roofPoints.length >= 1 &&
+                (e.pointer.x != this.roofPoints[this.roofPoints.length - 1].x ||
+                e.pointer.y != this.roofPoints[this.roofPoints.length - 1].y))
+            ) {
+              this.fabricObj.selection = false;
+              // this.mouseFrom.x = e.pointer.x;
+              // this.mouseFrom.y = e.pointer.y
+              let a = {};
               // a["x"] = this.mouseFrom.x;
               // a["y"] = this.mouseFrom.y;
               a["x"] = e.pointer.x;
-              a["y"] = e.pointer.y
-            this.roofPoints.push(a);
-            var points = [a.x, a.y, a.x, a.y];
-            this.lines.push(
-              new fabric.Line(points, {
-                strokeWidth: 3,
-                selectable: false,
-                stroke: this.markcolor
-              })
-            );
-             this.fabricObj.add(this.lines[this.lineCounter]);
-            this.lineCounter++;
-          }
-          else{
-            console.log("click repeat!!!")
-          }
+              a["y"] = e.pointer.y;
+              this.roofPoints.push(a);
+              var points = [a.x, a.y, a.x, a.y];
+              this.lines.push(
+                new fabric.Line(points, {
+                  strokeWidth: 3,
+                  selectable: false,
+                  stroke: this.markcolor,
+                })
+              );
+              this.fabricObj.add(this.lines[this.lineCounter]);
+              this.lineCounter++;
+              console.log(this.roofPoints.length)
+            } else {
+              console.log("click repeat!!!");
+              // console.log(e.pointer.x)
+              // console.log(e.pointer.y)
+              // console.log(this.roofPoints[this.roofPoints.length - 1].x)
+              // console.log(this.roofPoints[this.roofPoints.length - 1].y)
+            }
           }
         },
-        "mouse:move": e => {
+        "mouse:move": (e) => {
+          //鼠标移动时的直线绘制
           if (
             this.lines[0] !== null &&
             this.lines[0] !== undefined &&
@@ -156,68 +273,74 @@ export default {
             //console.log(this.lineCounter)
             this.lines[this.lineCounter - 1].set({
               x2: this.x,
-              y2: this.y
+              y2: this.y,
             });
             this.fabricObj.renderAll();
           }
         },
-        "mouse:dblclick": e => {
+        "mouse:dblclick": (e) => {
+          //双击结束绘制按点生成多边形
           if (this.drawingObject.type == "roof") {
-          // if (Math.abs(this.roofPoints[this.roofPoints.length-1].x-this.roofPoints[0].x)<10||
-          // Math.abs(this.roofPoints[this.roofPoints.length-1].y-this.roofPoints[0].y)<10) {
-          //             console.log("double click clean");
-          // //clear arrays
-          // this.roofPoints = [];
-          // this.lines = [];
-          // this.lineCounter = 0;
-          // }
-          console.log(this.roofPoints.length)
-          this.lines.forEach(item => this.fabricObj.remove(item));
-          if(this.roofPoints.length>2) { //阻止生成2个点以下的对象，包括空白对象，点对象，线对象
-          // canvas.remove(lines[lineCounter - 1]);
-          this.makeRoof();
-          console.log(this.roof)
-          this.fabricObj.add(this.roof);
-          this.polygonArray.push(this.roof);
-          this.polygonaxisArray.push(this.roofPoints);
-          }
-          this.fabricObj.renderAll();
+            // if (Math.abs(this.roofPoints[this.roofPoints.length-1].x-this.roofPoints[0].x)<10||
+            // Math.abs(this.roofPoints[this.roofPoints.length-1].y-this.roofPoints[0].y)<10) {
+            //             console.log("double click clean");
+            // //clear arrays
+            // this.roofPoints = [];
+            // this.lines = [];
+            // this.lineCounter = 0;
+            // }
+            console.log(this.roofPoints.length);
+            this.lines.forEach((item) => this.fabricObj.remove(item));
+            if (this.roofPoints.length > 2) {
+              //阻止生成2个点以下的对象，包括空白对象，点对象，线对象
+              // canvas.remove(lines[lineCounter - 1]);
+              this.makeRoof();
+              console.log(this.roof);
+              this.fabricObj.add(this.roof);
+              this.polygonArray.push(this.roof);
+              this.polygonaxisArray.push(this.roofPoints);
+            }
+            this.fabricObj.renderAll();
 
-          console.log("double click");
-          //clear arrays
-          this.roofPoints = [];
-          this.lines = [];
-          this.lineCounter = 0;
+            console.log("double click");
+            //clear arrays
+            this.roofPoints = [];
+            this.lines = [];
+            this.lineCounter = 0;
           }
-        }
+        },
       });
     },
     makeRoof() {
+      //生成多边形
+      //定义多边形生成时的生成位置
       let left = this.findLeftPaddingForRoof(this.roofPoints);
       let top = this.findTopPaddingForRoof(this.roofPoints);
-      let a = {}
+      let a = {};
       a["x"] = this.roofPoints[0].x;
       a["y"] = this.roofPoints[0].y;
       this.roofPoints.push(a);
+      //生成多边形
       this.roof = new fabric.Polygon(this.roofPoints, {
         //fill: "rgba(255,255,0,0)",
         //fill: this.markcolor,
         fill: this.markcolor,
-        strokeWidth:2,
-        selectable:false,
-        hasControls:false,
+        strokeWidth: 2,
+        selectable: false,
+        hasControls: false,
         //hasBordes:false,
         //stroke: "red",
-        left:left,
-        top:top
-      })
+        left: left,
+        top: top,
+      });
       this.roof.on({
-        "selected":e =>{
-          console.log(e)
-          console.log("selected")
-        }
+        selected: (e) => {
+          console.log(e);
+          console.log("selected");
+        },
       });
     },
+    //获取所有点中最上边的点的坐标
     findTopPaddingForRoof(roofPoints) {
       var result = 999999;
       for (var f = 0; f < this.lineCounter; f++) {
@@ -227,6 +350,7 @@ export default {
       }
       return Math.abs(result);
     },
+    //获取所有点中最左边的点的坐标
     findLeftPaddingForRoof(roofPoints) {
       var result = 999999;
       for (var i = 0; i < this.lineCounter; i++) {
@@ -237,7 +361,7 @@ export default {
       return Math.abs(result);
     },
     // toggerBackHandle(src) {
-    //     let Shape;     
+    //     let Shape;
     //     // (解决跨域图片加载)
     //     const image = new Image()
     //     image.setAttribute('crossOrigin', 'anonymous')
@@ -252,7 +376,7 @@ export default {
     //        imageEffectCanvas.renderAll(); //重新渲染画布
     //     }
     // }
-  }
+  },
 };
 </script>
 <style scoped>
