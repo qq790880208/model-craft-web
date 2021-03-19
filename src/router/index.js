@@ -211,6 +211,16 @@ export const asyncRoutes = [
     ]
   },
   {
+    path: 'external-link2',
+    component: Layout,
+    children: [
+      {
+        path: 'https://element.eleme.cn/#/zh-CN/component/layout',
+        meta: { title: 'element-ui文档', icon: 'link' }
+      }
+    ]
+  },
+  {
     path: '/example',
     component: Layout,
     redirect: '/example/table',
@@ -300,7 +310,11 @@ export const asyncRoutes = [
         path: 'menu2',
         component: () => import('@/views/nested/menu2/index'),
         name: 'Menu2',
+<<<<<<< HEAD
         meta: { title: 'menu2', roles: ['admin'] }
+=======
+        meta: { title: 'menu2' }
+>>>>>>> origin/dev
       }
     ]
   },
