@@ -42,7 +42,6 @@ export const constantRoutes = [
     component: () => import('@/views/404'),
     hidden: true
   },
-
   {
     path: '/',
     component: Layout,
@@ -53,7 +52,9 @@ export const constantRoutes = [
       component: () => import('@/views/dashboard/index'),
       meta: { title: 'Dashboard', icon: 'dashboard' }
     }]
-  },
+  }
+]
+export const asyncRoutes = [
   {
     path: '/label',
     component: Layout,
@@ -61,32 +62,57 @@ export const constantRoutes = [
     name: 'label',
     meta: {
       title: '数据集标注',
-      icon: 'form'
+      icon: 'form',
+      roles: ['admin', 'user']
     },
     children: [
       {
         path: '/label/d2',
         component: () => import('@/views/label/d2/index'),
         name: 'd2',
-        meta: { title: '图片标注', icon: 'excel'}
+        meta: { title: '图片标注', icon: 'excel', roles: ['admin', 'user'] }
       },
       {
         path: '/label/d3',
-        component: () => import('@/views/label/d3/index'),
+        component: () => import ('@/views/label/d3/index'),
         name: 'd3',
-        meta: { title: '3D目标标注', icon: 'excel'}
+        meta: { title: '3D目标标注', icon: 'excel', roles: ['admin', 'user'] }
       },
       {
         path: '/label/voice',
-        component: () => import('@/views/label/voice/index'),
+        component: () => import ('@/views/label/voice/index'),
         name: 'voice',
-        meta: { title: '语音标注', icon: 'excel'}
+        meta: { title: '语音标注', icon: 'excel', roles: ['admin', 'user'] }
       },
       {
         path: '/label/pointcloud',
-        component: () => import('@/views/label/pointcloud/index'),
+        component: () => import ('@/views/label/pointcloud/index'),
         name: 'pointcloud',
-        meta: { title: '点云数据标注', icon: 'excel'}
+        meta: { title: '点云数据标注', icon: 'excel', roles: ['admin', 'user'] }
+      }
+    ]
+  },
+  {
+    path: '/models',
+    component: Layout,
+    name: 'model',
+    meta: {
+      title: '模型管理',
+      icon: 'form',
+      roles: ['admin', 'user']
+    },
+    children: [
+      {
+        path: '/model',
+        component: () => import('@/views/model/index'),
+        name: 'model admin',
+        meta: { title: '模型', icon: 'nested', roles: ['admin', 'user'] }
+      },
+      {
+        path: '/model-eval',
+        component: () => import('@/views/model/index'),
+        name: 'model eval',
+        meta: { title: '模型评估', icon: 'excel', roles: ['admin', 'user'] }
       }
     ]
   },
@@ -97,20 +123,21 @@ export const constantRoutes = [
     name: 'teamManagement',
     meta: {
       title: '团队管理',
-      icon: 'form'
+      icon: 'form',
+      roles: ['admin', 'user']
     },
     children: [
       {
         path: '/teamManagement/annotateTeamManagement',
         component: () => import('@/views/teamManagement/annotateTeamManagement/index'),
         name: 'annotateTeamManagement',
-        meta: { title: '标注团队管理', icon: 'excel' }
+        meta: { title: '标注团队管理', icon: 'excel', roles: ['admin', 'user'] }
       },
       {
         path: '/teamManagement/annotateMemberManagement',
         component: () => import('@/views/teamManagement/annotateMemberManagement/index'),
         name: 'annotateMemberManagement',
-        meta: { title: '标注成员管理', icon: 'excel' }
+        meta: { title: '标注成员管理', icon: 'excel', roles: ['admin', 'user'] }
       }
     ]
   },
@@ -121,44 +148,45 @@ export const constantRoutes = [
     name: 'system_management',
     meta: {
       title: '系统设置',
-      icon: 'form'
+      icon: 'form',
+      roles: ['admin']
     },
     children: [
       {
         path: '/systemManagement/authorityManagement',
         component: () => import('@/views/systemManagement/authorityManagement/index'),
         name: 'authorityManagement',
-        meta: { title: '权限管理', icon: 'excel'}
+        meta: { title: '权限管理', icon: 'excel', roles: ['admin'] }
       },
       {
         path: '/systemManagement/userManagement',
         component: () => import('@/views/systemManagement/userManagement/index'),
         name: 'userManagement',
-        meta: { title: '用户管理', icon: 'excel'}
+        meta: { title: '用户管理', icon: 'excel', roles: ['admin'] }
       },
       {
         path: '/systemManagement/systemResourceManagement',
         component: () => import('@/views/systemManagement/systemResourceManagement/index'),
         name: 'systemResourceManagement',
-        meta: { title: '系统资源管理', icon: 'excel'}
+        meta: { title: '系统资源管理', icon: 'excel', roles: ['admin'] }
       },
       {
         path: '/systemManagement/platformOperation',
         component: () => import('@/views/systemManagement/platformOperation/index'),
         name: 'platformOperation',
-        meta: { title: '平台运行情况', icon: 'excel'}
+        meta: { title: '平台运行情况', icon: 'excel', roles: ['admin'] }
       },
       {
         path: '/systemManagement/systemLogManagement',
         component: () => import('@/views/systemManagement/systemLogManagement/index'),
         name: 'systemLogManagement',
-        meta: { title: '系统日志管理', icon: 'excel'}
+        meta: { title: '系统日志管理', icon: 'excel', roles: ['admin'] }
       },
       {
         path: '/systemManagement/userOperatingSystemManagement',
         component: () => import('@/views/systemManagement/userOperatingSystemManagement/index'),
         name: 'userOperatingSystemManagement',
-        meta: { title: '用户操作日志', icon: 'excel'}
+        meta: { title: '用户操作日志', icon: 'excel', roles: ['admin'] }
       }
     ]
   },
@@ -168,7 +196,17 @@ export const constantRoutes = [
     children: [
       {
         path: 'https://panjiachen.github.io/vue-element-admin-site/zh/',
-        meta: { title: 'vue-element-admin文档', icon: 'link' }
+        meta: { title: 'vue-element-admin文档', icon: 'link', roles: ['admin'] }
+      }
+    ]
+  },
+  {
+    path: 'external-link2',
+    component: Layout,
+    children: [
+      {
+        path: 'https://element.eleme.cn/#/zh-CN/component/layout',
+        meta: { title: 'element-ui文档', icon: 'link', roles: ['admin'] }
       }
     ]
   },
@@ -177,19 +215,19 @@ export const constantRoutes = [
     component: Layout,
     redirect: '/example/table',
     name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
+    meta: { title: 'Example', icon: 'el-icon-s-help', roles: ['admin'] },
     children: [
       {
         path: 'table',
         name: 'Table',
         component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
+        meta: { title: 'Table', icon: 'table', roles: ['admin'] }
       },
       {
         path: 'tree',
         name: 'Tree',
         component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
+        meta: { title: 'Tree', icon: 'tree', roles: ['admin'] }
       }
     ]
   },
@@ -202,7 +240,7 @@ export const constantRoutes = [
         path: 'index',
         name: 'Form',
         component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
+        meta: { title: 'Form', icon: 'form', roles: ['admin'] }
       }
     ]
   },
@@ -214,38 +252,39 @@ export const constantRoutes = [
     name: 'Nested',
     meta: {
       title: 'Nested',
-      icon: 'nested'
+      icon: 'nested',
+      roles: ['admin']
     },
     children: [
       {
         path: 'menu1',
         component: () => import('@/views/nested/menu1/index'), // Parent router-view
         name: 'Menu1',
-        meta: { title: 'Menu1' },
+        meta: { title: 'Menu1', roles: ['admin'] },
         children: [
           {
             path: 'menu1-1',
             component: () => import('@/views/nested/menu1/menu1-1'),
             name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
+            meta: { title: 'Menu1-1', roles: ['admin'] }
           },
           {
             path: 'menu1-2',
             component: () => import('@/views/nested/menu1/menu1-2'),
             name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
+            meta: { title: 'Menu1-2', roles: ['admin'] },
             children: [
               {
                 path: 'menu1-2-1',
                 component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
                 name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
+                meta: { title: 'Menu1-2-1', roles: ['admin'] }
               },
               {
                 path: 'menu1-2-2',
                 component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
                 name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
+                meta: { title: 'Menu1-2-2', roles: ['admin'] }
               }
             ]
           },
@@ -253,7 +292,7 @@ export const constantRoutes = [
             path: 'menu1-3',
             component: () => import('@/views/nested/menu1/menu1-3'),
             name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
+            meta: { title: 'Menu1-3', roles: ['admin'] }
           }
         ]
       },
@@ -261,22 +300,10 @@ export const constantRoutes = [
         path: 'menu2',
         component: () => import('@/views/nested/menu2/index'),
         name: 'Menu2',
-        meta: { title: 'menu2' }
+        meta: { title: 'menu2', roles: ['admin'] }
       }
     ]
   },
-
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/#/',
-        meta: { title: 'External Link', icon: 'link' }
-      }
-    ]
-  },
-
   // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]

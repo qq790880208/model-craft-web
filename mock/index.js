@@ -4,10 +4,16 @@ const { param2Obj } = require('./utils') // 自定义工具模块
 
 const user = require('./user')
 const table = require('./table')
+const userManage = require('./userManage')
+const team = require('./team')
+const teamUser = require('./teamUser')
 
 const mocks = [
   ...user,
-  ...table
+  ...table,
+  ...team,
+  ...teamUser,
+  ...userManage
 ]
 
 // for front mock
