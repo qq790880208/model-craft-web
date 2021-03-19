@@ -5,7 +5,7 @@ export function addUser(params) {
     url: '/userManage/addUser',
     method: 'post',
     params: params,
-    // baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.239:8083'
   })
 }
 export function getUserListPage(params) {
@@ -13,7 +13,7 @@ export function getUserListPage(params) {
     url: '/userManage/getUserListPage',
     method: 'get',
     params: params,
-    // baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.239:8083'
   })
 }
 /* editUser */
@@ -22,7 +22,7 @@ export function editUser(params) {
     url: '/userManage/editUser',
     method: 'put',
     params: params,
-    // baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.239:8083'
   })
 }
 /* removeUser */
@@ -31,7 +31,7 @@ export function removeUser(params) {
     url: '/userManage/removeUser',
     method: 'delete',
     params: params,
-    // baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.239:8083'
   })
 }
 /* batchRemove */
@@ -40,6 +40,6 @@ export function batchRemoveUser(params) {
     url: '/userManage/batchRemoveUser',
     method: 'delete',
     params: params,
-    //baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.239:8083'
   })
 }

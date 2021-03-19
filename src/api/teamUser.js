@@ -5,7 +5,7 @@ export function getTeamsUser(params) {
     url: '/teamUser/getTeamUser',
     method: 'get',
     params: params,
-    //baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.239:8083'
   })
 }
 /* 获取用户列表分页 */
@@ -14,7 +14,7 @@ export function getTeamsUserPage(params) {
     url: '/teamUser/getTeamUserPage',
     method: 'get',
     params: params,
-    // baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.239:8083'
   })
 }
 /* 添加用户 */
@@ -23,7 +23,7 @@ export function addUser(params) {
     url: '/teamUser/addUser',
     method: 'post',
     params: params,
-    //baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.239:8083'
   })
 }
 /* 修改信息 */
@@ -32,7 +32,7 @@ export function editUser(params) {
     url: '/teamUser/editUser',
     method: 'put',
     params: params,
-  //  baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.239:8083'
   })
 }
 /* 删除用户 */
@@ -41,7 +41,7 @@ export function delUser(params) {
     url: '/teamUser/delUser',
     method: 'delete',
     params: params,
-   // baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.239:8083'
   })
 }
 /* 批量删除用户 */
@@ -50,6 +50,6 @@ export function batchDelUser(params) {
     url: '/teamUser/batchDelUser',
     method: 'delete',
     params: params,
-   // baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.239:8083'
   })
 }
