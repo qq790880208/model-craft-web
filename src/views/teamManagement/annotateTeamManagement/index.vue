@@ -85,12 +85,12 @@
             </el-table-column>
             <el-table-column align="center" label="标注角色" width="120">
               <template slot-scope="scope">
-                {{ scope.row.character }}
+                {{ scope.row.label_role }}
               </template>
             </el-table-column>
             <el-table-column align="header-center" label="Description">
               <template slot-scope="scope">
-                {{ scope.row.nums }}
+                {{ scope.row.descr }}
               </template>
             </el-table-column>
             <el-table-column align="center" label="Operations">
@@ -222,7 +222,7 @@ export default {
     },
     mouseLeave: function() {
       this.flag = true
-      //const para = Object.assign({}, this.selectTeam)
+      // const para = Object.assign({}, this.selectTeam)
       const para = {}
       para.descr = this.selectTeam.descr
       para.name = this.selectTeam.name
@@ -427,7 +427,7 @@ export default {
       })
         .then(() => {
           const para = { ids: ids }
-          para.teamid = this.selectTeam.id;
+          para.teamid = this.selectTeam.id
           console.log(para)
           batchDelUser(para).then(res => {
             this.$message({

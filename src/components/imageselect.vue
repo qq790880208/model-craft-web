@@ -542,50 +542,6 @@ export default {
 </script>
 <style lang="less">
 #test {
-<<<<<<< HEAD
- /deep/.el-dialog__body {
-   padding: 10px 20px !important;
- }
- .content {
-   width: 800px;
-   height: 500px;
-   background: rgb(0, 0, 0);
-   margin: 0 auto;
-   overflow: hidden;
-   position: relative;
-
-   .drag_box {
-     width: 150px;
-     height: 90px;
-     border: 1px solid #666;
-     background-color: #ccc;
-     /* 使用定位，脱离文档流 */
-     position: relative;
-     top: 100px;
-     left: 100px;
-     /* 鼠标移入变成拖拽手势 */
-     cursor: move;
-     z-index: 3000;
-   }
-   .b_border {
-     border: 1px solid rgba(255, 0, 0, 0.5) !important;
-   }
-   .biaozhu {
-     z-index: 9999999;
-   }
-   .r_b {
-     position: absolute;
-     right: 0;
-     bottom: 0;
-     width: 8px;
-     height: 8px;
-     background: green;
-   }
-   .r_b:hover {
-     cursor: se-resize;
-   }
- }
-=======
   /deep/.el-dialog__body {
     padding: 10px 20px !important;
   }
@@ -628,7 +584,6 @@ export default {
       cursor: se-resize;
     }
   }
->>>>>>> origin/dev
 }
 </style>>
 

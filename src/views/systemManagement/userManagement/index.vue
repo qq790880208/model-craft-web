@@ -41,7 +41,7 @@
 
     <!--工具条-->
     <el-col :span="24" class="toolbar">
-      <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
+      <el-button type="danger" @click="batchRemove" :disabled="sels.length===0">批量删除</el-button>
       <!--<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="5" :total="total" style="float:right;">-->
       <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
       </el-pagination>
@@ -126,7 +126,7 @@ export default {
     },
     // 获取用户列表
     getUsers() {
-      let para = {
+      const para = {
         page: this.page,
         pagesize: this.page_size,
         name: this.filters.name
@@ -143,7 +143,7 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          let para = { id: row.id }
+          const para = { id: row.id }
           console.log(para)
           removeUser(para).then(res => {
             this.$message({
@@ -177,14 +177,13 @@ export default {
         if (valid) {
           this.$confirm('确认提交吗?', '提示', {})
             .then(() => {
-              let temp = Object.assign({}, this.editForm)
-            let para = {
-              id: temp.id,
-              role: temp.role,
-              name: temp.name,
-              password: temp.password,
-              descr: temp.descr
-            } 
+              const temp = Object.assign({}, this.editForm)
+              const para = {
+                id: temp.id,
+                role: temp.role,
+                name: temp.name,
+                password: temp.password,
+                descr: temp.descr }
               console.log(para)
               editUser(para).then(res => {
                 this.$message({
@@ -209,7 +208,7 @@ export default {
           this.$confirm('确认提交吗？', '提示', {})
             .then(() => {
               this.editForm.id = (parseInt(Math.random() * 100)).toString() // mock a id
-              let para = Object.assign({}, this.editForm)
+              const para = Object.assign({}, this.editForm)
               console.log(para)
               addUser(para).then(res => {
                 this.$message({
@@ -233,13 +232,13 @@ export default {
     },
     // 批量删除
     batchRemove: function() {
-      var ids = this.sels.map(item => item.id).toString();
+      var ids = this.sels.map(item => item.id).toString()
       this.$confirm('确认删除选中记录吗？', '提示', {
         type: 'warning'
       })
         .then(() => {
-          let para = { ids: ids };
-          console.log(para);
+          const para = { ids: ids }
+          console.log(para)
           batchRemoveUser(para).then(res => {
             this.$message({
               message: '删除成功',
