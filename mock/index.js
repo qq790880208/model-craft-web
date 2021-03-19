@@ -5,7 +5,11 @@ const { param2Obj } = require('./utils') // 自定义工具模块
 const user = require('./user')
 const table = require('./table')
 
+const train = require('./train')
+const newTrain = require('./newTrain')
 const mocks = [
+  ...newTrain,
+  ...train,
   ...user,
   ...table
 ]
