@@ -1,14 +1,18 @@
 <template>
   <div class="dashboard-container">
     <div class="dashboard-text">name: {{ name }}</div>
+    <wave></wave>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-
+import wave from "@/components/wave.vue"
 export default {
   name: 'Dashboard',
+  components:{
+     wave
+  },
   computed: {
     ...mapGetters([
       'name'
