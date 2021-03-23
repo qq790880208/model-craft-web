@@ -24,7 +24,8 @@
      }
    },
    props: {
-     inputname:String
+     inputname:String,
+     ishighlight:Boolean
    },
    methods: {
      //通知父方法删除对应的div和标注框

@@ -2,9 +2,12 @@
   <div id="test" style="user-select: none">
     <el-button @click="fangda">放大</el-button>
     <el-button @click="suoxiao">缩小</el-button>
+    <el-button @click="gai" v-show="isTrue2">拖动图片</el-button>
+    <el-button @click="gai" v-show="!isTrue2">添加标注</el-button>
     <el-button @click="saveinfo">保存 </el-button>
     <el-button @click="updatelastdata">查看上次标注数据</el-button>
-    <el-button @click="gai" v-show="isTrue">添加</el-button>
+
+
 
     <div class="content" id:contentfather>
       <div
@@ -34,7 +37,7 @@
             position: 'absolute',
             left: item.left + 'px',
             top: item.top + 'px',
-            background: 'rgba(43,100,206,0.3)',
+            background: 'rgba(43,100,206,0.8)',
             border: 'none',
           }"
         >
@@ -54,7 +57,7 @@
             top: biaozhuTop + 'px',
             left: biaozhuLeft + 'px',
             position: 'absolute',
-            background: 'rgba(43,100,206,0.3)',
+            background: 'rgba(43,100,206,0.8)',
           }"
         ></div>
         <img
@@ -65,8 +68,6 @@
             border: 1px solid #666;
           "
           :src="imagesrc"
-          alt=""
-          @mousedown="isTrue ? null : alter"
         />
       </div>
     </div>
@@ -115,6 +116,13 @@ export default {
     imagesrc() {
       let image = new Image();
       image.src = this.imagesrc;
+      // if(image.width===0&&image.height===0){
+      //   console("reread")
+      // image.src = null;
+      // image.src = this.imagesrc;
+      // }
+      //保证图片加载完成之后读取数据
+      image.onload=function() {
       this.imagewidth = image.width;
       this.imageheight = image.height;
       this.scalewidth = 800 / image.width;
@@ -126,6 +134,7 @@ export default {
       this.boxArry = [],
       this.labelArry = [],
       this.num = 1
+      }
     },
   },
   data() {
@@ -147,6 +156,9 @@ export default {
       left: "",
       top: "",
       b_i: "",
+
+      imageleft:0,
+      imagetop:0,
       biaozhuHeight: 0,
       biaozhuWidth: 0,
       biaozhuTop: 0,
@@ -179,25 +191,25 @@ export default {
     //         });
     //       });
     //     },
-    mouseOver2(e) {
-      document.onmousedown = (e) => {
-        let odiv = e.target; //获取目标元素
+    // mouseOver2(e) {
+    //   document.onmousedown = (e) => {
+    //     let odiv = e.target; //获取目标元素
 
-        //算出鼠标相对元素的位置
-        let disX = e.clientX - odiv.offsetLeft;
-        let disY = e.clientY - odiv.offsetTop;
-        let left = e.clientX - disX;
-        let top = e.clientY - disY;
+    //     //算出鼠标相对元素的位置
+    //     let disX = e.clientX - odiv.offsetLeft;
+    //     let disY = e.clientY - odiv.offsetTop;
+    //     let left = e.clientX - disX;
+    //     let top = e.clientY - disY;
 
-        //绑定元素位置到positionX和positionY上面
-        this.positionX = top;
-        this.positionY = left;
-        console.log(this.boxArry, this.dragsIndex);
-        //移动当前元素
-        this.boxArry[this.b_i].width = left;
-        this.boxArry[this.b_i].height = top;
-      };
-    },
+    //     //绑定元素位置到positionX和positionY上面
+    //     this.positionX = top;
+    //     this.positionY = left;
+    //     console.log(this.boxArry, this.dragsIndex);
+    //     //移动当前元素
+    //     this.boxArry[this.b_i].width = left;
+    //     this.boxArry[this.b_i].height = top;
+    //   };
+    // },
     //  drags(e) {
     //    console.log(e);
     //  },
@@ -297,7 +309,7 @@ export default {
       this.labelArry[i].info = input;
     },
     gai() {
-      this.isTrue = !this.isTrue;
+      this.isTrue2 = !this.isTrue2;
     },
     getOffect(e) {
       console.log(e);
@@ -306,21 +318,27 @@ export default {
       //     this.top=e.offsetY
     },
     moveMouse(e) {
-      console.log("moveMouse!!!!!!!!!!!!!!");
+      //console.log("moveMouse!!!!!!!!!!!!!!");
       let odiv = e.target; //获取目标元素
+
+      console.log("this.imageleft",this.imageleft,"this.imagetop",this.imagetop);
+      //拖动图片的相对位置
+      let left2 = this.imageleft
+      let top2 = this.imagetop
       //算出鼠标相对元素的位置
-      let disX = e.clientX - odiv.offsetLeft;
-      let disY = e.clientY - odiv.offsetTop;
+      let disX = e.clientX + this.imageleft - odiv.offsetLeft;
+      let disY = e.clientY + this.imagetop - odiv.offsetTop;
       //  let disX = (e.clientX - odiv.offsetLeft) / this.num;
       //  let disY = (e.clientY - odiv.offsetTop) / this.num;
       console.log("disxy", disX, disY);
-      if (this.isTrue) {
-        // 拖动
+      if (this.isTrue2) {
+        // 拖动图片
+        console.log("moveMouse!!!!!!!!!!!!!!");
         document.onmousemove = (e) => {
           //鼠标按下并移动的事件
           //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
-          let left = e.clientX - disX;
-          let top = e.clientY - disY;
+          let left = e.clientX - disX+left2;
+          let top = e.clientY - disY+top2;
 
           //绑定元素位置到positionX和positionY上面
           this.positionX = top;
@@ -329,6 +347,10 @@ export default {
           //移动当前元素
           odiv.style.left = left + "px";
           odiv.style.top = top + "px";
+          // console.log("odiv.style.left",odiv.style.left,"odiv.style.top",odiv.style.top);
+          // console.log("left2",left2,"top2",top2);
+          this.imageleft=left
+          this.imagetop=top
         };
         document.onmouseup = (e) => {
           document.onmousemove = null;
@@ -344,9 +366,9 @@ export default {
 
           //  let left = disX - odiv.getBoundingClientRect().x;
           //  let top = disY - odiv.getBoundingClientRect().y;
-          let left = (disX - odiv.getBoundingClientRect().x) / this.num;
-          let top = (disY - odiv.getBoundingClientRect().y) / this.num;
-
+          let left = (disX  - odiv.getBoundingClientRect().x) / this.num;
+          let top = (disY  - odiv.getBoundingClientRect().y) / this.num;
+          //console.log("this.imageleft",this.imageleft,"this.imagetop",this.imagetop);
           console.log(e.target.offsetLeft);
           this.width = (e.clientX - disX) / this.num;
           this.height = (e.clientY - disY) / this.num;
@@ -456,32 +478,32 @@ export default {
       console.log("label", this.labelArry);
     },
 
-    alter(e) {
-      let odiv = e.target; //获取目标元素
-      console.log("movemovemove");
-      //算出鼠标相对元素的位置
-      let disX = e.clientX - odiv.offsetLeft;
-      let disY = e.clientY - odiv.offsetTop;
-      document.onmousemove = (e) => {
-        //鼠标按下并移动的事件
-        //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
-        let left = e.clientX - disX;
-        let top = e.clientY - disY;
+    // alter(e) {
+    //   let odiv = e.target; //获取目标元素
+    //   console.log("movemovemove");
+    //   //算出鼠标相对元素的位置
+    //   let disX = e.clientX - odiv.offsetLeft;
+    //   let disY = e.clientY - odiv.offsetTop;
+    //   document.onmousemove = (e) => {
+    //     //鼠标按下并移动的事件
+    //     //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
+    //     let left = e.clientX - disX;
+    //     let top = e.clientY - disY;
 
-        //绑定元素位置到positionX和positionY上面
-        this.positionX = top;
-        this.positionY = left;
+    //     //绑定元素位置到positionX和positionY上面
+    //     this.positionX = top;
+    //     this.positionY = left;
 
-        //移动当前元素
-        odiv.style.left = left + "px";
-        odiv.style.top = top + "px";
-      };
-      document.onmouseup = (e) => {
-        document.onmousemove = null;
-        document.onmouseup = null;
-      };
-      console.log(this.boxArry);
-    },
+    //     //移动当前元素
+    //     odiv.style.left = left + "px";
+    //     odiv.style.top = top + "px";
+    //   };
+    //   document.onmouseup = (e) => {
+    //     document.onmousemove = null;
+    //     document.onmouseup = null;
+    //   };
+    //   console.log(this.boxArry);
+    // },
     fangda() {
       if (this.num < 10) this.num += 0.1;
       //  imagesrc=require(this.testsc)

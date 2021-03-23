@@ -61,10 +61,6 @@ export default {
     },
     //保存图片标注信息
     saveimageinfo: function (markinfo, imageeindex) {
-      //this.infoArry.push(markinfo)
-      // this.infoArry[imageeindex].push(markinfo)
-      // this.infoArry[imageeindex][1]=imageesrc
-      // this.infoArry[imageeindex][2]=imageeindex
       this.infoArry[imageeindex] = markinfo;
       console.log("save success", markinfo, imageeindex);
       console.log("this", this.infoArry);
@@ -78,8 +74,9 @@ export default {
         method: "get",
         //params: query
       }).then(function (response) {
-        console.log(response);
+        console.log("mkxlvmxclkvjkcov",response);
         for (let i = 0; i < response.data.items.length; i++) {
+          //console.log(response);
           console.log(response.data.items[i]);
           //console.log(JSON.parse(response.data.items[i].label_data))
           //_this.lastinfoArry =
@@ -117,6 +114,7 @@ export default {
         data: {
           label_data: JSON.stringify(this.infoArry[i][0]),
           //"last_update_by": "liaoziheng",
+          file_type: "rectangle",
           is_label: 1,
           uuid: this.uuidArry[i],
         },
