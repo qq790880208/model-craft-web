@@ -53,6 +53,7 @@
       <div v-for="(items, index) in infoArry" :key="index">
         <labelinfo
           :inputname="infoArry[index].info"
+          :ishighlight="highlight[index]"
           @deletelabel="deletelabel(index)"
           @changeinfo="changeinfo($event, index)"
           style="text-align: center"
@@ -78,6 +79,7 @@ export default {
       maxnum: 200,
       valuenum: 1000,
       infoArry: [],
+      highlight: [],
     };
   },
   components: {
@@ -166,7 +168,7 @@ export default {
       //创建标注信息数组
       this.wavesurfer.on("region-created", this.createRegions);
       //更新标注信息数组
-      this.wavesurfer.on("region-update-end", this.saveRegions);
+      this.wavesurfer.on("region-update-end", this.changeRegions);
       //this.wavesurfer.on('region-removed', this.saveRegions);
       //this.wavesurfer.on("region-in", ()=>{console.log("in")});
 
@@ -196,8 +198,10 @@ export default {
         end: null,
         info: "default",
       });
+      this.highlight.push(false)
     },
-    saveRegions(region) {
+    changeRegions(region) {
+      
       console.log(region.id);
       let index;
       this.infoArry.forEach(function (item, id) {
