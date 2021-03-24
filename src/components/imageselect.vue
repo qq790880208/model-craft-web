@@ -105,9 +105,6 @@ export default {
   },
   computed: {
     imagesrc: function () {
-      //return require('@/image/'+this.fatherimagesrc)
-      //return require('http://192.168.19.237:18080/images/abc.png')
-      //return require('@/'+'image/微信图片_20200927191717'+'.jpg')
       return this.fatherimagesrc;
     },
   },
@@ -122,7 +119,8 @@ export default {
       // image.src = this.imagesrc;
       // }
       //保证图片加载完成之后读取数据
-      image.onload=function() {
+      image.onload=() =>{
+      console.log("image onload ")
       this.imagewidth = image.width;
       this.imageheight = image.height;
       this.scalewidth = 800 / image.width;
@@ -242,7 +240,7 @@ export default {
     //    };
     //  },
     updatelastdata() {
-      console.log("4312453456346", this.lastlabelArry);
+      console.log("image select lastlabelArry", this.lastlabelArry);
       this.boxArry = []
       this.labelArry = []
       for (let i = 0; i < this.lastlabelArry.length; i++) {

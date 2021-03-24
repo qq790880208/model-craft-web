@@ -13,6 +13,7 @@
     <el-button @click="fangda">放大</el-button>
     <el-button @click="suoxiao">缩小</el-button>
     <el-button @click="saveinfo">保存 </el-button>
+    <el-button @click="updatelastdata">查看上次标注数据</el-button>
     <div style="margin: 0 auto; width: 600px">
       <canvas
         id="label-canvas"
@@ -68,6 +69,10 @@ export default {
     fatherimagesrc: String,
     imageindex: Number,
     premarktype: Array,
+    lastlabelArry: {
+      type: Array,
+      default: () => [],
+    },
   },
   data() {
     return {
@@ -82,11 +87,13 @@ export default {
       scalewidth: null, //图片宽度缩放倍数
       scaleheight: null, //图片高度缩放倍数
       roofPoints: [],
+      realPoints: [],
       lines: [],
       lineCounter: 0,
       polygonArray: [],
       polygoninfoArray: [],
-      tempArry:[],
+      realpolygoninfoArray: [],
+      tempArry: [],
       drawingObject: {},
       drawingObject: {
         type: "",
@@ -138,7 +145,9 @@ export default {
       this.lines.forEach((item) => this.fabricObj.remove(item));
       this.polygonArray = [];
       this.polygoninfoArray = [];
+      this.realpolygoninfoArray = [];
       this.roofPoints = [];
+      this.realPoints = [];
       this.lines = [];
       this.lineCounter = 0;
 
@@ -170,9 +179,9 @@ export default {
       this.markinfo = item.name;
     },
     saveinfo() {
-      console.log("start!!!", this.polygoninfoArray);
+      console.log("start!!!", this.realpolygoninfoArray);
       //变为深拷贝
-      this.tempArry.push(JSON.parse(JSON.stringify(this.polygoninfoArray)));
+      this.tempArry.push(JSON.parse(JSON.stringify(this.realpolygoninfoArray)));
       //this.tempArry[0]=this.boxArry
       // this.tempArry.push(this.fatherimagesrc);
       // this.tempArry.push(this.imageindex);
@@ -182,37 +191,53 @@ export default {
       //  this.$emit('saveimageinfo',this.boxArry,this.fatherimagesrc,this.imageindex)
       //  console.log(this.boxArry,this.fatherimagesrc,this.imageindex)
     },
-    // inputimage() {
-    //   //未完成
-    //   let _this = this;
-    //   new fabric.Image.fromURL(this.imagesrc, function (img) {
-    //     // console.log(_this.fabricObj)
+    updatelastdata() { //查看上次标注保存的信息
+      console.log("image select lastlabelArry", this.lastlabelArry);
+      this.polygonArray.forEach((item) => {
+        this.fabricObj.remove(item);
+      });
+      this.lines.forEach((item) => this.fabricObj.remove(item));
+      this.polygonArray = [];
+      this.polygoninfoArray = [];
+      this.realpolygoninfoArray = [];
+      this.roofPoints = [];
+      this.realPoints = [];
+      this.lines = [];
+      this.lineCounter = 0;
 
-    //     console.log(_this.fabricObj.width);
-    //     console.log(_this.fabricObj.height);
-    //     console.log(img.width);
-    //     console.log(img.height);
-    //     _this.scalewidth = _this.fabricObj.width / img.width;
-    //     _this.scaleheight = _this.fabricObj.height / img.height;
-    //     console.log(_this.scalewidth);
-    //     console.log(_this.scaleheight);
-    //     // _this.imagewidth=_this.fabricObj.width=img.width
-    //     // _this.imageheight=_this.fabricObj.height=img.height
-    //     img.set({
-    //       scaleX: _this.scalewidth,
-    //       scaleY: _this.scaleheight,
-    //       selectable: true,
-    //       hasControls: false,
-    //       left: 0,
-    //       top: 0,
-    //     });
-    //     _this.fabricimageObj = img;
-    //     console.log(_this.fabricimageObj, img);
-    //     _this.fabricObj.add(img);
-    //   });
+      for (let i = 0; i < this.lastlabelArry.length; i++) {
+        this.realpolygoninfoArray.push(this.lastlabelArry[i]);
 
-    //   //_this.fabricObj.sendToBack(_this.fabricimageObj);
-    // },
+        console.log("lastlabelArry[i].point", this.lastlabelArry[i].point);
+        for (let j = 0; j < this.lastlabelArry[i].point.length; j++) {
+          console.log("point", this.lastlabelArry[i].point[j]);
+          let a = {};
+          let reala = {};
+          a["x"] = this.lastlabelArry[i].point[j].x * this.scalewidth;
+          a["y"] = this.lastlabelArry[i].point[j].y * this.scaleheight;
+          // reala["x"] = this.lastlabelArry[i].point[j].x;
+          // reala["y"] = this.lastlabelArry[i].point[j].y;
+          this.roofPoints.push(a);
+        }
+        console.log("roofPoint",this.roofPoints)
+        this.findcolor(this.lastlabelArry[i].info)
+        //console.log("typeof color",typeof(color))
+        this.makeRoof();
+        console.log("this.roof",this.roof);
+        this.fabricObj.add(this.roof);
+        this.polygonArray.push(this.roof);
+        this.polygoninfoArray.push({
+          point: this.roofPoints,
+          info: this.markinfo,
+        });
+        // this.fabricObj.renderAll();
+        console.log("create 1");
+        // //clear arrays
+        this.roofPoints = [];
+      }
+      this.fabricObj.renderAll();
+      console.log("realpolygoninfoArray", this.realpolygoninfoArray);
+    },
     createBackgroundImage() {
       let _this = this;
       // console.log(this.fabricObj.width);
@@ -259,6 +284,7 @@ export default {
       }
       if (!this.buttonmouseoveflag) {
         console.log(this.polygoninfoArray[this.input - 1]);
+        console.log(this.realpolygoninfoArray[this.input - 1]);
         this.temproof = this.polygonArray[this.input - 1];
         this.fabricObj.add(this.temproof);
         this.buttonmouseoveflag = true;
@@ -289,6 +315,7 @@ export default {
       this.fabricObj.remove(this.polygonArray[this.input - 1]);
       this.polygonArray.splice(this.input - 1, 1);
       this.polygoninfoArray.splice(this.input - 1, 1);
+      this.realpolygoninfoArray.splice(this.input - 1, 1);
     },
     start() {
       //切换画板上是否能标注的按钮
@@ -309,10 +336,15 @@ export default {
             point: this.roofPoints,
             info: this.markinfo,
           });
+          this.realpolygoninfoArray.push({
+            point: this.realPoints,
+            info: this.markinfo,
+          });
         }
         this.fabricObj.renderAll();
         //清空直线和点数组和他们的计数
         this.roofPoints = [];
+        this.realPoints = [];
         this.lines = [];
         this.lineCounter = 0;
         this.buttonstate = "拖动图片";
@@ -368,13 +400,17 @@ export default {
               // this.mouseFrom.x = e.pointer.x;
               // this.mouseFrom.y = e.pointer.y
               let a = {};
+              let reala = {};
               // a["x"] = this.mouseFrom.x;
               // a["y"] = this.mouseFrom.y;
               // a["x"] = e.absolutePointer.x-e.pointer.x;
               // a["y"] = e.absolutePointer.y-e.pointer.y;
               a["x"] = e.absolutePointer.x;
               a["y"] = e.absolutePointer.y;
+              reala["x"] = e.absolutePointer.x / this.scalewidth;
+              reala["y"] = e.absolutePointer.y / this.scaleheight;
               this.roofPoints.push(a);
+              this.realPoints.push(reala);
               var points = [a.x, a.y, a.x, a.y];
               this.lines.push(
                 new fabric.Line(points, {
@@ -445,12 +481,17 @@ export default {
                 point: this.roofPoints,
                 info: this.markinfo,
               });
+              this.realpolygoninfoArray.push({
+                point: this.realPoints,
+                info: this.markinfo,
+              });
             }
             this.fabricObj.renderAll();
             //console.log("point!",this.roofPoints)
             console.log("double click");
             //clear arrays
             this.roofPoints = [];
+            this.realPoints = [];
             this.lines = [];
             this.lineCounter = 0;
           }
@@ -473,17 +514,20 @@ export default {
     makeRoof() {
       //生成多边形
       //定义多边形生成时的生成位置
+      //console.log(color)
       let left = this.findLeftPaddingForRoof(this.roofPoints);
       let top = this.findTopPaddingForRoof(this.roofPoints);
       let a = {};
       a["x"] = this.roofPoints[0].x;
       a["y"] = this.roofPoints[0].y;
       this.roofPoints.push(a);
+      console.log("!!!roofPoint",this.roofPoints)
+      console.log("!!!fabricObj",this.fabricObj)
       //生成多边形
       this.roof = new fabric.Polygon(this.roofPoints, {
         //fill: "rgba(255,255,0,0)",
-        //fill: this.markcolor,
         fill: this.markcolor,
+        //fill: color,
         strokeWidth: 2,
         selectable: false,
         hasControls: false,
@@ -492,17 +536,27 @@ export default {
         left: left,
         top: top,
       });
-      this.roof.on({
-        selected: (e) => {
-          console.log(e);
-          console.log("selected");
-        },
-      });
+      console.log("create!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!",this.roof)
+      // this.roof.on({
+      //   selected: (e) => {
+      //     console.log(e);
+      //     console.log("selected");
+      //   },
+      // });
+    },
+    findcolor(abcdefg){
+      this.premarktype.forEach((item) =>{
+        console.log("infind",abcdefg)
+        if(item.name===abcdefg) {
+        console.log("find",item.color,typeof(item.color))
+        this.markcolor = item.color
+        }
+      })
     },
     //获取所有点中最上边的点的坐标
     findTopPaddingForRoof(roofPoints) {
       var result = 999999;
-      for (var f = 0; f < this.lineCounter; f++) {
+      for (var f = 0; f < this.roofPoints.length; f++) {
         if (roofPoints[f].y < result) {
           result = roofPoints[f].y;
         }
@@ -512,7 +566,7 @@ export default {
     //获取所有点中最左边的点的坐标
     findLeftPaddingForRoof(roofPoints) {
       var result = 999999;
-      for (var i = 0; i < this.lineCounter; i++) {
+      for (var i = 0; i < this.roofPoints.length; i++) {
         if (roofPoints[i].x < result) {
           result = roofPoints[i].x;
         }
@@ -534,7 +588,37 @@ export default {
     //         imageEffectCanvas.setBackgroundImage(Shape, imageEffectCanvas.renderAll.bind(imageEffectCanvas));// setBackgroundImage 方法设置画布背景
     //        imageEffectCanvas.renderAll(); //重新渲染画布
     //     }
-    // }
+    // },
+    // inputimage() {
+    //   let _this = this;
+    //   new fabric.Image.fromURL(this.imagesrc, function (img) {
+    //     // console.log(_this.fabricObj)
+
+    //     console.log(_this.fabricObj.width);
+    //     console.log(_this.fabricObj.height);
+    //     console.log(img.width);
+    //     console.log(img.height);
+    //     _this.scalewidth = _this.fabricObj.width / img.width;
+    //     _this.scaleheight = _this.fabricObj.height / img.height;
+    //     console.log(_this.scalewidth);
+    //     console.log(_this.scaleheight);
+    //     // _this.imagewidth=_this.fabricObj.width=img.width
+    //     // _this.imageheight=_this.fabricObj.height=img.height
+    //     img.set({
+    //       scaleX: _this.scalewidth,
+    //       scaleY: _this.scaleheight,
+    //       selectable: true,
+    //       hasControls: false,
+    //       left: 0,
+    //       top: 0,
+    //     });
+    //     _this.fabricimageObj = img;
+    //     console.log(_this.fabricimageObj, img);
+    //     _this.fabricObj.add(img);
+    //   });
+
+    //   //_this.fabricObj.sendToBack(_this.fabricimageObj);
+    // },
   },
 };
 </script>
