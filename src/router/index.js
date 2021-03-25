@@ -67,13 +67,13 @@ export const constantRoutes = [
         path: '/label/d2',
         component: () => import('@/views/label/d2/index'),
         name: 'd2',
-        meta: { title: '图片标注', icon: 'excel' }
+        meta: { title: '2D拉框标注', icon: 'excel' }
       },
       {
-        path: '/label/d3',
-        component: () => import ('@/views/label/d3/index'),
-        name: 'd3',
-        meta: { title: '3D目标标注', icon: 'excel' }
+        path: '/label/polygon',
+        component: () => import ('@/views/label/polygon/index'),
+        name: 'polygon',
+        meta: { title: '像素级标注', icon: 'excel' }
       },
       {
         path: '/label/voice',
@@ -82,10 +82,10 @@ export const constantRoutes = [
         meta: { title: '语音标注', icon: 'excel' }
       },
       {
-        path: '/label/pointcloud',
-        component: () => import ('@/views/label/pointcloud/index'),
-        name: 'pointcloud',
-        meta: { title: '点云数据标注', icon: 'excel' }
+        path: '/label/d3',
+        component: () => import ('@/views/label/d3/index'),
+        name: 'd3',
+        meta: { title: '3D标注', icon: 'excel' }
       }
     ]
   },

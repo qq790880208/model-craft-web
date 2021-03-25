@@ -12,6 +12,7 @@
     <label style="color: blue"><b></b></label>
     <el-button @click="fangda">放大</el-button>
     <el-button @click="suoxiao">缩小</el-button>
+    <el-button @click="huanyuan">还原图片大小</el-button>
     <el-button @click="saveinfo">保存 </el-button>
     <el-button @click="updatelastdata">查看上次标注数据</el-button>
     <div style="margin: 0 auto; width: 600px">
@@ -173,6 +174,13 @@ export default {
       if (this.zoom > 0.2) this.zoom -= 0.1;
       if (this.zoom > 0.1) this.fabricObj.zoomToPoint(zoomPoint, this.zoom);
       console.log(this.fabricObj.getZoom());
+    },
+    huanyuan(){
+      let ppoint = new fabric.Point(0,0)
+      this.fabricObj.absolutePan(ppoint)
+      this.zoom=1
+      this.fabricObj.setZoom(1)
+
     },
     changeinfo(item) {
       this.markcolor = item.color;
@@ -379,7 +387,8 @@ export default {
         "mouse:down": (e) => {
           //点击生成多边形的边框并且将点加入数组
           //console.log(e)
-          console.log(e);
+          console.log(e.e);
+          console.log(this.fabricObj);
           if (this.istrue === true) {
             console.log("1111");
             this.panning = true;

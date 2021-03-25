@@ -1,9 +1,9 @@
 <template>
   <div id="test" style="user-select: none">
-    <el-button @click="fangda">放大</el-button>
-    <el-button @click="suoxiao">缩小</el-button>
     <el-button @click="gai" v-show="isTrue2">拖动图片</el-button>
     <el-button @click="gai" v-show="!isTrue2">添加标注</el-button>
+    <el-button @click="fangda">放大</el-button>
+    <el-button @click="suoxiao">缩小</el-button>
     <el-button @click="saveinfo">保存 </el-button>
     <el-button @click="updatelastdata">查看上次标注数据</el-button>
 
@@ -318,7 +318,7 @@ export default {
     moveMouse(e) {
       //console.log("moveMouse!!!!!!!!!!!!!!");
       let odiv = e.target; //获取目标元素
-
+      console.log("mousedown!!!!!!!!")
       console.log("this.imageleft",this.imageleft,"this.imagetop",this.imagetop);
       //拖动图片的相对位置
       let left2 = this.imageleft
@@ -331,7 +331,7 @@ export default {
       console.log("disxy", disX, disY);
       if (this.isTrue2) {
         // 拖动图片
-        console.log("moveMouse!!!!!!!!!!!!!!");
+        console.log("image mousemove!!!!!!!!!!!!!!");
         document.onmousemove = (e) => {
           //鼠标按下并移动的事件
           //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
@@ -351,17 +351,22 @@ export default {
           this.imagetop=top
         };
         document.onmouseup = (e) => {
+          console.log("image mouseup!!!!!!!!!!!!!!");
           document.onmousemove = null;
           document.onmouseup = null;
         };
       } else {
         // 添加div
-
+        document.onmouseup = (e) => {
+          console.log("nomove mouseup!!!!!!!!!!!!!!");
+          document.onmousemove = null;
+          document.onmouseup = null;
+        };
         console.log(e);
         document.onmousemove = (e) => {
           //鼠标按下并移动的事件
           //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
-
+          console.log("creatediv mousemove!!!!!!!!")
           //  let left = disX - odiv.getBoundingClientRect().x;
           //  let top = disY - odiv.getBoundingClientRect().y;
           let left = (disX  - odiv.getBoundingClientRect().x) / this.num;
@@ -375,6 +380,7 @@ export default {
           this.biaozhuLeft = left;
           this.biaozhuTop = top;
           document.onmouseup = (e) => {
+            console.log("creatediv mouseup!!!!!!!!")
             let left = (disX - odiv.getBoundingClientRect().x) / this.num;
             let top = (disY - odiv.getBoundingClientRect().y) / this.num;
             this.width = (e.clientX - disX) / this.num;
@@ -562,9 +568,9 @@ export default {
 </script>
 <style lang="less">
 #test {
-  /deep/.el-dialog__body {
-    padding: 10px 20px !important;
-  }
+//   /deep/.el-dialog__body {
+//     padding: 10px 20px !important;
+//   }
   .content {
     width: 800px;
     height: 800px;
