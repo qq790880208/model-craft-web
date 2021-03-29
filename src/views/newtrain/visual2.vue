@@ -8,7 +8,7 @@ import { debounce } from '../../utils'
 require('echarts/theme/macarons') // echarts theme
 export default {
   props: {
-    lineData: {
+    dData: {
       type: Object,
       default: {}
     },
@@ -49,14 +49,7 @@ export default {
       this.chart.clear();//清除画布内容
       this.chart.setOption({
         backgroundColor: '#ffffff',
-        title: {
-          //标题
-          text: this.lineData.title, 
-          textStyle:{
-            color:'#000000',
-            fontSize:18
-          }
-        },
+        
         tooltip: {
           trigger: 'axis'
         },
@@ -66,7 +59,7 @@ export default {
           itemWidth: 14,
           itemHeight: 5,
           itemGap: 13,
-          data: this.lineData.yData, //导航数据
+          data: ['train-loss','val-loss'], //导航数据
           right: '50%',
           textStyle: {
             fontSize: 12,
@@ -87,10 +80,10 @@ export default {
           boundaryGap: false,
           axisLine: {
             lineStyle: {
-              color: '#008acd'
+              color: '#000000'
             }
           },
-          data: this.lineData.yData,
+          data: this.dData.epoch,
         }],
         yAxis: [{
           type: 'value',
@@ -100,7 +93,7 @@ export default {
           },
           axisLine: {
             lineStyle: {
-              color: '#008acd'
+              color: '#000000'
             }
           },
           axisLabel: {
@@ -115,16 +108,34 @@ export default {
             }
           }
         }],
-        series: this.lineData.series
+        series:  [
+              {
+                name: 'train-loss',
+                data: this.dData.trainLoss,
+                type: 'line',
+                color:'#00FF00'
+              },
+              {
+                name: 'val-loss',
+                data: this.dData.valLoss,
+                type: 'line',
+                color:'#FFD700'
+              }
+            ]
       })
+      var that = this
+      var that = this
+      let sizeFun = function () {
+        that.chart.resize()
+      }
+      window.addEventListener('resize', sizeFun)
     }
   },
 //折现数据通过变量传递
   watch: {
-    lineData: {
+    dData: {
       deep: true,
       handler(val) {
-        console.log('折线图监听', val)
         if (val) {
           setTimeout(this.initChart(), 100);
         }

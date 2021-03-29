@@ -8,7 +8,7 @@ import { debounce } from '../../utils'
 require('echarts/theme/macarons') // echarts theme
 export default {
   props: {
-    lineData: {
+    Data: {
       type: Object,
       default: {}
     },
@@ -49,29 +49,8 @@ export default {
       this.chart.clear();//清除画布内容
       this.chart.setOption({
         backgroundColor: '#ffffff',
-        title: {
-          //标题
-          text: this.lineData.title, 
-          textStyle:{
-            color:'#000000',
-            fontSize:18
-          }
-        },
         tooltip: {
           trigger: 'axis'
-        },
-        legend: {
-          top: 0,
-          icon: 'rect',
-          itemWidth: 14,
-          itemHeight: 5,
-          itemGap: 13,
-          data: this.lineData.yData, //导航数据
-          right: '50%',
-          textStyle: {
-            fontSize: 12,
-            color: '#000000'
-          }
         },
         grid: {
           top: 100,
@@ -87,10 +66,10 @@ export default {
           boundaryGap: false,
           axisLine: {
             lineStyle: {
-              color: '#008acd'
+              color: '#000000'
             }
           },
-          data: this.lineData.yData,
+          data: this.Data.epoch,
         }],
         yAxis: [{
           type: 'value',
@@ -100,7 +79,7 @@ export default {
           },
           axisLine: {
             lineStyle: {
-              color: '#008acd'
+              color: '#000000'
             }
           },
           axisLabel: {
@@ -115,16 +94,25 @@ export default {
             }
           }
         }],
-        series: this.lineData.series
+        series: {
+                name: 'train-loss',
+                data: this.Data.valAccuaccy,
+                type: 'line',
+                color:'	#F08080'
+        },
       })
+      var that = this
+      let sizeFun = function () {
+        that.chart.resize()
+      }
+      window.addEventListener('resize', sizeFun)
     }
   },
 //折现数据通过变量传递
   watch: {
-    lineData: {
+    Data: {
       deep: true,
       handler(val) {
-        console.log('折线图监听', val)
         if (val) {
           setTimeout(this.initChart(), 100);
         }

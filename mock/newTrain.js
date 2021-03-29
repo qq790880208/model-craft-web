@@ -20,7 +20,7 @@ Mock.Random.extend({
     },
     Aalgorithm(){
       return this.pick(['tensorflow','pytorch'])
-  },
+    },
 })
 
 let x = []
@@ -29,23 +29,16 @@ let y2 = []
 let y = []
 
 let s =  parseInt(20*Math.random())
-for (let index = 0; index < s; index++) {
+for (let index = 0; index < 20; index++) {
   x.push(index)
   y1.push(parseInt(1000*Math.random()))
   y2.push(parseInt(1000*Math.random()))
-  y.push(parseInt(1000*Math.random()))
+  y.push(parseInt(Math.random()+0.1))
+
 }
-// task:'yolo',
-//             algorithm:'yolov3',
-//             status:'运行中',
-//             num:1,
-//             time:'20min',
-//             date: '2016-05-02',
-//             description:'无',
-//             name: '王小虎',
 
 let tableData = []
-for(let i = 0; i < 10; i++){
+for(let i = 0; i < 12; i++){
   tableData.push({
     'task': '@Tname',
     'algorithm':'@Aalgorithm',
@@ -63,48 +56,41 @@ module.exports = [
     url:'/newtrain/start',
     type:'post',
     response: config =>{
-
+      const {index}=config.query
       return{
         code:20000,
-        data:config.params
+        data:index
       }
     }
   },
   {
     url:'/newtrain/stop',
     type:'post',
-    response: _ =>{
+    response: config =>{
+      const {index}=config.query
       return{
         code:20000,
-        data:'success'
+        data:index
       }
     }
   },
   {
     url:'/newtrain/delete',
-    type:'post',
-    response: _ =>{
+    type:'delete',
+    response: config =>{
+      const {index}=config.query
       return{
         code:20000,
-        data:'success'
+        data:index
       }
     }
   },
 
-  {
-    url: '/newtrain/getTableData',
-    method: 'get',
-    response: config => {
-      return {
-        code: 20000,
-        data: tableData
-      }
-    }
-  },
+  
 
   {
     url:'/newtrain/search',
-    type:'post',
+    type:'get',
     response: _ =>{
       return{
         code:20000,
@@ -115,11 +101,11 @@ module.exports = [
 
   {
     url:'/newtrain/searchStatus',
-    type:'post',
+    type:'get',
     response: config =>{
       return{
         code:20000,
-        data:config.data
+        data:'seccuss'
       }
     }
   },
@@ -128,59 +114,52 @@ module.exports = [
     url:'/newtrain/getVisualData',
     type:'get',
     response: config =>{
+      const {index} = config.query
       return{
         code:20000,
         data:{
+          index,
           epoch:x,
-          trainLoss:y,
+          valAccuaccy:y,
           valLoss:y1,
-          valAccuaccy:y2
+          trainLoss:y2
         }
       }
     }
   },
+  {
+    url:'/newtrain/submitTask',
+    type:'post',
+    response: config =>{
+      const {para} = config.query
+      return{
+        code:20000,
+        data:para
+      }
+    }
+  },
 
-  // {
-  //   url: '/train/getVisualData',
-  //   method: 'get',
-  //   response: config => {
-  //     return {
-  //       code: 20000,
-  //       data: {
-  //         data:trainLoss,
-  //         data1:valLoss,
-  //         data2:valAccuracy,
-  //         yData:y
-  //       }
-  //     }
-  //   }
-  // },
-
-  
-
-  // {
-  //   url: '/train/getcreateInfo',
-  //   method: 'get',
-  //   response: config => {
-  //     return {
-  //       code: 20000,
-  //       data: {
-  //         model:['train1','train2'],
-  //         inputdata:['voc', 'coco'],
-  //         outpath:['/yolo', '/deeplab', '/fastspeech','/yolo', '/deeplab', '/fastspeech']
-  //       }
-  //     }
-  //   }
-  // },
-  // {
-  //   url: '/train/sendTaskInfo',
-  //   method: 'get',
-  //   response: config => {
-  //     let taskdata = config.params
-  //     return {
-  //       code: 20000,
-  //       data: taskdata
-  //     }
-  //   }
-  // }
+  {
+    url: '/newtrain/getinitialPara',
+    method: 'get',
+    response: config => {
+      return {
+        code: 20000,
+        data: {
+          inputData:['voc', 'coco'],
+          outpath:['\path1', '\path2']
+        }
+      }
+    }
+  },
+  {
+    url: '/newtrain/getTableData',
+    method: 'get',
+    response: config => {
+      return {
+        code: 20000,
+        data: tableData
+      }
+    }
+  }
 ]
