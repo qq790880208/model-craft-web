@@ -131,9 +131,11 @@
               border: 'none',
             }"
           >
+          <div class="ltc" @mousedown.stop="move(false,true,true, null, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
           <div class="rtc" @mousedown.stop="move(false,true,true, null, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
-          <div class="tc" @mousedown.stop="move(false,false,false,9, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
           <div class="lbc" @mousedown.stop="move(false,true,true, null, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
+          <div class="rbc" @mousedown.stop="move(false,true,true, null, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
+          <div class="tc" @mousedown.stop="move(false,false,false,9, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
           <div class="bc" @mousedown.stop="move(false,false,false,9, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
           </div>
           <div :class="  //正面的正方形
@@ -482,7 +484,7 @@ export default {
                 height: this.height,
                 long:50,
                 transform:-30,
-                isdown:true,
+                isdown:false,
                 left: left,
                 top: top,
               });
