@@ -10,7 +10,16 @@
 
 
 
-    <div class="content" id:contentfather>
+    <div :style="{    
+      width: this.imagewidth+'px',
+      height: this.imageheight+'px',
+      background: 'rgb(0, 0, 0)',
+      margin: '0 auto',
+      overflow: 'hidden',
+      position: 'relative',
+      }"
+      id:contentfather
+      >
       <div ref="canvesdiv"
         :style="{
           transform: 'scale(' + num + ')',
@@ -125,10 +134,20 @@ export default {
       //保证图片加载完成之后读取数据
       image.onload=() =>{
       console.log("image onload ")
-      this.imagewidth = image.width;
-      this.imageheight = image.height;
-      this.scalewidth = 800 / image.width;
-      this.scaleheight = 800 / image.height;
+
+      if(image.width<600&&image.height<600){
+        this.imagewidth=image.width*1.5
+        this.imageheight=image.height*1.5
+        this.scalewidth = 1.5
+        this.scaleheight = 1.5
+      }
+      else{
+        this.imagewidth = image.width;
+        this.imageheight = image.height;
+        this.scalewidth = 1
+        this.scaleheight = 1
+      }
+
       console.log(this.imagewidth);
       console.log(this.imageheight);
       console.log(this.scalewidth);

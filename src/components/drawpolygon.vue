@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="width:100% height:100%">
     <el-button
       type="primary"
       icon="el-icon-edit"
@@ -15,14 +15,20 @@
     <el-button @click="huanyuan">还原图片大小</el-button>
     <el-button @click="saveinfo">保存 </el-button>
     <el-button @click="updatelastdata">查看上次标注数据</el-button>
-    <div style="margin: 0 auto; width: 600px">
+    <!-- <el-button @click="Edit">test</el-button>-->
+    <div  style="margin: 0 auto; width: 100%;">
       <canvas
         id="label-canvas"
         class="canvas"
         :width="canvaswidth"
         :height="canvasheight"
       ></canvas>
+
     </div>
+          <label 
+        v-for="(items, index) in polygonArray" :key="index"
+        style="margin: 0 auto; width: 100%;display:inline">11111111111
+      </label>
     <div style="text-align: center; margin: 0 auto">
       <label style="color: blue"
         ><b style="text-align: center"
@@ -74,6 +80,14 @@ export default {
       type: Array,
       default: () => [],
     },
+    canvaswidth: {
+      type: Number,
+      default: 600
+      },
+    canvasheight: {
+      type: Number,
+      default: 600
+      },
   },
   data() {
     return {
@@ -83,8 +97,7 @@ export default {
       istrue: true,
       panning: false,
       zoom: 1,
-      canvaswidth: 600,
-      canvasheight: 600,
+
       scalewidth: null, //图片宽度缩放倍数
       scaleheight: null, //图片高度缩放倍数
       roofPoints: [],
@@ -116,6 +129,9 @@ export default {
       //localimage:'D:/VueProject/modelcraft-web/src/image/test2.jpg'
     };
   },
+  // created() {
+  //    document.addEventListener("keydown", this.deletelastpoint());
+  // },
   computed: {
     imagesrc: function () {
       //return require('@/image/'+this.fatherimagesrc)
@@ -186,6 +202,94 @@ export default {
       this.markcolor = item.color;
       this.markinfo = item.name;
     },
+    // deletelastpoint(){
+    //   console.log("ggggg")
+    //   //if(event.keykode===32) {console.log("223244356346")}
+    //   if(this.roofPoints.length>0){
+    //     this.roofPoints.pop();
+    //     this.realPoints.pop();
+    //     this.lines.pop();
+    //   }
+    // },
+    // polygonPositionHandler(index,fabricObject) {
+    //   console.log("22222",index)
+    //   console.log("11111",fabricObject.points[this.pointIndex])
+	  // // let x = (fabricObject.points[this.pointIndex].x - fabricObject.pathOffset.x),
+		// //     y = (fabricObject.points[this.pointIndex].y - fabricObject.pathOffset.y);
+		// // return fabric.util.transformPoint(
+		// // 	{ x: x, y: y },
+    // //   fabric.util.multiplyTransformMatrices(
+    // //     fabricObject.canvas.viewportTransform,
+    // //     fabricObject.calcTransformMatrix()
+    // //   )
+		// // );
+	  // },
+    // actionHandler(eventData, transform, x, y) {
+		// let polygon = transform.target,
+		//     currentControl = polygon.controls[polygon.__corner],
+		//     mouseLocalPosition = polygon.toLocalPoint(new fabric.Point(x, y), 'center', 'center'),
+    //     polygonBaseSize = polygon._getNonTransformedDimensions(),
+		// 		size = polygon._getTransformedDimensions(0, 0),
+		// 		finalPointPosition = {
+		// 			x: mouseLocalPosition.x * polygonBaseSize.x / size.x + polygon.pathOffset.x,
+		// 			y: mouseLocalPosition.y * polygonBaseSize.y / size.y + polygon.pathOffset.y
+		// 		};
+		// polygon.points[currentControl.pointIndex] = finalPointPosition;
+		// return true;
+	  // },
+    // anchorWrapper(anchorIndex, fn) {
+    // return function(eventData, transform, x, y) {
+    //   let fabricObject = transform.target,
+    //       absolutePoint = fabric.util.transformPoint({
+    //           x: (fabricObject.points[anchorIndex].x - fabricObject.pathOffset.x),
+    //           y: (fabricObject.points[anchorIndex].y - fabricObject.pathOffset.y),
+    //       }, fabricObject.calcTransformMatrix()),
+    //       actionPerformed = fn(eventData, transform, x, y),
+    //       newDim = fabricObject._setPositionDimensions({}),
+    //       polygonBaseSize = fabricObject._getNonTransformedDimensions(),
+    //       newX = (fabricObject.points[anchorIndex].x - fabricObject.pathOffset.x) / polygonBaseSize.x,
+  	// 	    newY = (fabricObject.points[anchorIndex].y - fabricObject.pathOffset.y) / polygonBaseSize.y;
+    //   fabricObject.setPositionByOrigin(absolutePoint, newX + 0.5, newY + 0.5);
+    //   return actionPerformed;
+    // }
+    // },
+    // Edit() {
+		// // clone what are you copying since you
+		// // may want copy and paste on different moment.
+		// // and you do not want the changes happened
+		// // later to reflect on the copy.
+    // console.log(this.fabricObj.getObjects()[0])
+		// let poly = this.fabricObj.getObjects()[0];
+		// this.fabricObj.setActiveObject(poly);
+    // let aaa = true
+    // let _this=this
+		// poly.edit = !poly.edit;
+		// // if (poly.edit) {
+    // if (aaa) {
+    //   let lastControl = poly.points.length - 1;
+    //   poly.cornerStyle = 'circle';
+    //   poly.cornerColor = 'rgba(0,0,255,0.5)';
+	  //   poly.controls = poly.points.reduce(function(acc, point, index) {
+		// 		acc['p' + index] = new fabric.Control({
+		// 			positionHandler: _this.polygonPositionHandler(index,_this.fabricObj),
+		// 			actionHandler: _this.anchorWrapper(index > 0 ? index - 1 : lastControl, _this.actionHandler),
+		// 			actionName: 'modifyPolygon',
+		// 			pointIndex: index
+		// 		});
+    //     console.log("aaaccc"+index,acc)
+		// 		return acc;
+		// 	}, { });
+    //   console.log("pppppppppp",poly.controls)
+		// } 
+    
+    // else {
+    //   poly.cornerColor = 'blue';
+    //   poly.cornerStyle = 'rect';
+		// 	poly.controls = fabric.Object.prototype.controls;
+		// }
+		// poly.hasBorders = !poly.edit;
+		// this.fabricObj.requestRenderAll();
+	  // },
     saveinfo() {
       console.log("start!!!", this.realpolygoninfoArray);
       //变为深拷贝
@@ -258,6 +362,14 @@ export default {
           console.log(_this.fabricObj.height);
           console.log(img.width);
           console.log(img.height);
+          if(img.width<700&&img.height<1000){
+            _this.fabricObj.setWidth(1.5*img.width);
+            _this.fabricObj.setHeight(1.5*img.height);
+          }
+          else{
+            _this.fabricObj.setWidth(img.width)
+            _this.fabricObj.setHeight(img.height)
+          }
           _this.scalewidth = _this.fabricObj.width / img.width;
           _this.scaleheight = _this.fabricObj.height / img.height;
           console.log(_this.scalewidth);
@@ -384,6 +496,27 @@ export default {
         // "object:selected":e =>{
         //   console.log("selected")
         // },
+        "mouse:wheel":(e)=>{//删除上一个点
+        //console.log(e)
+        if(this.roofPoints.length>0){
+        let x = e.absolutePointer.x;
+        let y = e.absolutePointer.y;
+        if(this.lineCounter>=2){
+          this.lines[this.lineCounter - 2].set({
+            x2: x,
+            y2: y,
+        });
+        }
+        this.fabricObj.remove(this.lines[this.lineCounter-1]);
+        //this.fabricObj.renderAll();
+        //this.fabricObj.remove(this.lines[this.lineCounter+1]);
+        this.roofPoints.pop();
+        this.realPoints.pop();
+        this.lines.pop();
+        this.lineCounter--;
+        this.fabricObj.renderAll();
+        }
+        },
         "mouse:down": (e) => {
           //点击生成多边形的边框并且将点加入数组
           //console.log(e)
