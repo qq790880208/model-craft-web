@@ -64,10 +64,10 @@ export const constantRoutes = [
     },
     children: [
       {
-        path: '/label/d2',
-        component: () => import('@/views/label/d2/index'),
-        name: 'd2',
-        meta: { title: '2D拉框标注', icon: 'excel' }
+        path: '/label/d2imageview',
+        component: () => import('@/views/label/d2/imageview'),
+        name: 'd2view',
+        meta: { title: '2D拉框标注', icon: 'excel' },
       },
       {
         path: '/label/polygon',

@@ -1,5 +1,7 @@
 <template>
-  <div>
+  <div :style="{
+    
+  }">
     <el-row>
     <el-input 
     v-model="input" 
@@ -9,7 +11,6 @@
     ></el-input>
     <el-input style="width:300px" v-model="inputname" :disabled="true"></el-input>
     <el-button @click="changefatherinfo" type="primary">保存</el-button>
-    <slot></slot>
     <el-button @click="deletefatherlabel" type="danger">删除</el-button>
     </el-row>
   </div>

@@ -10,13 +10,9 @@
 
 
 
-    <div :style="{    
+    <div class="content" :style="{    
       width: this.imagewidth+'px',
       height: this.imageheight+'px',
-      background: 'rgb(0, 0, 0)',
-      margin: '0 auto',
-      overflow: 'hidden',
-      position: 'relative',
       }"
       id:contentfather
       >
@@ -113,6 +109,44 @@ export default {
       default: () => [],
     },
   },
+  // destroyed(){
+  //   console.log("2dmarkddddddddddddddddddddddddddddddddddddddddddddddddddddd")
+  // },
+  mounted: function () {
+      let image = new Image();
+      image.src = this.imagesrc;
+      // if(image.width===0&&image.height===0){
+      //   console("reread")
+      // image.src = null;
+      // image.src = this.imagesrc;
+      // }
+      //保证图片加载完成之后读取数据
+      image.onload=() =>{
+      console.log("image onload ")
+
+      if(image.width<600&&image.height<600){
+        this.imagewidth=image.width*1.5
+        this.imageheight=image.height*1.5
+        this.scalewidth = 1.5
+        this.scaleheight = 1.5
+      }
+      else{
+        this.imagewidth = image.width;
+        this.imageheight = image.height;
+        this.scalewidth = 1
+        this.scaleheight = 1
+      }
+
+      console.log(this.imagewidth);
+      console.log(this.imageheight);
+      console.log(this.scalewidth);
+      console.log(this.scaleheight);
+      this.boxArry = [],
+      this.labelArry = [],
+      this.num = 1
+      this.updatelastdata()
+      }
+  },
   components: {
     labelinfo,
   },
@@ -155,6 +189,7 @@ export default {
       this.boxArry = [],
       this.labelArry = [],
       this.num = 1
+      this.updatelastdata()
       }
     },
   },
