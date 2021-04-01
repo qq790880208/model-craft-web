@@ -70,8 +70,8 @@ export const constantRoutes = [
         meta: { title: '2D拉框标注', icon: 'excel' },
       },
       {
-        path: '/label/polygon',
-        component: () => import ('@/views/label/polygon/index'),
+        path: '/label/polygonimageview',
+        component: () => import ('@/views/label/polygon/imageview'),
         name: 'polygon',
         meta: { title: '像素级标注', icon: 'excel' }
       },

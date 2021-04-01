@@ -1,5 +1,6 @@
 <template>
-  <el-row :gutter="20" style="margin-top: 50px">
+  <!-- <el-row :gutter="20" style="margin-top: 50px"> -->
+    <div>
     <div class="dashboard-container" v-if="isimageview">
       <div v-for="(item, index) in imagelargeArry" :key="index" style="width:500px; height:500px; display:inline" >
       <miniimage style="width:100px; height:100px; display:inline"
@@ -20,7 +21,8 @@
         @saveimageinfo="saveimageinfo"
       ></imageselect>
     </div>
-  </el-row>
+    </div>
+  <!-- </el-row> -->
 </template>
 
 <script>

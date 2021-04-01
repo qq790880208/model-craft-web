@@ -46,7 +46,8 @@
             left: item.left + 'px',
             top: item.top + 'px',
             background: 'rgba(43,100,206,0.5)',
-            border: 'none',
+            border: '5px solid #666',
+            //border: 'none',
           }"
         >
           <!-- <div class="r_b" @mousedown="mouseMove11" v-if="b_i == index"></div> -->

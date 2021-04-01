@@ -23,13 +23,15 @@
         :width="canvaswidth"
         :height="canvasheight"
       ></canvas>
-
     </div>
-          <label 
-        v-for="(items, index) in polygonArray" :key="index"
-        style="margin: 0 auto; width: 100%;display:inline">11111111111
-      </label>
-    <div style="text-align: center; margin: 0 auto">
+        <el-button 
+        v-for="(items, index) in polygonArray" :key="index" type="danger"
+          @mouseover.native="infotip(index)"
+          @mouseout.native="removetip"
+          @mousedown.native="deletemarked(index)"
+        style="margin: 0 auto; width: 10%;display:inline">删除
+      </el-button >
+    <!--<div style="text-align: center; margin: 0 auto">
       <label style="color: blue"
         ><b style="text-align: center"
           >输入一个不大于标注个数的数字，鼠标放在删除上能看到将要删除的对象</b
@@ -42,7 +44,7 @@
           style="width: 300px"
           clearable
         ></el-input>
-        <!-- <el-button @mouseover="infotip" @mousedown="deletemarked" type="danger">删除</el-button> -->
+        
         <el-button
           @mouseover.native="infotip"
           @mouseout.native="removetip"
@@ -51,22 +53,13 @@
           >删除</el-button
         >
       </el-row>
-      <!-- <el-row>
-        <div v-for="(items, index) in polygonArray" :key="index">
-        <labelinfo
-          :inputname="labelArry[index].info"
-          @deletelabel="deletelabel(index)"
-          @changeinfo="changeinfo($event, index)"
-          style="text-align: center"
-        ></labelinfo>
-      </div>
-      </el-row> -->
+      </div> -->
       <el-row>
         <div v-for="(items, index) in premarktype" :key="index">
           <el-button @click="changeinfo(items)">{{ items.name }}</el-button>
         </div>
       </el-row>
-    </div>
+    
   </div>
 </template>
 <script>
@@ -144,11 +137,14 @@ export default {
     this.$nextTick(() => {
       setTimeout(() => {
         this.fabricObj = new fabric.Canvas("label-canvas");
+        this.fabricEvent();
         this.createBackgroundImage();
         //this.inputimage();
         console.log(this.premarktype);
-        this.fabricEvent();
-      }, 500);
+      }, 500),
+      setTimeout(() => {
+          this.updatelastdata();
+      },510)
     });
   },
   watch: {
@@ -167,7 +163,7 @@ export default {
       this.realPoints = [];
       this.lines = [];
       this.lineCounter = 0;
-
+      this.updatelastdata();
       //this.fabricEvent();
       //this.inputimage();
     },
@@ -319,7 +315,7 @@ export default {
 
       for (let i = 0; i < this.lastlabelArry.length; i++) {
         this.realpolygoninfoArray.push(this.lastlabelArry[i]);
-
+        this.markinfo=this.lastlabelArry[i].info
         console.log("lastlabelArry[i].point", this.lastlabelArry[i].point);
         for (let j = 0; j < this.lastlabelArry[i].point.length; j++) {
           console.log("point", this.lastlabelArry[i].point[j]);
@@ -342,13 +338,23 @@ export default {
           point: this.roofPoints,
           info: this.markinfo,
         });
+        this.markinfo=null;
         // this.fabricObj.renderAll();
         console.log("create 1");
         // //clear arrays
+        console.log("roofPointsuuu",this.roofPoints)
         this.roofPoints = [];
       }
       this.fabricObj.renderAll();
-      console.log("realpolygoninfoArray", this.realpolygoninfoArray);
+      // console.log("realpolygoninfoArray", this.realpolygoninfoArray);
+              console.log("fabricobjuuu",this.fabricObj)
+        console.log("polygonArrayuuu",this.polygonArray)
+        console.log("polygoninfoArrayuuu",this.polygoninfoArray)
+        console.log("realpolygoninfoArrayuuu",this.realpolygoninfoArray)
+
+        console.log("realPointsuuu",this.realPoints)
+        console.log("linesuuu",this.lines)
+        console.log("lineCounteruuu",this.lineCounter)
     },
     createBackgroundImage() {
       let _this = this;
@@ -391,29 +397,29 @@ export default {
         }
       );
     },
-    infotip() {
-      //防止输入数字以外的字符的响应
-      var reg = /^[1-9]+[0-9]*]*$/;
-      console.log(reg.test(this.input));
-      if (
-        this.input > this.polygonArray.length ||
-        this.input <= 0 ||
-        !reg.test(this.input)
-      ) {
-        return;
-      }
+    infotip(index) {
+      // //防止输入数字以外的字符的响应
+      // var reg = /^[1-9]+[0-9]*]*$/;
+      // console.log(reg.test(this.input));
+      // if (
+      //   this.input > this.polygonArray.length ||
+      //   this.input <= 0 ||
+      //   !reg.test(this.input)
+      // ) {
+      //   return;
+      // }
       if (!this.buttonmouseoveflag) {
-        console.log(this.polygoninfoArray[this.input - 1]);
-        console.log(this.realpolygoninfoArray[this.input - 1]);
-        this.temproof = this.polygonArray[this.input - 1];
+        console.log(this.polygoninfoArray[index]);
+        console.log(this.realpolygoninfoArray[index]);
+        this.temproof = this.polygonArray[index];
         this.fabricObj.add(this.temproof);
         this.buttonmouseoveflag = true;
       }
     },
     removetip() {
-      if (this.input > this.polygonArray.length || this.input <= 0) {
-        return;
-      }
+      // if (this.input > this.polygonArray.length || this.input <= 0) {
+      //   return;
+      // }
       if (this.buttonmouseoveflag) {
         console.log("remove!");
         if (this.temproof != null) {
@@ -423,19 +429,23 @@ export default {
         this.buttonmouseoveflag = false;
       }
     },
-    deletemarked() {
-      if (this.input > this.polygonArray.length || this.input <= 0) {
-        return;
-      }
-      console.log("input", this.input);
+    deletemarked(index) {
+      // if (this.input > this.polygonArray.length || this.input <= 0) {
+      //   return;
+      // }
+      // console.log("input", this.input);
       if (this.temproof != null) {
         this.fabricObj.remove(this.temproof);
         this.temproof = null;
       }
-      this.fabricObj.remove(this.polygonArray[this.input - 1]);
-      this.polygonArray.splice(this.input - 1, 1);
-      this.polygoninfoArray.splice(this.input - 1, 1);
-      this.realpolygoninfoArray.splice(this.input - 1, 1);
+      this.fabricObj.remove(this.polygonArray[index]);
+      this.polygonArray.splice(index, 1);
+      this.polygoninfoArray.splice(index, 1);
+      this.realpolygoninfoArray.splice(index, 1);
+      // this.fabricObj.remove(this.polygonArray[this.input - 1]);
+      // this.polygonArray.splice(this.input - 1, 1);
+      // this.polygoninfoArray.splice(this.input - 1, 1);
+      // this.realpolygoninfoArray.splice(this.input - 1, 1);
     },
     start() {
       //切换画板上是否能标注的按钮
