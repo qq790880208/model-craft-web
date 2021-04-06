@@ -1,10 +1,11 @@
 import request from '@/utils/request'
 
-export function getTeams() {
+export function getTeams(params) {
   return request({
     url: '/team/getTeams',
     method: 'get',
-    //baseURL: 'http://localhost:9528/dev-api'
+    params: params,
+    baseURL: 'http://192.168.19.239:8083'
   })
 }
 
@@ -13,16 +14,16 @@ export function delTeams(params) {
     url: '/team/delTeams',
     method: 'delete',
     params: params,
-    //baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.239:8083'
   })
 }
 
-export function addTeams(params) {
+export function addTeams(params) { 
   return request({
     url: '/team/addTeams',
     method: 'post',
     params: params,
-    //baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.239:8083'
   })
 }
 
@@ -31,6 +32,6 @@ export function editTeams(params) {
     url: '/team/editTeams',
     method: 'put',
     params: params,
-    //baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.239:8083'
   })
 }
