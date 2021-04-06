@@ -9,15 +9,15 @@
           <el-button type="primary" @click="handleAdd">新增团队</el-button>
           <p>创建了{{ teamsList.length }}个团队</p>
         </el-row>
-        <el-table :data="teamsList" border> <!-- @row-click="openDetails(scope.$index, scope.row)-->
-          <el-table-column align="center" label="Team Name" width="60">
+        <el-table :data="teamsList" border> <!--@mouseover="mouseOn()" @mouseleave="mouseGo()" @row-click="openDetails(scope.$index, scope.row)-->
+          <el-table-column align="center" label="Team Name" width="80">
             <template slot-scope="scope">
               {{ scope.row.name }}
             </template>
           </el-table-column>
-          <el-table-column align="center" label="Operations" width="180">
+          <el-table-column align="center" label="Operations" width="160">
             <template slot-scope="scope">
-              <el-button type="danger" size="small" @click="handleDelete(scope.$index, scope.row)">Delete</el-button>
+              <el-button type="danger" size="small" @click="handleDelete(scope.$index, scope.row)">Del</el-button>
               <el-button type="primary" size="small" @click="openDetails(scope.$index, scope.row)">Show</el-button>
             </template>
           </el-table-column>
@@ -35,50 +35,47 @@
           </el-dropdown>
         </el-header>
         <el-main>
-          <el-col style="font-size: 12px">
-            <el-col>
-              <table>
-                <tr>
-                  <td width="120">
-                    <span style="float: left">团队名称：</span>
-                    <li v-if='flag'>
-                      <span @click='edit()'>{{ selectTeam.name }}</span>
-                    </li>
-                    <input type="text" v-else @change='input()' v-model="selectTeam.name">
-                  </td>
-                  <td width="120">
-                    <span style="margin-right: 15px">团队成员：</span> <span>{{ rolesList.length }}</span>
-                  </td>
-                </tr>
-                <tr>
+          <el-col style="font-size: 15px">
+            <table width="600" @click="mouseOver"> <!--@mouseleave="mouseLeave"-->
+              <tr>
+                <td width="350">
+                  <span style="float: left">团队名称：</span>
+                  <div v-if="flag">
+                    <div style="margin-left: 70px">{{ selectTeam.name }}</div>
+                  </div>
+                  <div v-else>
+                    <input v-model="selectTeam.name" type="text" style="margin-left: 70px">
+                  </div>
+                </td>
+                <td width="250">
+                  <span style="margin-right: 15px">团队成员：</span> <span>{{ rolesList.length }}</span>
+                </td>
+              </tr>
+              <tr>
+                <td width="350">
                   <span style="float: left">团队信息：</span>
-                  <textarea v-model="selectTeam.message" style="margin-left: 70px"></textarea>
-                </tr>
-              </table>
-            </el-col>
-            <!--<div style="float: left">
-              <span>团队名称：</span>
-              <li v-if='flag'>
-                <span @click='edit()'>{{ selectTeam.name }}</span>
-              </li>
-              <input type="text" v-else @change='input()' v-model="selectTeam.name">
-              &lt;!&ndash;<span>{{ selectTeam.name }}</span>&ndash;&gt;
-              <span style="margin-right: 15px">团队成员：</span> <span>{{ rolesList.length }}</span>
-            </div>
-            <br>
-            <div style="float: left">
-              <span>团队信息：</span>
-              <textarea v-model="selectTeam.message"></textarea>
-            </div>-->
+                  <div v-if="flag">
+                    <div style="margin-left: 70px">{{ selectTeam.descr }}</div>
+                  </div>
+                  <div v-else>
+                    <input v-model="selectTeam.descr" style="margin-left: 70px">
+                  </div>
+                </td>
+                <td width="250">
+                  <span style="margin-right: 15px">创建时间：</span> <span>{{ selectTeam.display_time }}</span>
+                </td>
+              </tr>
+            </table>
           </el-col>
           <el-col>
             <el-button type="primary" style="float:left;" @click="handleAddUser">新增成员</el-button>
+            <el-button type="primary" style="float:left;" @click="mouseLeave">保存编辑</el-button>
           </el-col>
           <el-table :data="rolesList" style="width: 100%;" border @selection-change="selChange">
             <el-table-column type="selection" width="55" />
             <el-table-column align="center" label="Role Key" width="120">
               <template slot-scope="scope">
-                {{ scope.row.key }}
+                {{ scope.row.id }}
               </template>
             </el-table-column>
             <el-table-column align="center" label="Role Name" width="120">
@@ -86,14 +83,14 @@
                 {{ scope.row.name }}
               </template>
             </el-table-column>
-            <el-table-column align="center" label="Character" width="120">
+            <el-table-column align="center" label="标注角色" width="120">
               <template slot-scope="scope">
                 {{ scope.row.character }}
               </template>
             </el-table-column>
             <el-table-column align="header-center" label="Description">
               <template slot-scope="scope">
-                {{ scope.row.description }}
+                {{ scope.row.nums }}
               </template>
             </el-table-column>
             <el-table-column align="center" label="Operations">
@@ -104,8 +101,8 @@
             </el-table-column>
           </el-table>
           <el-col :span="24" class="tool-bar">
-            <el-button type="danger" :disabled="this.seles.length===0" @click="batchRemove" style="float: left">批量删除</el-button>
-            <el-pagination layout="total, sizes ,prev, pager, next" @current-change="handleCurrentChange" :page-size="10" :total="rolesList.length" style="float: right"></el-pagination>
+            <el-button type="danger" :disabled="seles.length===0" style="float: left" @click="batchRemove">批量删除</el-button>
+            <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :total="rolesList.length" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
           </el-col>
         </el-main>
       </el-container>
@@ -118,7 +115,7 @@
           <el-input v-model="editForm.name" auto-complete="off" />
         </el-form-item>
         <el-form-item label="描述">
-          <el-input v-model="editForm.addr" type="textarea" />
+          <el-input v-model="editForm.descr" type="textarea" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -137,7 +134,7 @@
           <el-input v-model="editFormUser.character" auto-complete="off" />
         </el-form-item>
         <el-form-item label="描述">
-          <el-input v-model="editFormUser.description" type="textarea" />
+          <el-input v-model="editFormUser.descr" type="textarea" />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -151,36 +148,25 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { getTeams, delTeams, addTeams, editTeams } from '@/api/team'
+import { addUser, batchDelUser, delUser, editUser, getTeamsUserPage } from '@/api/teamUser'
 
 export default {
   name: 'Dashboard',
-  computed: {
-    ...mapGetters([
-      'name'
-    ])
-  },
   data() {
     return {
+      seen: 'false',
+      showClickIcon: false,
+      listLoading: true,
       flag: 'true',
       nowDateTime: '',
       total: 0,
       page: 1,
+      page_size: 10,
       seles: [],
       selectTeam: [],
-      teamsList: [
-        { name: 'blue', nums: '20', message: 'hhhhh' },
-        { name: 'red', nums: '20', message: 'hhhhh' },
-        { name: 'black', nums: '20', message: 'hhhhh' }
-      ],
-      rolesList: [
-        { key: '1', name: 'kobe', character: '标注员', description: 'wwwww' },
-        { key: '1', name: 'kobe', character: '标注员', description: 'wwwww' },
-        { key: '1', name: 'bean', character: '标注员', description: 'wwwww' },
-        { key: '1', name: 'kobe', character: '标注员', description: 'wwwww' },
-        { key: '1', name: 'kobe', character: '标注员', description: 'wwwww' },
-        { key: '1', name: 'kobe', character: '审核员', description: 'wwwww' },
-        { key: '2', name: 'james', character: '标注员', description: 'dddddd' }
-      ],
+      teamsList: [],
+      rolesList: [],
       dialogStatus: '',
       dialogStatusUser: '',
       dialogFormVisible: false,
@@ -190,11 +176,12 @@ export default {
       },
       editForm: {
         name: '',
-        addr: ''
+        descr: ''
       },
       editFormUser: {
         name: '',
-        description: ''
+        character: '',
+        descr: ''
       },
       editFormRules: {
         name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
@@ -212,34 +199,84 @@ export default {
       }
     }
   },
+  computed: {
+    ...mapGetters([
+      'name'
+    ])
+  },
+  created() {
+    this.getTeamsList()
+  },
   methods: {
     edit() {
       this.flag = false
     },
-    input() {
+    mouseOn: function() {
+      this.seen = true
+    },
+    mouseGo: function() {
+      this.seen = false
+    },
+    mouseOver: function() {
+      this.flag = false
+    },
+    mouseLeave: function() {
       this.flag = true
+      //const para = Object.assign({}, this.selectTeam)
+      const para = {}
+      para.descr = this.selectTeam.descr
+      para.name = this.selectTeam.name
+      para.id = this.selectTeam.id
+      console.log(para)
+      editTeams(para).then(res => {
+        this.$message({
+          message: '提交成功',
+          type: 'success'
+        })
+        this.getTeamsList()
+      })
     },
-    /* 显示团队的信息 */
-    openDetails: function(index, row) {
-      this.selectTeam = Object.assign({}, row)
-      console.log(this.selectTeam)
-      this.rolesList = [
-        { key: '2', name: 'james', description: 'dddddd' },
-        { key: '2', name: 'james', description: 'dddddd' }
-      ]
+    getTeamsList: function() {
+      getTeams().then(response => {
+        this.teamsList = response.data.items
+      })
     },
-    updateData: function() {
+    handleSizeChange(val) {
+      this.page_size = val
+      this.getUsers()
     },
     handleCurrentChange(val) {
       this.page = val
       this.getUsers()
+    },
+    getUsers: function() {
+      const para = {}
+      para.id = this.selectTeam.id
+      para.name = this.selectTeam.name
+      para.page = this.page
+      para.pagesize = this.page_size
+      console.log(para)
+      getTeamsUserPage(para).then(response => {
+        this.total = response.data.total
+        this.rolesList = response.data.items
+      })
+    },
+    /* 显示团队的信息 */
+    openDetails: function(index, row) {
+      this.selectTeam = Object.assign({}, row)
+      this.selectTeam.descr = this.teamsList[index].descr
+      console.log(index)
+      console.log(this.selectTeam)
+      this.getUsers()
+    },
+    updateData: function() {
     },
     handleAdd: function() {
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.editForm = {
         name: '',
-        addr: ''
+        descr: ''
       }
     },
     handleEdit: function(index, row) {
@@ -251,12 +288,38 @@ export default {
       this.$confirm('确认删除该记录吗?', '提示', {
         type: 'warning'
       })
+        .then(() => {
+          const para = { name: row.name }
+          para.id = row.id
+          console.log(row)
+          console.log(para)
+          delTeams(para).then(res => {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            this.getTeamsList()
+          })
+        })
+        .catch(() => {})
       console.log(index, row)
     },
     handleDeleteUser: function(index, row) {
       this.$confirm('确认删除该记录吗?', '提示', {
         type: 'warning'
       })
+        .then(() => {
+          const para = { id: row.id }
+          para.teamid = this.selectTeam.id
+          console.log(para)
+          delUser(para).then(res => {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            this.getUsers()
+          })
+        })
       console.log(index, row)
     },
     /* 添加用户数据 */
@@ -265,7 +328,8 @@ export default {
       this.dialogFormVisibleUser = true
       this.editFormUser = {
         name: '',
-        addr: ''
+        character: '',
+        descr: ''
       }
     },
     /* edit 用户数据 */
@@ -274,18 +338,28 @@ export default {
       this.dialogFormVisibleUser = true
       this.editFormUser = Object.assign({}, row)
     },
-    getTeams: function() {
-    },
-    getUsers: function() {
-    },
     updateDataUser: function() {
       this.$refs.editForm.validate(valid => {
         if (valid) {
           this.$confirm('确认提交吗？', '提示', {})
             .then(() => {
-              const para = Object.assign({}, this.editFormUser)
+              const temp = Object.assign({}, this.editFormUser)
+              const para = {
+                id: temp.id,
+                descr: temp.descr,
+                teamid: this.selectTeam.id,
+                character: temp.character
+              }
               console.log(para)
-              this.dialogFormVisibleUser = false })
+              editUser(para).then(res => {
+                this.$message({
+                  message: '提交成功',
+                  type: 'success'
+                })
+                this.dialogFormVisibleUser = false
+                this.getUsers()
+              })
+            })
             .catch(e => {
               // 打印一下错误
               console.log(e)
@@ -299,8 +373,18 @@ export default {
           this.$confirm('确认提交吗？', '提示', {})
             .then(() => {
               const para = Object.assign({}, this.editFormUser)
+              para.team = this.selectTeam.id
+              console.log(222222222222222222222)
               console.log(para)
-              this.dialogFormVisible = false })
+              addUser(para).then(res => {
+                this.message({
+                  message: '提交成功',
+                  type: 'success'
+                })
+              })
+              this.dialogFormVisibleUser = false
+              this.getUsers()
+            })
             .catch(e => {
               // 打印一下错误
               console.log(e)
@@ -308,27 +392,21 @@ export default {
         }
       })
     },
-    getTime: function() {
-      var _this = this;
-      let yy = new Date().getFullYear()
-      let mm = new Date().getMonth()+1
-      let dd = new Date().getDate()
-      let hh = new Date().getHours()
-      let mf = new Date().getMinutes()<10 ? '0'+new Date().getMinutes() : new Date().getMinutes()
-      /* let ss = new Date().getSeconds()<10 ? '0'+new Date().getSeconds() : new Date().getSeconds() */
-      _this.nowDateTime = yy+'年 '+mm+'月'+dd+'日 '+hh+':'+mf
-    },
     createTeam: function() {
       this.$refs.editForm.validate(valid => {
         if (valid) {
           this.$confirm('确认提交吗？', '提示', {})
             .then(() => {
-              this.getTime()
               const para = Object.assign({}, this.editForm)
-              para.createTime = this.nowDateTime
               console.log(para)
-              this.dialogFormVisible = false
-              console.log(this.nowDateTime)
+              addTeams(para).then(res => {
+                this.$message({
+                  message: '提交成功',
+                  type: 'success'
+                })
+                this.dialogFormVisible = false
+                this.getTeamsList()
+              })
             })
             .catch(e => {
               // 打印一下错误
@@ -343,12 +421,21 @@ export default {
     },
     batchRemove: function() {
       var ids = this.seles.map(item => item.id).toString()
+      console.log(ids)
       this.$confirm('确认删除选中记录吗？', '提示', {
         type: 'warning'
       })
         .then(() => {
-          // this.listLoading = true;
           const para = { ids: ids }
+          para.teamid = this.selectTeam.id;
+          console.log(para)
+          batchDelUser(para).then(res => {
+            this.$message({
+              message: '删除成功',
+              type: 'success'
+            })
+            this.getUsers()
+          })
         })
         .catch(() => {})
     }
@@ -357,68 +444,68 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.el-header, .el-footer {
-  background-color: #ffffff;
-  color: #333;
-  text-align: center;
-  line-height: 60px;
-}
-
-.el-aside {
-  background-color: #fcfcfc;
-  color: #333;
-  text-align: center;
-  /*line-height: 400px;*/
-}
-
-.el-main {
-  background-color: #E9EEF3;
-  color: #333;
-  text-align: center;
-  /*line-height: 360px;*/
-}
-
-body > .el-container {
-  margin-bottom: 40px;
-}
-
-.el-container:nth-child(5) .el-aside,
-.el-container:nth-child(6) .el-aside {
-  line-height: 360px;
-}
-
-.el-container:nth-child(7) .el-aside {
-  line-height: 320px;
-}
-.el-button--goon:hover {
-  background: red;
-}
-.dialog-footer{
-  text-align:center
-}
-.app-container {
-  .roles-table {
-    margin-top: 30px;
+  .el-header, .el-footer {
+    background-color: #ffffff;
+    color: #333;
+    text-align: center;
+    line-height: 60px;
   }
-  .permission-tree {
-    margin-bottom: 30px;
+
+  .el-aside {
+    background-color: #fcfcfc;
+    color: #333;
+    text-align: center;
+    /*line-height: 400px;*/
   }
-}
-.team_wapper {
-  display: flex;
-  align-items: center;
-  margin-left: 40px;
-}
-.team_data{
-  float: left;
-  font-size: 25px;
-}
-.useManage{
-  float: right;
-  font-size: 20px;
-}
-.team_manage{
-  font-size: 15px;
-  float: left;
-}
+
+  .el-main {
+    background-color: #E9EEF3;
+    color: #333;
+    text-align: center;
+    /*line-height: 360px;*/
+  }
+
+  body > .el-container {
+    margin-bottom: 40px;
+  }
+
+  .el-container:nth-child(5) .el-aside,
+  .el-container:nth-child(6) .el-aside {
+    line-height: 360px;
+  }
+
+  .el-container:nth-child(7) .el-aside {
+    line-height: 320px;
+  }
+  .el-button--goon:hover {
+    background: red;
+  }
+  .dialog-footer{
+    text-align:center
+  }
+  .app-container {
+    .roles-table {
+      margin-top: 30px;
+    }
+    .permission-tree {
+      margin-bottom: 30px;
+    }
+  }
+  .team_wapper {
+    display: flex;
+    align-items: center;
+    margin-left: 40px;
+  }
+  .team_data{
+    float: left;
+    font-size: 25px;
+  }
+  .useManage{
+    float: right;
+    font-size: 20px;
+  }
+  .team_manage{
+    font-size: 15px;
+    float: left;
+  }
 </style>
