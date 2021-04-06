@@ -1,8 +1,12 @@
 <template>
 <div>
     <div class="dashboard-container" v-if="isimageview">
-      <div v-for="(item, index) in imagelargeArry" :key="index" style="width:500px; height:500px; display:inline" >
-      <miniimage style="width:100px; height:100px; display:inline"
+      <div v-for="(item, index) in imagelargeArry" :key="index" style="
+        float:left;
+        margin-left:20px
+        margin-top:20px
+      " >
+      <miniimage 
       :fatherimagesrc="item.url"
       :ismarked="item.islabel"
       @entermark="entermark(index)"

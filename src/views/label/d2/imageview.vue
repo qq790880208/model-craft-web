@@ -1,20 +1,24 @@
 <template>
   <!-- <el-row :gutter="20" style="margin-top: 50px"> -->
-    <div>
+    <div style="user-select: none;">
     <div class="dashboard-container" v-if="isimageview">
-      <div v-for="(item, index) in imagelargeArry" :key="index" style="width:500px; height:500px; display:inline" >
-      <miniimage style="width:100px; height:100px; display:inline"
+      <div v-for="(item, index) in imagelargeArry" :key="index" style="
+        float:left;
+        margin-left:20px
+        margin-top:20px
+      " >
+      <miniimage 
       :fatherimagesrc="item.url"
       :ismarked="item.islabel"
       @entermark="entermark(index)"
       ></miniimage>
       </div>
     </div>
-    <div class="dashboard-container" v-if="!isimageview">
+    <div class="dashboard-container"  v-if="!isimageview">
       <el-button @click="returnimageview">返回</el-button>
       <el-button @click="nextimage">下一张</el-button>
       <el-button @click="previousimage">上一张</el-button>
-      <imageselect
+      <imageselect 
         :fatherimagesrc="this.imageArry[nownum]"
         :imageindex="this.nownum"
         :lastlabelArry="this.lastinfoArry[nownum]"
@@ -183,5 +187,10 @@ export default {
     font-size: 30px;
     line-height: 46px;
   }
+}
+</style>
+<style scoped>
+.imageviewa{
+  display:flex;
 }
 </style>

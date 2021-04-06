@@ -1,5 +1,6 @@
 <template>
   <div style="width:100% height:100%">
+  <div>
     <el-button
       type="primary"
       icon="el-icon-edit"
@@ -15,8 +16,14 @@
     <el-button @click="huanyuan">还原图片大小</el-button>
     <el-button @click="saveinfo">保存 </el-button>
     <el-button @click="updatelastdata">查看上次标注数据</el-button>
+  </div>
     <!-- <el-button @click="Edit">test</el-button>-->
-    <div  style="margin: 0 auto; width: 100%;">
+    <div  :style="{
+      //margin:' 0 auto',
+      float:'left',
+      //width:canvaswidth+'px',
+      //height:canvasheight+'px',
+      }" >
       <canvas
         id="label-canvas"
         class="canvas"
@@ -24,13 +31,26 @@
         :height="canvasheight"
       ></canvas>
     </div>
-        <el-button 
+
+    <div style="margin-left:50px;float:left;border:1px solid #666;width:25%">
+      <div v-for="(items, index) in premarktype" :key="index">
+        <el-button @click="changeinfo(items)">{{ items.name }}</el-button>
+      </div>
+    </div>
+
+    <div >
+    <!-- <div style="margin-left:50px;float:left;border:1px solid #666;width:25%"> -->
+      <el-button 
         v-for="(items, index) in polygonArray" :key="index" type="danger"
           @mouseover.native="infotip(index)"
           @mouseout.native="removetip"
           @mousedown.native="deletemarked(index)"
-        style="margin: 0 auto; width: 10%;display:inline">删除
+        style="float:left;
+        margin-right:20px">删除{{index+1}}
       </el-button >
+    </div>
+
+
     <!--<div style="text-align: center; margin: 0 auto">
       <label style="color: blue"
         ><b style="text-align: center"
@@ -54,11 +74,7 @@
         >
       </el-row>
       </div> -->
-      <el-row>
-        <div v-for="(items, index) in premarktype" :key="index">
-          <el-button @click="changeinfo(items)">{{ items.name }}</el-button>
-        </div>
-      </el-row>
+
     
   </div>
 </template>
@@ -164,6 +180,7 @@ export default {
       this.lines = [];
       this.lineCounter = 0;
       this.updatelastdata();
+      this.huanyuan();
       //this.fabricEvent();
       //this.inputimage();
     },

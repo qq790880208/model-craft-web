@@ -1,5 +1,6 @@
 <template>
-  <div id="test" style="user-select: none">
+  <div id="test" style="user-select: none;">
+    <div>
     <el-button @click="gai" v-show="isTrue2">拖动图片</el-button>
     <el-button @click="gai" v-show="!isTrue2">添加标注</el-button>
     <el-button @click="fangda">放大</el-button>
@@ -7,12 +8,14 @@
     <el-button @click="huanyuan">还原图片大小</el-button>
     <el-button @click="saveinfo">保存 </el-button>
     <el-button @click="updatelastdata">查看上次标注数据</el-button>
-
+    </div>
 
 
     <div class="content" :style="{    
       width: this.imagewidth+'px',
       height: this.imageheight+'px',
+      float:'left',
+      marginLeft :0+'px',    
       }"
       id:contentfather
       >
@@ -22,7 +25,7 @@
           position: 'relative',
           width: '100%',
           height: '100%',
-
+          //float:left
         }"
         @mousedown.stop="moveMouse"
         @click="getOffect"
@@ -81,8 +84,20 @@
         />
       </div>
     </div>
-    <div id="labelfather">
-      <div v-for="(items, index) in boxArry" :key="index">
+    <div id="labelfather" :style="{
+        //width:800+'px',
+        //height:800+'px',
+        border: '1px solid #666',
+        float:'left',
+        marginLeft:20+'px'
+        }
+      " >
+      <div v-for="(items, index) in boxArry" :key="index" :style="{
+        //float:left,
+        //marginLeft:20+'px',
+        //margin-top:20px,
+        }
+      " >
         <!-- <el-row> -->
         <labelinfo
           :inputname="labelArry[index].info"
@@ -712,7 +727,7 @@ export default {
     width: 800px;
     height: 800px;
     background: rgb(0, 0, 0);
-    margin: 0 auto;
+    //margin: 0 auto;
     overflow: hidden;
     position: relative;
 

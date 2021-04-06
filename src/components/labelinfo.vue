@@ -1,15 +1,13 @@
 <template>
-  <div :style="{
-    
-  }">
+  <div>
     <el-row>
     <el-input 
     v-model="input" 
     placeholder="请输入内容" 
-    style="width:300px" 
+    style="width:150px" 
     clearable
     ></el-input>
-    <el-input style="width:300px" v-model="inputname" :disabled="true"></el-input>
+    <el-input style="width:150px" v-model="inputname" :disabled="true"></el-input>
     <el-button @click="changefatherinfo" type="primary">保存</el-button>
     <el-button @click="deletefatherlabel" type="danger">删除</el-button>
     </el-row>
@@ -25,8 +23,7 @@
      }
    },
    props: {
-     inputname:String,
-     ishighlight:Boolean
+     inputname:String
    },
    methods: {
      //通知父方法删除对应的div和标注框
