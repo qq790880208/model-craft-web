@@ -93,31 +93,31 @@ export default {
 
       scalewidth: null, //图片宽度缩放倍数
       scaleheight: null, //图片高度缩放倍数
-      roofPoints: [],
-      realPoints: [],
-      lines: [],
-      lineCounter: 0,
-      polygonArray: [],
-      polygoninfoArray: [],
-      realpolygoninfoArray: [],
-      tempArry: [],
-      drawingObject: {},
+      roofPoints: [],//多边形点数组
+      realPoints: [],//真实多边形点数组
+      lines: [],//线数组
+      lineCounter: 0,//线计数
+      polygonArray: [],//多边形对象数组
+      polygoninfoArray: [],//多边形对象信息数组
+      realpolygoninfoArray: [],//真实多边形对象信息数组
+      tempArry: [],//高亮多边形
+      drawingObject: {},//flag
       drawingObject: {
         type: "",
         background: "",
         border: "",
       },
-      fabricObj: null,
-      fabricimageObj: null,
-      mouseFrom: {},
+      fabricObj: null,//画布对象
+      fabricimageObj: null,//图片对象（未使用）
+      //mouseFrom: {},
       canvas: null,
       Point: {},
-      markcolor: "rgba(0,128,128,0.5)",
-      markinfo: null,
-      isCanSelect: false,
+      markcolor: "rgba(0,128,128,0.5)",//标记颜色
+      markinfo: null,//标记信息
+      //isCanSelect: false,
       //buttonstate: "拖动图片",
       buttonstate: "拖动图片",
-      buttonmouseoveflag: false,
+      buttonmouseoveflag: false,//高亮显示按钮的移入移出判断flag
       //imageurl:'http://localhost:9528/static/img/QQ%E5%9B%BE%E7%89%8720201120101655.ff1d6fd1.jpg',
       //localimage:'D:/VueProject/modelcraft-web/src/image/test2.jpg'
     };
@@ -126,7 +126,7 @@ export default {
   //    document.addEventListener("keydown", this.deletelastpoint());
   // },
   computed: {
-    imagesrc: function () {
+    imagesrc: function () {//获取图片url
       //return require('@/image/'+this.fatherimagesrc)
       //return require('http://192.168.19.237:18080/images/abc.png')
       //return require('@/'+'image/微信图片_20200927191717'+'.jpg')
@@ -134,7 +134,7 @@ export default {
     },
   },
   mounted() {
-    this.$nextTick(() => {
+    this.$nextTick(() => {//延时加载放置报错
       setTimeout(() => {
         this.fabricObj = new fabric.Canvas("label-canvas");
         this.fabricEvent();
@@ -142,7 +142,7 @@ export default {
         //this.inputimage();
         console.log(this.premarktype);
       }, 500),
-      setTimeout(() => {
+      setTimeout(() => {//由于this.createBackgroundImage函数总是最后加载，在这里设置更后延迟来更新图片标注信息
           this.updatelastdata();
       },510)
     });
@@ -169,7 +169,7 @@ export default {
     },
   },
   methods: {
-    fangda() {
+    fangda() {//放大图片
       let zoomPoint = new fabric.Point(
         this.canvaswidth / 2,
         this.canvaswidth / 2
@@ -178,7 +178,7 @@ export default {
       this.fabricObj.zoomToPoint(zoomPoint, this.zoom);
       console.log(this.fabricObj.getZoom());
     },
-    suoxiao() {
+    suoxiao() {//缩小图片
       let zoomPoint = new fabric.Point(
         this.canvaswidth / 2,
         this.canvaswidth / 2
@@ -187,14 +187,14 @@ export default {
       if (this.zoom > 0.1) this.fabricObj.zoomToPoint(zoomPoint, this.zoom);
       console.log(this.fabricObj.getZoom());
     },
-    huanyuan(){
+    huanyuan(){//还原图片大小和位置
       let ppoint = new fabric.Point(0,0)
       this.fabricObj.absolutePan(ppoint)
       this.zoom=1
       this.fabricObj.setZoom(1)
 
     },
-    changeinfo(item) {
+    changeinfo(item) {//切换标注类型（包括颜色）
       this.markcolor = item.color;
       this.markinfo = item.name;
     },
@@ -286,7 +286,7 @@ export default {
 		// poly.hasBorders = !poly.edit;
 		// this.fabricObj.requestRenderAll();
 	  // },
-    saveinfo() {
+    saveinfo() {//保存标注信息时传递的信息
       console.log("start!!!", this.realpolygoninfoArray);
       //变为深拷贝
       this.tempArry.push(JSON.parse(JSON.stringify(this.realpolygoninfoArray)));
@@ -356,7 +356,7 @@ export default {
         console.log("linesuuu",this.lines)
         console.log("lineCounteruuu",this.lineCounter)
     },
-    createBackgroundImage() {
+    createBackgroundImage() {//加载图片为背景
       let _this = this;
       // console.log(this.fabricObj.width);
       // console.log(this.fabricObj.height);
@@ -397,7 +397,7 @@ export default {
         }
       );
     },
-    infotip(index) {
+    infotip(index) {//鼠标放在删除上时高亮（通过在创建一个同样的多边形实现
       // //防止输入数字以外的字符的响应
       // var reg = /^[1-9]+[0-9]*]*$/;
       // console.log(reg.test(this.input));
@@ -416,12 +416,12 @@ export default {
         this.buttonmouseoveflag = true;
       }
     },
-    removetip() {
+    removetip() {//鼠标脱离删除按钮时取消高亮
       // if (this.input > this.polygonArray.length || this.input <= 0) {
       //   return;
       // }
       if (this.buttonmouseoveflag) {
-        console.log("remove!");
+        console.log("removetemproof!");
         if (this.temproof != null) {
           this.fabricObj.remove(this.temproof);
           this.temproof = null;
@@ -429,7 +429,7 @@ export default {
         this.buttonmouseoveflag = false;
       }
     },
-    deletemarked(index) {
+    deletemarked(index) {//删除对应多边形
       // if (this.input > this.polygonArray.length || this.input <= 0) {
       //   return;
       // }

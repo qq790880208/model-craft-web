@@ -46,8 +46,8 @@
             left: item.left + 'px',
             top: item.top + 'px',
             background: 'rgba(43,100,206,0.5)',
-            border: '5px solid #666',
-            //border: 'none',
+            //border: '5px solid #666',
+            border: 'none',
           }"
         >
           <!-- <div class="r_b" @mousedown="mouseMove11" v-if="b_i == index"></div> -->
@@ -114,6 +114,7 @@ export default {
   //   console.log("2dmarkddddddddddddddddddddddddddddddddddddddddddddddddddddd")
   // },
   mounted: function () {
+    //加载时获取图片分辨率并设置div大小为图片的大小（有缩放）
       let image = new Image();
       image.src = this.imagesrc;
       // if(image.width===0&&image.height===0){
@@ -159,6 +160,7 @@ export default {
   watch: {
     //监听图片变化
     imagesrc() {
+      //加载时获取图片分辨率并设置div大小为图片的大小（有缩放）
       let image = new Image();
       image.src = this.imagesrc;
       // if(image.width===0&&image.height===0){
@@ -197,22 +199,22 @@ export default {
   data() {
     return {
       num: 1,
-      imagewidth: null,
-      imageheight: null,
+      imagewidth: null,//图片宽度像素数
+      imageheight: null,//图片高度像素数
       scalewidth: null, //图片宽度缩放倍数
       scaleheight: null, //图片高度缩放倍数
-      boxArry: [],
-      labelArry: [],
-      tempArry: [],
+      boxArry: [],//显示的div对象数组
+      labelArry: [],//标注信息保存数组
+      tempArry: [],//临时数组，用来传递信息
       //testsc:"image/test2",
       //imagesrc:require('@/'+this.fatherimagesrc+'.jpg'),
-      isTrue: false,
-      isTrue2: false,
+      isTrue: false,//移动标注和缩放标注的切换标识
+      isTrue2: false,//拖动图片和标注的切换标识
       width: "",
       height: "",
       left: "",
       top: "",
-      b_i: "",
+      b_i: "",//获取目前点击的div的index
       imageleft:0,
       imagetop:0,
       biaozhuHeight: 0,
@@ -229,7 +231,7 @@ export default {
     commitVuex() {
       this.$store.commit("changeTreeData", { a: 1, b: 2 });
     },
-    updatelastdata() {
+    updatelastdata() {//将从后台读取到的标注信息更新在前端
       console.log("image select lastlabelArry", this.lastlabelArry);
       this.b_i=-1
       this.boxArry = []
@@ -266,7 +268,7 @@ export default {
       this.isTrue2 = false;
       console.log("setfalse");
     },
-    saveinfo() {
+    saveinfo() {//保存时传递的信息
       console.log("start!!!", this.boxArry);
       //变为深拷贝
       this.tempArry.push(JSON.parse(JSON.stringify(this.labelArry)));
@@ -286,7 +288,7 @@ export default {
       //  this.$emit('saveimageinfo',this.boxArry,this.fatherimagesrc,this.imageindex)
       //  console.log(this.boxArry,this.fatherimagesrc,this.imageindex)
     },
-    deletelabel(i) {
+    deletelabel(i) {//删除对应标注
       this.boxArry.splice(i, 1);
       this.labelArry.splice(i, 1);
       console.log(this.boxArry);
@@ -306,7 +308,7 @@ export default {
       // this.left=e.offsetX
       //     this.top=e.offsetY
     },
-    moveMouse(e) {
+    moveMouse(e) {//标注或者拖动图片的函数
       //console.log("moveMouse!!!!!!!!!!!!!!");
       let odiv = e.target; //获取目标元素
       odiv.style.left = this.imageleft + "px";
@@ -414,7 +416,7 @@ export default {
         };
       }
     },
-    move(istrue,mtype, e) {
+    move(istrue,mtype, e) {//移动标注框，缩放标注框的函数
       let odiv = e.target; //获取目标元素
       // let canvasodiv = e.target.offsetParent.offsetParent.offsetLeft
       // console.log("PPOL",e.target.offsetParent.offsetParent)
@@ -434,6 +436,8 @@ export default {
         //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
         let left = (e.clientX - disX) / this.num;
         let top = (e.clientY - disY) / this.num;
+        console.log("owidth",owidth,"oleft",oleft,"left",left,"oheight",oheight,"otop",otop,"top",top)
+        console.log("width",this.boxArry[this.b_i].width,"height",this.boxArry[this.b_i].height)
         //绑定元素位置到positionX和positionY上面
         //  this.positionX = top * this.num;
         //  this.positionY = left * this.num;
@@ -470,81 +474,126 @@ export default {
           //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
           //console.log("left",left,"top",top)
           if(left<owidth)this.boxArry[this.b_i].left = oleft + left
-          if(top<oheight)this.boxArry[this.b_i].top = otop + top         
-          this.boxArry[this.b_i].width = owidth-left;
-          this.boxArry[this.b_i].height = oheight-top;
+          else this.boxArry[this.b_i].left=oleft + owidth-1
+
+          if(top<oheight)this.boxArry[this.b_i].top = otop + top
+          else this.boxArry[this.b_i].top=otop + oheight-1
+
+          if(left<owidth)this.boxArry[this.b_i].width = owidth-left;
+          else this.boxArry[this.b_i].width = 1
+
+          if(top<oheight)this.boxArry[this.b_i].height = oheight-top;
+          else this.boxArry[this.b_i].height = 1
+
           this.labelArry[this.b_i].x1 = this.boxArry[this.b_i].left / this.scalewidth;
           this.labelArry[this.b_i].y1 = this.boxArry[this.b_i].top / this.scaleheight;
           }
           if(mtype === 2){//右上角的点
           //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
           //console.log("left",left,"top",top)
-          if(top<oheight)this.boxArry[this.b_i].top = otop + top         
-          this.boxArry[this.b_i].width = left + 7;
-          this.boxArry[this.b_i].height = oheight-top;
+          if(top<oheight)this.boxArry[this.b_i].top = otop + top
+          else this.boxArry[this.b_i].top=otop + oheight-1        
+          if(left>0)this.boxArry[this.b_i].width = left + 7;
+          else this.boxArry[this.b_i].width=1
+          if(top<oheight)this.boxArry[this.b_i].height = oheight-top;
+          else this.boxArry[this.b_i].height = 1
           this.labelArry[this.b_i].x1 = this.boxArry[this.b_i].left / this.scalewidth;
           this.labelArry[this.b_i].y1 = this.boxArry[this.b_i].top / this.scaleheight;
-          this.labelArry[this.b_i].x2 =
-            (this.scalewidth * this.labelArry[this.b_i].x1 + left + 9) /
+          if(left>0)this.labelArry[this.b_i].x2 =
+            (this.scalewidth * this.labelArry[this.b_i].x1 + left + 7) /
             this.scalewidth;
-          this.labelArry[this.b_i].y2 =
-            (this.scaleheight * this.labelArry[this.b_i].y1 + top + 9) /
+          else this.labelArry[this.b_i].x2 =
+            (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
+            this.scalewidth;
+          if(top<oheight)this.labelArry[this.b_i].y2 =
+            (this.scaleheight * this.labelArry[this.b_i].y1 + top + 7) /
+            this.scaleheight;
+          else this.labelArry[this.b_i].y2 =
+            (this.scaleheight * this.labelArry[this.b_i].y1 + 1) /
             this.scaleheight;
           }
           if(mtype === 3){//左下角的点
           //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
           //console.log("left",left,"top",top)
-          if(left<owidth)this.boxArry[this.b_i].left = oleft + left       
-          this.boxArry[this.b_i].width = owidth-left;
-          this.boxArry[this.b_i].height = top + 7;
+          if(left<owidth)this.boxArry[this.b_i].left = oleft + left
+          else this.boxArry[this.b_i].left=oleft + owidth-1       
+          if(left<owidth)this.boxArry[this.b_i].width = owidth-left;
+          else this.boxArry[this.b_i].width = 1
+          if(top>0)this.boxArry[this.b_i].height = top + 7;
+          else this.boxArry[this.b_i].height = 1
           this.labelArry[this.b_i].x1 = this.boxArry[this.b_i].left / this.scalewidth;
           this.labelArry[this.b_i].y1 = this.boxArry[this.b_i].top / this.scaleheight;
-          this.labelArry[this.b_i].x2 =
-            (this.scalewidth * this.labelArry[this.b_i].x1 + left + 9) /
+          if(left<owidth)this.labelArry[this.b_i].x2 =
+            (this.scalewidth * this.labelArry[this.b_i].x1 + left + 7) /
             this.scalewidth;
-          this.labelArry[this.b_i].y2 =
-            (this.scaleheight * this.labelArry[this.b_i].y1 + top + 9) /
+          else this.labelArry[this.b_i].x2 =
+            (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
+            this.scalewidth;
+          if(top>0)this.labelArry[this.b_i].y2 =
+            (this.scaleheight * this.labelArry[this.b_i].y1 + top + 7) /
+            this.scaleheight;
+          else this.labelArry[this.b_i].y2 =
+            (this.scaleheight * this.labelArry[this.b_i].y1 + 1) /
             this.scaleheight;
           }
-          if(mtype === 4){
+          if(mtype === 4){//右下角的点
           //console.log("left",left,"top",top)
-          this.boxArry[this.b_i].width = left + 7;
-          this.boxArry[this.b_i].height = top + 7;
-          this.labelArry[this.b_i].x2 =
-            (this.scalewidth * this.labelArry[this.b_i].x1 + left + 9) /
+          if(left>0)this.boxArry[this.b_i].width = left + 7;
+          else this.boxArry[this.b_i].width=1
+          if(top>0)this.boxArry[this.b_i].height = top + 7;
+          else this.boxArry[this.b_i].height = 1
+          if(left>0)this.labelArry[this.b_i].x2 =
+            (this.scalewidth * this.labelArry[this.b_i].x1 + left + 7) /
             this.scalewidth;
-          this.labelArry[this.b_i].y2 =
-            (this.scaleheight * this.labelArry[this.b_i].y1 + top + 9) /
+          else this.labelArry[this.b_i].x2 =
+            (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
+            this.scalewidth;
+          if(top>0)this.labelArry[this.b_i].y2 =
+            (this.scaleheight * this.labelArry[this.b_i].y1 + top + 7) /
+            this.scaleheight;
+          else this.labelArry[this.b_i].y2 =
+            (this.scaleheight * this.labelArry[this.b_i].y1 + 1) /
             this.scaleheight;
           }
           if(mtype === 5){//上边的点
           //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
           //console.log("left",left,"top",top)
           if(top<oheight)this.boxArry[this.b_i].top = otop + top
-          this.boxArry[this.b_i].height = oheight-top;
+          else this.boxArry[this.b_i].top=otop + oheight-1
+          if(top<oheight)this.boxArry[this.b_i].height = oheight-top;
+          else this.boxArry[this.b_i].height = 1
           this.labelArry[this.b_i].y1 = this.boxArry[this.b_i].top / this.scaleheight;
           }
           if(mtype === 6){//左边的点
           //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
-          //console.log("left",left,"top",top)
-          if(left<owidth)this.boxArry[this.b_i].left = oleft + left   
-          this.boxArry[this.b_i].width = owidth-left;
+          if(left<owidth)this.boxArry[this.b_i].left = oleft + left
+          else this.boxArry[this.b_i].left=oleft + owidth-1   
+          if(left<owidth)this.boxArry[this.b_i].width = owidth-left;
+          else this.boxArry[this.b_i].width = 1
           this.labelArry[this.b_i].x1 = this.boxArry[this.b_i].left / this.scalewidth;
           }
           if(mtype === 7){//右边的点
           //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
           //console.log("left",left,"top",top)
-          this.boxArry[this.b_i].width = left + 7;
-          this.labelArry[this.b_i].x2 =
-            (this.scalewidth * this.labelArry[this.b_i].x1 + left + 9) /
+          if(left>0)this.boxArry[this.b_i].width = left + 7;
+          else this.boxArry[this.b_i].width=1
+          if(left>0)this.labelArry[this.b_i].x2 =
+            (this.scalewidth * this.labelArry[this.b_i].x1 + left + 7) /
+            this.scalewidth;
+          else this.labelArry[this.b_i].x2 =
+            (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
             this.scalewidth;
           }
           if(mtype === 8){//下边点
           //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
           //console.log("left",left,"top",top)
-          this.boxArry[this.b_i].height = top + 7;
-          this.labelArry[this.b_i].y2 =
-            (this.scaleheight * this.labelArry[this.b_i].y1 + top + 9) /
+          if(top>0)this.boxArry[this.b_i].height = top + 7;
+          else this.boxArry[this.b_i].height = 1
+          if(top>0)this.labelArry[this.b_i].y2 =
+            (this.scaleheight * this.labelArry[this.b_i].y1 + top + 7) /
+            this.scaleheight;
+          else this.labelArry[this.b_i].y2 =
+            (this.scaleheight * this.labelArry[this.b_i].y1 + 1) /
             this.scaleheight;
           }
         }
@@ -583,15 +632,15 @@ export default {
     //   };
     //   console.log(this.boxArry);
     // },
-    fangda() {
+    fangda() {//放大图片
       if (this.num < 10) this.num += 0.1;
       //  imagesrc=require(this.testsc)
       //  console.log(this.fatherimagesrc,this.imageindex)
     },
-    suoxiao() {
+    suoxiao() {//缩小图片
       if (this.num > 0.2) this.num -= 0.1;
     },
-    huanyuan(){
+    huanyuan(){//还原图片大小和位置
       this.num=1
       console.log(this.$refs.canvesdiv)
       let canvesdiv = this.$refs.canvesdiv
@@ -612,7 +661,7 @@ export default {
         top: 20,
       });
     },
-    handelClick(i) {
+    handelClick(i) {//存储点击对象的index
       this.b_i = i;
       console.log("hahaha" + i);
     },
