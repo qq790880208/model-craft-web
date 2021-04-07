@@ -75,12 +75,12 @@
           </el-col>
           <el-table class="teamUser" :data="rolesList" style="width: 100%;" border @selection-change="selChange">
             <el-table-column type="selection" width="55" :disabled="isRole !=='admin' && idLabel !=='TeamManager'" />
-            <el-table-column align="center" label="Role Key" width="120">
+            <!-- <el-table-column align="center" label="Role Key" width="120">
               <template slot-scope="scope">
                 {{ scope.row.id }}
               </template>
-            </el-table-column>
-            <el-table-column align="center" label="Role Name" width="120">
+            </el-table-column> -->
+            <el-table-column align="center" label="用户名字" width="120">
               <template slot-scope="scope">
                 {{ scope.row.name }}
               </template>
@@ -90,7 +90,7 @@
                 {{ scope.row.label_role }}
               </template>
             </el-table-column>
-            <el-table-column align="header-center" label="Description">
+            <el-table-column align="center" label="Description">
               <template slot-scope="scope">
                 {{ scope.row.descr }}
               </template>
@@ -458,6 +458,7 @@ export default {
             .then(() => {
               const para = Object.assign({}, this.editForm)
               para.createBy = store.getters.name
+              para.userid = store.getters.userid
               console.log(para)
               addTeams(para).then(res => {
                 this.$message({
