@@ -17,7 +17,7 @@
               <el-row>
                 <el-button icon="el-icon-plus" @click="addData">添加数据</el-button>
                 <el-button icon="el-icon-delete" @click="delData">删除数据</el-button>
-                <el-button icon="el-icon-delete" @click="delLabel">删除标注数据</el-button>
+                <!-- <el-button icon="el-icon-delete" @click="delLabel">删除标注数据</el-button> -->
                 <el-button icon="el-icon-cloudy" style="right" @click="startLabel" :style="{ display: visible}">开始标注</el-button>
               </el-row>
       <div v-for="(item, index) in imagelargeArry" :key="index" style="

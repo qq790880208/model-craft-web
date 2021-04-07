@@ -81,13 +81,6 @@ export const asyncRoutes = [
         name: 'annotateTeamManagement',
         meta: { title: '标注团队管理', icon: 'nested', resources: 'annotateTeamManagement' }
       }
-      // },
-      // {
-      //   path: '/teamManagement/annotateMemberManagement',
-      //   component: () => import('@/views/teamManagement/annotateMemberManagement/index'),
-      //   name: 'annotateMemberManagement',
-      //   meta: { title: '标注团队管理', icon: 'excel', resources: 'annotateMemberManagement' }
-      // }
     ]
   },
   {
