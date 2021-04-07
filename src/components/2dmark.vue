@@ -1,8 +1,8 @@
 <template>
   <div id="test" style="user-select: none;">
     <div>
-    <el-button @click="gai" v-show="isTrue2">拖动图片</el-button>
-    <el-button @click="gai" v-show="!isTrue2">添加标注</el-button>
+    <el-button @click="gai()" >{{buttontext}}</el-button>
+    <!-- <el-button @click="gai" v-show="!isTrue2">正在添加标注</el-button> -->
     <el-button @click="fangda">放大</el-button>
     <el-button @click="suoxiao">缩小</el-button>
     <el-button @click="huanyuan">还原图片大小</el-button>
@@ -48,6 +48,7 @@
             position: 'absolute',
             left: item.left + 'px',
             top: item.top + 'px',
+            //background: item.mymarkcolor,
             background: 'rgba(43,100,206,0.5)',
             //border: '5px solid #666',
             border: 'none',
@@ -101,6 +102,7 @@
         <!-- <el-row> -->
         <labelinfo
           :inputname="labelArry[index].info"
+          :typelabel="markinfoArry"
           @deletelabel="deletelabel(index)"
           @changeinfo="changeinfo($event, index)"
           style="text-align: center"
@@ -120,6 +122,10 @@ export default {
   props: {
     fatherimagesrc: String,
     imageindex: Number,
+    premarktype: {
+      type: Array,
+      default: () => [],
+    },
     lastlabelArry: {
       type: Array,
       default: () => [],
@@ -230,6 +236,10 @@ export default {
       left: "",
       top: "",
       b_i: "",//获取目前点击的div的index
+      buttontext:"正在标注(切换拖动图片)",
+      markcolorArry: [], //标记颜色数组
+      markcolor:'rgba(43,100,206,0.5)',
+      markinfoArry: [], //标记信息数组
       imageleft:0,
       imagetop:0,
       biaozhuHeight: 0,
@@ -243,35 +253,58 @@ export default {
     getVuex() {
       console.log(this.$store.state.treeData);
     },
-    commitVuex() {
-      this.$store.commit("changeTreeData", { a: 1, b: 2 });
+    // commitVuex() {
+    //   this.$store.commit("changeTreeData", { a: 1, b: 2 });
+    // },
+    findcolor(abcdefg) {
+      this.premarktype.forEach((item) => {
+        console.log("infind", abcdefg);
+        //if(item.name===null) this.markcolor = "rgba(0,128,128,0.5)";
+        if (item.name === abcdefg) {
+          console.log("find", item.color, typeof item.color);
+          this.markcolor = item.color;
+        }
+      });
     },
     updatelastdata() {//将从后台读取到的标注信息更新在前端
       console.log("image select lastlabelArry", this.lastlabelArry);
       this.b_i=-1
       this.boxArry = []
       this.labelArry = []
+      this.markinfoArry = []
+      this.markcolorArry = []
       for (let i = 0; i < this.lastlabelArry.length; i++) {
-        let left = this.lastlabelArry[i].x1 
-        let top = this.lastlabelArry[i].y1 
-        let width = (this.lastlabelArry[i].x2-this.lastlabelArry[i].x1) 
-        let height = (this.lastlabelArry[i].y2-this.lastlabelArry[i].y1) 
+        let left = Number(this.lastlabelArry[i].x1)
+        let top = Number(this.lastlabelArry[i].y1)
+        let width = Number(this.lastlabelArry[i].x2-this.lastlabelArry[i].x1) 
+        let height = Number(this.lastlabelArry[i].y2-this.lastlabelArry[i].y1) 
         this.boxArry.push({
           width: width * this.scalewidth,
           height: height * this.scaleheight,
           left: left * this.scalewidth,
           top: top * this.scaleheight,
         });
+        console.log("llllllllll",left,top,width,height)
         this.labelArry.push({
           x1: left,
           y1: top,
-          x2: (left + width) ,
-          y2: (top + height) ,
+          x2: (left+width) ,
+          y2: (top+height) ,
           info: this.lastlabelArry[i].info,
         });
-        console.log("42343423423423fsdd", this.lastlabelArry[i].x1);
+        console.log("42343423423423fsdd", this.labelArry[i]);
         //this.labelArry.push(this.lastlabelArry[i])
       }
+      for (let i = 0; i < this.premarktype.length; i++) {
+        let a={}
+        a["value"]=i
+        a["label"]=this.premarktype[i].name
+        this.markinfoArry.push(a)
+        //this.markcolorArry.push(this.premarktype[i].color)
+
+      }
+      console.log("markinfoArry", this.markinfoArry);
+      //console.log("markcolorArry", this.markcolorArry);
       console.log("vcxxcvxvxcv", this.boxArry);
       console.log("fsdfdsfsd", this.labelArry);
     },
@@ -316,6 +349,9 @@ export default {
     },
     gai() {
       this.isTrue2 = !this.isTrue2;
+      console.log("isTrue2",this.isTrue2)
+      if(this.isTrue2) this.buttontext="正在标注(切换拖动图片)"
+      else this.buttontext="正在拖动图片(切换标注)"
     },
     getOffect(e) {
       console.log(e);

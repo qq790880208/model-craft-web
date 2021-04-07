@@ -4,9 +4,8 @@
       <div v-for="(item, index) in imagelargeArry" :key="index" style="
         float:left;
         margin-left:20px
-        margin-top:20px
       " >
-      <miniimage 
+      <miniimage style="margin-top:20px"
       :fatherimagesrc="item.url"
       :ismarked="item.islabel"
       @entermark="entermark(index)"
@@ -20,7 +19,7 @@
     <el-button @click="previousimage">上一张</el-button>
     <!-- <el-button @click="requireimage">请求图片</el-button> -->
     <!-- <el-button @click="savelabel(nownum)">保存标注信息</el-button> -->
-    <drawpolygon
+    <drawpolygon style="margin-top:20px"
       :fatherimagesrc="this.imageArry[nownum]"
       :imageindex="this.nownum"
       :premarktype="this.marktype"
@@ -64,6 +63,22 @@ export default {
         },
         {
           name:"human",
+          color:"rgba(0,128,0,0.75)"
+        },
+                {
+          name:"human1",
+          color:"rgba(0,128,0,0.75)"
+        },
+                {
+          name:"human2",
+          color:"rgba(0,128,0,0.75)"
+        },
+                {
+          name:"human3",
+          color:"rgba(0,128,0,0.75)"
+        },
+                {
+          name:"human4",
           color:"rgba(0,128,0,0.75)"
         },
       ],
@@ -193,7 +208,11 @@ export default {
         },
       }).then(function (response) {
         console.log(response);
-        console.log("isab",isab);
+        //console.log("isab",isab);
+        _this.$message({
+          message:"保存成功",
+          type: 'success'
+          });
         _this.requireimage();
       });
     },

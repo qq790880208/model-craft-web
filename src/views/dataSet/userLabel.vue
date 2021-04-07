@@ -16,9 +16,9 @@
             <el-main>
               <el-row>
                 <el-button icon="el-icon-plus" @click="addData">添加数据</el-button>
-                <el-button icon="el-icon-delete" @click="deData">删除数据</el-button>
-                <el-button icon="el-icon-delete" @click="delLabel">删除标注数据</el-button>
-                <el-button icon="el-icon-cloudy" style="right" @click="staetLabel">开始标注</el-button>
+                <el-button icon="el-icon-delete" @click="delData">删除数据</el-button>
+                <!-- <el-button icon="el-icon-delete" @click="delLabel">删除标注数据</el-button> -->
+                <el-button icon="el-icon-cloudy" style="right" @click="startLabel" :style="{ display: visible}">开始标注</el-button>
               </el-row>
       <div v-for="(item, index) in imagelargeArry" :key="index" style="
         float:left;
@@ -61,6 +61,7 @@ export default {
   name: 'Dashboard',
   data() {
     return {
+      visible: '',
       message: '',
       urls: [],
       doneurls: [],
@@ -96,10 +97,30 @@ export default {
           _this.imagelargeArry.push(a);
         }
       })
+    },
+    startLabel: function() {
+      const type = store.getters.type
+      const uuid = store.getters.uuid
+      const userid = store.getters.userid
+      if(type == 0) {
+        this.$router.push('/label/d2imageview')
+      }
+      if(type == 1) {
+        this.$router.push({path:'/label/polygonimageview'})
+      }
+      if(type == 2) {
+        this.$router.push({path:'/label/d3'})
+      }
+      if(type == 3) {
+        this.$router.push({path:'/label/voice'})
+      }
     }
   },
   mounted() {
     this.getData()
+    if(this.$route.query.key == 'allData') {
+      this.visible = 'none'
+    }
   }
 }
 </script>
@@ -113,6 +134,9 @@ export default {
     font-size: 30px;
     line-height: 50px;
   }
+}
+.el-container {
+  height: 600px;
 }
 .el-header {
     background-color: #e5e9ee;

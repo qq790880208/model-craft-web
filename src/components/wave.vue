@@ -64,7 +64,7 @@
 </template>
 <script>
 import WaveSurfer from "wavesurfer.js";
-import labelinfo from "@/components/labelinfo.vue";
+import labelinfo from "@/components/wavelabelinfo.vue";
 import Timeline from "wavesurfer.js/dist/plugin/wavesurfer.timeline.js";
 import Regions from "wavesurfer.js/dist/plugin/wavesurfer.regions.js";
 import Minimap from "wavesurfer.js/dist/plugin/wavesurfer.minimap.js";
