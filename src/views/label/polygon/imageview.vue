@@ -1,6 +1,21 @@
 <template>
-  <div class="dashboard-container">
+<div>
+    <div class="dashboard-container" v-if="isimageview">
+      <div v-for="(item, index) in imagelargeArry" :key="index" style="
+        float:left;
+        margin-left:20px
+        margin-top:20px
+      " >
+      <miniimage 
+      :fatherimagesrc="item.url"
+      :ismarked="item.islabel"
+      @entermark="entermark(index)"
+      ></miniimage>
+      </div>
+    </div>
+  <div class="dashboard-container" v-if="!isimageview">
     <!-- <div class="dashboard-text">name: {{ name }}</div> -->
+    <el-button @click="returnimageview">返回</el-button>
     <el-button @click="nextimage">下一张</el-button>
     <el-button @click="previousimage">上一张</el-button>
     <!-- <el-button @click="requireimage">请求图片</el-button> -->
@@ -15,6 +30,7 @@
     ></drawpolygon>
     <!-- <canvas id="canvas" width='800' height='800'></canvas> -->
   </div>
+</div>
 </template>
 
 <script>
@@ -23,6 +39,7 @@
 import { mapGetters } from "vuex";
 import drawpolygon from "@/components/drawpolygon.vue";
 import request from "@/utils/request";
+import miniimage from "@/components/miniimage.vue"
 export default {
   name: "Dashboard",
   data() {
@@ -35,8 +52,10 @@ export default {
       lastinfoArry: [],
       //与图片对于的uuid数组，是后台数据库主键
       uuidArry: [],
-      //预读取每张图片的分辨率，以适应画布
-      imagesize:[],
+      //存储图片url,是否已标注等信息的数组，用于获取远程图片信息
+      imagelargeArry:[],
+    //   //预读取每张图片的分辨率，以适应画布
+    //   imagesize:[],
       //后台读取的标注类别
       marktype: [
         {
@@ -49,10 +68,12 @@ export default {
         },
       ],
       nownum: 0,
+      isimageview: true,
     };
   },
   components: {
     drawpolygon,
+    miniimage,
   },
   mounted() {
     this.infoArry = new Array(this.imageArry.length);
@@ -60,6 +81,14 @@ export default {
     this.requireimage();
   },
   methods: {
+    entermark(index){
+      console.log("faaaaaaaaaaaatherenter!")
+      this.nownum=index;
+      this.isimageview=!this.isimageview;
+    },
+    returnimageview(){
+        this.isimageview=!this.isimageview;
+    },
     //下一张图片
     nextimage: function () {
       if (this.nownum < this.imageArry.length - 1) this.nownum++;
@@ -86,6 +115,11 @@ export default {
         method: "get",
         //params: query
       }).then(function (response) {
+        _this.imageArry=[]
+        _this.infoArry=[]
+        _this.lastinfoArry=[]
+        _this.uuidArry=[]
+        _this.imagelargeArry=[]
         console.log("get response.data.items",response.data.items);
         for (let i = 0; i < response.data.items.length; i++) {
           console.log(response.data.items[i]);
@@ -105,7 +139,7 @@ export default {
           let len = eval(tempa).length;
           console.log("len", len);
           console.log("tempa",tempa)
-          let arr=[];
+          //   let arr=[];
           // for (let i = 0; i < len; i++) {
           //   arr[i] = []; //js中二维数组必须进行重复的声明，否则会undefind
           //   arr[i].x1 = tempa[i].x1;
@@ -115,12 +149,24 @@ export default {
           //   arr[i].info = tempa[i].info;
           // }
           _this.lastinfoArry.push(tempa)
-          console.log("get response.data.items[i]",response.data.items[i]);
-          console.log("get response.data.items[i].file_path",response.data.items[i].file_path);
-          console.log("get response.data.items[i].uuid",response.data.items[i].uuid);
-          console.log("get response.data.items[i].label_data",response.data.items[i].label_data);
+          console.log("lastinfoArry", response.data.items[i].is_label);
+          let a={};
+          a["url"]=response.data.items[i].file_path
+          a["islabel"]=response.data.items[i].is_label
+          //a["index"]=i
+          _this.imagelargeArry.push(a);
+        //   console.log("lastinfoArry", _this.lastinfoArry);
+        //   console.log("url", response.data.items[i].file_path);
+        //   console.log("uuid", response.data.items[i].uuid);
+        //   console.log("is_label", response.data.items[i].is_label);
+          //_this.islabelArry.push(response.data.items[i].is_label)
+          console.log("3ffafnzxvnkzjxc", _this.imagelargeArry);
+        //   console.log("get response.data.items[i]",response.data.items[i]);
+        //   console.log("get response.data.items[i].file_path",response.data.items[i].file_path);
+        //   console.log("get response.data.items[i].uuid",response.data.items[i].uuid);
+        //   console.log("get response.data.items[i].label_data",response.data.items[i].label_data);
           _this.uuidArry.push(response.data.items[i].uuid);
-          console.log("_this.uuidArry", _this.uuidArry);
+        //   console.log("_this.uuidArry", _this.uuidArry);
           _this.imageArry.push(response.data.items[i].file_path);
         }
         console.log("_this.imageArry",_this.imageArry);
@@ -130,7 +176,11 @@ export default {
     },
     //put请求
     savelabel(i) {
+      let _this=this
       console.log("put111",JSON.stringify(this.infoArry[i][0]),this.uuidArry[i]);
+      let isab
+      if(this.infoArry[i][0].length>0) isab=1
+      else isab=0
       return request({
         url: "http://192.168.19.237:8082/label",
         method: "put",
@@ -138,11 +188,13 @@ export default {
           label_data: JSON.stringify(this.infoArry[i][0]),
           //"last_update_by": "liaoziheng",
           //file_type: "polygon",
-          is_label: 1,
+          is_label: isab,
           uuid: this.uuidArry[i],
         },
       }).then(function (response) {
         console.log(response);
+        console.log("isab",isab);
+        _this.requireimage();
       });
     },
   },
