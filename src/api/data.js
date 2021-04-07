@@ -11,7 +11,7 @@ export function getDataByName(params) {
 
 export function getDataByTeam(params) {
   return request({
-    url: '/data/getdata',
+    url: '/data/getDataTeam',
     method: 'get',
     params: params,
     baseURL: 'http://192.168.19.239:8085'
