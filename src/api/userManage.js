@@ -43,3 +43,21 @@ export function batchRemoveUser(params) {
     baseURL: 'http://192.168.19.239:8083'
   })
 }
+/* 获取团队管理的权限 */
+export function getTeamPerm(params) {
+  return request({
+    url: '/userManage/getTeamPerm',
+    method: 'get',
+    params: params,
+    baseURL: 'http://192.168.19.239:8083'
+  })
+}
+// 修改用户密码
+export function updatePassword(params) {
+  return request({
+    url: '/userManage/updatePassword',
+    method: 'put',
+    params: params,
+    baseURL: 'http://192.168.19.239:8083'
+  })
+}

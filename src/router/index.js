@@ -51,7 +51,15 @@ export const constantRoutes = [
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
       meta: { title: '主页', icon: 'dashboard' }
-    }]
+    },
+    {
+      path: '/dataSet/userLabel',
+      component: () => import('@/views/dataSet/userLabel'),
+      name: 'userLabel',
+      meta: { title: 'userLabel', icon: 'nested', resources: 'userLabel' },
+      hidden: true
+    }
+  ]
   }
 ]
 export const asyncRoutes = [
@@ -63,21 +71,23 @@ export const asyncRoutes = [
     meta: {
       title: '团队管理',
       icon: 'form',
-      roles: ['admin', 'user']
+      // roles: ['admin', 'user'],
+      resources: 'teamManagement'
     },
     children: [
       {
         path: '/teamManagement/annotateTeamManagement',
         component: () => import('@/views/teamManagement/annotateTeamManagement/index'),
         name: 'annotateTeamManagement',
-        meta: { title: '标注团队管理', icon: 'excel', roles: ['admin', 'user'] }
-      },
-      {
-        path: '/teamManagement/annotateMemberManagement',
-        component: () => import('@/views/teamManagement/annotateMemberManagement/index'),
-        name: 'annotateMemberManagement',
-        meta: { title: '标注团队管理', icon: 'excel', roles: ['admin', 'user'] }
+        meta: { title: '标注团队管理', icon: 'nested', resources: 'annotateTeamManagement' }
       }
+      // },
+      // {
+      //   path: '/teamManagement/annotateMemberManagement',
+      //   component: () => import('@/views/teamManagement/annotateMemberManagement/index'),
+      //   name: 'annotateMemberManagement',
+      //   meta: { title: '标注团队管理', icon: 'excel', resources: 'annotateMemberManagement' }
+      // }
     ]
   },
   {
@@ -107,100 +117,79 @@ export const asyncRoutes = [
     meta: {
       title: '数据集标注',
       icon: 'form',
-      roles: ['admin', 'user']
+      resources: 'label'
     },
     children: [
       {
-        path: '/label/d2',
-        component: () => import('@/views/label/d2/index'),
-        name: 'd2',
-        meta: { title: '图片标注', icon: 'excel', roles: ['admin', 'user'] }
+        path: '/label/d2imageview',
+        component: () => import('@/views/label/d2/imageview'),
+        name: 'd2view',
+        meta: { title: '2D拉框标注', icon: 'excel', resources: 'd2' },
       },
       {
-        path: '/label/d3',
-        component: () => import ('@/views/label/d3/index'),
-        name: 'd3',
-        meta: { title: '3D目标标注', icon: 'excel', roles: ['admin', 'user'] }
+        path: '/label/polygonimageview',
+        component: () => import ('@/views/label/polygon/imageview'),
+        name: 'polygon',
+        meta: { title: '像素级标注', icon: 'excel', resources: 'polygon' }
       },
       {
         path: '/label/voice',
         component: () => import ('@/views/label/voice/index'),
         name: 'voice',
-        meta: { title: '语音标注', icon: 'excel', roles: ['admin', 'user'] }
+        meta: { title: '语音标注', icon: 'excel', resources: 'voice' }
       },
       {
-        path: '/label/pointcloud',
-        component: () => import ('@/views/label/pointcloud/index'),
-        name: 'pointcloud',
-        meta: { title: '点云数据标注', icon: 'excel', roles: ['admin', 'user'] }
+        path: '/label/d3',
+        component: () => import ('@/views/label/d3/index'),
+        name: 'd3',
+        meta: { title: '3D标注', icon: 'excel', resources: 'd3' }
       }
     ]
   },
-
-  // {
-  //   path: '/trains',
-  //   component: Layout,
-  //   name: 'trians',
-  //   redirect:'/trains/index',
-  //   meta: {
-  //     title: '训练管理',
-  //     icon: 'form'
-  //   },
-  //   children: [
-  //     {
-  //       path: '/trains/index',
-  //       component: () => import('@/views/train/index'),
-  //       name: 'training jobs',
-  //       meta: { title: '训练作业', icon: 'nested' },
-        
-  //     },
-  //     {
-  //       path: '/trains/train-visual',
-  //       component: () => import('@/views/train/visual'),
-  //       name: 'transfer learning',
-  //       meta: { title: '可视化', icon: 'nested' }
-  //     },
-  //     {
-  //       path: '/trains/train-new',
-  //       component: () => import('@/views/train/newTable'),
-  //       name: 'transfer learning',
-  //       meta: { title: '全新界面', icon: 'nested' }
-  //     },
-  //   ]
-  // },
-
   {
     path: '/newtrain',
     component: Layout,
     name: 'newtrain',
-    redirect:'/newtrain/table',
+    redirect: '/newtrain/table',
     meta: {
       title: '训练管理',
-      icon: 'form'
+      icon: 'form',
+      resources: 'newtrain'
     },
     children: [
-      // {
-      //   path: '/newtrain/index',
-      //   component: () => import('@/views/newtrain/index'),
-      //   name: 'newIndex',
-      //   meta: { title: '新的训练作业', icon: 'nested' },
-        
-      // },
       {
         path: '/newtrain/table',
         component: () => import('@/views/newtrain/table'),
         name: 'newTable',
-        meta: { title: '训练管理', icon: 'nested' }
-      },
-    //   {
-    //     path: '/newtrain/createTask',
-    //     component: () => import('@/views/newtrain/createTask'),
-    //     name: 'createTask',
-    //     meta: { title: '', icon: 'nested' }
-    //   },
+        meta: { title: '训练管理', icon: 'nested', resources: 'newTable' }
+      }
     ]
   },
-
+  {
+    path: '/dataSet',
+    component: Layout,
+    name: 'dataSet',
+    redirect: '/dataSet/rectangle',
+    meta: {
+      title: '数据管理',
+      icon: 'form',
+      resources: 'dataSet',
+    },
+    children: [
+      {
+        path: '/data',
+        component: () => import('@/views/dataSet/index'),
+        name: 'data manage',
+        meta: { title: '数据管理', icon: 'nested', resources: 'data' }
+      },
+      {
+        path: '/userLabel',
+        component: () => import('@/views/dataSet/userLabel'),
+        name: 'userLabel',
+        meta: { title: 'userLabel', icon: 'nested', resources: 'userLabel' }
+      }
+    ]
+  },
   {
     path: '/models',
     component: Layout,
@@ -208,20 +197,20 @@ export const asyncRoutes = [
     meta: {
       title: '模型管理',
       icon: 'form',
-      roles: ['admin', 'user']
+      resources: 'models'
     },
     children: [
       {
         path: '/model',
         component: () => import('@/views/model/index'),
         name: 'model admin',
-        meta: { title: '模型', icon: 'nested', roles: ['admin', 'user'] }
+        meta: { title: '模型', icon: 'nested', resources: 'model' }
       },
       {
         path: '/model-eval',
         component: () => import('@/views/model/index'),
         name: 'model eval',
-        meta: { title: '模型评估', icon: 'excel', roles: ['admin', 'user'] }
+        meta: { title: '模型评估', icon: 'excel', resources: 'model-eval' }
       }
     ]
   },
@@ -233,36 +222,35 @@ export const asyncRoutes = [
     meta: {
       title: '系统设置',
       icon: 'form',
-      roles: ['admin']
+      resources: 'system_management'
     },
     children: [
       {
         path: '/systemManagement/authorityManagement',
         component: () => import('@/views/systemManagement/authorityManagement/index'),
         name: 'authorityManagement',
-        meta: { title: '权限管理', icon: 'excel', roles: ['admin'] }
+        meta: { title: '权限管理', icon: 'excel', resources: 'authorityManagement' }
       },
       {
         path: '/systemManagement/userManagement',
         component: () => import('@/views/systemManagement/userManagement/index'),
         name: 'userManagement',
-        meta: { title: '用户管理', icon: 'excel', roles: ['admin'] }
+        meta: { title: '用户管理', icon: 'excel', resources: 'userManagement' }
       },
       {
-        path: '/systemManagement/systemLogManagement',
-        component: () => import('@/views/systemManagement/systemLogManagement/index'),
-        name: 'systemLogManagement',
-        meta: { title: '系统日志管理', icon: 'excel', roles: ['admin'] }
+        path: '/systemManagement/log',
+        component: () => import('@/views/systemManagement/log/index'),
+        name: 'log',
+        meta: { title: '系统日志管理', icon: 'excel', resources: 'log' }
       },
       {
-        path: '/systemManagement/userOperatingSystemManagement',
-        component: () => import('@/views/systemManagement/userOperatingSystemManagement/index'),
-        name: 'userOperatingSystemManagement',
-        meta: { title: '用户操作日志', icon: 'excel', roles: ['admin'] }
+        path: '/systemManagement/loginLog',
+        component: () => import('@/views/systemManagement/loginLog/index'),
+        name: 'longinLog',
+        meta: { title: '用户登录日志', icon: 'excel', resources: 'loginLog' }
       }
     ]
   },
-  // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
 

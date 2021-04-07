@@ -3,23 +3,19 @@
     <div class="dashboard-container">
       <el-button @click="nextimage">下一张</el-button>
       <el-button @click="previousimage">上一张</el-button>
-      <!-- <el-button @click="requireimage">请求图片</el-button> -->
-      <!-- <el-button @click="savelabel(nownum)">保存标注信息</el-button> -->
-      <!-- <div class="dashboard-text">name: {{ name }}</div> -->
       <imageselect
         :fatherimagesrc="this.imageArry[nownum]"
         :imageindex="this.nownum"
         :lastlabelArry="this.lastinfoArry[nownum]"
         @saveimageinfo="saveimageinfo"
       ></imageselect>
-      <!-- <labelinfo></labelinfo> -->
     </div>
   </el-row>
 </template>
 
 <script>
 import { mapGetters } from "vuex";
-import imageselect from "@/components/imageselect.vue";
+import imageselect from "@/components/2dmark.vue";
 import request from "@/utils/request";
 //import axios from 'node_modules/axios';
 // import labelinfo from '@/components/labelinfo.vue'
@@ -51,38 +47,32 @@ export default {
     //下一张图片
     nextimage: function () {
       if (this.nownum < this.imageArry.length - 1) this.nownum++;
-      console.log(this.nownum);
-      console.log(this.infoArry, this.infoArry.length, "sadasdas");
+      console.log("nextimage",this.nownum);
+      console.log("nextimage infoArry",this.infoArry, this.infoArry.length);
     },
     //上一张图片
     previousimage: function () {
       if (this.nownum > 0) this.nownum--;
-      console.log(this.nownum);
+      console.log("previousimage",this.nownum);
     },
     //保存图片标注信息
     saveimageinfo: function (markinfo, imageeindex) {
-      //this.infoArry.push(markinfo)
-      // this.infoArry[imageeindex].push(markinfo)
-      // this.infoArry[imageeindex][1]=imageesrc
-      // this.infoArry[imageeindex][2]=imageeindex
       this.infoArry[imageeindex] = markinfo;
       console.log("save success", markinfo, imageeindex);
-      console.log("this", this.infoArry);
+      console.log("thisinfoArry", this.infoArry);
       this.savelabel(this.nownum)
     },
     //get请求
     requireimage: function () {
       let _this = this;
       return request({
-        url: "http://192.168.19.237:8082/label/?user_id=10",
+        url: "http://192.168.19.237:8082/label?dataset_uuid=0022f6831fbe40b0bd4aae781f202517&user_id=10",
         method: "get",
         //params: query
       }).then(function (response) {
-        console.log(response);
+        console.log("mkxlvmxclkvjkcov",response);
         for (let i = 0; i < response.data.items.length; i++) {
           console.log(response.data.items[i]);
-          //console.log(JSON.parse(response.data.items[i].label_data))
-          //_this.lastinfoArry =
           let tempa = JSON.parse(response.data.items[i].label_data)
           let len = eval(tempa).length;
           console.log("len", len);
@@ -104,19 +94,20 @@ export default {
           _this.imageArry.push(response.data.items[i].file_path);
         }
 
-        console.log(_this.imageArry);
+        console.log("imagearry",_this.imageArry);
         //console.log("transforjson",JSON.stringify(_this.infoArry[0][0]))
       });
     },
-    //post请求
+    //put
     savelabel(i) {
       console.log(JSON.stringify(this.infoArry[i][0]));
       return request({
         url: "http://192.168.19.237:8082/label",
-        method: "post",
+        method: "put",
         data: {
           label_data: JSON.stringify(this.infoArry[i][0]),
           //"last_update_by": "liaoziheng",
+          //file_type: "rectangle",
           is_label: 1,
           uuid: this.uuidArry[i],
         },
@@ -124,11 +115,6 @@ export default {
         console.log(response);
       });
     },
-    // savelabel(){
-    //   axios.post("http://192.168.19.237:8082/label",{
-    //     label_data:"aaaaabbbbb"
-    //   })
-    // }
   },
   mounted: function () {
     //console.log(this.infoArry[0])
