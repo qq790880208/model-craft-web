@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
 
-    <form action="http://localhost:8082/upload" method="post" enctype="multipart/form-data">
+    <!-- <form action="http://localhost:8082/upload" method="post" enctype="multipart/form-data">
       <input type="file" name="multipartFile">
       <input type="file" name="multipartFile">
       <input type="submit" value="上传">
-    </form>
-    <el-button plain size="mini" type="primary" @click="onSubmit">导入</el-button>
+    </form> -->
+    <el-button plain size="mini" type="primary" @click="onSubmit">从训练作业导入</el-button>
     <el-table
       v-loading="listLoading"
       :data="list"
@@ -60,9 +60,9 @@
 
               <!-- 子表格操作列 -->
               <el-table-column label="操作" align="center" width="150">
-                <template slot-scope="scope">
+                <template slot-scope="scope0">
                   <el-button size="mini" type="primary">部署</el-button>
-                  <el-button size="mini" type="danger" @click="handleDelete(scope.row.muuid)">删除</el-button>
+                  <el-button size="mini" type="danger" @click="handleSubDelete(scope0, scope.$index)">删除</el-button>
                 </template>
               </el-table-column>
             </el-table>
@@ -103,7 +103,7 @@
       <el-table-column label="操作" align="center"  width="200">
         <template slot-scope="scope">
           <el-button size="mini" type="gray">创建新版本</el-button>
-          <el-button size="mini" type="danger" @click="handleDelete(scope.row.uuid)">删除</el-button>
+          <el-button size="mini" type="danger" @click="handleDelete(scope)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -111,7 +111,7 @@
 </template>
 
 <script>
-import { getList, getListByName } from '@/api/model'
+import { getList, getListByName, delModelById } from '@/api/model'
 
 export default {
   filters: {
@@ -161,7 +161,7 @@ export default {
   methods: {
     fetchData() {
       this.listLoading = true
-      getList().then(response => {
+      getList(10).then(response => {
         this.list = response.data.items
         this.listLoading = false
       })
@@ -169,11 +169,40 @@ export default {
     onSubmit() {
       this.$message('submit!')
     },
+    handleSubDelete(scope0, listIndex) {
+      this.$confirm('是否删除该模型', '请确认', {
+       confirmButtonText: '确定',
+       cancelButtonText: '取消',
+       type: 'warning'
+     }).then(() => {
+       delModelById(scope0.row.uuid).then(response => {
+        console.log(listIndex)
+        this.sublist[listIndex].splice(scope0.$index, 1)
+        this.$message('已删除')
+      })
+     }).catch(() => {
+     })
+    },handleDelete(scope) {
+      this.$confirm('是否删除该模型', '请确认', {
+       confirmButtonText: '确定',
+       cancelButtonText: '取消',
+       type: 'warning'
+     }).then(() => {
+       // delModelById(scope.row.uuid).then(response => {
+      //   //this.$message('已删除')
+      // })
+      this.$message('已删除' + scope.$index + '')
+      console.log(listIndex)
+      this.sublist[listIndex].splice(scope.$index, 1)
+
+     }).catch(() => {
+     })
+    },
     handleExpendRow(row, expandedRows) {
       let index = this.list.findIndex(data => data.uuid == row.uuid).toString()
       if (!this.sublist[index]) {
         this.sublistLoading = true
-        getListByName(row.name).then(response => {
+        getListByName(10, row.name).then(response => {
           this.sublist[index] = response.data.items
           this.sublistLoading = false
         })
