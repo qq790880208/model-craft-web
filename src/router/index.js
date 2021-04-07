@@ -91,25 +91,6 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/dataManagement',
-    component: Layout,
-    redirect: '/dataManagement/rectangle',
-    name: 'dataManagement',
-    meta: {
-      title: '数据管理',
-      icon: 'form',
-      roles: ['admin', 'user']
-    },
-    children: [
-      {
-        path: '/dataManagement/dataManagement',
-        component: () => import('@/views/dataManagement/dataManagement/index'),
-        name: 'dataManagement',
-        meta: { title: '数据管理', icon: 'excel', roles: ['admin', 'user'] }
-      }
-    ]
-  },
-  {
     path: '/label',
     component: Layout,
     redirect: '/label/rectangle',
@@ -187,7 +168,13 @@ export const asyncRoutes = [
         component: () => import('@/views/dataSet/userLabel'),
         name: 'userLabel',
         meta: { title: 'userLabel', icon: 'nested', resources: 'userLabel' }
-      }
+      },
+      {
+        path: '/oss',
+        component: () => import('@/views/dataSet/oss'),
+        name: 'oss manage',
+        meta: { title: '对象存储', icon: 'nested', resources: 'oss' }
+      },
     ]
   },
   {
