@@ -37,6 +37,7 @@ import { mapGetters } from "vuex";
 import imageselect from "@/components/2dmark.vue";
 import request from "@/utils/request";
 import miniimage from "@/components/miniimage.vue"
+import store from "@/store"
 //import axios from 'node_modules/axios';
 // import labelinfo from '@/components/labelinfo.vue'
 export default {
@@ -126,10 +127,11 @@ export default {
     },
     //get请求数据
     requireimage: function () {
+      console.log("uuid",store.getters.uuid)
       let _this = this;
       return request({
         url:
-          "http://192.168.19.237:8082/label?dataset_uuid=0022f6831fbe40b0bd4aae781f202517&user_id=10",
+          "http://192.168.19.237:8082/label?dataset_uuid="+store.getters.uuid+"&user_id="+store.getters.userid,
         method: "get",
         //params: query
       }).then(function (response) {
@@ -181,7 +183,7 @@ export default {
       this.marktype=[]
       return request({
         url:
-          "http://192.168.19.237:8082/dataset/tag?dataset_uuid=0022f6831fbe40b0bd4aae781f202517",
+          "http://192.168.19.237:8082/dataset/tag?dataset_uuid="+store.getters.uuid,
         method: "get",
         //params: query
       }).then(function (response) {
@@ -233,7 +235,7 @@ export default {
       _this.isloading=true;
       return request({
         url:
-          "http://192.168.19.237:8082/dataset/auto?dataset_id=0022f6831fbe40b0bd4aae781f202517",
+          "http://192.168.19.237:8082/dataset/auto?dataset_id="+store.getters.uuid,
         method: "post",
         timeout:15000,
         //params: query
