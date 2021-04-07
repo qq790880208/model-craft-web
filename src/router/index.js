@@ -161,7 +161,13 @@ export const asyncRoutes = [
         component: () => import('@/views/dataSet/userLabel'),
         name: 'userLabel',
         meta: { title: 'userLabel', icon: 'nested', resources: 'userLabel' }
-      }
+      },
+      {
+        path: '/oss',
+        component: () => import('@/views/dataSet/oss'),
+        name: 'oss manage',
+        meta: { title: '对象存储', icon: 'nested', resources: 'oss' }
+      },
     ]
   },
   {

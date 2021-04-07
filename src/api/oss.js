@@ -4,7 +4,7 @@ export function listBucket() {
     return request({
         url: '/minio-service/listBucketname',
         method: 'get',
-        baseURL: 'http://192.168.56.1:8080'
+        baseURL: 'http://localhost:8089'
     })
 }
 
@@ -13,7 +13,7 @@ export function listObject(params) {
         url: '/minio-service/listObjectByPrefix',
         method: 'get',
         params: params,
-        baseURL: 'http://192.168.56.1:8080'
+        baseURL: 'http://localhost:8089'
     })
 }
 
@@ -22,7 +22,7 @@ export function listObjectByPrefix(params) {
         url: '/minio-service/listObjectByPrefix',
         method: 'get',
         params: params,
-        baseURL: 'http://192.168.56.1:8080'
+        baseURL: 'http://localhost:8089'
     })
 }
 
@@ -31,7 +31,7 @@ export function createBucket(params) {
         url: '/minio-service/createBucket',
         method: 'get',
         params: params,
-        baseURL: 'http://192.168.56.1:8080'
+        baseURL: 'http://localhost:8089'
     })
 }
 
@@ -40,7 +40,7 @@ export function removeBucket(params) {
         url: '/minio-service/removeBucket',
         method: 'get',
         params: params,
-        baseURL: 'http://192.168.56.1:8080'
+        baseURL: 'http://localhost:8089'
     })
 }
 
@@ -49,6 +49,6 @@ export function removeFile(params) {
         url: '/minio-service/removeFile',
         method: 'get',
         params: params,
-        baseURL: 'http://192.168.56.1:8080'
+        baseURL: 'http://localhost:8089'
     })
 }

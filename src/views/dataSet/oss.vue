@@ -14,7 +14,7 @@
             <el-button plain round @click="createbucketmsg">创建桶</el-button>
             <el-button plain round @click="removebucketmsg">删除桶</el-button>
             <el-button plain round @click="uploadobjectmsg">上传文件</el-button>
-            <el-button plain round @click="">删除文件</el-button>
+            <el-button plain round @click="removeobjectmsg">删除文件</el-button>
         </el-col>
     </el-row>
     <el-divider></el-divider>
@@ -36,8 +36,7 @@
                 <el-button type="primary" @click="choosefolder = true">选择上传路径</el-button>
                 <el-button>{{uploadBucketName}} : {{uploadObjectFolder}}</el-button>
             </el-button-group>
-            </el-col>
-        <el-dialog width="30%" title="选择路径" :visible.sync="choosefolder" append-to-body>
+        <el-dialog width="30%" title="选择路径" :visible.sync="choosefolder" append-to-body :show-close="false">
             <el-form>
                 <el-form-item label="请选择桶:">
                     <el-radio-group v-model="uplbucket" @change="chooseuplbucket">
@@ -72,11 +71,45 @@
             <el-button type="primary" @click="">确 定</el-button>
         </div>
     </el-dialog>
+
+    <!--删除文件dialog-->
+    <el-dialog title="删除文件" :visible.sync="removefileVisible">
+        <el-button-group>
+                <el-button type="primary" @click="removefolder = true">选择删除文件</el-button>
+                <el-button>{{removeBucketName}} : {{removeObjectFolder}} : {{removeObjectName}}</el-button>
+        </el-button-group>
+        <el-dialog width="30%" title="选择路径" :visible.sync="removefolder" append-to-body :show-close="false">
+            <el-form>
+                <el-form-item label="请选择桶:">
+                    <el-radio-group v-model="delbucket" @change="choosedelbucket">
+                        <el-radio-button :label="item.name" :key="item.name" v-for="item in list">{{item.name}}</el-radio-button>
+                    </el-radio-group>
+                </el-form-item> 
+            </el-form>
+        <el-divider></el-divider>
+        <el-row>
+            <el-button icon="el-icon-upload2" circle @click="returnOlddelCurrentRow"></el-button>
+            <el-divider direction="vertical"></el-divider>
+            <el-tag type="info" effect="light">当前路径：{{delbucket}} ：{{objectdelcurrentRow}}</el-tag>
+        </el-row> 
+        <el-table :data="objectdelData" highlight-current-row @row-click="dellistbyPrefix">
+            <el-table-column prop="name" label="请选择文件  "></el-table-column>
+        </el-table>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="returndelNull">取 消</el-button>
+            <el-button type="primary" @click="returndelFolder">确定</el-button>
+        </div>
+        </el-dialog>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="removefileVisible = false">取 消</el-button>
+            <el-button type="primary" @click="removeObject">确 定</el-button>
+        </div>
+    </el-dialog>
 </div>
 </template>
 
 <script>
-import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile } from '@/api/dataManagement'
+import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile } from '@/api/oss'
 export default {
     data(){
         return{
@@ -100,6 +133,20 @@ export default {
             uploadBucketName:'',//上传目标桶
             uploadObjectFolder:'',//上传目标路径
             uploadobjectName:'',//上传文件名
+            removefileVisible:false,//删除文件dialog框信号
+            removefolder:false,//删除文件路径dialog框信号
+            delbucket:'',//删除文件bucket
+            objectdelData:[],//删除文件列表
+            objectdelcurrentRow:'',//页面显示的删除路径
+            objectdelPrefix:'',//后端调用的删除路径
+            oldObjectdelPrefix:'',//删除文件后端调用的上级目录
+            olddelCurrentRow:'',//删除的上一级目录
+            delsignal:false,//是否选择文件
+            selectremBucketName:'',//选择删除文件的桶名
+            selectremObjectFolder:'',//选择删除文件的总路径（前缀+名称）
+            removeBucketName:'',//传给后端的删除桶名
+            removeObjectFolder:'',//传给后端的删除前缀
+            removeObjectName:'',//传给后端的文件名
         }
     },
 
@@ -119,6 +166,7 @@ export default {
                 type: 'success'
             })
         },
+
         fai(){//失败提醒
             this.$message.error('发生错误');
         },
@@ -288,7 +336,6 @@ export default {
             }
             this.selectBucketName=this.uplbucket;
             this.selectObjectFolder=row.name;
-
         },
 
         //更新objectuplData的值
@@ -325,8 +372,137 @@ export default {
         returnNull(){
             this.uploadBucketName=''
             this.uploadObjectFolder=''
+            this.uplbucket=''
+            this.objectuplcurrentRow=''
+            this.objectuplData=[]
             this.choosefolder = false
         },
+        
+        //删除文件点击事件
+        removeobjectmsg(){
+            this.removefileVisible = true
+        },
+
+        //选择删除文件的bucket
+        choosedelbucket(val){
+            this.objectdelData=[]
+            this.objectdelcurrentRow=''
+            const para = {bucketName : val}
+            console.log(para);
+            this.objectdellist(para);
+        },
+
+        //删除文件的列表
+        objectdellist(para){
+            listObject(para).then(response=>{
+                if(response){
+                    console.log(response);
+                    this.objectdelData = response.data
+                }else{
+                }
+            }).catch()
+        },
+
+        dellistbyPrefix(row,event,column){
+            console.log(row.name);
+            const para={}
+            if("/"==((row.name.split("").reverse().join("")).substring(0,1)).split("").reverse().join("")){
+                console.log("isdir");
+                this.delsignal=false //未选择文件
+                this.objectdelcurrentRow = row.name;
+                console.log(row.name.substring(0,row.name.length-1));
+                this.objectdelPrefix = row.name.substring(0,row.name.length-1)
+                para.bucketName = this.delbucket
+                para.objectPrefix = this.objectdelPrefix
+                console.log(para);
+                this.listdelObject(para)
+                // this.oldCurrentRow = this.objectPrefix.split("").reverse().indexOf("/") 逆置然后求出第一个/在第几个位置 
+                this.oldObjectdelPrefix = this.objectdelPrefix.substring(0,this.objectdelPrefix.length-this.objectdelPrefix.split("").reverse().indexOf("/")-1)
+                this.olddelCurrentRow = this.objectdelPrefix.substring(0,this.objectdelPrefix.length-this.objectdelPrefix.split("").reverse().indexOf("/"))
+            }else{
+                console.log("isnotdir");
+                this.delsignal=true //选到了文件
+                this.selectremBucketName=this.delbucket;
+                this.selectremObjectFolder=row.name;
+            }
+        },
+
+        //更新objectdelData的值
+        listdelObject(para){
+            listObjectByPrefix(para).then(response=>{
+                this.objectdelData = response.data
+            }).catch(error=>{console.log(error);})
+        },
+
+        //上传的返回上一级事件
+        returnOlddelCurrentRow(){
+            console.log(this.delbucket);
+            console.log(this.olddelCurrentRow);
+            console.log(this.oldObjectdelPrefix);
+            const para={}
+            para.bucketName = this.delbucket;
+            para.objectPrefix = this.oldObjectdelPrefix;
+            console.log(para);
+            this.listdelObject(para)
+            this.objectdelcurrentRow = this.olddelCurrentRow
+            this.objectdelPrefix = this.oldObjectdelPrefix
+            this.olddelCurrentRow = this.objectdelPrefix.substring(0,this.objectdelPrefix.length-this.objectdelPrefix.split("").reverse().indexOf("/"))
+            this.oldObjectdelPrefix = this.objectdelPrefix.substring(0,this.objectdelPrefix.length-this.objectdelPrefix.split("").reverse().indexOf("/")-1)
+        },
+
+        //返回待删除文件
+        returndelFolder(){
+            if(this.delsignal==true){
+                this.removeBucketName=this.selectremBucketName
+                this.removeObjectFolder=this.objectdelPrefix
+                this.removeObjectName=this.selectremObjectFolder.substring(this.objectdelcurrentRow.length,this.selectremObjectFolder.length)
+                this.delsignal=false
+                this.removefolder=false
+            }else{
+                this.choosefile()
+            }
+        },
+
+        //提示选择文件进行删除
+        choosefile(){
+            this.$message.error('请选择文件');
+        },
+
+        //关闭并销毁数据
+        returndelNull(){
+            this.removeBucketName=''
+            this.removeObjectFolder=''
+            this.removeObjectName=''
+            this.delbucket=''
+            this.objectdelcurrentRow=''
+            this.objectdelData=[]
+            this.delsignal=false
+            this.removefolder=false
+        },
+
+        //删除文件
+        removeObject(){
+            const para={}
+            para.bucketName=this.removeBucketName
+            para.folderName=this.removeObjectFolder
+            para.objectName=this.removeObjectName
+            this.removeobj(para)
+            this.removeBucketName=''
+            this.removeObjectFolder=''
+            this.removeObjectName=''
+            this.fresh()
+        },
+
+        //后端删除一个文件
+        removeobj(para){
+            removeFile(para).then(response=>{
+                if(20000 == response.code){
+                    this.suc()
+                }else{
+                    this.fai()
+                }
+            })
+        }
     }
 
 }
