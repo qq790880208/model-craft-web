@@ -1,27 +1,33 @@
 import request from '@/utils/request'
 
-export function login(data) {
+export function login(params) {
   return request({
-    url: '/vue-admin-template/user/login',
+    url: '/user/login',
     method: 'post',
-    data,
-    baseURL: 'http://localhost:9528/dev-api'
+    params: params,
+    baseURL: 'http://192.168.19.239:8083'
+    //data,
+    //baseURL: 'http://localhost:9528/dev-api'
   })
 }
 
 export function getInfo(token) {
   return request({
-    url: '/vue-admin-template/user/info',
+    //url: '/vue-admin-template/user/info',
+    url: '/user/info',
     method: 'get',
     params: { token },
-    baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.239:8083'
+    //baseURL: 'http://localhost:9528/dev-api'
   })
 }
 
 export function logout() {
   return request({
-    url: '/vue-admin-template/user/logout',
+    url: '/user/logout',
     method: 'post',
-    baseURL: 'http://localhost:9528/dev-api'
+    //params: { token },
+    baseURL: 'http://192.168.19.239:8083'
+    //baseURL: 'http://localhost:9528/dev-api'
   })
 }
