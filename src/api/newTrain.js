@@ -22,7 +22,8 @@ export function deleteTask(query){
     url:'/newtrain/delete',
     method:'delete',
     params: query,
-    baseURL: 'http://localhost:9528/dev-api'
+    //baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.237:8084'
   })
 }
 

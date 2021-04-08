@@ -90,37 +90,6 @@ export const constantRoutes = [
     ]
   },
 
-  // {
-  //   path: '/trains',
-  //   component: Layout,
-  //   name: 'trians',
-  //   redirect:'/trains/index',
-  //   meta: {
-  //     title: '训练管理',
-  //     icon: 'form'
-  //   },
-  //   children: [
-  //     {
-  //       path: '/trains/index',
-  //       component: () => import('@/views/train/index'),
-  //       name: 'training jobs',
-  //       meta: { title: '训练作业', icon: 'nested' },
-        
-  //     },
-  //     {
-  //       path: '/trains/train-visual',
-  //       component: () => import('@/views/train/visual'),
-  //       name: 'transfer learning',
-  //       meta: { title: '可视化', icon: 'nested' }
-  //     },
-  //     {
-  //       path: '/trains/train-new',
-  //       component: () => import('@/views/train/newTable'),
-  //       name: 'transfer learning',
-  //       meta: { title: '全新界面', icon: 'nested' }
-  //     },
-  //   ]
-  // },
 
   {
     path: '/newtrain',
@@ -132,25 +101,12 @@ export const constantRoutes = [
       icon: 'form'
     },
     children: [
-      // {
-      //   path: '/newtrain/index',
-      //   component: () => import('@/views/newtrain/index'),
-      //   name: 'newIndex',
-      //   meta: { title: '新的训练作业', icon: 'nested' },
-        
-      // },
       {
         path: '/newtrain/table',
         component: () => import('@/views/newtrain/table'),
         name: 'newTable',
         meta: { title: '训练管理', icon: 'nested' }
       },
-    //   {
-    //     path: '/newtrain/createTask',
-    //     component: () => import('@/views/newtrain/createTask'),
-    //     name: 'createTask',
-    //     meta: { title: '', icon: 'nested' }
-    //   },
     ]
   },
 
