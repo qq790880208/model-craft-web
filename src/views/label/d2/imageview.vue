@@ -127,7 +127,7 @@ export default {
     },
     //get请求数据
     requireimage: function () {
-      console.log("uuid",store.getters.uuid)
+      console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
       let _this = this;
       return request({
         url:

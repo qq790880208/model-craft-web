@@ -126,7 +126,7 @@ export default {
     requireimage: function () {
       let _this = this;
       return request({
-        url: "http://192.168.19.237:8082/label?dataset_uuid=76cc3eb6689538d7feb9c571d7c355be&user_id=10",
+        url: "http://192.168.19.237:8082/label?dataset_uuid=76cc3eb6689538d7feb9c571d7c355be&user_id=1",
         method: "get",
         //params: query
       }).then(function (response) {
