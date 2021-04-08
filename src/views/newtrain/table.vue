@@ -65,7 +65,7 @@
       </el-table-column>
       <el-table-column  label="创建者" width="120">
         <template slot-scope="scope">
-          <b>{{ scope.row.user_id }}</b>
+          <b>{{ scope.row.userId }}</b>
         </template>
       </el-table-column>
       <el-table-column  label="进度" width="160">
@@ -101,7 +101,7 @@
       :page-sizes="[10, 12, 15]"
       :page-size="queryInfo.pagesize"
       layout="total, sizes, prev, pager, next, jumper"
-      :total="queryInfo.total">
+      :total="totalData">
     </el-pagination>
     <!-- 可视化 -->
     <el-dialog :visible.sync="picVisible" title="当前训练">
@@ -124,7 +124,8 @@
           <el-input type="textarea" v-model="taskForm.description"></el-input>
         </el-form-item>
         <el-form-item label="算法来源" prop="algorithm">
-          <el-select v-model="taskForm.algorithm" placeholder="请选择" @change="currentAlgorithm = taskForm.algorithm">
+          <!-- <el-select v-model="taskForm.algorithm" placeholder="请选择" @change="currentAlgorithm = taskForm.algorithm"> -->
+          <el-select v-model="taskForm.algorithm" placeholder="请选择">
             <div style="height:200px;" class="scrollbar">
               <el-scrollbar style="height:100%;">
                <el-option label="yolov3-tensorflow" value="0"></el-option>
@@ -141,8 +142,8 @@
           <el-select v-model="taskForm.data" placeholder="请选择">
             <div style="height:150px;" class="scrollbar">
               <el-scrollbar style="height:100%;;">
-                <el-option v-for="(item, index) in initialPara.inputData" :key="index"
-                :label="item" :value="item">
+                <el-option v-for="(item, index) in initialPara.inputData.name" :key="index"
+                :label="item" :value="initialPara.inputData.uuid[index]">
                 </el-option>
               </el-scrollbar>
             </div>
@@ -188,7 +189,8 @@
 import visual from "./visual"
 import visualf from "./visual1"
 import visualt from "./visual2"
-import {startTask, stopTask, getTableData1,deleteTask,  search, searchStatus, getVisualData, submitTask, getinitialPara} from '@/api/newTrain'
+import {startTask, getDataByName,stopTask, getTableData1,deleteTask,  search, searchStatus, getVisualData, submitTask, getinitialPara} from '@/api/newTrain'
+import store from '@/store'
 export default {
     components: {visual, visualf, visualt},
     data() {
@@ -215,12 +217,14 @@ export default {
         //创建任务部分数据
         dialogFormVisible:false,//创建任务窗口
         taskForm: {//临时保存创建的任务信息
+          user_id:'',
           name: '',
           algorithm: '',
           data:'',
           outpath:'',
           description: '',
-          paras:[]
+          paras:[],
+          uuid:''
         },
         rules: {
           name: [
@@ -253,8 +257,11 @@ export default {
             ['2','5'],
         ],
         initialPara:{
-          inputData:[],
-          outpath:[]
+          inputData:{
+            name:[],
+            uuid:[]
+          },
+          outpath:[],
         },//创建任务时从后台传入的数据源和输出路径
         currentAlgorithm:0,//创建任务时目前选中的代码
 
@@ -267,35 +274,26 @@ export default {
           'para':''
         },
         taskPara:{//创建任务向后台提交的任务信息
-          'para':null
+          "algo_id": 0,
+          "args": "string",
+          "cost_time": "0",
+          "dataset_id": "string",
+          "descr": "string",
+          "name": "string",
+          "status": "0",
+          "user_id": 0,
+          "uuid": "string"
         },
         queryInfo:{//按照页数和也页面大小，定时请求后台渲染表格数据
-          query:10,
-          pagenum:1,
-          pagesize:10,
-          total:0
+          "user_id":store.getters.userid,
+          "pagenum":1,
+          "pagesize":10
         },
-        startPara:{
+        commonPara:{//四个按钮给后台传递的参数
           'index':0
         },
-        stopPara:{
-          'index':0
-        },
-        deletePara:{
-          'index':0
-        },
-        visualPara:{
-          'index':0
-        },
-        tablePara:{//读取后台表格传递的参数
-          "user_id":10
-        }, 
-        JsPara:{
-          'index':0
-        },
-        
-        timer: null//定时器
-
+        timer: null,//定时器
+        totalData:0//主界面显示数据库任务总数
       }
     },
 
@@ -315,55 +313,64 @@ export default {
       },
       createbtn:function(){//点击桌面的创建按钮
         this.dialogFormVisible = true
+        this.taskForm.uuid = this.generateUUID()
+        this.taskForm.user_id = store.getters.userid
+        this.taskForm.name = 'train-' + this.taskForm.uuid.slice(0,4)
+        this.taskForm.algorithm = ''
+        this.taskForm.data = ''
+        this.taskForm.outpath = ''
+        this.taskForm.description = ''
+        this.taskForm.paras = []
+        const params = {
+          'page': 1,
+          'pagesize': 100,
+          'id': store.getters.userid,
+          'name':''
+      }
+        getDataByName(params).then(res =>{//从后台读取数据来源的目录
+          console.log(res)
+          for(let i = 0;i < res.data.total;i++){
+            this.initialPara.inputData.name.push(res.data.items[i].name)
+            this.initialPara.inputData.uuid.push(res.data.items[i].uuid)
+          }
+        })
         getinitialPara().then(res =>{
-          this.initialPara.inputData = res.data.inputData
           this.initialPara.outpath = res.data.outpath
         })
-        this.taskForm = {
-          name: '',
-          algorithm: '',
-          data:'',
-          outpath:'',
-          description: '',
-          paras:[]
-        }
+        
       }, 
       handleStart(index, row) {//开始某行训练
-        this.startPara.para = index
-        startTask(this.startPara).then(res=>{
+        this.commonPara.index = index
+        console.log(row)
+        startTask(this.commonPara).then(res=>{
           console.log(res)
         })
         //==重新获取表格数据
       },
       handleDelete(index, row) {//删除某行
-        this.deletePara.index = index
-        deleteTask(this.deletePara).then(res=>{
+        this.commonPara.index = index
+        deleteTask(this.commonPara).then(res=>{
           console.log(res)
         })
         //==重新获取表格数据
       },
       handleStop(index, row) {//终止某行训练
-        this.stopPara.index = index
-        stopTask(this.stopPara).then(res=>{
+        this.commonPara.index = index
+        stopTask(this.commonPara).then(res=>{
           console.log(res)
         })
         //==重新获取表格数据
       },
       handleShow(index, row) {//可视化某行 
         this.picVisible = true
-        this.visualPara.index = index
-        getVisualData(this.visualPara).then(res =>{
+        this.commonPara.index = index
+        getVisualData(this.commonPara).then(res =>{
           console.log(res)
           this.drawData.first.epoch = res.data.epoch
           this.drawData.second.epoch = res.data.epoch
           this.drawData.first.trainLoss = res.data.trainLoss
           this.drawData.first.valLoss = res.data.valLoss
           this.drawData.second.valAccuaccy = res.data.valAccuaccy
-          // this.drawData.train.epoch = res.data.epoch
-          // this.drawData.val.epoch = res.data.epoch
-          // this.drawData.train.data = res.data.trainLoss
-          // this.drawData.val.data1 = res.data.valLoss
-          // this.drawData.val.data2 = res.data.valAccuaccy
         })
       },
       formatDate(nows) {//转化时间
@@ -391,7 +398,10 @@ export default {
         return ' ' + year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
       },
       fetchData(){//从后台拉取列表数据
-        getTableData1(this.tablePara).then(res => { 
+        let tmp = {
+          "user_id": store.getters.userid 
+        }
+        getTableData1(tmp).then(res => { 
           console.log(res)
           for(let i = 0;i < res.data.items.length;i++){
             let obj = {}
@@ -402,7 +412,7 @@ export default {
             obj.cost_time = res.data.items[i].cost_time
             obj.create_time = this.formatDate(res.data.items[i].create_time) 
             obj.descr = res.data.items[i].descr
-            obj.user_id = res.data.items[i].user_id
+            obj.userId = res.data.items[i].user_id
             this.tableData.push(obj)
           }
         })
@@ -422,12 +432,23 @@ export default {
         })
         this.taskForm.paras.push(this.paraNameList[this.taskForm.algorithm])
         this.taskForm.paras.push(this.paraValueList[this.taskForm.algorithm])
-        this.taskPara.para = this.taskForm
+
+        this.taskPara.algo_id = this.taskForm.algorithm
+        this.taskPara.args = JSON.stringify(this.taskForm.paras)
+        this.taskPara.dataset_id = this.taskForm.data
+        this.taskPara.descr = this.taskForm.description
+        this.taskPara.name = this.taskForm.name
+        this.taskPara.user_id = JSON.stringify(this.taskForm.user_id)
+        this.taskPara.uuid = this.taskForm.uuid
+        this.taskPara.path = this.taskForm.outpath
+
+        //console.log(this.taskPara)
         submitTask(this.taskPara).then(res => {
           console.log(res.data)
         })
         //==需要重新获取用户列表
-        
+        this.tableData = []
+        this.fetchData()
       },
       cancelbtn(taskForm){
         this.dialogFormVisible = false
@@ -452,6 +473,20 @@ export default {
               //]this.fetchData()
           }, 1000)
         }
+      },
+
+
+      generateUUID() {
+        var d = new Date().getTime();
+        if (window.performance && typeof window.performance.now === "function") {
+          d += performance.now(); //use high-precision timer if available
+        }
+        var uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+          var r = (d + Math.random() * 16) % 16 | 0;
+          d = Math.floor(d / 16);
+          return (c == 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+        });
+        return uuid;
       }
 
     },

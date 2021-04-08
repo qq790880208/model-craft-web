@@ -146,7 +146,6 @@ module.exports = [
       return {
         code: 20000,
         data: {
-          inputData:['voc', 'coco'],
           outpath:['\path1', '\path2']
         }
       }
