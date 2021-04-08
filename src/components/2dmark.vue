@@ -1,23 +1,31 @@
 <template>
-  <div id="test" style="user-select: none">
-    <el-button @click="gai" v-show="isTrue2">拖动图片</el-button>
-    <el-button @click="gai" v-show="!isTrue2">添加标注</el-button>
+  <div id="test" style="user-select: none;">
+    <div>
+    <el-button @click="gai()" >{{buttontext}}</el-button>
+    <!-- <el-button @click="gai" v-show="!isTrue2">正在添加标注</el-button> -->
     <el-button @click="fangda">放大</el-button>
     <el-button @click="suoxiao">缩小</el-button>
     <el-button @click="huanyuan">还原图片大小</el-button>
     <el-button @click="saveinfo">保存 </el-button>
     <el-button @click="updatelastdata">查看上次标注数据</el-button>
+    </div>
 
 
-
-    <div class="content" id:contentfather>
+    <div class="content" :style="{    
+      width: this.imagewidth+'px',
+      height: this.imageheight+'px',
+      float:'left',
+      marginLeft :0+'px',    
+      }"
+      id:contentfather
+      >
       <div ref="canvesdiv"
         :style="{
           transform: 'scale(' + num + ')',
           position: 'relative',
           width: '100%',
           height: '100%',
-
+          //float:left
         }"
         @mousedown.stop="moveMouse"
         @click="getOffect"
@@ -40,7 +48,9 @@
             position: 'absolute',
             left: item.left + 'px',
             top: item.top + 'px',
+            //background: item.mymarkcolor,
             background: 'rgba(43,100,206,0.5)',
+            //border: '5px solid #666',
             border: 'none',
           }"
         >
@@ -75,11 +85,24 @@
         />
       </div>
     </div>
-    <div id="labelfather">
-      <div v-for="(items, index) in boxArry" :key="index">
+    <div id="labelfather" :style="{
+        //width:800+'px',
+        //height:800+'px',
+        border: '1px solid #666',
+        float:'left',
+        marginLeft:20+'px'
+        }
+      " >
+      <div v-for="(items, index) in boxArry" :key="index" :style="{
+        //float:left,
+        //marginLeft:20+'px',
+        //margin-top:20px,
+        }
+      " >
         <!-- <el-row> -->
         <labelinfo
           :inputname="labelArry[index].info"
+          :typelabel="markinfoArry"
           @deletelabel="deletelabel(index)"
           @changeinfo="changeinfo($event, index)"
           style="text-align: center"
@@ -99,10 +122,53 @@ export default {
   props: {
     fatherimagesrc: String,
     imageindex: Number,
+    premarktype: {
+      type: Array,
+      default: () => [],
+    },
     lastlabelArry: {
       type: Array,
       default: () => [],
     },
+  },
+  // destroyed(){
+  //   console.log("2dmarkddddddddddddddddddddddddddddddddddddddddddddddddddddd")
+  // },
+  mounted: function () {
+    //加载时获取图片分辨率并设置div大小为图片的大小（有缩放）
+      let image = new Image();
+      image.src = this.imagesrc;
+      // if(image.width===0&&image.height===0){
+      //   console("reread")
+      // image.src = null;
+      // image.src = this.imagesrc;
+      // }
+      //保证图片加载完成之后读取数据
+      image.onload=() =>{
+      console.log("image onload ")
+
+      if(image.width<600&&image.height<600){
+        this.imagewidth=image.width*1.5
+        this.imageheight=image.height*1.5
+        this.scalewidth = 1.5
+        this.scaleheight = 1.5
+      }
+      else{
+        this.imagewidth = image.width;
+        this.imageheight = image.height;
+        this.scalewidth = 1
+        this.scaleheight = 1
+      }
+
+      console.log(this.imagewidth);
+      console.log(this.imageheight);
+      console.log(this.scalewidth);
+      console.log(this.scaleheight);
+      this.boxArry = [],
+      this.labelArry = [],
+      this.num = 1
+      this.updatelastdata()
+      }
   },
   components: {
     labelinfo,
@@ -115,6 +181,7 @@ export default {
   watch: {
     //监听图片变化
     imagesrc() {
+      //加载时获取图片分辨率并设置div大小为图片的大小（有缩放）
       let image = new Image();
       image.src = this.imagesrc;
       // if(image.width===0&&image.height===0){
@@ -125,10 +192,20 @@ export default {
       //保证图片加载完成之后读取数据
       image.onload=() =>{
       console.log("image onload ")
-      this.imagewidth = image.width;
-      this.imageheight = image.height;
-      this.scalewidth = 800 / image.width;
-      this.scaleheight = 800 / image.height;
+
+      if(image.width<600&&image.height<600){
+        this.imagewidth=image.width*1.5
+        this.imageheight=image.height*1.5
+        this.scalewidth = 1.5
+        this.scaleheight = 1.5
+      }
+      else{
+        this.imagewidth = image.width;
+        this.imageheight = image.height;
+        this.scalewidth = 1
+        this.scaleheight = 1
+      }
+
       console.log(this.imagewidth);
       console.log(this.imageheight);
       console.log(this.scalewidth);
@@ -136,28 +213,33 @@ export default {
       this.boxArry = [],
       this.labelArry = [],
       this.num = 1
+      this.updatelastdata()
       }
     },
   },
   data() {
     return {
       num: 1,
-      imagewidth: null,
-      imageheight: null,
+      imagewidth: null,//图片宽度像素数
+      imageheight: null,//图片高度像素数
       scalewidth: null, //图片宽度缩放倍数
       scaleheight: null, //图片高度缩放倍数
-      boxArry: [],
-      labelArry: [],
-      tempArry: [],
+      boxArry: [],//显示的div对象数组
+      labelArry: [],//标注信息保存数组
+      tempArry: [],//临时数组，用来传递信息
       //testsc:"image/test2",
       //imagesrc:require('@/'+this.fatherimagesrc+'.jpg'),
-      isTrue: false,
-      isTrue2: false,
+      isTrue: false,//移动标注和缩放标注的切换标识
+      isTrue2: false,//拖动图片和标注的切换标识
       width: "",
       height: "",
       left: "",
       top: "",
-      b_i: "",
+      b_i: "",//获取目前点击的div的index
+      buttontext:"正在标注(切换拖动图片)",
+      markcolorArry: [], //标记颜色数组
+      markcolor:'rgba(43,100,206,0.5)',
+      markinfoArry: [], //标记信息数组
       imageleft:0,
       imagetop:0,
       biaozhuHeight: 0,
@@ -171,35 +253,58 @@ export default {
     getVuex() {
       console.log(this.$store.state.treeData);
     },
-    commitVuex() {
-      this.$store.commit("changeTreeData", { a: 1, b: 2 });
+    // commitVuex() {
+    //   this.$store.commit("changeTreeData", { a: 1, b: 2 });
+    // },
+    findcolor(abcdefg) {
+      this.premarktype.forEach((item) => {
+        console.log("infind", abcdefg);
+        //if(item.name===null) this.markcolor = "rgba(0,128,128,0.5)";
+        if (item.name === abcdefg) {
+          console.log("find", item.color, typeof item.color);
+          this.markcolor = item.color;
+        }
+      });
     },
-    updatelastdata() {
+    updatelastdata() {//将从后台读取到的标注信息更新在前端
       console.log("image select lastlabelArry", this.lastlabelArry);
       this.b_i=-1
       this.boxArry = []
       this.labelArry = []
+      this.markinfoArry = []
+      this.markcolorArry = []
       for (let i = 0; i < this.lastlabelArry.length; i++) {
-        let left = this.lastlabelArry[i].x1 
-        let top = this.lastlabelArry[i].y1 
-        let width = (this.lastlabelArry[i].x2-this.lastlabelArry[i].x1) 
-        let height = (this.lastlabelArry[i].y2-this.lastlabelArry[i].y1) 
+        let left = Number(this.lastlabelArry[i].x1)
+        let top = Number(this.lastlabelArry[i].y1)
+        let width = Number(this.lastlabelArry[i].x2-this.lastlabelArry[i].x1) 
+        let height = Number(this.lastlabelArry[i].y2-this.lastlabelArry[i].y1) 
         this.boxArry.push({
           width: width * this.scalewidth,
           height: height * this.scaleheight,
           left: left * this.scalewidth,
           top: top * this.scaleheight,
         });
+        console.log("llllllllll",left,top,width,height)
         this.labelArry.push({
           x1: left,
           y1: top,
-          x2: (left + width) ,
-          y2: (top + height) ,
+          x2: (left+width) ,
+          y2: (top+height) ,
           info: this.lastlabelArry[i].info,
         });
-        console.log("42343423423423fsdd", this.lastlabelArry[i].x1);
+        console.log("42343423423423fsdd", this.labelArry[i]);
         //this.labelArry.push(this.lastlabelArry[i])
       }
+      for (let i = 0; i < this.premarktype.length; i++) {
+        let a={}
+        a["value"]=i
+        a["label"]=this.premarktype[i].name
+        this.markinfoArry.push(a)
+        //this.markcolorArry.push(this.premarktype[i].color)
+
+      }
+      console.log("markinfoArry", this.markinfoArry);
+      //console.log("markcolorArry", this.markcolorArry);
       console.log("vcxxcvxvxcv", this.boxArry);
       console.log("fsdfdsfsd", this.labelArry);
     },
@@ -211,7 +316,7 @@ export default {
       this.isTrue2 = false;
       console.log("setfalse");
     },
-    saveinfo() {
+    saveinfo() {//保存时传递的信息
       console.log("start!!!", this.boxArry);
       //变为深拷贝
       this.tempArry.push(JSON.parse(JSON.stringify(this.labelArry)));
@@ -231,7 +336,7 @@ export default {
       //  this.$emit('saveimageinfo',this.boxArry,this.fatherimagesrc,this.imageindex)
       //  console.log(this.boxArry,this.fatherimagesrc,this.imageindex)
     },
-    deletelabel(i) {
+    deletelabel(i) {//删除对应标注
       this.boxArry.splice(i, 1);
       this.labelArry.splice(i, 1);
       console.log(this.boxArry);
@@ -244,6 +349,9 @@ export default {
     },
     gai() {
       this.isTrue2 = !this.isTrue2;
+      console.log("isTrue2",this.isTrue2)
+      if(this.isTrue2) this.buttontext="正在标注(切换拖动图片)"
+      else this.buttontext="正在拖动图片(切换标注)"
     },
     getOffect(e) {
       console.log(e);
@@ -251,7 +359,7 @@ export default {
       // this.left=e.offsetX
       //     this.top=e.offsetY
     },
-    moveMouse(e) {
+    moveMouse(e) {//标注或者拖动图片的函数
       //console.log("moveMouse!!!!!!!!!!!!!!");
       let odiv = e.target; //获取目标元素
       odiv.style.left = this.imageleft + "px";
@@ -359,7 +467,7 @@ export default {
         };
       }
     },
-    move(istrue,mtype, e) {
+    move(istrue,mtype, e) {//移动标注框，缩放标注框的函数
       let odiv = e.target; //获取目标元素
       // let canvasodiv = e.target.offsetParent.offsetParent.offsetLeft
       // console.log("PPOL",e.target.offsetParent.offsetParent)
@@ -379,6 +487,8 @@ export default {
         //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
         let left = (e.clientX - disX) / this.num;
         let top = (e.clientY - disY) / this.num;
+        console.log("owidth",owidth,"oleft",oleft,"left",left,"oheight",oheight,"otop",otop,"top",top)
+        console.log("width",this.boxArry[this.b_i].width,"height",this.boxArry[this.b_i].height)
         //绑定元素位置到positionX和positionY上面
         //  this.positionX = top * this.num;
         //  this.positionY = left * this.num;
@@ -415,81 +525,126 @@ export default {
           //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
           //console.log("left",left,"top",top)
           if(left<owidth)this.boxArry[this.b_i].left = oleft + left
-          if(top<oheight)this.boxArry[this.b_i].top = otop + top         
-          this.boxArry[this.b_i].width = owidth-left;
-          this.boxArry[this.b_i].height = oheight-top;
+          else this.boxArry[this.b_i].left=oleft + owidth-1
+
+          if(top<oheight)this.boxArry[this.b_i].top = otop + top
+          else this.boxArry[this.b_i].top=otop + oheight-1
+
+          if(left<owidth)this.boxArry[this.b_i].width = owidth-left;
+          else this.boxArry[this.b_i].width = 1
+
+          if(top<oheight)this.boxArry[this.b_i].height = oheight-top;
+          else this.boxArry[this.b_i].height = 1
+
           this.labelArry[this.b_i].x1 = this.boxArry[this.b_i].left / this.scalewidth;
           this.labelArry[this.b_i].y1 = this.boxArry[this.b_i].top / this.scaleheight;
           }
           if(mtype === 2){//右上角的点
           //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
           //console.log("left",left,"top",top)
-          if(top<oheight)this.boxArry[this.b_i].top = otop + top         
-          this.boxArry[this.b_i].width = left + 7;
-          this.boxArry[this.b_i].height = oheight-top;
+          if(top<oheight)this.boxArry[this.b_i].top = otop + top
+          else this.boxArry[this.b_i].top=otop + oheight-1        
+          if(left>0)this.boxArry[this.b_i].width = left + 7;
+          else this.boxArry[this.b_i].width=1
+          if(top<oheight)this.boxArry[this.b_i].height = oheight-top;
+          else this.boxArry[this.b_i].height = 1
           this.labelArry[this.b_i].x1 = this.boxArry[this.b_i].left / this.scalewidth;
           this.labelArry[this.b_i].y1 = this.boxArry[this.b_i].top / this.scaleheight;
-          this.labelArry[this.b_i].x2 =
-            (this.scalewidth * this.labelArry[this.b_i].x1 + left + 9) /
+          if(left>0)this.labelArry[this.b_i].x2 =
+            (this.scalewidth * this.labelArry[this.b_i].x1 + left + 7) /
             this.scalewidth;
-          this.labelArry[this.b_i].y2 =
-            (this.scaleheight * this.labelArry[this.b_i].y1 + top + 9) /
+          else this.labelArry[this.b_i].x2 =
+            (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
+            this.scalewidth;
+          if(top<oheight)this.labelArry[this.b_i].y2 =
+            (this.scaleheight * this.labelArry[this.b_i].y1 + top + 7) /
+            this.scaleheight;
+          else this.labelArry[this.b_i].y2 =
+            (this.scaleheight * this.labelArry[this.b_i].y1 + 1) /
             this.scaleheight;
           }
           if(mtype === 3){//左下角的点
           //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
           //console.log("left",left,"top",top)
-          if(left<owidth)this.boxArry[this.b_i].left = oleft + left       
-          this.boxArry[this.b_i].width = owidth-left;
-          this.boxArry[this.b_i].height = top + 7;
+          if(left<owidth)this.boxArry[this.b_i].left = oleft + left
+          else this.boxArry[this.b_i].left=oleft + owidth-1       
+          if(left<owidth)this.boxArry[this.b_i].width = owidth-left;
+          else this.boxArry[this.b_i].width = 1
+          if(top>0)this.boxArry[this.b_i].height = top + 7;
+          else this.boxArry[this.b_i].height = 1
           this.labelArry[this.b_i].x1 = this.boxArry[this.b_i].left / this.scalewidth;
           this.labelArry[this.b_i].y1 = this.boxArry[this.b_i].top / this.scaleheight;
-          this.labelArry[this.b_i].x2 =
-            (this.scalewidth * this.labelArry[this.b_i].x1 + left + 9) /
+          if(left<owidth)this.labelArry[this.b_i].x2 =
+            (this.scalewidth * this.labelArry[this.b_i].x1 + left + 7) /
             this.scalewidth;
-          this.labelArry[this.b_i].y2 =
-            (this.scaleheight * this.labelArry[this.b_i].y1 + top + 9) /
+          else this.labelArry[this.b_i].x2 =
+            (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
+            this.scalewidth;
+          if(top>0)this.labelArry[this.b_i].y2 =
+            (this.scaleheight * this.labelArry[this.b_i].y1 + top + 7) /
+            this.scaleheight;
+          else this.labelArry[this.b_i].y2 =
+            (this.scaleheight * this.labelArry[this.b_i].y1 + 1) /
             this.scaleheight;
           }
-          if(mtype === 4){
+          if(mtype === 4){//右下角的点
           //console.log("left",left,"top",top)
-          this.boxArry[this.b_i].width = left + 7;
-          this.boxArry[this.b_i].height = top + 7;
-          this.labelArry[this.b_i].x2 =
-            (this.scalewidth * this.labelArry[this.b_i].x1 + left + 9) /
+          if(left>0)this.boxArry[this.b_i].width = left + 7;
+          else this.boxArry[this.b_i].width=1
+          if(top>0)this.boxArry[this.b_i].height = top + 7;
+          else this.boxArry[this.b_i].height = 1
+          if(left>0)this.labelArry[this.b_i].x2 =
+            (this.scalewidth * this.labelArry[this.b_i].x1 + left + 7) /
             this.scalewidth;
-          this.labelArry[this.b_i].y2 =
-            (this.scaleheight * this.labelArry[this.b_i].y1 + top + 9) /
+          else this.labelArry[this.b_i].x2 =
+            (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
+            this.scalewidth;
+          if(top>0)this.labelArry[this.b_i].y2 =
+            (this.scaleheight * this.labelArry[this.b_i].y1 + top + 7) /
+            this.scaleheight;
+          else this.labelArry[this.b_i].y2 =
+            (this.scaleheight * this.labelArry[this.b_i].y1 + 1) /
             this.scaleheight;
           }
           if(mtype === 5){//上边的点
           //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
           //console.log("left",left,"top",top)
           if(top<oheight)this.boxArry[this.b_i].top = otop + top
-          this.boxArry[this.b_i].height = oheight-top;
+          else this.boxArry[this.b_i].top=otop + oheight-1
+          if(top<oheight)this.boxArry[this.b_i].height = oheight-top;
+          else this.boxArry[this.b_i].height = 1
           this.labelArry[this.b_i].y1 = this.boxArry[this.b_i].top / this.scaleheight;
           }
           if(mtype === 6){//左边的点
           //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
-          //console.log("left",left,"top",top)
-          if(left<owidth)this.boxArry[this.b_i].left = oleft + left   
-          this.boxArry[this.b_i].width = owidth-left;
+          if(left<owidth)this.boxArry[this.b_i].left = oleft + left
+          else this.boxArry[this.b_i].left=oleft + owidth-1   
+          if(left<owidth)this.boxArry[this.b_i].width = owidth-left;
+          else this.boxArry[this.b_i].width = 1
           this.labelArry[this.b_i].x1 = this.boxArry[this.b_i].left / this.scalewidth;
           }
           if(mtype === 7){//右边的点
           //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
           //console.log("left",left,"top",top)
-          this.boxArry[this.b_i].width = left + 7;
-          this.labelArry[this.b_i].x2 =
-            (this.scalewidth * this.labelArry[this.b_i].x1 + left + 9) /
+          if(left>0)this.boxArry[this.b_i].width = left + 7;
+          else this.boxArry[this.b_i].width=1
+          if(left>0)this.labelArry[this.b_i].x2 =
+            (this.scalewidth * this.labelArry[this.b_i].x1 + left + 7) /
+            this.scalewidth;
+          else this.labelArry[this.b_i].x2 =
+            (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
             this.scalewidth;
           }
           if(mtype === 8){//下边点
           //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
           //console.log("left",left,"top",top)
-          this.boxArry[this.b_i].height = top + 7;
-          this.labelArry[this.b_i].y2 =
-            (this.scaleheight * this.labelArry[this.b_i].y1 + top + 9) /
+          if(top>0)this.boxArry[this.b_i].height = top + 7;
+          else this.boxArry[this.b_i].height = 1
+          if(top>0)this.labelArry[this.b_i].y2 =
+            (this.scaleheight * this.labelArry[this.b_i].y1 + top + 7) /
+            this.scaleheight;
+          else this.labelArry[this.b_i].y2 =
+            (this.scaleheight * this.labelArry[this.b_i].y1 + 1) /
             this.scaleheight;
           }
         }
@@ -528,15 +683,15 @@ export default {
     //   };
     //   console.log(this.boxArry);
     // },
-    fangda() {
+    fangda() {//放大图片
       if (this.num < 10) this.num += 0.1;
       //  imagesrc=require(this.testsc)
       //  console.log(this.fatherimagesrc,this.imageindex)
     },
-    suoxiao() {
+    suoxiao() {//缩小图片
       if (this.num > 0.2) this.num -= 0.1;
     },
-    huanyuan(){
+    huanyuan(){//还原图片大小和位置
       this.num=1
       console.log(this.$refs.canvesdiv)
       let canvesdiv = this.$refs.canvesdiv
@@ -557,7 +712,7 @@ export default {
         top: 20,
       });
     },
-    handelClick(i) {
+    handelClick(i) {//存储点击对象的index
       this.b_i = i;
       console.log("hahaha" + i);
     },
@@ -608,7 +763,7 @@ export default {
     width: 800px;
     height: 800px;
     background: rgb(0, 0, 0);
-    margin: 0 auto;
+    //margin: 0 auto;
     overflow: hidden;
     position: relative;
 

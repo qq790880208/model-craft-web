@@ -10,6 +10,7 @@
       :imageindex="this.nownum"
       :premarktype="this.marktype"
       :lastlabelArry="this.lastinfoArry[nownum]"
+
       @saveimageinfo="saveimageinfo"
     ></drawpolygon>
     <!-- <canvas id="canvas" width='800' height='800'></canvas> -->
@@ -17,6 +18,8 @@
 </template>
 
 <script>
+      // :canvaswidth="this.imagesize[nownum].width"
+      // :canvasheight="this.imagesize[nownum].height"
 import { mapGetters } from "vuex";
 import drawpolygon from "@/components/drawpolygon.vue";
 import request from "@/utils/request";
@@ -32,15 +35,17 @@ export default {
       lastinfoArry: [],
       //与图片对于的uuid数组，是后台数据库主键
       uuidArry: [],
+      //预读取每张图片的分辨率，以适应画布
+      imagesize:[],
       //后台读取的标注类别
       marktype: [
         {
           name:"car",
-          color:"rgba(128,0,0,0.3)"
+          color:"rgba(128,0,0,0.75)"
         },
         {
           name:"human",
-          color:"rgba(0,128,0,0.3)"
+          color:"rgba(0,128,0,0.75)"
         },
       ],
       nownum: 0,
@@ -84,6 +89,18 @@ export default {
         console.log("get response.data.items",response.data.items);
         for (let i = 0; i < response.data.items.length; i++) {
           console.log(response.data.items[i]);
+          //读取图片分辨率
+          // let image = new Image();
+          // image.src = response.data.items[i].file_path; 
+          // console.log("imagesize",image)       
+          // image.onload=() =>{
+          //   console.log("imageonloadsuccess",image.width,image.height)
+          //   let imagea={}
+          //   imagea["width"]=image.width
+          //   imagea["height"]=image.height
+          //   _this.imagesize.push(imagea)
+          // }
+          // console.log("ima",_this.imagesize)
           let tempa = JSON.parse(response.data.items[i].label_data)
           let len = eval(tempa).length;
           console.log("len", len);

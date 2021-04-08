@@ -8,45 +8,46 @@ export function startTask(query){
   })
 }
 
-export function stopTask(data){
+export function stopTask(query){
   return request({
     url:'/newtrain/stop',
     method:'post',
-    data,
+    params: query,
     baseURL: 'http://localhost:9528/dev-api'
   })
 }
 
-export function deleteTask(data){
+export function deleteTask(query){
   return request({
     url:'/newtrain/delete',
-    method:'post',
-    data,
-    baseURL: 'http://localhost:9528/dev-api'
+    method:'delete',
+    params: query,
+    //baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.237:8084'
   })
 }
 
-export function getTableData(){
-  return request({
-    url:'/newtrain/getTableData',
-    method:'get',
-    baseURL: 'http://localhost:9528/dev-api'
-  })
-}
+// export function getTableData(){
+//   return request({
+//     url:'/newtrain/getTableData',
+//     method:'get',
+//     baseURL: 'http://localhost:9528/dev-api'
+//   })
+// }
 
-export function search(data){
+export function search(data){//输入框查询
   return request({
     url:'/newtrain/search',
-    method:'post',
+    method:'get',
     data,
     baseURL: 'http://localhost:9528/dev-api'
   })
 }
 
-export function searchStatus(data){
+export function searchStatus(data){//下拉框查询
   return request({
     url:'/newtrain/searchStatus',
-    method:'post',
+    method:'get',
     data,
     baseURL: 'http://localhost:9528/dev-api'
   })
@@ -58,5 +59,32 @@ export function getVisualData(query){
     method:'get',
     params: query,
     baseURL: 'http://localhost:9528/dev-api'
+  })
+}
+
+export function submitTask(query){
+  return request({
+    url:'/newtrain/submitTask',
+    method:'post',
+    params: query,
+    baseURL: 'http://localhost:9528/dev-api'
+  })
+}
+
+export function getinitialPara(query){
+  return request({
+    url:'/newtrain/getinitialPara',
+    method:'get',
+    params: query,
+    baseURL: 'http://localhost:9528/dev-api'
+  })
+}
+
+export function getTableData1(query){
+  return request({
+    params:query,
+    url:'/train',
+    method:'get',
+    baseURL: 'http://192.168.19.237:8084'
   })
 }

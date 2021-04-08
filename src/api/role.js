@@ -9,8 +9,24 @@ export function getRoutes() {
 
 export function getRoles() {
   return request({
-    url: '/vue-element-admin/roles',
+    url: '/role/roles',
     method: 'get'
+  })
+}
+
+export function getRoleMenuByRoleId(param) {
+  return request({
+    url: '/role/getRoleMenu',
+    method: 'get',
+    params: param
+  })
+}
+
+export function addRoleMenu(params) {
+  return request({
+    url: '/role/addRoleMenu',
+    method: 'put',
+    params: params
   })
 }
 

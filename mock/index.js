@@ -8,11 +8,10 @@ const userManage = require('./userManage')
 const team = require('./team')
 const teamUser = require('./teamUser')
 
-const train = require('./train')
+
 const newTrain = require('./newTrain')
 const mocks = [
   ...newTrain,
-  ...train,
   ...user,
   ...table,
   ...team,

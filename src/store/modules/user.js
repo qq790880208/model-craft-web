@@ -6,9 +6,14 @@ const getDefaultState = () => {
   return {
     token: getToken(),
     name: '',
+    labelrole: '',
     avatar: '',
     roles: [],
-    introduction: ''
+    menus: [], // 菜单权限
+    descr: '',
+    userid: '',
+    role: '',
+    password: ''
   }
 }
 
@@ -24,14 +29,29 @@ const mutations = {
   SET_NAME: (state, name) => {
     state.name = name
   },
-  SET_AVATAR: (state, avatar) => {
-    state.avatar = avatar
+  SET_LABELROLE: (state, labelrole) => {
+    state.labelrole = labelrole
   },
-  SET_INTRODUCTION: (state, introduction) => {
-    state.introduction = introduction
+  SET_DESCR: (state, descr) => {
+    state.descr = descr
   },
   SET_ROLES: (state, roles) => {
     state.roles = roles
+  },
+  SET_ROLE: (state, role) => {
+    state.role = role
+  },
+  SET_MENUS: (state, menus) => {
+    state.menus = menus
+  },
+  SET_USERID: (state, userid) => {
+    state.userid = userid
+  },
+  SET_AVATAR: (state, avatar) => {
+    state.avatar = avatar
+  },
+  SET_PASSWORD: (state, password) => {
+    state.password = password
   }
 }
 
@@ -39,10 +59,19 @@ const actions = {
   // user login
   login({ commit }, userInfo) {
     const { username, password } = userInfo
+    // md5 加密
+    // var md5 = crypto.createHash("md5")
+    // md5.update(password)
+    // temppassword = md5.digest('hex');
+    // console.log(password)
+    const paras = {
+      username: username.trim(),
+      password: password
+    }
     return new Promise((resolve, reject) => {
-      login({ username: username.trim(), password: password }).then(response => {
+      login(paras).then(response => {
         const { data } = response
-        console.log("111111111111111111111111111111111111111111111111")
+        console.log('111111111111111111111111111111111111111111111111')
         console.log(data)
         commit('SET_TOKEN', data.token)
         setToken(data.token)
@@ -56,21 +85,34 @@ const actions = {
   // get user info
   getInfo({ commit, state }) {
     return new Promise((resolve, reject) => {
-      console.log("statetoken")
+      console.log('statetoken')
       console.log(state.token)
       getInfo(state.token).then(response => {
         const { data } = response
-
+        console.log(data.items)
         if (!data) {
           return reject('Verification failed, please Login again.')
         }
-
-        const { name, avatar, roles, introduction } = data
-        commit('SET_ROLES', roles)
+        const { name, role, descr, id, password } = data.items
+        console.log(role.split(','))
+        commit('SET_ROLE', role)
+        commit('SET_ROLES', role.split(','))
         commit('SET_NAME', name)
-        commit('SET_AVATAR', avatar)
-        commit('SET_INTRODUCTION', introduction)
-        resolve(data)
+        commit('SET_USERID', id)
+        // commit('SET_LABELROLE', labelrole)
+        commit('SET_DESCR', descr)
+        commit('SET_PASSWORD', password)
+        if (data.menus && data.menus.length > 0) { // 验证返回的menus是否是一个非空数组
+          commit('SET_MENUS', data.menus)
+        }
+        console.log(state.roles)
+        console.log(state.name)
+        console.log(state.descr)
+        console.log(state.userid)
+        console.log(state.password)
+        console.log(state.menus)
+        // resolve(data.items)
+        resolve(response)
       }).catch(error => {
         reject(error)
       })
@@ -80,7 +122,7 @@ const actions = {
   // user logout
   logout({ commit, state }) {
     return new Promise((resolve, reject) => {
-      logout(state.token).then(() => {
+      logout().then(() => {
         removeToken() // must remove  token  first
         resetRouter()
         commit('RESET_STATE')
@@ -107,4 +149,3 @@ export default {
   mutations,
   actions
 }
-

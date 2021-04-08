@@ -15,6 +15,7 @@ export function getListByName(uid, name) {
     baseURL: 'http://192.168.19.237:8081'
   })
 }
+<<<<<<< HEAD
 
 export function delModelById(mid) {
   return request({
@@ -24,3 +25,5 @@ export function delModelById(mid) {
     baseURL: 'http://192.168.19.237:8081'
   })
 }
+=======
+>>>>>>> dev

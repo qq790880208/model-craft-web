@@ -29,7 +29,10 @@
       </el-table-column>
       <el-table-column prop="descr" align="center" label="用户描述" min-width="180" sortable>
       </el-table-column>
-      <el-table-column prop="team" align="center" label="团队" min-width="180" sortable>
+      <el-table-column prop="create_time" align="center" label="创建时间" min-width="180" sortable>
+        <template slot-scope="scope">
+          {{ scope.row.create_time | formatDate }}
+         </template>
       </el-table-column>
       <el-table-column label="操作" align="center" width="150">
         <template slot-scope="scope">
@@ -41,7 +44,7 @@
 
     <!--工具条-->
     <el-col :span="24" class="toolbar">
-      <el-button type="danger" @click="batchRemove" :disabled="this.sels.length===0">批量删除</el-button>
+      <el-button type="danger" @click="batchRemove" :disabled="sels.length===0">批量删除</el-button>
       <!--<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="5" :total="total" style="float:right;">-->
       <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
       </el-pagination>
@@ -49,15 +52,17 @@
 
     <!--编辑界面-->
     <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
-      <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
+      <el-form :model="editForm" label-width="80px" :rules="addFormRules" ref="editForm">
         <el-form-item label="姓名" prop="name">
           <el-input v-model="editForm.name" auto-complete="off"></el-input>
         </el-form-item>
         <el-form-item label="身份">
-          <el-input v-model="editForm.role"></el-input>
+          <el-select v-model="editForm.role" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
+          </el-select>
         </el-form-item>
-        <el-form-item label="密码">
-          <el-input v-model="editForm.password"></el-input>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="editForm.password" placeholder="输入6位密码"></el-input>
         </el-form-item>
         <el-form-item label="描述">
           <el-input type="textarea" v-model="editForm.descr"></el-input>
@@ -80,9 +85,18 @@ import {
   editUser,
   addUser
 } from '@/api/userManage'
+import md5 from 'js-md5'
+import { title } from '@/settings'
 
 export default {
   data() {
+    const validatePassword = (rule, value, callback) => {
+      if (value.length < 6) {
+        callback(new Error('The password can not be less than 6 digits'))
+      } else {
+        callback()
+      }
+    }
     return {
       dialogStatus: '',
       textMap: {
@@ -94,13 +108,20 @@ export default {
         name: ''
       },
       users: [],
+      statusOptions: ['admin', 'user', 'Manager'],
       total: 0,
       page: 1,
       page_size: 20,
       sels: [], // 列表选中列
-      editFormRules: {
-        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
-      },
+      // editFormRules: {
+      //   name: [
+      //     { required: true, message: '尽量不要修改姓名', trigger: 'blur' }
+      //   ],
+      //   password: [
+      //     { required: true, message: '密码不能为空', trigger: 'blur' },
+      //     { min: 6, max: 20, message: '长度在 6 到 20 个字符', validator: validatePassword, trigger: 'blur' }
+      //   ]
+      // },
       // 编辑界面数据
       editForm: {
         id: '0',
@@ -111,8 +132,40 @@ export default {
       },
       addFormVisible: false, // 新增界面是否显示
       addFormRules: {
-        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
+        name: [{ required: true, message: '请输入名字', trigger: 'blur' }],
+        password: [
+          { required: true, message: '新密码不能为空', trigger: 'blur' },
+          { min: 6, max: 20, message: '长度不小于 6 个字符', validator: validatePassword, trigger: 'blur' }
+        ]
       }
+    }
+  },
+  filters: {
+    formatDate(nows) {
+      if (!nows) { // 在这里进行一次传递数据判断.如果传递进来的为空值,返回其空字符串.解决其问题
+        return ''
+      }
+      var year = nows[0]
+      var month = nows[1]
+      var day = nows[2]
+      var hour = nows[3]
+      var minute = nows[4]
+      var second = nows[5]
+      if (hour.toString().length < 2) {
+        hour = '0' + hour
+      }
+      if (minute == null) {
+        minute = '00'
+      } else if (minute.toString().length < 2) {
+        minute = '0' + minute
+      }
+      if (second == null) {
+        second = '00'
+        console.log(hour.length)
+      } else if (second.toString().length < 2) {
+        second = '0' + second
+      }
+      return ' ' + year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
     }
   },
   methods: {
@@ -126,7 +179,7 @@ export default {
     },
     // 获取用户列表
     getUsers() {
-      let para = {
+      const para = {
         page: this.page,
         pagesize: this.page_size,
         name: this.filters.name
@@ -143,7 +196,7 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          let para = { id: row.id }
+          const para = { id: row.id }
           console.log(para)
           removeUser(para).then(res => {
             this.$message({
@@ -159,6 +212,7 @@ export default {
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.editForm = Object.assign({}, row)
+      this.editForm.password = ''
     },
     // 显示新增界面
     handleAdd: function() {
@@ -177,14 +231,15 @@ export default {
         if (valid) {
           this.$confirm('确认提交吗?', '提示', {})
             .then(() => {
-              let temp = Object.assign({}, this.editForm)
-            let para = {
-              id: temp.id,
-              role: temp.role,
-              name: temp.name,
-              password: temp.password,
-              descr: temp.descr
-            } 
+              const temp = Object.assign({}, this.editForm)
+              // md5 加密
+              var temppassword = md5(temp.password)
+              const para = {
+                id: temp.id,
+                role: temp.role,
+                name: temp.name,
+                password: temppassword,
+                descr: temp.descr }
               console.log(para)
               editUser(para).then(res => {
                 this.$message({
@@ -209,7 +264,9 @@ export default {
           this.$confirm('确认提交吗？', '提示', {})
             .then(() => {
               this.editForm.id = (parseInt(Math.random() * 100)).toString() // mock a id
-              let para = Object.assign({}, this.editForm)
+              const para = Object.assign({}, this.editForm)
+              // md5 加密
+              para.password = md5(para.password)
               console.log(para)
               addUser(para).then(res => {
                 this.$message({
@@ -233,13 +290,13 @@ export default {
     },
     // 批量删除
     batchRemove: function() {
-      var ids = this.sels.map(item => item.id).toString();
+      var ids = this.sels.map(item => item.id).toString()
       this.$confirm('确认删除选中记录吗？', '提示', {
         type: 'warning'
       })
         .then(() => {
-          let para = { ids: ids };
-          console.log(para);
+          const para = { ids: ids }
+          console.log(para)
           batchRemoveUser(para).then(res => {
             this.$message({
               message: '删除成功',

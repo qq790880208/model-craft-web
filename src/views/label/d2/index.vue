@@ -3,16 +3,12 @@
     <div class="dashboard-container">
       <el-button @click="nextimage">下一张</el-button>
       <el-button @click="previousimage">上一张</el-button>
-      <!-- <el-button @click="requireimage">请求图片</el-button> -->
-      <!-- <el-button @click="savelabel(nownum)">保存标注信息</el-button> -->
-      <!-- <div class="dashboard-text">name: {{ name }}</div> -->
       <imageselect
         :fatherimagesrc="this.imageArry[nownum]"
         :imageindex="this.nownum"
         :lastlabelArry="this.lastinfoArry[nownum]"
         @saveimageinfo="saveimageinfo"
       ></imageselect>
-      <!-- <labelinfo></labelinfo> -->
     </div>
   </el-row>
 </template>

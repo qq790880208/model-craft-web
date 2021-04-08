@@ -1,30 +1,22 @@
 <template>
   <div class="dashboard-container">
-    <div class="dashboard-text">name: {{ name }}</div>
-    <div>
-      {{info}}
-    </div>
+    <!-- <div class="dashboard-text">name: {{ name }}</div> -->
+    <three-d></three-d>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import axios from "axios";
-
+import threeD from "@/components/3dmark.vue";
 export default {
   name: 'Dashboard',
+  components:{
+    threeD
+  },
   computed: {
     ...mapGetters([
       'name'
     ])
-  },
-  data() {
-    return {
-      info: null
-    }
-  },
-  methods: {
-
   }
 }
 </script>

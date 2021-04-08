@@ -1,9 +1,10 @@
 import request from '@/utils/request'
 
-export function getTeams() {
+export function getTeams(params) {
   return request({
     url: '/team/getTeams',
     method: 'get',
+    params: params,
     baseURL: 'http://192.168.19.239:8083'
   })
 }
@@ -17,7 +18,7 @@ export function delTeams(params) {
   })
 }
 
-export function addTeams(params) {
+export function addTeams(params) { 
   return request({
     url: '/team/addTeams',
     method: 'post',
