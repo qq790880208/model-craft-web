@@ -15,7 +15,7 @@ const users = {
     name: 'Super Admin'
   },
   'editor-token': {
-    roles: ['editor'],
+    roles: ['user'],
     introduction: 'I am an editor',
     avatar: 'https://wpimg.wallstcn.com/f778738c-e4f8-4870-b634-56703b4acafe.gif',
     name: 'Normal Editor'
@@ -71,7 +71,7 @@ module.exports = [
 
   // user logout
   {
-    url: '/vue-admin-template/user/logout',
+    url: '/user/logout',
     type: 'post',
     response: _ => {
       return {

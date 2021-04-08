@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <template>
   <div class="app-container">
     <el-button type="primary" @click="handleAddRole">New Role</el-button>
@@ -272,3 +273,41 @@ export default {
     }
   }
 </style>
+=======
+<template>
+  <div class="dashboard-container">
+    <div class="dashboard-text">name: {{ name }}</div>
+    <div>{{ message }}</div>
+  </div>
+</template>
+
+<script>
+import { mapGetters } from 'vuex'
+
+export default {
+  name: 'Dashboard',
+  data() {
+    return {
+      message: ''
+    }
+  },
+  computed: {
+    ...mapGetters([
+      'name'
+    ])
+  }
+}
+</script>
+
+<style lang="scss" scoped>
+  .dashboard {
+    &-container {
+      margin: 30px;
+    }
+    &-text {
+      font-size: 30px;
+      line-height: 46px;
+    }
+  }
+</style>
+>>>>>>> 305daaf3812851262aaca43cfaeb2597ce9ebfe8

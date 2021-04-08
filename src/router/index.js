@@ -50,8 +50,38 @@ export const constantRoutes = [
       path: 'dashboard',
       name: 'Dashboard',
       component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
-    }]
+      meta: { title: '主页', icon: 'dashboard' }
+    },
+    {
+      path: '/dataSet/userLabel',
+      component: () => import('@/views/dataSet/userLabel'),
+      name: 'userLabel',
+      meta: { title: 'userLabel', icon: 'nested', resources: 'userLabel' },
+      hidden: true
+    }
+  ]
+  }
+]
+export const asyncRoutes = [
+  {
+    path: '/teamManagement',
+    component: Layout,
+    redirect: '/teamManagement/rectangle',
+    name: 'teamManagement',
+    meta: {
+      title: '团队管理',
+      icon: 'form',
+      // roles: ['admin', 'user'],
+      resources: 'teamManagement'
+    },
+    children: [
+      {
+        path: '/teamManagement/annotateTeamManagement',
+        component: () => import('@/views/teamManagement/annotateTeamManagement/index'),
+        name: 'annotateTeamManagement',
+        meta: { title: '标注团队管理', icon: 'nested', resources: 'annotateTeamManagement' }
+      }
+    ]
   },
   {
     path: '/label',
@@ -60,100 +90,107 @@ export const constantRoutes = [
     name: 'label',
     meta: {
       title: '数据集标注',
-      icon: 'form'
+      icon: 'form',
+      resources: 'label'
     },
     children: [
       {
-        path: '/label/d2',
-        component: () => import('@/views/label/d2/index'),
-        name: 'd2',
-        meta: { title: '图片标注', icon: 'excel' }
+        path: '/label/d2imageview',
+        component: () => import('@/views/label/d2/imageview'),
+        name: 'd2view',
+        meta: { title: '2D拉框标注', icon: 'excel', resources: 'd2' },
       },
       {
-        path: '/label/d3',
-        component: () => import ('@/views/label/d3/index'),
-        name: 'd3',
-        meta: { title: '3D目标标注', icon: 'excel' }
+        path: '/label/polygonimageview',
+        component: () => import ('@/views/label/polygon/imageview'),
+        name: 'polygon',
+        meta: { title: '像素级标注', icon: 'excel', resources: 'polygon' }
       },
       {
         path: '/label/voice',
         component: () => import ('@/views/label/voice/index'),
         name: 'voice',
-        meta: { title: '语音标注', icon: 'excel' }
+        meta: { title: '语音标注', icon: 'excel', resources: 'voice' }
       },
       {
-        path: '/label/pointcloud',
-        component: () => import ('@/views/label/pointcloud/index'),
-        name: 'pointcloud',
-        meta: { title: '点云数据标注', icon: 'excel' }
+        path: '/label/d3',
+        component: () => import ('@/views/label/d3/index'),
+        name: 'd3',
+        meta: { title: '3D标注', icon: 'excel', resources: 'd3' }
       }
     ]
   },
-
-
   {
     path: '/newtrain',
     component: Layout,
     name: 'newtrain',
-    redirect:'/newtrain/table',
+    redirect: '/newtrain/table',
     meta: {
       title: '训练管理',
-      icon: 'form'
+      icon: 'form',
+      resources: 'newtrain'
     },
     children: [
       {
         path: '/newtrain/table',
         component: () => import('@/views/newtrain/table'),
         name: 'newTable',
-        meta: { title: '训练管理', icon: 'nested' }
+        meta: { title: '训练管理', icon: 'nested', resources: 'newTable' }
+      }
+    ]
+  },
+  {
+    path: '/dataSet',
+    component: Layout,
+    name: 'dataSet',
+    redirect: '/dataSet/rectangle',
+    meta: {
+      title: '数据管理',
+      icon: 'form',
+      resources: 'dataSet',
+    },
+    children: [
+      {
+        path: '/data',
+        component: () => import('@/views/dataSet/index'),
+        name: 'data manage',
+        meta: { title: '数据管理', icon: 'nested', resources: 'data' }
+      },
+      {
+        path: '/userLabel',
+        component: () => import('@/views/dataSet/userLabel'),
+        name: 'userLabel',
+        meta: { title: 'userLabel', icon: 'nested', resources: 'userLabel' }
+      },
+      {
+        path: '/oss',
+        component: () => import('@/views/dataSet/oss'),
+        name: 'oss manage',
+        meta: { title: '对象存储', icon: 'nested', resources: 'oss' }
       },
     ]
   },
-
   {
     path: '/models',
     component: Layout,
     name: 'model',
     meta: {
       title: '模型管理',
-      icon: 'form'
+      icon: 'form',
+      resources: 'models'
     },
     children: [
       {
         path: '/model',
         component: () => import('@/views/model/index'),
         name: 'model admin',
-        meta: { title: '模型', icon: 'nested' }
+        meta: { title: '模型', icon: 'nested', resources: 'model' }
       },
       {
         path: '/model-eval',
         component: () => import('@/views/model/index'),
         name: 'model eval',
-        meta: { title: '模型评估', icon: 'excel' }
-      }
-    ]
-  },
-  {
-    path: '/teamManagement',
-    component: Layout,
-    redirect: '/teamManagement/rectangle',
-    name: 'teamManagement',
-    meta: {
-      title: '团队管理',
-      icon: 'form'
-    },
-    children: [
-      {
-        path: '/teamManagement/annotateTeamManagement',
-        component: () => import('@/views/teamManagement/annotateTeamManagement/index'),
-        name: 'annotateTeamManagement',
-        meta: { title: '标注团队管理', icon: 'excel' }
-      },
-      {
-        path: '/teamManagement/annotateMemberManagement',
-        component: () => import('@/views/teamManagement/annotateMemberManagement/index'),
-        name: 'annotateMemberManagement',
-        meta: { title: '标注成员管理', icon: 'excel' }
+        meta: { title: '模型评估', icon: 'excel', resources: 'model-eval' }
       }
     ]
   },
@@ -164,161 +201,36 @@ export const constantRoutes = [
     name: 'system_management',
     meta: {
       title: '系统设置',
-      icon: 'form'
+      icon: 'form',
+      resources: 'system_management'
     },
     children: [
       {
         path: '/systemManagement/authorityManagement',
         component: () => import('@/views/systemManagement/authorityManagement/index'),
         name: 'authorityManagement',
-        meta: { title: '权限管理', icon: 'excel'}
+        meta: { title: '权限管理', icon: 'excel', resources: 'authorityManagement' }
       },
       {
         path: '/systemManagement/userManagement',
         component: () => import('@/views/systemManagement/userManagement/index'),
         name: 'userManagement',
-        meta: { title: '用户管理', icon: 'excel'}
+        meta: { title: '用户管理', icon: 'excel', resources: 'userManagement' }
       },
       {
-        path: '/systemManagement/systemResourceManagement',
-        component: () => import('@/views/systemManagement/systemResourceManagement/index'),
-        name: 'systemResourceManagement',
-        meta: { title: '系统资源管理', icon: 'excel'}
+        path: '/systemManagement/log',
+        component: () => import('@/views/systemManagement/log/index'),
+        name: 'log',
+        meta: { title: '系统日志管理', icon: 'excel', resources: 'log' }
       },
       {
-        path: '/systemManagement/platformOperation',
-        component: () => import('@/views/systemManagement/platformOperation/index'),
-        name: 'platformOperation',
-        meta: { title: '平台运行情况', icon: 'excel'}
-      },
-      {
-        path: '/systemManagement/systemLogManagement',
-        component: () => import('@/views/systemManagement/systemLogManagement/index'),
-        name: 'systemLogManagement',
-        meta: { title: '系统日志管理', icon: 'excel'}
-      },
-      {
-        path: '/systemManagement/userOperatingSystemManagement',
-        component: () => import('@/views/systemManagement/userOperatingSystemManagement/index'),
-        name: 'userOperatingSystemManagement',
-        meta: { title: '用户操作日志', icon: 'excel'}
+        path: '/systemManagement/loginLog',
+        component: () => import('@/views/systemManagement/loginLog/index'),
+        name: 'longinLog',
+        meta: { title: '用户登录日志', icon: 'excel', resources: 'loginLog' }
       }
     ]
   },
-  {
-    path: 'external-link',
-    component: Layout,
-    children: [
-      {
-        path: 'https://panjiachen.github.io/vue-element-admin-site/zh/',
-        meta: { title: 'vue-element-admin文档', icon: 'link' }
-      }
-    ]
-  },
-  {
-    path: 'external-link2',
-    component: Layout,
-    children: [
-      {
-        path: 'https://element.eleme.cn/#/zh-CN/component/layout',
-        meta: { title: 'element-ui文档', icon: 'link' }
-      }
-    ]
-  },
-  {
-    path: '/example',
-    component: Layout,
-    redirect: '/example/table',
-    name: 'Example',
-    meta: { title: 'Example', icon: 'el-icon-s-help' },
-    children: [
-      {
-        path: 'table',
-        name: 'Table',
-        component: () => import('@/views/table/index'),
-        meta: { title: 'Table', icon: 'table' }
-      },
-      {
-        path: 'tree',
-        name: 'Tree',
-        component: () => import('@/views/tree/index'),
-        meta: { title: 'Tree', icon: 'tree' }
-      }
-    ]
-  },
-
-  {
-    path: '/form',
-    component: Layout,
-    children: [
-      {
-        path: 'index',
-        name: 'Form',
-        component: () => import('@/views/form/index'),
-        meta: { title: 'Form', icon: 'form' }
-      }
-    ]
-  },
-
-  {
-    path: '/nested',
-    component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
-    children: [
-      {
-        path: 'menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        children: [
-          {
-            path: 'menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: 'menu1-2',
-            component: () => import('@/views/nested/menu1/menu1-2'),
-            name: 'Menu1-2',
-            meta: { title: 'Menu1-2' },
-            children: [
-              {
-                path: 'menu1-2-1',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-1'),
-                name: 'Menu1-2-1',
-                meta: { title: 'Menu1-2-1' }
-              },
-              {
-                path: 'menu1-2-2',
-                component: () => import('@/views/nested/menu1/menu1-2/menu1-2-2'),
-                name: 'Menu1-2-2',
-                meta: { title: 'Menu1-2-2' }
-              }
-            ]
-          },
-          {
-            path: 'menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
-      },
-      {
-        path: 'menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        name: 'Menu2',
-        meta: { title: 'menu2' }
-      }
-    ]
-  },
-  // 404 page must be placed at the end !!!
   { path: '*', redirect: '/404', hidden: true }
 ]
 
