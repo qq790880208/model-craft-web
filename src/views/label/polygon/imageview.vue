@@ -14,9 +14,9 @@
     </div>
   <div class="dashboard-container" v-if="!isimageview">
     <!-- <div class="dashboard-text">name: {{ name }}</div> -->
-    <el-button @click="returnimageview">返回</el-button>
-    <el-button @click="nextimage">下一张</el-button>
-    <el-button @click="previousimage">上一张</el-button>
+    <el-button :disabled="isdisablebutton" @click="returnimageview">返回</el-button>
+    <el-button :disabled="isdisablebutton" @click="nextimage">下一张</el-button>
+    <el-button :disabled="isdisablebutton" @click="previousimage" >上一张</el-button>
     <!-- <el-button @click="requireimage">请求图片</el-button> -->
     <!-- <el-button @click="savelabel(nownum)">保存标注信息</el-button> -->
     <drawpolygon style="margin-top:20px"
@@ -24,7 +24,7 @@
       :imageindex="this.nownum"
       :premarktype="this.marktype"
       :lastlabelArry="this.lastinfoArry[nownum]"
-
+      @closebutton="closebutton"
       @saveimageinfo="saveimageinfo"
     ></drawpolygon>
     <!-- <canvas id="canvas" width='800' height='800'></canvas> -->
@@ -36,9 +36,10 @@
       // :canvaswidth="this.imagesize[nownum].width"
       // :canvasheight="this.imagesize[nownum].height"
 import { mapGetters } from "vuex";
-import drawpolygon from "@/components/drawpolygon.vue";
+import drawpolygon from "@/components/testdrawpolygon.vue";
 import request from "@/utils/request";
 import miniimage from "@/components/miniimage.vue"
+import store from "@/store"
 export default {
   name: "Dashboard",
   data() {
@@ -83,6 +84,7 @@ export default {
         },
       ],
       nownum: 0,
+      isdisablebutton:false,
       isimageview: true,
     };
   },
@@ -115,6 +117,10 @@ export default {
       if (this.nownum > 0) this.nownum--;
       console.log("previousimage",this.nownum);
     },
+    closebutton: function(){
+      console.log("fatherdisbtnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
+      this.isdisablebutton=!this.isdisablebutton
+    },
     //保存图片标注信息
     saveimageinfo: function (markinfo, imageeindex) {
       this.infoArry[imageeindex] = markinfo;
@@ -126,7 +132,7 @@ export default {
     requireimage: function () {
       let _this = this;
       return request({
-        url: "http://192.168.19.237:8082/label?dataset_uuid=76cc3eb6689538d7feb9c571d7c355be&user_id=10",
+        url: "http://192.168.19.237:8082/label?dataset_uuid=76cc3eb6689538d7feb9c571d7c355be&user_id=1",
         method: "get",
         //params: query
       }).then(function (response) {
@@ -187,7 +193,13 @@ export default {
         console.log("_this.imageArry",_this.imageArry);
         console.log("_this.lastinfoArry",_this.lastinfoArry);
         //console.log("transforjson",JSON.stringify(_this.infoArry[0][0]))
-      });
+      }).catch(function(error){
+        console.log("error",error)
+          _this.$message({
+          message:"请求图片失败",
+          type: 'error'
+          })
+      });;
     },
     //put请求
     savelabel(i) {
@@ -213,6 +225,13 @@ export default {
           message:"保存成功",
           type: 'success'
           });
+        _this.requireimage();
+      }).catch(function(error){
+        console.log("error",error)
+          _this.$message({
+          message:"保存失败",
+          type: 'error'
+          })
         _this.requireimage();
       });
     },
