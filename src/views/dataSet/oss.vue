@@ -59,7 +59,7 @@
         </div>
         </el-dialog>
         <el-divider></el-divider>
-            <el-upload>
+            <el-upload class="upload-demo" action="#" :file-list="fileList" :show-file-list="true" :http-request="uploadHttpRequest">
                 <el-button>选择文件</el-button>
             </el-upload>
         <el-divider></el-divider>
@@ -68,7 +68,7 @@
         </el-input>
         <div slot="footer" class="dialog-footer">
             <el-button @click="uploadObjectVisible = false">取 消</el-button>
-            <el-button type="primary" @click="">确 定</el-button>
+            <el-button type="primary" @click="uploadObject">确 定</el-button>
         </div>
     </el-dialog>
 
@@ -109,7 +109,7 @@
 </template>
 
 <script>
-import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile } from '@/api/oss'
+import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload } from '@/api/oss'
 export default {
     data(){
         return{
@@ -133,6 +133,9 @@ export default {
             uploadBucketName:'',//上传目标桶
             uploadObjectFolder:'',//上传目标路径
             uploadobjectName:'',//上传文件名
+            fileList: [],//上传文件的列表
+            uploadFile:'',//要给后端的文件
+            uploadFilesignal:false,//上传文件判断信号
             removefileVisible:false,//删除文件dialog框信号
             removefolder:false,//删除文件路径dialog框信号
             delbucket:'',//删除文件bucket
@@ -361,6 +364,48 @@ export default {
             this.oldObjectuplPrefix = this.objectuplPrefix.substring(0,this.objectuplPrefix.length-this.objectuplPrefix.split("").reverse().indexOf("/")-1)
         },
 
+        //选择上传文件
+        uploadHttpRequest(param) {
+            console.log(param);
+            console.log(param.file);
+            this.uploadFile = param.file
+            this.uploadFilesignal=true
+            // let reader = new FileReader()
+            // let that = this
+            // reader.readAsText(data.file)
+            // reader.onload = function() {
+            //     that.formData.mmiapXml = this.result
+            // }
+        },
+
+        //点击进行文件上传
+        uploadObject(){
+            if(this.uploadFilesignal=true){
+                const para ={}
+                para.bucketName=this.uploadBucketName
+                para.file=this.uploadFile
+                para.folderName=this.uploadObjectFolder
+                para.objectName=this.uploadobjectName
+                this.uploadObjectFile(para)
+                this.uploadFilesignal=false
+                // this.fresh()
+            }else{
+                this.nofile()
+            }
+        },
+
+        //向后台传文件
+        uploadObjectFile(para){
+            console.log(para);
+            upload(para).then(response=>{
+                if(20000 == response.code){
+                    this.suc()
+                }else{
+                    this.fai()
+                }
+            }).catch(()=>{})
+        },
+
         //返回内层dialog
         returnuplFolder(){
             this.uploadBucketName=this.selectBucketName
@@ -377,7 +422,12 @@ export default {
             this.objectuplData=[]
             this.choosefolder = false
         },
-        
+
+        //上传未选择文件的提示
+        nofile(){//失败提醒
+            this.$message.error('请选择上传文件');
+        },
+
         //删除文件点击事件
         removeobjectmsg(){
             this.removefileVisible = true
