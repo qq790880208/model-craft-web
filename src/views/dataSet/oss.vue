@@ -59,8 +59,18 @@
         </div>
         </el-dialog>
         <el-divider></el-divider>
-            <el-upload class="upload-demo" action="#" :file-list="fileList" :show-file-list="true" :http-request="uploadHttpRequest">
-                <el-button>选择文件</el-button>
+            <el-upload
+                class="upload"
+                ref="upload"
+                action="string"
+                :file-list="fileList"
+                :auto-upload="false"
+                :http-request="uplFile"
+                :on-change="handleChange"
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                multiple="multiple">
+                <el-button slot="trigger" size="small" type="primary" @click="delFile">选取文件</el-button>
             </el-upload>
         <el-divider></el-divider>
         <el-input placeholder="请输入文件名" v-model="uploadobjectName" clearable>
@@ -110,6 +120,7 @@
 
 <script>
 import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload } from '@/api/oss'
+import request from "@/utils/request"
 export default {
     data(){
         return{
@@ -133,7 +144,7 @@ export default {
             uploadBucketName:'',//上传目标桶
             uploadObjectFolder:'',//上传目标路径
             uploadobjectName:'',//上传文件名
-            fileList: [],//上传文件的列表
+            // fileList: [],//上传文件的列表
             uploadFile:'',//要给后端的文件
             uploadFilesignal:false,//上传文件判断信号
             removefileVisible:false,//删除文件dialog框信号
@@ -150,6 +161,9 @@ export default {
             removeBucketName:'',//传给后端的删除桶名
             removeObjectFolder:'',//传给后端的删除前缀
             removeObjectName:'',//传给后端的文件名
+            fileList: [],
+            multiple: true,
+            formData: "",
         }
     },
 
@@ -364,47 +378,46 @@ export default {
             this.oldObjectuplPrefix = this.objectuplPrefix.substring(0,this.objectuplPrefix.length-this.objectuplPrefix.split("").reverse().indexOf("/")-1)
         },
 
-        //选择上传文件
-        uploadHttpRequest(param) {
-            console.log(param);
-            console.log(param.file);
-            this.uploadFile = param.file
-            this.uploadFilesignal=true
-            // let reader = new FileReader()
-            // let that = this
-            // reader.readAsText(data.file)
-            // reader.onload = function() {
-            //     that.formData.mmiapXml = this.result
-            // }
+        delFile() {
+        this.fileList = [];
+        },
+        handleChange(file, fileList) {
+            this.fileList = fileList;
+        },
+        uplFile(file) {
+        this.formData.append("file", file.file);
+        },
+        handleRemove(file, fileList) {
+        console.log(file, fileList);
+        },
+        handlePreview(file) {
+        console.log(file);
         },
 
-        //点击进行文件上传
-        uploadObject(){
-            if(this.uploadFilesignal=true){
-                const para ={}
-                para.bucketName=this.uploadBucketName
-                para.file=this.uploadFile
-                para.folderName=this.uploadObjectFolder
-                para.objectName=this.uploadobjectName
-                this.uploadObjectFile(para)
-                this.uploadFilesignal=false
-                // this.fresh()
-            }else{
-                this.nofile()
+        uploadObject() {
+        let formData = new FormData();
+        formData.append("bucketName", this.uploadBucketName);
+        formData.append("folderName", this.uploadObjectFolder);
+        formData.append("file", this.fileList[0].raw);
+        formData.append("objectName", this.uploadobjectName);
+            return request({
+            url: "http://localhost:8089/minio-service/upload",
+            method: "post",
+            data: formData,
+            headers: {
+            "Content-Type": "multipart/form-data;charset=utf-8"
             }
-        },
-
-        //向后台传文件
-        uploadObjectFile(para){
-            console.log(para);
-            upload(para).then(response=>{
-                if(20000 == response.code){
+        }).then(response => {
+            if(20000 == response.code){
                     this.suc()
+                    this.uploadObjectVisible = false
                 }else{
                     this.fai()
                 }
-            }).catch(()=>{})
-        },
+        })
+        .catch(err => {console.log(err);})
+        this.fresh()
+    },
 
         //返回内层dialog
         returnuplFolder(){
