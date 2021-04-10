@@ -4,7 +4,7 @@
       <el-tab-pane label="全部数据" name="allData">
         <el-form :inline="true" :model="filter" >
           <el-button style="text-align: left" min type="primary" @click="createDataSet()">
-            创建数据集
+            创建数据集npm 
           </el-button>
           <el-form-item >
             <el-input v-model="filter.name" placeholder="请输入查询名称" >
@@ -164,9 +164,11 @@
         </el-form-item>
         <el-form-item label="数据集输入位置" prop="input">
           <el-input style="width: 90%" v-model="form.input"></el-input><el-button @click="showOssInputDialog" icon="el-icon-folder-add"></el-button>
+          {{inputBucket}} {{inputObject}}
         </el-form-item>
         <el-form-item   label="数据集输出位置" prop="output">
           <el-input style="width: 90%" v-model="form.output"></el-input><el-button  @click="showOssOutputDialog" icon="el-icon-folder-add"></el-button>
+          {{outputBucket}} {{outputObject}}
         </el-form-item>
         <el-form-item label="添加标签集" prop="label">
           <el-tag
@@ -233,10 +235,50 @@
     </el-dialog>
 
     <el-dialog
-      title="提示"
-      :visible.sync="visible"
-      width="30%">
-        <span>这是一段信息</span>
+      title="选择路径" :visible.sync="ossInputVisible" width="30%" :show-close="false">
+        <el-form>
+          <el-form-item label="请选择桶:">
+            <el-radio-group v-model="bucketlist" @change="chooseBucket">
+              <el-radio-button :label="item.name" :key="item.name" v-for="item in list">{{item.name}}</el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+        </el-form>
+        <el-divider></el-divider>
+        <el-row>
+          <el-button icon="el-icon-upload2" circle @click="retuenOdlRow"></el-button>
+          <el-divider direction="vertical"></el-divider>
+          <el-tag type="info" effect="light">当前路径：{{bucketlist}} ：{{objectcurrentRow}}</el-tag>
+        </el-row>
+        <el-table :data="objectList" highlight-current-row @row-click="getobjectbyPerfix">
+          <el-table-column prop="name" label="请选择目录"></el-table-column>
+        </el-table>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="notInput">取 消</el-button>
+            <el-button type="primary" @click="returnInput">确定</el-button>
+        </div>
+    </el-dialog>
+    <el-dialog
+      title="选择路径" :visible.sync="ossOutputVisible" width="30%" :show-close="false">
+        <el-form>
+          <el-form-item label="请选择桶:">
+            <el-radio-group v-model="bucketlist" @change="chooseBucket">
+              <el-radio-button :label="item.name" :key="item.name" v-for="item in list">{{item.name}}</el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+        </el-form>
+        <el-divider></el-divider>
+        <el-row>
+          <el-button icon="el-icon-upload2" circle @click="retuenOdlRow"></el-button>
+          <el-divider direction="vertical"></el-divider>
+          <el-tag type="info" effect="light">当前路径：{{bucketlist}} ：{{objectcurrentRow}}</el-tag>
+        </el-row>
+        <el-table :data="objectList" highlight-current-row @row-click="getobjectbyPerfix">
+          <el-table-column prop="name" label="请选择目录"></el-table-column>
+        </el-table>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="notOutput">取 消</el-button>
+            <el-button type="primary" @click="returnOutput">确定</el-button>
+        </div>
     </el-dialog>
 
   </div>
@@ -247,6 +289,7 @@ import { mapGetters } from 'vuex'
 import { getLabel, getDataByName, getDataByTeam, getDataByManager, createDataSet, deleteDataSet, assignLabel } from '@/api/data'
 import store from '@/store'
 import { getAllTeam } from '@/api/team'
+import{ listBucket,listObject,listObjectByPrefix } from '@/api/oss'
 export default {
   namespaced: true,
   filters: {
@@ -309,7 +352,21 @@ export default {
       dialogVisible: false,
       inputVisible: false, // tag显示
       teamDialogVisible: false,
-      visible: false,
+      ossInputVisible: false,
+      ossOutputVisible: false,
+      bucketlist:'',//选择的bucket
+      list:[],//bucket radio的数据
+      objectList:[],//object table数据
+      objectcurrentRow:'',//object当前目录
+      objectcurrentPrefix:'',//object后端前缀
+      objectoldRow:'',//object上级目录
+      objectoldPrefix:'',//object上级后端前缀
+      selectBucket:'',//dialog选择的桶
+      selectObject:'',//dialog选择的对象
+      inputBucket:'',//数据集输入桶
+      inputObject:'',//数据集输入对象
+      outputBucket:'',//数据集输出桶
+      outputObject:'',//数据集输出对象
       inputValue: '',
       teams: [], // 所有团队
       value: [],
@@ -381,11 +438,13 @@ export default {
 
     //  数据集文件输入位置
     showOssInputDialog() {
-      this.visible= true;
+      this.getbucket()
+      this.ossInputVisible= true;
     },
     //  数据集文件输出位置
     showOssOutputDialog() {
-      this.visible= true;
+      this.getbucket()
+      this.ossOutputVisible= true;
     },
     
     cancel() {
@@ -602,7 +661,130 @@ export default {
       if(ttype == 3) {
         this.$router.push({path:'/label/voice'})
       }
-    }  
+    },
+    
+     //获取bucket列表
+    getbucket(){
+        listBucket().then(response=>{
+        this.list = response.data}).catch(()=>{})
+    },
+    //选择桶后更新object table
+    chooseBucket(val){
+      this.objectList=[]
+      const para = {bucketName : val}
+      console.log(para);
+      this.getobject(para);
+    },
+    
+    //更新object的后台请求
+    getobject(para){
+      listObject(para).then(response=>{
+          if(response){
+            console.log(response);
+            this.objectList = response.data
+            }else{
+            }
+            }).catch()
+    },
+    //递归打开object
+    getobjectbyPerfix(row,event,column){
+      console.log(row.name);
+            const para={}
+            if("/"==((row.name.split("").reverse().join("")).substring(0,1)).split("").reverse().join("")){
+                console.log("isdir");
+                this.objectcurrentRow = row.name;
+                this.objectcurrentPrefix = row.name.substring(0,row.name.length-1)//去/
+                para.bucketName = this.bucketlist
+                para.objectPrefix = this.objectcurrentPrefix
+                console.log(para);
+                this.getobjectlist(para)
+                this.objectoldPrefix=this.objectcurrentPrefix.substring(0,this.objectcurrentPrefix.length-this.objectcurrentPrefix.split("").reverse().indexOf("/")-1)
+                this.objectoldRow=this.objectcurrentPrefix.substring(0,this.objectcurrentPrefix.length-this.objectcurrentPrefix.split("").reverse().indexOf("/"))
+            }else{
+                console.log("isnotdir");
+            }
+            this.selectBucket=this.bucketlist
+            this.selectObject=row.name
+    },
+    //根据前缀更新object
+    getobjectlist(para){
+      listObjectByPrefix(para).then(response=>{
+                this.objectList = response.data
+            }).catch(error=>{console.log(error);})
+    },
+
+    //返回上级
+    retuenOdlRow(){
+      console.log(this.bucketlist);
+      console.log(this.objectoldPrefix);
+      const para={}
+      para.bucketName = this.bucketlist;
+      para.objectPrefix = this.objectoldPrefix;
+      console.log(para);
+      this.getobjectlist(para)
+      this.objectcurrentRow = this.objectoldRow
+      this.objectcurrentPrefix = this.objectoldPrefix
+      this.objectoldRow = this.objectcurrentPrefix.substring(0,this.objectcurrentPrefix.length-this.objectcurrentPrefix.split("").reverse().indexOf("/"))
+      this.objectoldPrefix = this.objectcurrentPrefix.substring(0,this.objectcurrentPrefix.length-this.objectcurrentPrefix.split("").reverse().indexOf("/")-1)
+    },
+
+    //返回输入路径
+    returnInput(){
+      this.inputBucket=this.selectBucket
+      this.inputObject=this.selectObject
+      this.bucketlist=''
+      this.list=[]
+      this.objectList=[]
+      this.objectcurrentRow=''
+      this.objectcurrentPrefix=''
+      this.objectoldRow=''
+      this.objectoldPrefix=''
+      this.selectBucket=''
+      this.selectObject=''
+      this.ossInputVisible=false
+    },
+    //取消返回输入路径
+    notInput(){
+      this.bucketlist=''
+      this.list=[]
+      this.objectList=[]
+      this.objectcurrentRow=''
+      this.objectcurrentPrefix=''
+      this.objectoldRow=''
+      this.objectoldPrefix=''
+      this.selectBucket=''
+      this.selectObject=''
+      this.ossInputVisible=false
+    },
+    //返回输出路径
+    returnOutput(){
+      this.outputBucket=this.selectBucket
+      this.outputObject=this.selectObject
+      this.bucketlist=''
+      this.list=[]
+      this.objectList=[]
+      this.objectcurrentRow=''
+      this.objectcurrentPrefix=''
+      this.objectoldRow=''
+      this.objectoldPrefix=''
+      this.selectBucket=''
+      this.selectObject=''
+      this.ossOutputVisible=false
+    },
+    //取消返回输出路径
+    notOutput(){
+      this.bucketlist=''
+      this.list=[]
+      this.objectList=[]
+      this.objectcurrentRow=''
+      this.objectcurrentPrefix=''
+      this.objectoldRow=''
+      this.objectoldPrefix=''
+      this.selectBucket=''
+      this.selectObject=''
+      this.ossOutputVisible=false
+    },
+
   },
   mounted() {
     this.getDataSet(),

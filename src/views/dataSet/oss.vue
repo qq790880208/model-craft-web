@@ -103,7 +103,7 @@
             <el-tag type="info" effect="light">当前路径：{{delbucket}} ：{{objectdelcurrentRow}}</el-tag>
         </el-row> 
         <el-table :data="objectdelData" highlight-current-row @row-click="dellistbyPrefix">
-            <el-table-column prop="name" label="请选择文件  "></el-table-column>
+            <el-table-column prop="name" label="请选择文件"></el-table-column>
         </el-table>
         <div slot="footer" class="dialog-footer">
             <el-button @click="returndelNull">取 消</el-button>
@@ -434,11 +434,6 @@ export default {
             this.objectuplcurrentRow=''
             this.objectuplData=[]
             this.choosefolder = false
-        },
-
-        //上传未选择文件的提示
-        nofile(){//失败提醒
-            this.$message.error('请选择上传文件');
         },
 
         //删除文件点击事件
