@@ -717,6 +717,14 @@ export default {
     retuenOdlRow(){
       console.log(this.bucketlist);
       console.log(this.objectoldPrefix);
+      console.log(this.objectoldRow);
+      if(this.objectoldRow==this.objectoldPrefix){
+                this.objectoldRow=''
+                this.objectoldPrefix=''
+                this.objectcurrentRow=''
+                this.objectcurrentPrefix=''
+                this.selectObject=''
+            }
       const para={}
       para.bucketName = this.bucketlist;
       para.objectPrefix = this.objectoldPrefix;
