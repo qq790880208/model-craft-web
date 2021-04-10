@@ -21,7 +21,11 @@
     <el-row>
         <el-button icon="el-icon-upload2" circle @click="returnOldCurrentRow"></el-button>
         <el-divider direction="vertical"></el-divider>
-        <el-tag type="info" effect="light">当前路径：{{bucket}} ：{{objectcurrentRow}}</el-tag>
+        <el-tag effect="plain">当前路径：{{bucket}} ：{{objectcurrentRow}}</el-tag>
+        <el-button-group>
+            <el-button  icon="el-icon-folder-add" plain @click="addFolder">创建文件夹</el-button>
+            <el-button  icon="el-icon-folder-remove" plain @click="remFolder">删除文件夹</el-button>
+        </el-button-group>
     </el-row> 
     <el-divider></el-divider>
     <el-row>
@@ -115,16 +119,33 @@
             <el-button type="primary" @click="removeObject">确 定</el-button>
         </div>
     </el-dialog>
+
+    <!--删除文件夹-->
+    <el-dialog title="删除文件夹" :visible.sync="remFolderVisible" width="30%" >
+        {{bucket}} ：{{objectcurrentRow}}
+        <el-divider></el-divider>
+        <el-form>
+            <el-form-item label="选择文件夹:">
+                <el-radio-group v-model="folder" @change="chooseremFolder">
+                    <el-radio-button :label="item.name" :key="item.name" v-for="item in folders">{{item.name}}</el-radio-button>
+                </el-radio-group>
+            </el-form-item> 
+        </el-form>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="remFolderVisible=false">取 消</el-button>
+            <el-button type="primary" @click="delFol">确 定</el-button>
+        </div>
+    </el-dialog>
 </div>
 </template>
 
 <script>
-import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload } from '@/api/oss'
+import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder } from '@/api/oss'
 import request from "@/utils/request"
 export default {
     data(){
         return{
-            bucket:'',//双向绑定已选择的bucket
+            bucket:'modelcraft',//双向绑定已选择的bucket(默认值设为modelcraft)
             list:[],//bucket radio的数据
             objectData:[],//object table的数据
             objectcurrentRow:'',//页面显示的当前路径
@@ -164,11 +185,16 @@ export default {
             fileList: [],
             multiple: true,
             formData: "",
+            remFolderVisible:false,//删除文件夹dialog框
+            folder:'',//选择的folder
+            folders:[],//folder列表
+            delfolder:'',//要删除的文件夹
         }
     },
 
     created (){
         this.bucketlist()
+        this.choosebucket("modelcraft")//(默认值设为modelcraft)
     },
 
     methods : {
@@ -197,6 +223,8 @@ export default {
         //选bucket
         choosebucket(val){
             this.objectData=[]
+            this.objectcurrentRow=''
+            this.objectPrefix=''
             const para = {bucketName : val}
             console.log(para);
             this.objectlist(para);
@@ -247,6 +275,12 @@ export default {
             console.log(this.bucket);
             console.log(this.oldCurrentRow);
             console.log(this.oldObjectPrefix);
+            if(this.oldCurrentRow==this.oldObjectPrefix){
+                this.oldCurrentRow=''
+                this.oldObjectPrefix=''
+                this.objectcurrentRow=''
+                this.objectPrefix=''
+            }
             const para={}
             para.bucketName = this.bucket;
             para.objectPrefix = this.oldObjectPrefix;
@@ -367,6 +401,13 @@ export default {
             console.log(this.uplbucket);
             console.log(this.olduplCurrentRow);
             console.log(this.oldObjectuplPrefix);
+            if(this.olduplCurrentRow==this.oldObjectuplPrefix){
+                this.olduplCurrentRow=''
+                this.oldObjectuplPrefix=''
+                this.objectuplcurrentRow=''
+                this.objectuplPrefix=''
+                this.selectObjectFolder=''
+            }
             const para={}
             para.bucketName = this.uplbucket;
             para.objectPrefix = this.oldObjectuplPrefix;
@@ -492,8 +533,14 @@ export default {
             }).catch(error=>{console.log(error);})
         },
 
-        //上传的返回上一级事件
+        //删除的返回上一级事件
         returnOlddelCurrentRow(){
+            if(this.olddelCurrentRow==this.oldObjectdelPrefix){
+                this.olddelCurrentRow=''
+                this.oldObjectdelPrefix=''
+                this.objectdelcurrentRow=''
+                this.objectdelPrefix=''
+            }
             console.log(this.delbucket);
             console.log(this.olddelCurrentRow);
             console.log(this.oldObjectdelPrefix);
@@ -560,7 +607,67 @@ export default {
                     this.fai()
                 }
             })
-        }
+        },
+
+        //在目录创建文件夹
+        addFolder(){
+            this.$prompt(this.bucket+':'+this.objectcurrentRow, '新建文件夹', {
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                inputPlaceholder:'请输入文件夹名'
+            }).then(({ value }) => {
+                console.log(this.objectcurrentRow+value);
+                const para={}
+                para.bucketName=this.bucket
+                para.objectName=this.objectcurrentRow+value
+                this.createfolder(para)
+                this.fresh()
+            }).catch(() => {
+                    });      
+        },
+
+        //后端新建一个文件夹
+        createfolder(para){
+            createFolder(para).then(response=>{
+                if(20000 == response.code){
+                    this.suc()
+                }else{
+                    this.fai()
+                }
+            })
+        },
+
+        //在目录删除文件夹
+        remFolder(){
+            this.remFolderVisible=true
+            console.log(this.bucket);
+            console.log(this.objectPrefix);
+            const para={}
+            para.bucketName=this.bucket
+            para.objectPrefix=this.objectPrefix
+            this.listFolders(para)
+        },
+        listFolders(para){
+            listFolder(para).then(response=>{
+                if(response.message=="nofolder"){
+                    this.choofolder()
+                }
+            this.folders = response.data}).catch(()=>{})
+        },
+        chooseremFolder(val){
+            this.delfolder=val;
+        },
+        delFol(){
+            const para={}
+            para.bucketName=this.bucket
+            para.objectName=this.objectcurrentRow+this.delfolder
+            this.removeobj(para)
+            this.remFolderVisible=false
+            this.fresh()
+        },
+        choofolder(){
+            this.$message.error('该目录下不存在文件夹');
+        },
     }
 
 }
