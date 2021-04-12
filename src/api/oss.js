@@ -52,3 +52,30 @@ export function removeFile(params) {
         baseURL: 'http://localhost:8089'
     })
 }
+
+export function upload(params) {
+    return request({
+        url: '/minio-service/upload',
+        method: 'post',
+        params: params,
+        baseURL: 'http://localhost:8089',
+    })
+}
+
+export function createFolder(params) {
+    return request({
+        url: '/minio-service/createFolder',
+        method: 'get',
+        params: params,
+        baseURL: 'http://localhost:8089',
+    })
+}
+
+export function listFolder(params) {
+    return request({
+        url: '/minio-service/listFolder',
+        method: 'get',
+        params: params,
+        baseURL: 'http://localhost:8089',
+    })
+}

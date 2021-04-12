@@ -88,7 +88,7 @@
     <div id="labelfather" :style="{
         //width:800+'px',
         //height:800+'px',
-        border: '1px solid #666',
+        //border: '1px solid #666',
         float:'left',
         marginLeft:20+'px'
         }
@@ -105,7 +105,11 @@
           :typelabel="markinfoArry"
           @deletelabel="deletelabel(index)"
           @changeinfo="changeinfo($event, index)"
-          style="text-align: center"
+          @mousedown.native="handelClick(index)"
+          :style="{
+            //textAlign:'center',
+            border:(b_i===index) ?'1px solid #ff0000':'0px solid #ff0000',
+            }"
         ></labelinfo>
         <!-- <el-input placeholder="请输入内容" style="width:600px" clearable></el-input>
       <el-button type="primary">保存</el-button> -->
