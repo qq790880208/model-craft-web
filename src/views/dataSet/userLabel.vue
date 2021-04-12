@@ -20,16 +20,19 @@
                 <!-- <el-button icon="el-icon-delete" @click="delLabel">删除标注数据</el-button> -->
                 <el-button icon="el-icon-cloudy" style="right" @click="startLabel" :style="{ display: visible}">开始标注</el-button>
               </el-row>
-      <div v-for="(item, index) in imagelargeArry" :key="index" style="
+      <div v-for="(item, index) in imagelargeArry" :key="index" @click="select(item)" style="
         float:left;
         margin-left:20px
         margin-top:20px
       " >
-      <miniimage 
+      <myimage 
       :fatherimagesrc="item.url"
       :ismarked="item.islabel"
-      @entermark="entermark(index)"
-      ></miniimage>
+      :parentSelectList="selectList"
+      :parentUuid="item.uuid"
+      @select="select(index)"
+      @childSelectList = "fromChildList($event)"
+      ></myimage>
       </div>
             </el-main>
             <el-divider direction="vertical"></el-divider>
@@ -53,9 +56,9 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getLabel } from '@/api/data'
+import { getLabel, deleteData } from '@/api/data'
 import store from '@/store'
-import miniimage from '@/components/miniimage.vue'
+import myimage from '@/components/myimage.vue'
 
 export default {
   name: 'Dashboard',
@@ -68,10 +71,11 @@ export default {
       undoneurls: [],
       //存储图片url,是否已标注等信息的数组，用于获取远程图片信息
       imagelargeArry:[],
+      selectList: []
     }
   },
   components:{
-    miniimage
+    myimage
   },
   computed: {
     ...mapGetters([
@@ -79,10 +83,34 @@ export default {
     ])
   },
   methods: {
+    select(index) {
+      console.log('55555555555555555555555')
+      console.log('我是父组件')
+      console.log(this.selectList)
+    },
+    fromChildList(vara) {
+      this.selectList = vara;
+    },
+    delData() {
+      let uuidss = this.selectList.join(",");
+      const params = {
+        uuids: uuidss
+      }
+      console.log('uuuuuuuuuu')
+      console.log(params)
+      deleteData(params).then(res => {
+        this.$message({
+          message: '删除成功',
+          type: 'success'
+        })
+        this.getData()
+      })
+    },
     toDataSet: function() {
       this.$router.push('/data')
     },
     getData: function() {
+      this.imagelargeArry = []
       let _this = this;
       const params = {
         datasetuuid: store.getters.uuid
@@ -91,6 +119,7 @@ export default {
         console.log("response",response)
         for (let i = 0; i < response.data.items.length; i++) {
           let a={};
+          a["uuid"] = response.data.items[i].uuid  // label的uuid
           a["url"]=response.data.items[i].file_path
           a["islabel"]=response.data.items[i].is_label
           //a["index"]=i

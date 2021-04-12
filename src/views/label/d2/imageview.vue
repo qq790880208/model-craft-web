@@ -127,7 +127,7 @@ export default {
     },
     //get请求数据
     requireimage: function () {
-      console.log("uuid",store.getters.uuid)
+      console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
       let _this = this;
       return request({
         url:
@@ -175,6 +175,12 @@ export default {
 
         //console.log("imageArry", _this.imageArry);
         //console.log("transforjson",JSON.stringify(_this.infoArry[0][0]))
+      }).catch(function(error){
+        console.log("error",error)
+          _this.$message({
+          message:"请求图片失败",
+          type: 'error'
+          })
       });
     },
     //get请求数据集的标签集
@@ -195,8 +201,13 @@ export default {
           _this.marktype.push(a)
         }
         console.log("marktype",_this.marktype)
-      })
-
+      }).catch(function(error){
+        console.log("error",error)
+          _this.$message({
+          message:"请求标签集合失败",
+          type: 'error'
+          })
+      });
     },
     //put更新数据
     savelabel(i) {
@@ -225,12 +236,20 @@ export default {
           });
         _this.requireimage();
         _this.requiretag();
+      }).catch(function(error){
+        console.log("error",error)
+          _this.$message({
+          message:"保存失败",
+          type: 'error'
+          })
+        _this.requireimage();
+        _this.requiretag();
       });
     },
     //post半自动标注
     automark(){
       let _this = this;
-      _this.$message('开始自动标注');
+      _this.$message('开始2D拉框自动标注');
       _this.automarkbtntext="标注中";
       _this.isloading=true;
       return request({
@@ -242,14 +261,24 @@ export default {
       }).then(function (response) {
         console.log(response);
         _this.$message({
-          message:"自动标注成功",
+          message:"2D拉框自动标注成功",
           type: 'success'
           });
         _this.automarkbtntext="开始自动标注";
         _this.isloading=false;
         _this.requireimage();
         _this.requiretag();
-      })
+      }).catch(function(error){
+        console.log("error111",error)
+          _this.$message({
+          message:"2D拉框自动标注失败",
+          type: 'error'
+          });
+        _this.automarkbtntext="开始自动标注";
+        _this.isloading=false;
+        _this.requireimage();
+        _this.requiretag();
+      });
     }
   },
   mounted: function () {

@@ -64,10 +64,10 @@ export function getVisualData(query){
 
 export function submitTask(query){
   return request({
-    url:'/newtrain/submitTask',
+    url:'/train',
     method:'post',
-    params: query,
-    baseURL: 'http://localhost:9528/dev-api'
+    data: query,
+    baseURL: 'http://192.168.19.237:8084'
   })
 }
 
@@ -88,3 +88,12 @@ export function getTableData1(query){
     baseURL: 'http://192.168.19.237:8084'
   })
 }
+
+export function getDataByName(params) {//创建任务时获取数据集
+    return request({
+      url: '/data/getdataSet',
+      method: 'get',
+      params: params,
+      baseURL: 'http://192.168.19.239:8085'
+    })
+  }

@@ -35,3 +35,11 @@ export function editTeams(params) {
     baseURL: 'http://192.168.19.239:8083'
   })
 }
+
+export function getAllTeam() {
+  return request({
+    url: '/team/getAll',
+    method: 'get',
+    baseURL: 'http://192.168.19.239:8083'
+  })
+}
