@@ -202,14 +202,15 @@
       title="创建团队标注任务"
       :visible.sync="teamDialogVisible"
       :before-close="handleCloseDialog"
+      width="40%"
       >
-      <el-form :model='teamForm' ref="teamForm" label-width="120px" label-position="left">
+      <el-form :model='teamForm' ref="teamForm" label-width="100px" label-position="left">
         <el-form-item label="团队名称">
           <span>
             {{teamForm.dataSetName}}
           </span>
         </el-form-item>
-        <el-form-item>
+        <el-form-item label="标注团队">
           <template>
             <el-select
               v-model="teamForm.teamValue"
@@ -288,8 +289,7 @@
 import { mapGetters } from 'vuex'
 import { getLabel, getDataByName, getDataByTeam, getDataByManager, createDataSet, deleteDataSet, assignLabel } from '@/api/data'
 import store from '@/store'
-import { getAllTeam } from '@/api/team'
-import{ listBucket,listObject,listObjectByPrefix } from '@/api/oss'
+import { getAllTeam, getSelectTeam } from '@/api/team'
 export default {
   namespaced: true,
   filters: {
@@ -369,6 +369,7 @@ export default {
       outputObject:'',//数据集输出对象
       inputValue: '',
       teams: [], // 所有团队
+      selectTeams: [], //所选择的团队
       value: [],
       teamUser: [],  // 团队成员
       form: {
@@ -382,7 +383,8 @@ export default {
       },
       teamForm: {
         dataSetName: '',
-        teamValue: ''
+        teamValue: [],
+        dataSetUuid: ''
       },
       addFormRules: {
         name: [{ required: true, message: '请输入数据集名字', trigger: 'blur' }],
@@ -513,9 +515,18 @@ export default {
     // 显示标注团队对话框
     showTeamDialog(index, row) {
       this.getTeams()
+      this.teamForm.teamValue = []
+      // 得到标注团队
+      const params = {
+        dataSetUuid: row.uuid
+      }
+      getSelectTeam(params).then(res => {
+        this.selectTeams = res.data.items
+        this.teamForm.teamValue = res.data.items
+      })
       this.teamForm.dataSetName = row.name
       this.teamDialogVisible = true
-      this.teamForm.teamValue = []
+      
       this.teamForm.dataSetUuid = row.uuid
     },
 

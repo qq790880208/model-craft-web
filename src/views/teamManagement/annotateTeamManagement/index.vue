@@ -9,7 +9,7 @@
           <el-button type="primary" size="small" :disabled="isRole !=='admin'" @click="handleAdd">新增团队</el-button>
           <el-button type="danger" size="small" :disabled="isRole !=='admin'" @click="handleDelete()">Del</el-button>
         </el-row>
-        <el-table :data="teamsList" style="width: 100%;" fit> <!--@mouseover="mouseOn()" @mouseleave="mouseGo()" @row-click="openDetails(scope.$index, scope.row)-->
+        <el-table :data="teamsList" style="width: 100%;" fit> <!--@mouseover="mouseOn()" @mouseleave="mouseGo()" @row-click="openDetails(scope.$index, scope.row)"-->
           <!-- <el-table-column align="center" label="Team Name" width="200">
             <template slot-scope="scope">
               <span class="link-type" @click="openDetails(scope.$index, scope.row)">{{ scope.row.name }}</span>
@@ -21,6 +21,7 @@
             </template>
             <template slot-scope="scope">
               <span class="link-type" @click="openDetails(scope.$index, scope.row)">{{ scope.row.name }}</span>
+              <!-- <span class="link-type">{{ scope.row.name }}</span> -->
             </template>
           </el-table-column>
         </el-table>
@@ -80,22 +81,22 @@
                 {{ scope.row.id }}
               </template>
             </el-table-column> -->
-            <el-table-column align="center" label="用户名字" width="120">
+            <el-table-column align="center" label="用户名字" width="130">
               <template slot-scope="scope">
                 {{ scope.row.name }}
               </template>
             </el-table-column>
-            <el-table-column align="center" label="标注角色" width="120">
+            <el-table-column align="center" label="标注角色" width="130">
               <template slot-scope="scope">
                 {{ scope.row.label_role }}
               </template>
             </el-table-column>
-            <el-table-column align="center" label="Description">
+            <el-table-column align="center" label="描述" min-width="150">
               <template slot-scope="scope">
                 {{ scope.row.descr }}
               </template>
             </el-table-column>
-            <el-table-column align="center" label="Operations">
+            <el-table-column align="center" label="操作" min-width="150">
               <template slot-scope="scope">
                 <el-button type="primary" size="small" :disabled="isRole !=='admin' && idLabel !=='TeamManager'" @click="handleEditUser(scope.$index, scope.row)">Edit</el-button>
                 <el-button type="danger" size="small" :disabled="isRole !=='admin' && idLabel !=='TeamManager'" @click="handleDeleteUser(scope.$index, scope.row)">Delete</el-button>
@@ -130,7 +131,15 @@
     <el-dialog :title="textMap[dialogStatusUser]" :visible.sync="dialogFormVisibleUser" :close-on-click-modal="false">
       <el-form ref="editForm" :model="editFormUser" label-width="80px" :rules="editFormRulesUser">
         <el-form-item label="名字" prop="name">
-          <el-input v-model="editFormUser.name" auto-complete="off" />
+          <!-- <el-input v-model="editFormUser.name" auto-complete="off" /> -->
+          <el-select v-model="editFormUser.name" placeholder="请选择">
+            <el-option
+              v-for="item in options"
+              :key="item.name"
+              :label="item.name"
+              :value="item.name">
+            </el-option>
+          </el-select>
         </el-form-item>
         <el-form-item label="角色" prop="character">
           <!--<el-input v-model="editFormUser.character" auto-complete="off" />-->
@@ -155,7 +164,7 @@
 import { mapGetters } from 'vuex'
 import { getTeams, delTeams, addTeams, editTeams } from '@/api/team'
 import { addUser, batchDelUser, delUser, editUser, getTeamsUserPage } from '@/api/teamUser'
-import { getTeamPerm } from '@/api/userManage'
+import { getTeamPerm, getAllUser } from '@/api/userManage'
 import store from '@/store'
 
 export default {
@@ -210,6 +219,7 @@ export default {
       dialogStatusUser: '',
       dialogFormVisible: false,
       dialogFormVisibleUser: false,
+      options: [], // 所有用户
       editForm: {
         name: '',
         descr: ''
@@ -261,6 +271,8 @@ export default {
         this.flag = false
       }
     },
+
+    // 保存编辑
     mouseLeave: function() {
       this.flag = true
       // const para = Object.assign({}, this.selectTeam)
@@ -280,6 +292,8 @@ export default {
           })
         })
     },
+
+    // 得到团队列表
     getTeamsList: function() {
       const para = {
         name: store.getters.name,
@@ -289,6 +303,8 @@ export default {
         this.teamsList = response.data.items
       })
     },
+
+    // 分页
     handleSizeChange(val) {
       this.page_size = val
       this.getUsers()
@@ -297,6 +313,8 @@ export default {
       this.page = val
       this.getUsers()
     },
+
+    // 得到team的用户
     getUsers: function() {
       const para = {}
       para.id = this.selectTeam.id
@@ -309,6 +327,7 @@ export default {
         this.rolesList = response.data.items
       })
     },
+
     /* 显示团队的信息 */
     openDetails: function(index, row) {
       this.flag = true
@@ -344,6 +363,8 @@ export default {
       this.dialogFormVisible = true
       this.editForm = Object.assign({}, row)
     },
+
+    // 删除团队
     handleDelete: function() {
       this.$confirm('确认删除该记录吗?', '提示', {
         type: 'warning'
@@ -361,6 +382,8 @@ export default {
         })
         .catch(() => {})
     },
+
+    // 删除团队用户
     handleDeleteUser: function(index, row) {
       this.$confirm('确认删除该记录吗?', '提示', {
         type: 'warning'
@@ -379,6 +402,7 @@ export default {
         })
       console.log(index, row)
     },
+
     /* 添加用户数据 */
     handleAddUser: function() {
       this.dialogStatusUser = 'create'
@@ -388,6 +412,14 @@ export default {
         character: '',
         descr: ''
       }
+      this.getAllUserList()
+    },
+
+    // 得到所有的用户
+    getAllUserList: function() {
+      getAllUser().then(res => {
+        this.options = res.data.items
+      })
     },
     /* edit 用户数据 */
     handleEditUser: function(index, row) {
@@ -436,13 +468,13 @@ export default {
               console.log(222222222222222222222)
               console.log(para)
               addUser(para).then(res => {
-                this.message({
-                  message: '提交成功',
+                this.$message({
+                  message: '添加成功',
                   type: 'success'
                 })
+                this.getUsers()
               })
               this.dialogFormVisibleUser = false
-              this.getUsers()
             })
             .catch(e => {
               // 打印一下错误
