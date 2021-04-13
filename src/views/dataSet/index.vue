@@ -4,7 +4,7 @@
       <el-tab-pane label="全部数据" name="allData">
         <el-form :inline="true" :model="filter" >
           <el-button style="text-align: left" min type="primary" @click="createDataSet()">
-            创建数据集npm 
+            创建数据集
           </el-button>
           <el-form-item >
             <el-input v-model="filter.name" placeholder="请输入查询名称" >
@@ -163,12 +163,12 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="数据集输入位置" prop="input">
-          <el-input style="width: 90%" v-model="form.input"></el-input><el-button @click="showOssInputDialog" icon="el-icon-folder-add"></el-button>
-          {{inputBucket}} {{inputObject}}
+          <el-input style="width: 90%" v-model="form.input"></el-input><el-button @click="showOssInputDialog()" icon="el-icon-folder-add"></el-button>
+            {{inputObject}}
         </el-form-item>
         <el-form-item   label="数据集输出位置" prop="output">
-          <el-input style="width: 90%" v-model="form.output"></el-input><el-button  @click="showOssOutputDialog" icon="el-icon-folder-add"></el-button>
-          {{outputBucket}} {{outputObject}}
+          <el-input style="width: 90%" v-model="form.output"></el-input><el-button  @click="showOssOutputDialog()" icon="el-icon-folder-add"></el-button>
+            {{outputObject}}
         </el-form-item>
         <el-form-item label="添加标签集" prop="label">
           <el-tag
@@ -288,6 +288,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getLabel, getDataByName, getDataByTeam, getDataByManager, createDataSet, deleteDataSet, assignLabel } from '@/api/data'
+import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder } from '@/api/oss'
 import store from '@/store'
 import { getAllTeam, getSelectTeam } from '@/api/team'
 export default {
