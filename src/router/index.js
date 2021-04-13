@@ -184,7 +184,7 @@ export const asyncRoutes = [
         path: '/model',
         component: () => import('@/views/model/index'),
         name: 'model admin',
-        meta: { title: '模型', icon: 'nested', resources: 'model' }
+        meta: { title: '模型管理', icon: 'nested', resources: 'model' }
       },
       {
         path: '/model-eval',
