@@ -13,6 +13,7 @@ const getters = {
   userid: state => state.user.userid,
   password: state => state.user.password,
   uuid: state => state.data.uuid,
-  type: state => state.data.type
+  type: state => state.data.type,
+  dirPath: state => state.data.dirPath
 }
 export default getters

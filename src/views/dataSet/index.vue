@@ -4,7 +4,7 @@
       <el-tab-pane label="全部数据" name="allData">
         <el-form :inline="true" :model="filter" >
           <el-button style="text-align: left" min type="primary" @click="createDataSet()">
-            创建数据集npm 
+            创建数据集
           </el-button>
           <el-form-item >
             <el-input v-model="filter.name" placeholder="请输入查询名称" >
@@ -163,12 +163,12 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="数据集输入位置" prop="input">
-          <el-input style="width: 90%" v-model="form.input"></el-input><el-button @click="showOssInputDialog" icon="el-icon-folder-add"></el-button>
-          {{inputBucket}} {{inputObject}}
+          <el-input style="width: 90%" v-model="form.input"></el-input><el-button @click="showOssInputDialog()" icon="el-icon-folder-add"></el-button>
+            {{inputObject}}
         </el-form-item>
         <el-form-item   label="数据集输出位置" prop="output">
-          <el-input style="width: 90%" v-model="form.output"></el-input><el-button  @click="showOssOutputDialog" icon="el-icon-folder-add"></el-button>
-          {{outputBucket}} {{outputObject}}
+          <el-input style="width: 90%" v-model="form.output"></el-input><el-button  @click="showOssOutputDialog()" icon="el-icon-folder-add"></el-button>
+            {{outputObject}}
         </el-form-item>
         <el-form-item label="添加标签集" prop="label">
           <el-tag
@@ -202,14 +202,15 @@
       title="创建团队标注任务"
       :visible.sync="teamDialogVisible"
       :before-close="handleCloseDialog"
+      width="40%"
       >
-      <el-form :model='teamForm' ref="teamForm" label-width="120px" label-position="left">
+      <el-form :model='teamForm' ref="teamForm" label-width="100px" label-position="left">
         <el-form-item label="团队名称">
           <span>
             {{teamForm.dataSetName}}
           </span>
         </el-form-item>
-        <el-form-item>
+        <el-form-item label="标注团队">
           <template>
             <el-select
               v-model="teamForm.teamValue"
@@ -287,9 +288,9 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getLabel, getDataByName, getDataByTeam, getDataByManager, createDataSet, deleteDataSet, assignLabel } from '@/api/data'
+import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder } from '@/api/oss'
 import store from '@/store'
-import { getAllTeam } from '@/api/team'
-import{ listBucket,listObject,listObjectByPrefix } from '@/api/oss'
+import { getAllTeam, getSelectTeam } from '@/api/team'
 export default {
   namespaced: true,
   filters: {
@@ -369,6 +370,7 @@ export default {
       outputObject:'',//数据集输出对象
       inputValue: '',
       teams: [], // 所有团队
+      selectTeams: [], //所选择的团队
       value: [],
       teamUser: [],  // 团队成员
       form: {
@@ -382,7 +384,8 @@ export default {
       },
       teamForm: {
         dataSetName: '',
-        teamValue: ''
+        teamValue: [],
+        dataSetUuid: ''
       },
       addFormRules: {
         name: [{ required: true, message: '请输入数据集名字', trigger: 'blur' }],
@@ -513,9 +516,18 @@ export default {
     // 显示标注团队对话框
     showTeamDialog(index, row) {
       this.getTeams()
+      this.teamForm.teamValue = []
+      // 得到标注团队
+      const params = {
+        dataSetUuid: row.uuid
+      }
+      getSelectTeam(params).then(res => {
+        this.selectTeams = res.data.items
+        this.teamForm.teamValue = res.data.items
+      })
       this.teamForm.dataSetName = row.name
       this.teamDialogVisible = true
-      this.teamForm.teamValue = []
+      
       this.teamForm.dataSetUuid = row.uuid
     },
 
@@ -717,6 +729,14 @@ export default {
     retuenOdlRow(){
       console.log(this.bucketlist);
       console.log(this.objectoldPrefix);
+      console.log(this.objectoldRow);
+      if(this.objectoldRow==this.objectoldPrefix){
+                this.objectoldRow=''
+                this.objectoldPrefix=''
+                this.objectcurrentRow=''
+                this.objectcurrentPrefix=''
+                this.selectObject=''
+            }
       const para={}
       para.bucketName = this.bucketlist;
       para.objectPrefix = this.objectoldPrefix;

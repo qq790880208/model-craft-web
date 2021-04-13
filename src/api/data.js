@@ -71,3 +71,30 @@ export function assignLabel(params) {
     baseURL: 'http://192.168.19.239:8085'
   })
 }
+
+export function addNewLabels(params) {
+  return request({
+    url: '/label/addNewLabel',
+    method: 'post',
+    params: params,
+    baseURL: 'http://192.168.19.239:8085'
+  })
+}
+
+export function assignNewData(params) {
+  return request({
+    url: '/userlabel/assignNewData',
+    method: 'post',
+    params: params,
+    baseURL: 'http://192.168.19.239:8085'
+  })
+}
+
+export function getNewFile(params) {
+  return request({
+    url: '/file/getFiles',
+    method: 'get',
+    params: params,
+    baseURL: 'http://192.168.19.239:8085'
+  })
+}

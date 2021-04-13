@@ -5,7 +5,7 @@ export function addUser(params) {
     url: '/userManage/addUser',
     method: 'post',
     params: params,
-    baseURL: 'http://192.168.19.239:8083'
+    baseURL: 'http://192.168.19.239:8088'
   })
 }
 export function getUserListPage(params) {
@@ -13,7 +13,7 @@ export function getUserListPage(params) {
     url: '/userManage/getUserListPage',
     method: 'get',
     params: params,
-    baseURL: 'http://192.168.19.239:8083'
+    baseURL: 'http://192.168.19.239:8088'
   })
 }
 /* editUser */
@@ -22,7 +22,7 @@ export function editUser(params) {
     url: '/userManage/editUser',
     method: 'put',
     params: params,
-    baseURL: 'http://192.168.19.239:8083'
+    baseURL: 'http://192.168.19.239:8088'
   })
 }
 /* removeUser */
@@ -31,7 +31,7 @@ export function removeUser(params) {
     url: '/userManage/removeUser',
     method: 'delete',
     params: params,
-    baseURL: 'http://192.168.19.239:8083'
+    baseURL: 'http://192.168.19.239:8088'
   })
 }
 /* batchRemove */
@@ -40,7 +40,7 @@ export function batchRemoveUser(params) {
     url: '/userManage/batchRemoveUser',
     method: 'delete',
     params: params,
-    baseURL: 'http://192.168.19.239:8083'
+    baseURL: 'http://192.168.19.239:8088'
   })
 }
 /* 获取团队管理的权限 */
@@ -49,7 +49,7 @@ export function getTeamPerm(params) {
     url: '/userManage/getTeamPerm',
     method: 'get',
     params: params,
-    baseURL: 'http://192.168.19.239:8083'
+    baseURL: 'http://192.168.19.239:8088'
   })
 }
 // 修改用户密码
@@ -58,6 +58,14 @@ export function updatePassword(params) {
     url: '/userManage/updatePassword',
     method: 'put',
     params: params,
-    baseURL: 'http://192.168.19.239:8083'
+    baseURL: 'http://192.168.19.239:8088'
+  })
+}
+export function getAllUser(params) {
+  return request({
+    url: '/userManage/getAll',
+    method: 'get',
+    params: params,
+    baseURL: 'http://192.168.19.239:8088'
   })
 }

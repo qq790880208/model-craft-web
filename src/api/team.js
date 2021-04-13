@@ -5,7 +5,7 @@ export function getTeams(params) {
     url: '/team/getTeams',
     method: 'get',
     params: params,
-    baseURL: 'http://192.168.19.239:8083'
+    baseURL: 'http://192.168.19.239:8088'
   })
 }
 
@@ -14,7 +14,7 @@ export function delTeams(params) {
     url: '/team/delTeams',
     method: 'delete',
     params: params,
-    baseURL: 'http://192.168.19.239:8083'
+    baseURL: 'http://192.168.19.239:8088'
   })
 }
 
@@ -23,7 +23,7 @@ export function addTeams(params) {
     url: '/team/addTeams',
     method: 'post',
     params: params,
-    baseURL: 'http://192.168.19.239:8083'
+    baseURL: 'http://192.168.19.239:8088'
   })
 }
 
@@ -32,7 +32,7 @@ export function editTeams(params) {
     url: '/team/editTeams',
     method: 'put',
     params: params,
-    baseURL: 'http://192.168.19.239:8083'
+    baseURL: 'http://192.168.19.239:8088'
   })
 }
 
@@ -40,6 +40,15 @@ export function getAllTeam() {
   return request({
     url: '/team/getAll',
     method: 'get',
-    baseURL: 'http://192.168.19.239:8083'
+    baseURL: 'http://192.168.19.239:8085'
+  })
+}
+
+export function getSelectTeam(params) {
+  return request({
+    url: '/team/getSelect',
+    method: 'get',
+    params: params,
+    baseURL: 'http://192.168.19.239:8085'
   })
 }
