@@ -3,6 +3,7 @@
     <div style="user-select: none;">
     <div class="dashboard-container" v-if="isimageview">
       <div>
+      <el-button @click="returndataset" >返回数据集</el-button>
       <el-button @click="automark()" :loading="isloading">{{automarkbtntext}}</el-button>
       </div>
       <div v-for="(item, index) in imagelargeArry" :key="index" style="
@@ -95,6 +96,9 @@ export default {
     // labelinfo
   },
   methods: {
+    returndataset(){
+      this.$router.go(-1)
+    },
     entermark(index){
       console.log("faaaaaaaaaaaatherenter!")
       this.nownum=index;
@@ -125,7 +129,7 @@ export default {
       console.log("thisinfoArry", this.infoArry);
       this.savelabel(this.nownum);
     },
-    //get请求数据
+    //get请求图片数据
     requireimage: function () {
       console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
       let _this = this;
@@ -140,9 +144,10 @@ export default {
          _this.lastinfoArry=[]
          _this.uuidArry=[]
          _this.imagelargeArry=[]
-        console.log("mkxlvmxclkvjkcov", response);
+        console.log("get图片结果", response);
         for (let i = 0; i < response.data.items.length; i++) {
-          //console.log(response.data.items[i]);
+          console.log("testtttttttttt",response.data.items[i].label_data);
+          if(response.data.items[i].label_data!==undefined) {
           let tempa = JSON.parse(response.data.items[i].label_data);
           let len = eval(tempa).length;
           //console.log("len", len);
@@ -157,6 +162,7 @@ export default {
           }
           _this.lastinfoArry.push(arr);
           console.log("lastinfoArry", response.data.items[i].is_label);
+          }
           let a={};
           a["url"]=response.data.items[i].file_path
           a["islabel"]=response.data.items[i].is_label
@@ -285,6 +291,7 @@ export default {
     //console.log(this.infoArry[0])
     this.infoArry = new Array(this.imageArry.length);
     console.log("mounted!!!!", this.infoArry.length, this.infoArry);
+    console.log("mounted!!!!uuid",store.getters.uuid,"mounted!!!!store.getters.userid",store.getters.userid)
     this.requireimage();
     this.requiretag();
   },
