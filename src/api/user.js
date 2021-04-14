@@ -5,7 +5,7 @@ export function login(params) {
     url: '/user/login',
     method: 'post',
     params: params,
-    baseURL: 'http://192.168.19.239:8083'
+    baseURL: 'http://192.168.19.239:8088'
     //data,
     //baseURL: 'http://localhost:9528/dev-api'
   })
@@ -17,7 +17,7 @@ export function getInfo(token) {
     url: '/user/info',
     method: 'get',
     params: { token },
-    baseURL: 'http://192.168.19.239:8083'
+    baseURL: 'http://192.168.19.239:8088'
     //baseURL: 'http://localhost:9528/dev-api'
   })
 }
@@ -27,7 +27,7 @@ export function logout() {
     url: '/user/logout',
     method: 'post',
     //params: { token },
-    baseURL: 'http://192.168.19.239:8083'
+    baseURL: 'http://192.168.19.239:8088'
     //baseURL: 'http://localhost:9528/dev-api'
   })
 }
