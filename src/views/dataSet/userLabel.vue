@@ -15,22 +15,26 @@
           <el-container>
             <el-main>
               <el-row>
-                <el-button icon="el-icon-plus" @click="addData">添加数据</el-button>
-                <el-button icon="el-icon-delete" @click="delData">删除数据</el-button>
+                <el-button icon="el-icon-plus" @click="addData()">添加数据</el-button>
+                <el-button icon="el-icon-delete" @click="delData()">删除数据</el-button>
                 <!-- <el-button icon="el-icon-delete" @click="delLabel">删除标注数据</el-button> -->
                 <el-button icon="el-icon-cloudy" style="right" @click="startLabel" :style="{ display: visible}">开始标注</el-button>
               </el-row>
-      <div v-for="(item, index) in imagelargeArry" :key="index" style="
-        float:left;
-        margin-left:20px
-        margin-top:20px
-      " >
-      <miniimage 
-      :fatherimagesrc="item.url"
-      :ismarked="item.islabel"
-      @entermark="entermark(index)"
-      ></miniimage>
-      </div>
+              <!-- @click="select(item)" -->
+              <div v-for="(item, index) in imagelargeArry" :key="index" style="
+                float:left;
+                margin-left:20px
+                margin-top:20px
+                " >
+                <myimage 
+                  :fatherimagesrc="item.url"
+                  :ismarked="item.islabel"
+                  :parentSelectList="selectList"
+                  :parentUuid="item.uuid"
+                  @select="select(index)"
+                  @childSelectList = "fromChildList($event)"
+                ></myimage>
+              </div>
             </el-main>
             <el-divider direction="vertical"></el-divider>
             <el-aside width="350px" board>
@@ -47,15 +51,64 @@
         <el-tab-pane label="已标注">已标注</el-tab-pane> -->
       </el-tabs>
     </el-main>
-  </el-container>
+    </el-container>
+
+    <el-dialog
+      title="添加数据"
+      :visible.sync="addDataDialogVisible"
+      width="30%"
+      :before-close="handleClose">
+
+      <!-- <div v-for="(item, index) in imagelargeArry" :key="index" style="
+        float:left;
+        margin-left:20px
+        margin-top:20px
+        " >
+        <myimage 
+          :fatherimagesrc="item.url"
+          :ismarked="item.islabel"
+          :parentSelectList="selectList"
+          :parentUuid="item.uuid"
+          @select="select(index)"
+          @childSelectList = "fromChildList($event)"
+        ></myimage>
+      </div> -->
+
+      <el-table
+    ref="multipleTable"
+    :data="tableData"
+    tooltip-effect="dark"
+    style="width: 100%;"
+    @selection-change="handleSelectionChange">
+    <el-table-column
+      type="selection"
+      width="55">
+    </el-table-column>
+    <el-table-column
+      prop="name"
+      label="名称"
+      width="120">
+    </el-table-column>
+    <el-table-column
+      prop="path"
+      label="地址"
+      show-overflow-tooltip>
+    </el-table-column>
+  </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="cancel()">取 消</el-button>
+        <el-button type="primary" @click="add()">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { getLabel } from '@/api/data'
+import { getLabel, deleteData, addNewLabels, assignNewData, getNewFile } from '@/api/data'
+import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder } from '@/api/oss'
 import store from '@/store'
-import miniimage from '@/components/miniimage.vue'
+import myimage from '@/components/myimage.vue'
 
 export default {
   name: 'Dashboard',
@@ -63,15 +116,20 @@ export default {
     return {
       visible: '',
       message: '',
+      addDataDialogVisible: false,
       urls: [],
+      tableData: [],
       doneurls: [],
       undoneurls: [],
       //存储图片url,是否已标注等信息的数组，用于获取远程图片信息
       imagelargeArry:[],
+      selectList: [],
+      multipleSelection: [],
+      newPaths: []  //新的文件路径
     }
   },
   components:{
-    miniimage
+    myimage
   },
   computed: {
     ...mapGetters([
@@ -79,10 +137,85 @@ export default {
     ])
   },
   methods: {
+    handleClose(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done();
+        })
+        .catch(_ => {});
+    },
+    handleSelectionChange(val) {
+      this.multipleSelection = val.map(item => item.uuid).toString()
+      console.log('sssssssssssss')
+      console.log(this.multipleSelection)
+    },
+    select(index) {
+      console.log('55555555555555555555555')
+      console.log('我是父组件')
+      console.log(this.selectList)
+    },
+    fromChildList(vara) {
+      this.selectList = vara;
+    },
+    delData() {
+      let uuidss = this.selectList.join(",");
+      const params = {
+        uuids: uuidss
+      }
+      console.log('uuuuuuuuuu')
+      console.log(params)
+      deleteData(params).then(res => {
+        this.$message({
+          message: '删除成功',
+          type: 'success'
+        })
+        this.getData()
+      })
+    },
+    addData() {
+      this.addDataDialogVisible = true
+      const params = {
+        dataSetUuid: store.getters.uuid,
+      }
+      getNewFile(params).then(res => {
+        this.tableData = res.data.items
+      })
+    },
+    add() {
+      console.log(this.multipleSelection)
+      const params = {
+        dataSetUuid: store.getters.uuid,
+        fileUuids: this.multipleSelection
+      }
+      console.log(params)
+      addNewLabels(params).then(res => {
+        this.$message({
+          message: '添加成功',
+          type: 'success'
+        })
+        this.getData()
+        const newparams = {
+        datasetuuid: store.getters.uuid
+        }
+        assignNewData(newparams).then(res => {
+          this.$message({
+            message: '成功',
+            type: 'success'
+          })
+        })
+      })
+      this.addDataDialogVisible = false
+    },
+    cancel() {
+      this.addDataDialogVisible = false
+      this.tableData = []
+      this.multipleSelection = []
+    },
     toDataSet: function() {
       this.$router.push('/data')
     },
     getData: function() {
+      this.imagelargeArry = []
       let _this = this;
       const params = {
         datasetuuid: store.getters.uuid
@@ -91,6 +224,7 @@ export default {
         console.log("response",response)
         for (let i = 0; i < response.data.items.length; i++) {
           let a={};
+          a["uuid"] = response.data.items[i].uuid  // label的uuid
           a["url"]=response.data.items[i].file_path
           a["islabel"]=response.data.items[i].is_label
           //a["index"]=i

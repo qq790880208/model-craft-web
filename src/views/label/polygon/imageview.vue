@@ -1,6 +1,10 @@
 <template>
 <div>
     <div class="dashboard-container" v-if="isimageview">
+      <div>
+      <el-button @click="returndataset" >返回数据集</el-button>
+      <el-button @click="automark()" :loading="isloading">{{automarkbtntext}}</el-button>
+      </div>
       <div v-for="(item, index) in imagelargeArry" :key="index" style="
         float:left;
         margin-left:20px
@@ -14,17 +18,17 @@
     </div>
   <div class="dashboard-container" v-if="!isimageview">
     <!-- <div class="dashboard-text">name: {{ name }}</div> -->
-    <el-button @click="returnimageview">返回</el-button>
-    <el-button @click="nextimage">下一张</el-button>
-    <el-button @click="previousimage">上一张</el-button>
+    <el-button :disabled="isdisablebutton" @click="returnimageview">返回</el-button>
+    <el-button :disabled="isdisablebutton" @click="nextimage">下一张</el-button>
+    <el-button :disabled="isdisablebutton" @click="previousimage" >上一张</el-button>
     <!-- <el-button @click="requireimage">请求图片</el-button> -->
     <!-- <el-button @click="savelabel(nownum)">保存标注信息</el-button> -->
     <drawpolygon style="margin-top:20px"
       :fatherimagesrc="this.imageArry[nownum]"
       :imageindex="this.nownum"
-      :premarktype="this.marktype"
+      :premarktype="this.testmarktype"
       :lastlabelArry="this.lastinfoArry[nownum]"
-
+      @closebutton="closebutton"
       @saveimageinfo="saveimageinfo"
     ></drawpolygon>
     <!-- <canvas id="canvas" width='800' height='800'></canvas> -->
@@ -36,9 +40,10 @@
       // :canvaswidth="this.imagesize[nownum].width"
       // :canvasheight="this.imagesize[nownum].height"
 import { mapGetters } from "vuex";
-import drawpolygon from "@/components/drawpolygon.vue";
+import drawpolygon from "@/components/testdrawpolygon.vue";
 import request from "@/utils/request";
 import miniimage from "@/components/miniimage.vue"
+import store from "@/store"
 export default {
   name: "Dashboard",
   data() {
@@ -56,18 +61,18 @@ export default {
     //   //预读取每张图片的分辨率，以适应画布
     //   imagesize:[],
       //后台读取的标注类别
-      marktype: [
+      testmarktype: [
         {
           name:"car",
           color:"rgba(128,0,0,0.75)"
         },
         {
-          name:"human",
+          name:"person",
           color:"rgba(0,128,0,0.75)"
         },
                 {
           name:"human1",
-          color:"rgba(0,128,0,0.75)"
+          color:"rgba(0,0,128,0.75)"
         },
                 {
           name:"human2",
@@ -82,8 +87,12 @@ export default {
           color:"rgba(0,128,0,0.75)"
         },
       ],
+      marktype: [],
       nownum: 0,
+      isdisablebutton:false,
       isimageview: true,
+      automarkbtntext:"开始自动标注",
+      isloading:false,
     };
   },
   components: {
@@ -93,9 +102,14 @@ export default {
   mounted() {
     this.infoArry = new Array(this.imageArry.length);
     console.log("mounted!!!!", this.infoArry.length, this.infoArry);
+    console.log("mounted!!!!uuid",store.getters.uuid,"mounted!!!!store.getters.userid",store.getters.userid)
     this.requireimage();
+    this.requiretag();
   },
   methods: {
+    returndataset(){
+      this.$router.go(-1)
+    },
     entermark(index){
       console.log("faaaaaaaaaaaatherenter!")
       this.nownum=index;
@@ -115,6 +129,10 @@ export default {
       if (this.nownum > 0) this.nownum--;
       console.log("previousimage",this.nownum);
     },
+    closebutton: function(){
+      console.log("fatherdisbtnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
+      this.isdisablebutton=!this.isdisablebutton
+    },
     //保存图片标注信息
     saveimageinfo: function (markinfo, imageeindex) {
       this.infoArry[imageeindex] = markinfo;
@@ -122,11 +140,13 @@ export default {
       console.log("thisinfoArry", this.infoArry);
       this.savelabel(this.nownum)
     },
-    //get请求
+    //get请求图片数据
     requireimage: function () {
+      console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
       let _this = this;
       return request({
-        url: "http://192.168.19.237:8082/label?dataset_uuid=76cc3eb6689538d7feb9c571d7c355be&user_id=10",
+        url: 
+        "http://192.168.19.237:8082/label?dataset_uuid="+store.getters.uuid+"&user_id="+store.getters.userid,
         method: "get",
         //params: query
       }).then(function (response) {
@@ -150,6 +170,7 @@ export default {
           //   _this.imagesize.push(imagea)
           // }
           // console.log("ima",_this.imagesize)
+          if(response.data.items[i].label_data!==undefined) {
           let tempa = JSON.parse(response.data.items[i].label_data)
           let len = eval(tempa).length;
           console.log("len", len);
@@ -165,6 +186,7 @@ export default {
           // }
           _this.lastinfoArry.push(tempa)
           console.log("lastinfoArry", response.data.items[i].is_label);
+        }
           let a={};
           a["url"]=response.data.items[i].file_path
           a["islabel"]=response.data.items[i].is_label
@@ -187,6 +209,38 @@ export default {
         console.log("_this.imageArry",_this.imageArry);
         console.log("_this.lastinfoArry",_this.lastinfoArry);
         //console.log("transforjson",JSON.stringify(_this.infoArry[0][0]))
+      }).catch(function(error){
+        console.log("error",error)
+          _this.$message({
+          message:"请求图片失败",
+          type: 'error'
+          })
+      });;
+    },
+    //get请求数据集的标签集
+    requiretag: function () {
+      let _this = this;
+      this.marktype=[]
+      return request({
+        url:
+          "http://192.168.19.237:8082/dataset/tag?dataset_uuid="+store.getters.uuid,
+        method: "get",
+        //params: query
+      }).then(function (response) {
+        console.log(response)
+        for (let i = 0; i < response.data.items.length; i++) {
+          let a={};
+          a["name"]=response.data.items[i].name
+          a["color"]=response.data.items[i].color
+          _this.marktype.push(a)
+        }
+        console.log("marktype",_this.marktype)
+      }).catch(function(error){
+        console.log("error",error)
+          _this.$message({
+          message:"请求标签集合失败",
+          type: 'error'
+          })
       });
     },
     //put请求
@@ -214,9 +268,53 @@ export default {
           type: 'success'
           });
         _this.requireimage();
+        _this.requiretag();
+      }).catch(function(error){
+        console.log("error",error)
+          _this.$message({
+          message:"保存失败",
+          type: 'error'
+          })
+        _this.requireimage();
+        _this.requiretag();
+      });
+    },
+        //post半自动标注
+    automark(){
+      let _this = this;
+      _this.$message('开始像素级拉框自动标注');
+      _this.automarkbtntext="标注中";
+      _this.isloading=true;
+      return request({
+        url:
+          "http://192.168.19.237:8082/dataset/auto?dataset_id="+store.getters.uuid,
+        method: "post",
+        timeout:15000,
+        //params: query
+      }).then(function (response) {
+        console.log(response);
+        _this.$message({
+          message:"像素级自动标注成功",
+          type: 'success'
+          });
+        _this.automarkbtntext="开始自动标注";
+        _this.isloading=false;
+        _this.requireimage();
+        _this.requiretag();
+      }).catch(function(error){
+        console.log("error111",error)
+          _this.$message({
+          message:"像素级自动标注失败",
+          type: 'error'
+          });
+        _this.automarkbtntext="开始自动标注";
+        _this.isloading=false;
+        _this.requireimage();
+        _this.requiretag();
       });
     },
   },
+  
   computed: {
     ...mapGetters(["name"]),
   },

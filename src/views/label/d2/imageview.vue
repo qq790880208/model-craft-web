@@ -3,6 +3,7 @@
     <div style="user-select: none;">
     <div class="dashboard-container" v-if="isimageview">
       <div>
+      <el-button @click="returndataset" >返回数据集</el-button>
       <el-button @click="automark()" :loading="isloading">{{automarkbtntext}}</el-button>
       </div>
       <div v-for="(item, index) in imagelargeArry" :key="index" style="
@@ -95,6 +96,9 @@ export default {
     // labelinfo
   },
   methods: {
+    returndataset(){
+      this.$router.go(-1)
+    },
     entermark(index){
       console.log("faaaaaaaaaaaatherenter!")
       this.nownum=index;
@@ -125,9 +129,9 @@ export default {
       console.log("thisinfoArry", this.infoArry);
       this.savelabel(this.nownum);
     },
-    //get请求数据
+    //get请求图片数据
     requireimage: function () {
-      console.log("uuid",store.getters.uuid)
+      console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
       let _this = this;
       return request({
         url:
@@ -140,9 +144,10 @@ export default {
          _this.lastinfoArry=[]
          _this.uuidArry=[]
          _this.imagelargeArry=[]
-        console.log("mkxlvmxclkvjkcov", response);
+        console.log("get图片结果", response);
         for (let i = 0; i < response.data.items.length; i++) {
-          //console.log(response.data.items[i]);
+          console.log("testtttttttttt",response.data.items[i].label_data);
+          if(response.data.items[i].label_data!==undefined) {
           let tempa = JSON.parse(response.data.items[i].label_data);
           let len = eval(tempa).length;
           //console.log("len", len);
@@ -157,6 +162,7 @@ export default {
           }
           _this.lastinfoArry.push(arr);
           console.log("lastinfoArry", response.data.items[i].is_label);
+          }
           let a={};
           a["url"]=response.data.items[i].file_path
           a["islabel"]=response.data.items[i].is_label
@@ -175,6 +181,12 @@ export default {
 
         //console.log("imageArry", _this.imageArry);
         //console.log("transforjson",JSON.stringify(_this.infoArry[0][0]))
+      }).catch(function(error){
+        console.log("error",error)
+          _this.$message({
+          message:"请求图片失败",
+          type: 'error'
+          })
       });
     },
     //get请求数据集的标签集
@@ -195,8 +207,13 @@ export default {
           _this.marktype.push(a)
         }
         console.log("marktype",_this.marktype)
-      })
-
+      }).catch(function(error){
+        console.log("error",error)
+          _this.$message({
+          message:"请求标签集合失败",
+          type: 'error'
+          })
+      });
     },
     //put更新数据
     savelabel(i) {
@@ -225,12 +242,20 @@ export default {
           });
         _this.requireimage();
         _this.requiretag();
+      }).catch(function(error){
+        console.log("error",error)
+          _this.$message({
+          message:"保存失败",
+          type: 'error'
+          })
+        _this.requireimage();
+        _this.requiretag();
       });
     },
     //post半自动标注
     automark(){
       let _this = this;
-      _this.$message('开始自动标注');
+      _this.$message('开始2D拉框自动标注');
       _this.automarkbtntext="标注中";
       _this.isloading=true;
       return request({
@@ -242,20 +267,31 @@ export default {
       }).then(function (response) {
         console.log(response);
         _this.$message({
-          message:"自动标注成功",
+          message:"2D拉框自动标注成功",
           type: 'success'
           });
         _this.automarkbtntext="开始自动标注";
         _this.isloading=false;
         _this.requireimage();
         _this.requiretag();
-      })
+      }).catch(function(error){
+        console.log("error111",error)
+          _this.$message({
+          message:"2D拉框自动标注失败",
+          type: 'error'
+          });
+        _this.automarkbtntext="开始自动标注";
+        _this.isloading=false;
+        _this.requireimage();
+        _this.requiretag();
+      });
     }
   },
   mounted: function () {
     //console.log(this.infoArry[0])
     this.infoArry = new Array(this.imageArry.length);
     console.log("mounted!!!!", this.infoArry.length, this.infoArry);
+    console.log("mounted!!!!uuid",store.getters.uuid,"mounted!!!!store.getters.userid",store.getters.userid)
     this.requireimage();
     this.requiretag();
   },

@@ -99,6 +99,7 @@ export const asyncRoutes = [
         component: () => import('@/views/label/d2/imageview'),
         name: 'd2view',
         meta: { title: '2D拉框标注', icon: 'excel', resources: 'd2' },
+        hidden: true
       },
       {
         path: '/label/polygonimageview',
@@ -184,7 +185,7 @@ export const asyncRoutes = [
         path: '/model',
         component: () => import('@/views/model/index'),
         name: 'model admin',
-        meta: { title: '模型', icon: 'nested', resources: 'model' }
+        meta: { title: '模型管理', icon: 'nested', resources: 'model' }
       },
       {
         path: '/model-eval',

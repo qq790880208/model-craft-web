@@ -1,28 +1,30 @@
 <template>
   <div class="ih-item">
-    <!-- <p>已标注</p> -->
-      <!-- <el-button @click="kanurl">kanurl</el-button> -->
-      <a>
+    <a>
+      <!-- <span v-if="parentSelectList.indexOf(parentUuid)!=-1">
+          <i class="checked">✓</i>
+      </span> -->
       <div >
+        <span class="checked" v-if="parentSelectList.indexOf(parentUuid)!=-1">
+          <i>✓</i>
+        </span>
         <img 
           :style="{
-            //width: '10%px',
             height: 200+'px',
             border: '3px solid '+this.markcolor,
-            //display:'inline',
-            //c
+            
           }
           "
           :src="imagesrc"
-          @mousedown="entermark"
+          @click="select"
         >
+        
       </div>
-        <div class="info">
+      <div class="info">
           <h3 style="color:rgba(255,255,255,1)"
           >{{ismarkedtext}}</h3>
-          <!-- <p class="date">2013-4-12</p> -->
       </div>
-      </a>
+    </a>
   </div>
 </template>
 
@@ -32,16 +34,17 @@
    data () {
      return {
        input: "",
-
-       //markcolor:'rgba(128,0,0,0.75)'
+       visible: false
      }
    },
    props: {
      fatherimagesrc: String,
-     ismarked:{
-      type: Number,
-      default: false,
-    },
+     ismarked: {
+       type: Number,
+       default: false,
+     },
+     parentSelectList: [],
+     parentUuid: '',
      ishighlight:Boolean
    },
    destroyed(){
@@ -58,21 +61,43 @@
     ismarkedtext: function(){
       if(this.ismarked===1) return '已标注'
         else return '未标注'
-    }
     },
+    isSelect: function() {
+      if(this.isSelected === 1) return '选中'
+      else return ''
+    }
+  },
   methods:{
       kanurl(){
-          console.log(this.imagesrc)
+        console.log(this.imagesrc)
       },
-      entermark(){
-          console.log("entermark")
-          this.$emit("entermark")
+      select(){
+        console.log('hhhhhhhhhhhhh123456789')
+        var _index = this.checkSelect(this.parentUuid)
+        console.log('index =============')
+        // if (_index != -1) {
+        //   this.visible = true
+        // } else {
+        //   this.visible = false
+        // }
+        console.log(_index)
+        if(~_index){
+          console.log('存在')
+          this.parentSelectList.splice(_index,1)
+        }else{
+          console.log('不存在')
+          this.parentSelectList.push(this.parentUuid)
+        }
+        this.$emit("childSelectList", this.parentSelectList)
+      },
+      checkSelect(id){
+        return this.parentSelectList.indexOf(id);
       }
   },
-   components: {
+  components: {
 
-   }
- }
+  }
+}
 </script>
 
 <style scpoed>
@@ -81,12 +106,9 @@ img:hover{
 }
 .ih-item{           
     position: relative;
-    /* width: 220px; */
     height: 200px;
     } 
     .ih-item .img img{
-    /* position: relative; */
-    /* width: 220px; */
     height: 220px;
     max-width: 100%;
     } 
@@ -108,5 +130,32 @@ position: absolute;
 }
 .ih-item a:hover .info {
     opacity: 1;    /*有opacity有0变成1*/            
+}
+.ih-item .select {
+  top: 0px;
+  bottom: 150px;
+  left: 0;
+  right: 0;
+  text-align: right;
+}
+.checked {
+  font-size: 15px;
+ font-style: normal;
+ display: inline-block;
+ width: 18px;
+ border-radius: 15px;
+ height: 18px;
+ text-align: center;
+ line-height: 18px;
+ color: rgb(253, 253, 253);
+ vertical-align: middle;
+ margin: -2px 2px 1px 0px;
+ border: #f8f7f6 1px solid;
+ background-color: rgb(250, 0, 0);
+ margin: -6px;
+  margin-top: -382px;
+}
+.checked:hover {
+  margin-left: 0px;
 }
 </style>
