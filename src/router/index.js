@@ -56,7 +56,7 @@ export const constantRoutes = [
       path: '/dataSet/userLabel',
       component: () => import('@/views/dataSet/userLabel'),
       name: 'userLabel',
-      meta: { title: 'userLabel', icon: 'nested', resources: 'userLabel' },
+      meta: { title: 'userLabel', resources: 'userLabel' },
       hidden: true
     }
   ]
@@ -70,16 +70,15 @@ export const asyncRoutes = [
     name: 'teamManagement',
     meta: {
       title: '团队管理',
-      icon: 'form',
-      // roles: ['admin', 'user'],
-      resources: 'teamManagement'
+      resources: 'teamManagement',
+      icon: 'peoples'
     },
     children: [
       {
         path: '/teamManagement/annotateTeamManagement',
         component: () => import('@/views/teamManagement/annotateTeamManagement/index'),
         name: 'annotateTeamManagement',
-        meta: { title: '标注团队管理', icon: 'nested', resources: 'annotateTeamManagement' }
+        meta: { title: '标注团队管理', resources: 'annotateTeamManagement', icon: 'peoples' }
       }
     ]
   },
@@ -90,7 +89,6 @@ export const asyncRoutes = [
     name: 'label',
     meta: {
       title: '数据集标注',
-      icon: 'form',
       resources: 'label'
     },
     children: [
@@ -98,26 +96,26 @@ export const asyncRoutes = [
         path: '/label/d2imageview',
         component: () => import('@/views/label/d2/imageview'),
         name: 'd2view',
-        meta: { title: '2D拉框标注', icon: 'excel', resources: 'd2' },
+        meta: { title: '2D拉框标注', resources: 'd2' },
         hidden: true
       },
       {
         path: '/label/polygonimageview',
         component: () => import ('@/views/label/polygon/imageview'),
         name: 'polygon',
-        meta: { title: '像素级标注', icon: 'excel', resources: 'polygon' }
+        meta: { title: '像素级标注', resources: 'polygon' }
       },
       {
         path: '/label/voice',
         component: () => import ('@/views/label/voice/index'),
         name: 'voice',
-        meta: { title: '语音标注', icon: 'excel', resources: 'voice' }
+        meta: { title: '语音标注',  resources: 'voice' }
       },
       {
         path: '/label/d3',
         component: () => import ('@/views/label/d3/index'),
         name: 'd3',
-        meta: { title: '3D标注', icon: 'excel', resources: 'd3' }
+        meta: { title: '3D标注', resources: 'd3' }
       }
     ]
   },
@@ -128,15 +126,15 @@ export const asyncRoutes = [
     redirect: '/newtrain/table',
     meta: {
       title: '训练管理',
-      icon: 'form',
-      resources: 'newtrain'
+      resources: 'newtrain',
+      icon: 'skill'
     },
     children: [
       {
         path: '/newtrain/table',
         component: () => import('@/views/newtrain/table'),
         name: 'newTable',
-        meta: { title: '训练管理', icon: 'nested', resources: 'newTable' }
+        meta: { title: '训练管理',  resources: 'newTable', icon: 'skill' }
       }
     ]
   },
@@ -147,27 +145,21 @@ export const asyncRoutes = [
     redirect: '/dataSet/rectangle',
     meta: {
       title: '数据管理',
-      icon: 'form',
       resources: 'dataSet',
+      icon: 'zip'
     },
     children: [
       {
         path: '/data',
         component: () => import('@/views/dataSet/index'),
         name: 'data manage',
-        meta: { title: '数据管理', icon: 'nested', resources: 'data' }
-      },
-      {
-        path: '/userLabel',
-        component: () => import('@/views/dataSet/userLabel'),
-        name: 'userLabel',
-        meta: { title: 'userLabel', icon: 'nested', resources: 'userLabel' }
+        meta: { title: '数据集管理', resources: 'data', icon: 'tree-table' }
       },
       {
         path: '/oss',
         component: () => import('@/views/dataSet/oss'),
         name: 'oss manage',
-        meta: { title: '对象存储', icon: 'nested', resources: 'oss' }
+        meta: { title: '对象存储', resources: 'oss', icon: 'tree' }
       },
     ]
   },
@@ -177,21 +169,15 @@ export const asyncRoutes = [
     name: 'model',
     meta: {
       title: '模型管理',
-      icon: 'form',
-      resources: 'models'
+      resources: 'models',
+      icon: 'international'
     },
     children: [
       {
         path: '/model',
         component: () => import('@/views/model/index'),
         name: 'model admin',
-        meta: { title: '模型管理', icon: 'nested', resources: 'model' }
-      },
-      {
-        path: '/model-eval',
-        component: () => import('@/views/model/index'),
-        name: 'model eval',
-        meta: { title: '模型评估', icon: 'excel', resources: 'model-eval' }
+        meta: { title: '模型管理', resources: 'model', icon: 'international' }
       }
     ]
   },
@@ -202,33 +188,33 @@ export const asyncRoutes = [
     name: 'system_management',
     meta: {
       title: '系统设置',
-      icon: 'form',
-      resources: 'system_management'
+      resources: 'system_management',
+      icon: 'edit'
     },
     children: [
       {
         path: '/systemManagement/authorityManagement',
         component: () => import('@/views/systemManagement/authorityManagement/index'),
         name: 'authorityManagement',
-        meta: { title: '权限管理', icon: 'excel', resources: 'authorityManagement' }
+        meta: { title: '权限管理', resources: 'authorityManagement' }
       },
       {
         path: '/systemManagement/userManagement',
         component: () => import('@/views/systemManagement/userManagement/index'),
         name: 'userManagement',
-        meta: { title: '用户管理', icon: 'excel', resources: 'userManagement' }
+        meta: { title: '用户管理', resources: 'userManagement' }
       },
       {
         path: '/systemManagement/log',
         component: () => import('@/views/systemManagement/log/index'),
         name: 'log',
-        meta: { title: '系统日志管理', icon: 'excel', resources: 'log' }
+        meta: { title: '系统日志管理', resources: 'log' }
       },
       {
         path: '/systemManagement/loginLog',
         component: () => import('@/views/systemManagement/loginLog/index'),
         name: 'longinLog',
-        meta: { title: '用户登录日志', icon: 'excel', resources: 'loginLog' }
+        meta: { title: '用户登录日志', resources: 'loginLog' }
       }
     ]
   },

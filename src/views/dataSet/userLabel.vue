@@ -230,7 +230,7 @@ export default {
           //a["index"]=i
           _this.imagelargeArry.push(a);
         }
-      })
+      }) 
     },
     startLabel: function() {
       const type = store.getters.type
