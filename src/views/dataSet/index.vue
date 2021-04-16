@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-container">
     <el-tabs :tab-position="tabPosition" style="height: 200px;" v-model="activeName" @tab-click="handleClick">
-      <el-tab-pane label="全部数据" name="allData">
+      <el-tab-pane label="我的数据集" name="allData">
         <el-form :inline="true" :model="filter" >
           <el-button style="text-align: left" min type="primary" @click="createDataSet()">
             创建数据集
@@ -13,9 +13,9 @@
           </el-form-item>
         </el-form>
         <el-table :data="dataSets" highlight-current-row style="width: 100%;">
-          <el-table-column prop="name" align="center" label="名称" min-width="150" sortable>
+          <el-table-column prop="name" align="center" label="名称" min-width="120" sortable>
             <template slot-scope="scope">
-              <span class="link-type" @click="toDataSet(scope.row.name, scope.row.uuid, scope.row.label_type)">{{ scope.row.name }}</span>
+              <span class="link-type" @click="toDataSet(scope.row.name, scope.row.role_type, scope.row.uuid, scope.row.label_type)">{{ scope.row.name }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="type" align="center" label="标注类型" min-width="120" sortable>
@@ -28,6 +28,9 @@
               <div style="width: 250px; margin:0px auto;">
                 <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)" :format="format">
                 </el-progress>
+                <span>
+                  {{scope.row.done}} / {{scope.row.tol}}
+                </span>
               </div>
             </template>
           </el-table-column>
@@ -38,10 +41,11 @@
               {{ scope.row.create_time | formatDate }}
             </template>
           </el-table-column>
-          <el-table-column label="操作" align="center" width="250">
+          <el-table-column label="操作" align="center" width="300">
             <template slot-scope="scope">
               <!-- <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button> -->
-              <el-button type="info" size="small" @click="showTeamDialog(scope.$index, scope.row)">添加标注团队</el-button>
+              <el-button type="success" size="small" @click="toStartLabel(scope.row.label_type)">开始标注</el-button>
+              <el-button type="primary" size="small" @click="showTeamDialog(scope.$index, scope.row)">添加标注团队</el-button>
               <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
             </template>
           </el-table-column>
@@ -52,7 +56,7 @@
         </el-col>
       </el-tab-pane>
 
-      <el-tab-pane label="管理数据" name="manager">
+      <el-tab-pane label="标注数据集" name="manager">
         <el-form :inline="true" :model="filter" >
           <el-form-item>
             <el-input v-model="filter.name" placeholder="请输入查询名称" >
@@ -60,10 +64,10 @@
             </el-input>
           </el-form-item>
         </el-form>
-        <el-table :data="dataSetByManager" highlight-current-row style="width: 100%;">
+        <el-table :data="dataSetAssigned" highlight-current-row style="width: 100%;">
           <el-table-column prop="name" align="center" label="名称" min-width="200" sortable>
             <template slot-scope="scope">
-              <span class="link-type" @click="toDataSet(scope.row.name, scope.row.uuid, scope.row.label_type)">{{ scope.row.name }}</span>
+              <span class="link-type" @click="toDataSet(scope.row.name, scope.row.role_type, scope.row.uuid, scope.row.label_type)">{{ scope.row.name }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="type" align="center" label="标注类型" min-width="120" sortable>
@@ -76,6 +80,7 @@
               <div style="width: 250px; margin:0px auto;">
                 <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)" :format="format">
                 </el-progress>
+                {{scope.row.done}} / {{scope.row.tol}}
               </div>
             </template>
           </el-table-column>
@@ -90,47 +95,6 @@
         <el-col :span="24" class="toolbar">
           <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :total="total1" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
             </el-pagination>
-        </el-col>
-      </el-tab-pane>
-
-      <el-tab-pane label="标注数据" name="label">
-        <el-form :inline="true" :model="filter" >
-          <el-form-item class="find">
-            <el-input v-model="filter.name" placeholder="请输入查询名称" >
-              <el-button slot="append" icon="el-icon-search" @click="getDataSetByTeam()"></el-button>
-            </el-input>
-          </el-form-item> 
-        </el-form>
-        <el-table :data="dataSetByTeam" highlight-current-row style="width: 100%;">
-          <el-table-column prop="name" align="center" label="名称" min-width="200" sortable>
-            <template slot-scope="scope">
-              <span class="link-type" @click="toStartLabel(scope.row.uuid, scope.row.label_type)">{{ scope.row.name }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="type" align="center" label="标注类型" min-width="120" sortable>
-            <template slot-scope="scope">
-              {{ scope.row.label_type | formatType }}
-            </template>
-          </el-table-column>
-          <el-table-column prop="done" align="center" label="标注进度" min-width="260" sortable>
-            <template slot-scope="scope">
-              <div style="width: 250px; margin:0px auto;">
-                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)" :format="format">
-                  </el-progress>
-                </div>
-              </template>
-          </el-table-column>
-          <el-table-column prop="descr" align="center" label="描述" min-width="150" sortable>
-          </el-table-column>
-          <el-table-column prop="create_time" align="center" label="创建时间" min-width="180" sortable>
-            <template slot-scope="scope">
-              {{ scope.row.create_time | formatDate }}
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-col :span="24" class="toolbar">
-          <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :total="total2" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
-          </el-pagination>
         </el-col>
       </el-tab-pane>
     </el-tabs>
@@ -281,13 +245,12 @@
             <el-button type="primary" @click="returnOutput">确定</el-button>
         </div>
     </el-dialog>
-
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { getLabel, getDataByName, getDataByTeam, getDataByManager, createDataSet, deleteDataSet, assignLabel } from '@/api/data'
+import { getLabel, getDataByName, createDataSet, deleteDataSet, assignLabel, getAssignData } from '@/api/data'
 import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder } from '@/api/oss'
 import store from '@/store'
 import { getAllTeam, getSelectTeam } from '@/api/team'
@@ -343,11 +306,8 @@ export default {
         name: ''
       },
       dataSets: [],
-      dataSetByTeam: [],
-      dataSetByManager: [],
+      dataSetAssigned: [],
       total: 0,
-      total1: 0,
-      total2: 0,
       page: 1,
       page_size: 20,
       dialogVisible: false,
@@ -419,17 +379,16 @@ export default {
         .catch(_ => {});
     },
 
+    // 添加标签
     handleClose(tag) {
       this.form.label.splice(this.form.label.indexOf(tag), 1);
     },
-
     showInput() {
       this.inputVisible = true;
       this.$nextTick(_ => {
       this.$refs.saveTagInput.$refs.input.focus();
       });
     },
-
     handleInputConfirm() {
       let inputValue = this.inputValue;
       if (inputValue) {
@@ -451,6 +410,7 @@ export default {
     },
     
     cancel() {
+      console.log(this.form.label.join(','))
       this.dialogVisible = false
       this.teamDialogVisible = false
     },
@@ -545,7 +505,6 @@ export default {
         })
         this.teamDialogVisible = false
       })
-
     },
 
     // 得到所有的标注团队
@@ -557,7 +516,7 @@ export default {
       })
     },
 
-    // 切换tab
+    // 切换tab  我的数据集/标注数据集
     handleClick(tab, event) {
       console.log(tab.name)
       this.activeName = tab.name
@@ -582,11 +541,8 @@ export default {
         this.getDataSet()
       }
       if (this.activeName == 'manager') {
-        this.getDataSetByManager()
-      }
-      if (this.activeName == 'label') {
-        this.getDataSetByTeam()
-      }    
+        this.getAssignDataSet()
+      }   
     },
     handleCurrentChange(val) {
       this.page = val
@@ -594,10 +550,7 @@ export default {
         this.getDataSet()
       }
       if (this.activeName == 'manager') {
-        this.getDataSetByManager()
-      }
-      if (this.activeName == 'label') {
-        this.getDataSetByTeam()
+        this.getAssignDataSet()
       }
     },
 
@@ -617,50 +570,36 @@ export default {
       this.filter.name = ''
     },
 
-    // 得到团队管理员所管理的数据集
-    getDataSetByTeam: function() {
+    //得到用户所分配到的数据集
+    getAssignDataSet: function() {
       const params = {
         page: this.page,
         pagesize: this.page_size,
         id: store.getters.userid,
         name: this.filter.name
       }
-      console.log("ddddddddddd" + params)
-      getDataByTeam(params).then(res => {
-        this.dataSetByTeam = res.data.items
-        this.total2 = res.data.total
-      })
-      this.filter.name = ''
-    },
-
-    // 得到标注的数据集
-    getDataSetByManager: function() {
-      const params = {
-        page: this.page,
-        pagesize: this.page_size,
-        id: store.getters.userid,
-        name: this.filter.name
-      }
-      getDataByManager(params).then(res => {
-        this.dataSetByManager = res.data.items
+      getAssignData(params).then(res => {
+        this.dataSetAssigned = res.data.items
         this.total1 = res.data.total
       })
       this.filter.name = ''
     },
 
     // 展示数据
-    toDataSet: function(val, uuuid, ttype) {
+    toDataSet: function(val, roleType, uuuid, ttype) {
       console.log(ttype)
       store.dispatch('data/changeUuid', uuuid)
       store.dispatch('data/changeType', ttype)
       console.log(store.getters.uuid)
-      this.$router.push({path:'/dataSet/userLabel', query: {dataName: val, key: this.activeName}})
+      if (roleType != 0) {
+        this.$router.push({path:'/dataSet/userLabel', query: {dataName: val, key: this.activeName}})
+      } else {
+        this.toStartLabel(ttype)
+      }
     },
 
     // 开始标注
-    toStartLabel: function(uuuid, ttype) {
-      store.dispatch('data/changeUuid', uuuid)
-      store.dispatch('data/changeType', ttype)
+    toStartLabel: function(ttype) {
       if(ttype == 0) {
         this.$router.push('/label/d2imageview')
       }
@@ -808,8 +747,7 @@ export default {
   },
   mounted() {
     this.getDataSet(),
-    this.getDataSetByTeam(),
-    this.getDataSetByManager()
+    this.getAssignDataSet()
   }
 }
 </script>

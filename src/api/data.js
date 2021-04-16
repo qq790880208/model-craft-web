@@ -9,6 +9,15 @@ export function getDataByName(params) {
   })
 }
 
+export function getAssignData(params) {
+  return request({
+    url: '/data/getAssignedData',
+    method: 'get',
+    params: params,
+    baseURL: 'http://192.168.19.239:8085'
+  })
+}
+
 export function getDataByTeam(params) {
   return request({
     url: '/data/getDataTeam',

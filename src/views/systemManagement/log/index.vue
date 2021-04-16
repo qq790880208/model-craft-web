@@ -1,32 +1,69 @@
 <template>
   <section class="out-main">
     <!--工具条-->
-    <el-col :span="24" class="toolbar" style="padding-bottom: 10px;">
-      <el-form :inline="true">
-        <el-form-item>
-          <el-input v-model="filter.name" placeholder="用户名"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" v-on:click="getList">查询</el-button>
-        </el-form-item>
-      </el-form>
-    </el-col>
-
+    <el-row :gutter="24" class="toolbar" style="padding-bottom: 10px;">
+      <el-col>
+        <el-form :inline="true" :model="filter">
+          <el-form-item>
+            <el-input v-model="filter.name" placeholder="用户名" style="width:150px" clearable></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-input v-model="filter.method" placeholder="操作信息" style="width:150px" clearable></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-select
+              v-model="filter.type"
+              placeholder="请选择状态"
+              clearable
+              >
+              <el-option
+                v-for="item in flagList"
+                :key="item.key"
+                :label="item.status"
+                :value="item.key">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-input v-model="filter.ip" placeholder="IP" style="width:200px" clearable></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-date-picker
+              v-model="filter.createTime"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              align="right"
+              :picker-options="pickerOptions"
+              >
+            </el-date-picker>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
+    <el-row :gutter="24" style="padding-bottom: 10px;">
+      <el-col>
+        <el-button type="primary" v-on:click="getList">查询</el-button>
+        <el-button type="danger" @click="batchRemove" :disabled="sels.length===0">批量删除</el-button>
+      </el-col>
+    </el-row>
     <!--列表-->
     <el-table :data="logList" highlight-current-row style="width: 100%;" @selection-change="selsChange">
       <el-table-column type="selection" width="60">
       </el-table-column>
       <!-- <el-table-column prop="id" align="center" label="id" width="100">
       </el-table-column> -->
-      <el-table-column prop="user_name" align="center" label="用户名" width="120" sortable>
+      <el-table-column prop="user_name" align="center" label="用户名" width="100" sortable>
       </el-table-column>
-      <el-table-column prop="message" align="center" label="操作信息" min-width="180" sortable>
+      <el-table-column prop="message" align="center" label="操作信息" min-width="160" sortable>
       </el-table-column>
-      <el-table-column prop="method" align="center" label="方法" min-width="100" sortable>
+      <!-- <el-table-column prop="method" align="center" label="方法" min-width="100" sortable>
         <template slot-scope="scope">
           {{ scope.row.method}}
          </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column prop="type" align="center" label="状态" min-width="100" sortable>
         <template slot-scope="scope">
           <el-tag
@@ -39,7 +76,7 @@
       </el-table-column>
       <el-table-column prop="time" align="center" label="耗时" min-width="120" sortable>
       </el-table-column>
-      <el-table-column prop="params" align="center" label="参数" width="180" sortable>
+      <el-table-column prop="params" align="center" label="参数" width="220" sortable>
       </el-table-column>
       <el-table-column prop="create_time" align="center" label="创建时间" min-width="180" sortable>
         <template slot-scope="scope">
@@ -50,7 +87,6 @@
 
     <!--工具条-->
     <el-col :span="24" class="toolbar">
-      <el-button type="danger" @click="batchRemove" :disabled="sels.length===0">批量删除</el-button>
       <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
       </el-pagination>
     </el-col>
@@ -68,8 +104,43 @@ export default {
       sels: [], // 列表选中列
       page: 1,
       page_size: 10,
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+            picker.$emit('pick', [start, end]);
+          }
+        }, {
+          text: '最近一个月',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+            picker.$emit('pick', [start, end]);
+          }
+        }, {
+          text: '最近三个月',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+            picker.$emit('pick', [start, end]);
+          }
+        }]
+      },
+      flagList: [
+        { key: 1, status: '成功' },
+        { key: 0, status: '失败' }
+      ],
       filter: {
-        name: ''
+        name: '',
+        method: '',
+        ip: '',
+        type: '',
+        createTime: []
       },
       logList: []
     }
@@ -117,10 +188,18 @@ export default {
       this.getList()
     },
     getList() {
+      console.log(this.filter.createTime)
+      if(this.filter.createTime === null) {
+        this.filter.createTime = ''
+      }
       const para = {
         page: this.page,
         pagesize: this.page_size,
-        name: this.filter.name
+        name: this.filter.name,
+        message: this.filter.method,
+        type: this.filter.type,
+        ip: this.filter.ip,
+        createTime: this.filter.createTime.toString()
       }
       console.log(para)
       getListByPage(para).then(res => {

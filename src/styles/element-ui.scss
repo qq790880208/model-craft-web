@@ -38,9 +38,23 @@
 
 // dropdown
 .el-dropdown-menu {
+  padding: 0px 0px;
+  margin: 0px 0px;
+  width: auto;
   a {
     display: block
   }
+}
+
+.el-dropdown-menu__item {
+  list-style: none;
+  line-height: 32px;
+  padding: 0px 10px;
+  margin: 0px 0px;
+  font-size: 14px;
+  color: #606266;
+  cursor: pointer;
+  outline: 0;
 }
 
 // to fix el-date-picker css style

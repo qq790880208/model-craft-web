@@ -13,7 +13,8 @@ const getDefaultState = () => {
     descr: '',
     userid: '',
     role: '',
-    password: ''
+    password: '',
+    authority: []
   }
 }
 
@@ -52,6 +53,9 @@ const mutations = {
   },
   SET_PASSWORD: (state, password) => {
     state.password = password
+  },
+  SET_AUTHORITY: (state, authority) => {
+    state.authority = authority
   }
 }
 
@@ -102,6 +106,7 @@ const actions = {
         // commit('SET_LABELROLE', labelrole)
         commit('SET_DESCR', descr)
         commit('SET_PASSWORD', password)
+        commit('SET_AUTHORITY', data.authority)
         if (data.menus && data.menus.length > 0) { // 验证返回的menus是否是一个非空数组
           commit('SET_MENUS', data.menus)
         }

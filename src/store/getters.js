@@ -12,6 +12,7 @@ const getters = {
   permission_routes: state => state.permission.routes,
   userid: state => state.user.userid,
   password: state => state.user.password,
+  authority: state => state.user.authority,
   uuid: state => state.data.uuid,
   type: state => state.data.type,
   dirPath: state => state.data.dirPath
