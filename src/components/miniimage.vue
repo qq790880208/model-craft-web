@@ -16,11 +16,6 @@
           :src="imagesrc"
           @mousedown="entermark"
         >
-      	<!-- <figcaption>
-							<h3>Settings</h3>
-							<span>Jacob Cummings</span>
-							<a href="#">Take a look</a>
-				</figcaption> -->
       </div>
         <div class="info">
           <h3 style="color:rgba(255,255,255,1)"
@@ -57,60 +52,14 @@
       return this.fatherimagesrc;
     },
     markcolor(){
-        if(this.ismarked===0) return '#ffffff'
-        else return '#ff0000'
+        if(this.ismarked===1) return '#ff0000'
+        else return '#ffffff'
     },
     ismarkedtext: function(){
-      if(this.ismarked===0) return '未标注'
-        else return '已标注'
+      if(this.ismarked===1) return '已标注'
+        else return '未标注'
     }
     },
-    // watch: {
-    //     ismarked(){
-    //         console.log("ismarkedchange!")
-    //         if(this.ismarked===0) 
-    //         {
-    //           this.ismarkedtext='未标注'
-    //           //this.markcolor='#ffffff'
-    //         }
-    //         else 
-    //         {
-    //           this.ismarkedtext='已标注'
-    //           //his.markcolor='#ff0000'
-    //         }
-    //     }
-    // },
-//     //监听图片变化
-//     imagesrc() {
-//       let image = new Image();
-//       image.src = this.imagesrc;
-//       //保证图片加载完成之后读取数据
-//       image.onload=() =>{
-//       console.log("image onload ")
-
-//       if(image.width<600&&image.height<600){
-//         this.imagewidth=image.width*1.5
-//         this.imageheight=image.height*1.5
-//         this.scalewidth = 1.5
-//         this.scaleheight = 1.5
-//       }
-//       else{
-//         this.imagewidth = image.width;
-//         this.imageheight = image.height;
-//         this.scalewidth = 1
-//         this.scaleheight = 1
-//       }
-
-//       console.log(this.imagewidth);
-//       console.log(this.imageheight);
-//       console.log(this.scalewidth);
-//       console.log(this.scaleheight);
-//       this.boxArry = [],
-//       this.labelArry = [],
-//       this.num = 1
-//       }
-//     },
-//   },
   methods:{
       kanurl(){
           console.log(this.imagesrc)
@@ -120,22 +69,6 @@
           this.$emit("entermark")
       }
   },
-    
-//    methods: {
-//      //通知父方法删除对应的div和标注框
-//      deletefatherlabel(){
-//        console.log(this.input)
-//        this.$emit("deletelabel")
-//        //console.log("emit!!!!!!!!!")
-//      },
-//      //保存输入的标注信息
-//      changefatherinfo(){
-//        console.log(this.input)
-//        console.log(this.inputname)
-//        this.$emit("changeinfo",this.input)
-//        this.input=""
-//      }
-//    },
    components: {
 
    }
@@ -146,12 +79,6 @@
 img:hover{
   filter: blur(3px);
 }
-/* img:hover p{
-  display: block;
-}
-p{
-  display: none;
-} */
 .ih-item{           
     position: relative;
     /* width: 220px; */
@@ -182,30 +109,4 @@ position: absolute;
 .ih-item a:hover .info {
     opacity: 1;    /*有opacity有0变成1*/            
 }
-  /* .info h3{padding:5px;font-size:16px;}
-  .col-sm-6:hover .info{opacity:1;} */
-
-
- /* .cs-style-1 figcaption {
-  height: 100%;
-  width: 100%;
-  opacity: 0;
-  text-align: center;
-  backface-visibility: hidden;
-  transition: transform 0.3s, opacity 0.3s;
-}
-.no-touch .cs-style-1 figure:hover figcaption,
-.cs-style-1 figure.cs-hover figcaption {
-  opacity: 1;
-  transform: translate(15px, 15px);
-}
-.cs-style-1 figcaption h3 {
-  margin-top: 70px;
-}
-.cs-style-1 figcaption span {
-  display: block;
-}
-.cs-style-1 figcaption a {
-  margin-top: 30px;
-} */
 </style>
