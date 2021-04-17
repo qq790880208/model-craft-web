@@ -1,21 +1,22 @@
 import request from '@/utils/request'
 
-export function getList(id) {
+export function getList(tmp) {
   return request({
-    url: '/model/group' + '?user_id=' + id,
+    url: '/model/group',
     method: 'get',
+    params: tmp,
     baseURL: 'http://192.168.19.237:8081'
   })
 }
 
-export function getListByName(uid, name) {
+export function getListByName(tmp) {
   return request({
-    url: '/model/name/' + "?name=" + name + '&user_id=' + uid ,
+    url: '/model/name/',
     method: 'get',
+    params: tmp,
     baseURL: 'http://192.168.19.237:8081'
   })
 }
-<<<<<<< HEAD
 
 export function delModelById(mid) {
   return request({
@@ -25,5 +26,3 @@ export function delModelById(mid) {
     baseURL: 'http://192.168.19.237:8081'
   })
 }
-=======
->>>>>>> dev

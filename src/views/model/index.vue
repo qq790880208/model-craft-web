@@ -66,6 +66,16 @@
                 </template>
               </el-table-column>
             </el-table>
+                <!-- 分页 -->
+          <el-pagination
+            @size-change="handleSizeChange0($event, scope.$index, scope.row)"
+            @current-change="handleCurrentChange0($event, scope.$index, scope.row)"
+            :current-page="queryInfo0[String(scope.$index)].pagenum"
+            :page-sizes="[2,3,4,5,6,7,8,9,10]"
+            :page-size="queryInfo0[String(scope.$index)].pagesize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="queryInfo0[String(scope.$index)].totalData">
+          </el-pagination>
         </template>
       </el-table-column>
       <el-table-column label="模型名称" width="110" >
@@ -107,11 +117,23 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分页 -->
+    <el-pagination
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+      :current-page="queryInfo.pagenum"
+      :page-sizes="[2,3,4, 10, 12, 15]"
+      :page-size="queryInfo.pagesize"
+      layout="total, sizes, prev, pager, next, jumper"
+      :total="queryInfo.totalData">
+    </el-pagination>
   </div>
+  
 </template>
 
 <script>
 import { getList, getListByName, delModelById } from '@/api/model'
+import store from '@/store'
 
 export default {
   filters: {
@@ -152,17 +174,58 @@ export default {
       list: null,
       sublist: {},
       listLoading: true,
-      sublistLoading: false
+      sublistLoading: false,
+      queryInfo:{//按照页数和也页面大小，定时请求后台渲染表格数据
+          "user_id":store.getters.userid,
+          "pagenum":1,
+          "pagesize":10,
+          "totalData" : 0
+      },
+      queryInfo0 : {},
     }
   },
   created() {
     this.fetchData()
   },
   methods: {
+    handleExpendRow(row, expandedRows) {
+      
+      let index = this.list.findIndex(data => data.uuid == row.uuid).toString()
+      if (!this.sublist[index]) {
+        this.queryInfo0[index] = {}
+        this.fetchSubData(index, row)
+      }
+    },
+    fetchSubData(index, row) {
+      let tmp = {
+          "user_id": store.getters.userid,
+          "name" : row.name,
+          "curr": this.queryInfo0[index].hasOwnProperty("pagenum")?this.queryInfo0[index].pagenum:1,
+          "size": this.queryInfo0[index].hasOwnProperty("pagesize")?this.queryInfo0[index].pagesize:10
+        }
+        this.sublistLoading = true
+        getListByName(tmp).then(res => {
+          this.queryInfo0[index] = {
+            "pagenum":res.data.items.current,
+            "pagesize":res.data.items.size,
+            "totalData": res.data.items.total
+            }
+          this.sublist[index] = res.data.items.records
+          this.sublistLoading = false
+        })
+    },
     fetchData() {
+      let tmp = {
+          "user_id": store.getters.userid,
+          "curr": this.queryInfo.pagenum,
+          "size": this.queryInfo.pagesize 
+        }
       this.listLoading = true
-      getList(10).then(response => {
-        this.list = response.data.items
+      getList(tmp).then(res => {
+        this.queryInfo.pagenum = res.data.items.current
+        this.queryInfo.pagesize = res.data.items.size
+        this.queryInfo.totalData = res.data.items.total
+        this.list = res.data.items.records
         this.listLoading = false
       })
     },
@@ -198,16 +261,29 @@ export default {
      }).catch(() => {
      })
     },
-    handleExpendRow(row, expandedRows) {
-      let index = this.list.findIndex(data => data.uuid == row.uuid).toString()
-      if (!this.sublist[index]) {
-        this.sublistLoading = true
-        getListByName(10, row.name).then(response => {
-          this.sublist[index] = response.data.items
-          this.sublistLoading = false
-        })
-      }
-    }
+     //分页的功能
+      handleSizeChange(newSize) {
+        this.queryInfo.pagesize = newSize
+        //==重新发起数据请求
+        this.fetchData()
+      },
+      handleCurrentChange(newPage) {
+        this.queryInfo.pagenum = newPage
+        //==重新发起数据请求
+        this.fetchData()
+      },
+      //子分页的功能
+      handleSizeChange0(newSize, index, row) {
+
+        this.queryInfo0[index].pagesize = newSize
+        //==重新发起数据请求
+         this.fetchSubData(index, row)
+      },
+      handleCurrentChange0(newPage, index, row) {
+        this.queryInfo0[index].pagenum = newPage
+        //==重新发起数据请求
+         this.fetchSubData(index, row)
+      },
   }
 }
 </script>

@@ -35,12 +35,12 @@ export function deleteTask(query){
 //   })
 // }
 
-export function search(data){//输入框查询
+export function search(query){//输入框查询
   return request({
-    url:'/newtrain/search',
+    params:query,
+    url:'/train/search',
     method:'get',
-    data,
-    baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.237:8084'
   })
 }
 
