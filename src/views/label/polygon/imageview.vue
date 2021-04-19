@@ -1,6 +1,6 @@
 <template>
 <div>
-    <div class="dashboard-container" v-if="isimageview">
+    <div class="dashboard-container" v-if="!isimageview">
       <div>
       <el-button @click="returndataset" >返回数据集</el-button>
       <el-button @click="automark()" :loading="isloading">{{automarkbtntext}}</el-button>
@@ -16,9 +16,9 @@
       ></miniimage>
       </div>
     </div>
-  <div class="dashboard-container" v-if="!isimageview">
+  <div class="dashboard-container" v-if="isimageview">
     <!-- <div class="dashboard-text">name: {{ name }}</div> -->
-    <el-button :disabled="isdisablebutton" @click="returnimageview">返回</el-button>
+    <el-button :disabled="isdisablebutton" @click="returnimageview">返回图片预览</el-button>
     <el-button :disabled="isdisablebutton" @click="nextimage">下一张</el-button>
     <el-button :disabled="isdisablebutton" @click="previousimage" >上一张</el-button>
     <!-- <el-button @click="requireimage">请求图片</el-button> -->

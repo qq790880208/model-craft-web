@@ -1,13 +1,21 @@
 <template>
   <div id="test" style="user-select: none;">
-    <div>
-    <el-button @click="gai()" >{{buttontext}}</el-button>
+    <div style="
+    background: rgb(192, 192, 192);
+    ">
+      <el-radio-group v-model="radio" style="display: inline-block;">
+        <el-radio-button label="mark">标注</el-radio-button>
+        <el-radio-button label="drag">拖动</el-radio-button>
+      </el-radio-group>
+        <!-- <el-button @click="gai()" >{{buttontext}}</el-button> -->
     <!-- <el-button @click="gai" v-show="!isTrue2">正在添加标注</el-button> -->
-    <el-button @click="fangda">放大</el-button>
-    <el-button @click="suoxiao">缩小</el-button>
-    <el-button @click="huanyuan">还原图片大小</el-button>
-    <el-button @click="saveinfo">保存 </el-button>
-    <el-button @click="updatelastdata">查看上次标注数据</el-button>
+      <el-button-group style="display: inline-block;">
+        <el-button @click="fangda" icon="el-icon-plus">放大</el-button>
+        <el-button @click="suoxiao" icon="el-icon-minus">缩小</el-button>
+        <el-button @click="huanyuan">还原图片大小</el-button>
+        <el-button @click="saveinfo">保存 </el-button>
+        <el-button @click="updatelastdata">查看上次标注数据</el-button>
+      </el-button-group>  
     </div>
 
 
@@ -55,14 +63,22 @@
           }"
         >
           <!-- <div class="r_b" @mousedown="mouseMove11" v-if="b_i == index"></div> -->
-          <div class="ltc" @mousedown.stop="move(false,1, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
+          <!-- <div class="ltc" @mousedown.stop="move(false,1, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
           <div class="rtc" @mousedown.stop="move(false,2, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
           <div class="lbc" @mousedown.stop="move(false,3, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
           <div class="rbc" @mousedown.stop="move(false,4, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
           <div class="tc" @mousedown.stop="move(false,5, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
           <div class="lc" @mousedown.stop="move(false,6, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
           <div class="rc" @mousedown.stop="move(false,7, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
-          <div class="bc" @mousedown.stop="move(false,8, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
+          <div class="bc" @mousedown.stop="move(false,8, $event)" v-if="b_i == index"> {{ index + 1 }} </div> -->
+          <div class="ltc" @mousedown.stop="move(false,1, $event)" v-if="b_i == index"></div>
+          <div class="rtc" @mousedown.stop="move(false,2, $event)" v-if="b_i == index"></div>
+          <div class="lbc" @mousedown.stop="move(false,3, $event)" v-if="b_i == index"></div>
+          <div class="rbc" @mousedown.stop="move(false,4, $event)" v-if="b_i == index"></div>
+          <div class="tc" @mousedown.stop="move(false,5, $event)" v-if="b_i == index"></div>
+          <div class="lc" @mousedown.stop="move(false,6, $event)" v-if="b_i == index"></div>
+          <div class="rc" @mousedown.stop="move(false,7, $event)" v-if="b_i == index"></div>
+          <div class="bc" @mousedown.stop="move(false,8, $event)" v-if="b_i == index"></div>
         </div>
         <div
           :style="{
@@ -89,13 +105,16 @@
         //width:800+'px',
         //height:800+'px',
         //border: '1px solid #666',
-        float:'left',
+        //float:'left',
+        display:'inline-block',
         marginLeft:20+'px'
         }
       " >
       <div v-for="(items, index) in boxArry" :key="index" :style="{
+        display:'block',
+        marginTop:10+'px',
         //float:left,
-        //marginLeft:20+'px',
+        marginLeft:50+'px',
         //margin-top:20px,
         }
       " >
@@ -173,6 +192,17 @@ export default {
       this.num = 1
       this.updatelastdata()
       }
+      ////////////////
+            for (let i = 0; i < this.premarktype.length; i++) {
+        let a={}
+        a["value"]=i
+        a["label"]=this.premarktype[i].name
+        this.markinfoArry.push(a)
+        //this.markcolorArry.push(this.premarktype[i].color)
+
+      }
+      console.log("markinfoArry",this.markinfoArry)
+      /////////////////////
   },
   components: {
     labelinfo,
@@ -223,6 +253,7 @@ export default {
   },
   data() {
     return {
+      radio: 'mark',
       num: 1,
       imagewidth: null,//图片宽度像素数
       imageheight: null,//图片高度像素数
@@ -312,14 +343,17 @@ export default {
       console.log("vcxxcvxvxcv", this.boxArry);
       console.log("fsdfdsfsd", this.labelArry);
     },
-    settrue() {
-      this.isTrue2 = true;
-      console.log("setture");
-    },
-    setfalse() {
-      this.isTrue2 = false;
-      console.log("setfalse");
-    },
+    // settrue() {
+    //   this.isTrue2 = true;
+    //   console.log("setture");
+    // },
+    // setfalse() {
+    //   this.isTrue2 = false;
+    //   console.log("setfalse");
+    // },
+    // testsave(){
+    //   console.log("testtttttttttttttttttttttttsssssssssssssssssssssssssssssss")
+    // },
     saveinfo() {//保存时传递的信息
       console.log("start!!!", this.boxArry);
       //变为深拷贝
@@ -366,6 +400,7 @@ export default {
     moveMouse(e) {//标注或者拖动图片的函数
       //console.log("moveMouse!!!!!!!!!!!!!!");
       let odiv = e.target; //获取目标元素
+      console.log("dsadasdasdsadsadasdasdsadsad",this.radio)
       odiv.style.left = this.imageleft + "px";
       odiv.style.top = this.imagetop + "px";
       console.log(odiv)
@@ -380,7 +415,7 @@ export default {
       //  let disX = (e.clientX - odiv.offsetLeft) / this.num;
       //  let disY = (e.clientY - odiv.offsetTop) / this.num;
       console.log("disxy", disX, disY);
-      if (this.isTrue2) {
+      if (this.radio==="drag") {
         // 拖动图片
         console.log("moveMouse!!!!!!!!!!!!!!");
         document.onmousemove = (e) => {
