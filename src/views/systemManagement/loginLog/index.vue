@@ -1,16 +1,40 @@
 <template>
   <section class="out-main">
     <!--工具条-->
-    <el-col :span="24" class="toolbar" style="padding-bottom: 10px;">
-      <el-form :inline="true">
-        <el-form-item>
-          <el-input v-model="filter.name" placeholder="用户名"></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" v-on:click="getList">查询</el-button>
-        </el-form-item>
-      </el-form>
-    </el-col>
+    <el-row :gutter="24" class="toolbar" style="padding-bottom: 10px;">
+      <el-col>
+        <el-form :inline="true" :model="filter">
+          <el-form-item>
+            <el-input v-model="filter.name" placeholder="用户名" style="width:150px" clearable></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-input v-model="filter.method" placeholder="信息" style="width:150px" clearable></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-input v-model="filter.ip" placeholder="ip" style="width:150px" clearable></el-input>
+          </el-form-item>
+          <el-form-item>
+            <el-date-picker
+              v-model="filter.createTime"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              align="right"
+              :picker-options="pickerOptions"
+              >
+            </el-date-picker>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
+    <el-row :span="24" class="toolbar" style="padding-bottom: 10px;">
+      <el-col>
+        <el-button type="primary" v-on:click="getList">查询</el-button>
+        <el-button type="danger" :disabled="sels.length===0" @click="batchRemove">批量删除</el-button>
+      </el-col>
+    </el-row>
 
     <!--列表-->
     <el-table :data="logList" highlight-current-row style="width: 100%;" @selection-change="selsChange">
@@ -35,7 +59,6 @@
 
     <!--工具条-->
     <el-col :span="24" class="toolbar">
-      <el-button type="danger" :disabled="sels.length===0" @click="batchRemove">批量删除</el-button>
       <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
       </el-pagination>
     </el-col>
@@ -53,8 +76,38 @@ export default {
       sels: [], // 列表选中列
       page: 1,
       page_size: 10,
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
+            picker.$emit('pick', [start, end]);
+          }
+        }, {
+          text: '最近一个月',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
+            picker.$emit('pick', [start, end]);
+          }
+        }, {
+          text: '最近三个月',
+          onClick(picker) {
+            const end = new Date();
+            const start = new Date();
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
+            picker.$emit('pick', [start, end]);
+          }
+        }]
+      },
       filter: {
-        name: ''
+        name: '',
+        method: '',
+        ip: '',
+        createTime: []
       },
       logList: []
     }
@@ -102,10 +155,16 @@ export default {
       this.getList()
     },
     getList() {
+      if(this.filter.createTime === null) {
+        this.filter.createTime = ''
+      }
       const para = {
         page: this.page,
         pagesize: this.page_size,
-        name: this.filter.name
+        name: this.filter.name,
+        message: this.filter.method,
+        ip: this.filter.ip,
+        createTime: this.filter.createTime.toString()
       }
       console.log(para)
       getListByPage(para).then(res => {

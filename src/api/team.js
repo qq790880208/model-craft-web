@@ -40,6 +40,15 @@ export function getAllTeam() {
   return request({
     url: '/team/getAll',
     method: 'get',
-    baseURL: 'http://192.168.19.239:8088'
+    baseURL: 'http://192.168.19.239:8085'
+  })
+}
+
+export function getSelectTeam(params) {
+  return request({
+    url: '/team/getSelect',
+    method: 'get',
+    params: params,
+    baseURL: 'http://192.168.19.239:8085'
   })
 }

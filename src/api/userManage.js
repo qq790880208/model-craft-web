@@ -61,3 +61,11 @@ export function updatePassword(params) {
     baseURL: 'http://192.168.19.239:8088'
   })
 }
+export function getAllUser(params) {
+  return request({
+    url: '/userManage/getAll',
+    method: 'get',
+    params: params,
+    baseURL: 'http://192.168.19.239:8088'
+  })
+}

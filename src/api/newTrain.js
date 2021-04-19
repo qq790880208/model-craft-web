@@ -1,27 +1,38 @@
 import request from '@/utils/request'
 export function startTask(query){
   return request({
-    url:'/newtrain/start',
+    url:'/train/start',
     method:'post',
     params: query,
-    baseURL: 'http://localhost:9528/dev-api'
+    //baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.237:8084'
   })
 }
 
 export function stopTask(query){
   return request({
-    url:'/newtrain/stop',
+    url:'/train/stop',
     method:'post',
     params: query,
-    baseURL: 'http://localhost:9528/dev-api'
+    //baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.237:8084'
   })
 }
 
 export function deleteTask(query){
   return request({
-    url:'/newtrain/delete',
+    url:'/train',
     method:'delete',
     params: query,
+    //baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://192.168.19.237:8084'
+  })
+}
+
+export function showLog(){
+  return request({
+    url:'/train/log',
+    method:'post',
     //baseURL: 'http://localhost:9528/dev-api'
     baseURL: 'http://192.168.19.237:8084'
   })

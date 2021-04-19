@@ -19,19 +19,27 @@
     </el-row>
     <el-divider></el-divider>
     <el-row>
-        <el-button icon="el-icon-upload2" circle @click="returnOldCurrentRow"></el-button>
+        <el-button icon="el-icon-upload2" type="text" @click="returnOldCurrentRow">返回上级</el-button>
         <el-divider direction="vertical"></el-divider>
-        <el-tag effect="plain">当前路径：{{bucket}} ：{{objectcurrentRow}}</el-tag>
         <el-button-group>
-            <el-button  icon="el-icon-folder-add" plain @click="addFolder">创建文件夹</el-button>
-            <el-button  icon="el-icon-folder-remove" plain @click="remFolder">删除文件夹</el-button>
+            <el-button plain>当前路径：{{bucket}} ：{{objectcurrentRow}}</el-button>
+            <el-button  icon="el-icon-folder-add" @click="addFolder">创建文件夹</el-button>
+            <el-button  icon="el-icon-folder-remove" @click="remFolder">删除文件夹</el-button>
         </el-button-group>
     </el-row> 
     <el-divider></el-divider>
     <el-row>
-        <el-table  :data="objectData" highlight-current-row @row-click="listbyPrefix">
+        <el-table  :data="objectData" highlight-current-row @row-click="listbyPrefix" @row-contextmenu="rightClick" >
             <el-table-column prop="name" label="对象名"></el-table-column>
         </el-table>
+        <div v-show="rightClickMenuVisible">
+            <ul id="menu" class="menu">
+                <li class="menu__item" @click="downLoadObject">下载</li>
+                <li class="menu__item" @click="renameObject">重命名</li>
+                <li class="menu__item" @click="copyObject">拷贝</li>
+                <li class="menu__item" @click="deleteObject">删除</li>
+            </ul>
+        </div>
     </el-row>
     
     <!--上传文件dialog-->
@@ -50,7 +58,7 @@
             </el-form>
         <el-divider></el-divider>
         <el-row>
-            <el-button icon="el-icon-upload2" circle @click="returnOlduplCurrentRow"></el-button>
+            <el-button icon="el-icon-upload2" type="text"  @click="returnOlduplCurrentRow">返回上级</el-button>
             <el-divider direction="vertical"></el-divider>
             <el-tag type="info" effect="light">当前路径：{{uplbucket}} ：{{objectuplcurrentRow}}</el-tag>
         </el-row> 
@@ -102,7 +110,7 @@
             </el-form>
         <el-divider></el-divider>
         <el-row>
-            <el-button icon="el-icon-upload2" circle @click="returnOlddelCurrentRow"></el-button>
+            <el-button icon="el-icon-upload2" type="text"  @click="returnOlddelCurrentRow">返回上级</el-button>
             <el-divider direction="vertical"></el-divider>
             <el-tag type="info" effect="light">当前路径：{{delbucket}} ：{{objectdelcurrentRow}}</el-tag>
         </el-row> 
@@ -136,11 +144,65 @@
             <el-button type="primary" @click="delFol">确 定</el-button>
         </div>
     </el-dialog>
+
+    <!--右键重命名弹出框-->
+    <el-dialog title="重命名" :visible.sync="renameVisible" width="30%" >
+        <el-input v-model="objectNewName" placeholder="请输入新文件名" clearable>
+            <template slot="append">{{postfix}}</template>
+        </el-input>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="renameVisible=false">取 消</el-button>
+            <el-button type="primary" @click="renameFile">确 定</el-button>
+        </div>
+    </el-dialog>
+
+    <!--拷贝弹出框-->
+    <el-dialog title="拷贝" :visible.sync="copyVisible">
+        <el-button-group>
+            <el-button icon="el-icon-folder" size="medium">源文件</el-button>
+            <el-button size="medium">{{bucket}}:</el-button>
+            <el-button size="medium" v-show="objectcurrentRow">{{objectcurrentRow}}</el-button>
+            <el-button size="medium">{{copyNameOrg}}</el-button>
+        </el-button-group>
+        <el-divider></el-divider>
+        <el-button-group>
+            <el-button icon="el-icon-folder" size="medium" @click="copyFolder">目标路径</el-button>
+            <el-button size="medium" v-show="copyBucketName">{{copyBucketName}}:</el-button>
+            <el-button size="medium" v-show="copyObjectRow">{{copyObjectRow}}</el-button>
+            <el-button size="medium" v-show="copyName">{{copyName}}</el-button>
+        </el-button-group>
+        <el-dialog width="30%" title="选择路径" :visible.sync="copyFolderVisible" append-to-body :show-close="false">
+            <el-form>
+                <el-form-item label="请选择桶:">
+                    <el-radio-group v-model="copyBucket" @change="choosecopybucket">
+                        <el-radio-button :label="item.name" :key="item.name" v-for="item in list">{{item.name}}</el-radio-button>
+                    </el-radio-group>
+                </el-form-item> 
+            </el-form>
+        <el-divider></el-divider>
+        <el-row>
+            <el-button icon="el-icon-upload2" type="text"  @click="returnOldcopyCurrentRow">返回上级</el-button>
+            <el-divider direction="vertical"></el-divider>
+            <el-tag type="info" effect="light">当前路径：{{copyBucket}} ：{{objectcopycurrentRow}}</el-tag>
+        </el-row> 
+        <el-table :data="objectcopyData" highlight-current-row @row-click="copylistbyPrefix">
+            <el-table-column prop="name" label="请选择上传位置"></el-table-column>
+        </el-table>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="returnCopyNull">取 消</el-button>
+            <el-button type="primary" @click="returnCopyFolder">确定</el-button>
+        </div>
+        </el-dialog>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="returnCopyCancel">取 消</el-button>
+            <el-button type="primary" @click="returnCopy">确 定</el-button>
+        </div>
+    </el-dialog>
 </div>
 </template>
 
 <script>
-import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder } from '@/api/oss'
+import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder,fileRename,fileURL,fileCopy } from '@/api/oss'
 import request from "@/utils/request"
 export default {
     data(){
@@ -165,7 +227,6 @@ export default {
             uploadBucketName:'',//上传目标桶
             uploadObjectFolder:'',//上传目标路径
             uploadobjectName:'',//上传文件名
-            // fileList: [],//上传文件的列表
             uploadFile:'',//要给后端的文件
             uploadFilesignal:false,//上传文件判断信号
             removefileVisible:false,//删除文件dialog框信号
@@ -189,6 +250,24 @@ export default {
             folder:'',//选择的folder
             folders:[],//folder列表
             delfolder:'',//要删除的文件夹
+            rightClickMenuVisible:false,//右键菜单信号
+            rightName:'',//右键选中的行
+            renameVisible:false,//重命名弹出框信号
+            objectNewName:'',//文件重命名的新名字
+            postfix:'',//重命名文件的后缀与之前保持一致
+            copyVisible:false,//拷贝文件的弹出框信号
+            copyNameOrg:'',//拷贝的原文件名
+            copyBucket:'',//拷贝文件的目标桶
+            copyObjectRow:'',//拷贝文件的目标路径
+            copyName:'',//拷贝文件的新名称
+            copyFolderVisible:false,//拷贝文件选择性目标路径框信号
+            objectcopyData:'',//拷贝文件对象列表
+            objectcopycurrentRow:'',//拷贝文件的当前显示列表
+            objectcopyPrefix:'',//拷贝文件的后端调用
+            oldObjectcopyPrefix:'',//拷贝文件的上一级前缀名
+            oldcopyCurrentRow:'',//拷贝文件的上级目录
+            copysignal:false,//拷贝的选择具体文件信号控制
+            copyBucketName:''//拷贝的目标桶名
         }
     },
 
@@ -462,6 +541,7 @@ export default {
 
         //返回内层dialog
         returnuplFolder(){
+            if(this.selectBucketName==''){this.selectBucketName=this.uplbucket}
             this.uploadBucketName=this.selectBucketName
             this.uploadObjectFolder=this.selectObjectFolder
             this.choosefolder = false
@@ -668,6 +748,263 @@ export default {
         choofolder(){
             this.$message.error('该目录下不存在文件夹');
         },
+
+        //右键点击事件
+        rightClick(row, event,column) {
+            this.rightName=row.name;
+            this.rightClickMenuVisible = false; // 先把模态框关死，目的是 第二次或者第n次右键鼠标的时候 它默认的是true
+            this.rightClickMenuVisible = true; // 显示模态窗口，跳出自定义菜单栏
+            var menu = document.querySelector('#menu');
+            this.styleMenu(menu);
+        },
+        // 取消鼠标监听事件 菜单栏
+        foo() {
+            this.rightClickMenuVisible = false;
+            document.removeEventListener('click', this.foo); // 要及时关掉监听，不关掉的是一个坑，不信你试试，虽然前台显示的时候没有啥毛病，加一个alert你就知道了
+        },
+        styleMenu(menu) {
+        if (event.clientX > 1800) {
+            menu.style.left = event.clientX - 100 + 'px';
+        } else {
+            menu.style.left = event.clientX + 1 + 'px';
+        }
+        document.addEventListener('click', this.foo); // 给整个document新增监听鼠标事件，点击任何位置执行foo方法
+        event.preventDefault();
+        if (event.clientY > 700) {
+            menu.style.top = event.clientY - 30 + 'px';
+        } else {
+            menu.style.top = event.clientY - 10 + 'px';
+        }
+        },
+
+        //重命名文件
+        renameObject(){
+            if("/"==this.rightName.substring(this.rightName.length-1)){
+                this.choosefile()
+            }else{
+                this.renameVisible=true;
+                console.log(this.rightName);
+                const name=this.rightName.substring(this.objectcurrentRow.length);
+                console.log(name);
+                this.postfix=name.substring(this.rightName.substring(this.objectcurrentRow.length).indexOf("."));
+            }
+        },
+
+        //后端重命名
+        renameFile(){
+            const para={}
+                para.bucketName=this.bucket
+                para.folderName=this.objectcurrentRow
+                para.objectName=this.rightName.substring(this.objectcurrentRow.length)
+                para.objectNameNew=this.objectNewName+this.postfix
+                console.log(para);
+                fileRename(para).then(response=>{
+                if(20000 == response.code){
+                    this.suc()
+                }else{
+                    this.fai()
+                }
+            })
+            this.renameVisible=false
+        },
+
+        //下载的点击事件
+        downLoadObject(){
+            console.log(this.bucket);
+            console.log(this.rightName);
+            const para={}
+            para.bucketName=this.bucket
+            para.objectName=this.rightName
+            console.log(para);
+            fileURL(para).then(response=>{
+                if(20000 == response.code){
+                    this.suc()
+                    console.log(response.data);
+                }else{
+                    this.fai()
+                }
+            })
+        },
+
+        //拷贝的点击事件
+        copyObject(){
+            if("/"==this.rightName.substring(this.rightName.length-1)){
+                this.choosefile()
+            }else{
+                this.copyVisible=true
+            this.copyNameOrg=this.rightName.substring(this.objectcurrentRow.length);
+            const para={}
+            para.bucketNameOrg=this.bucket
+            para.folderNameOrg=this.objectcurrentRow
+            para.objectNameOrg=this.copyNameOrg
+            console.log(para);
+            }
+        },
+
+        //拷贝文件的目标路径
+        copyFolder(){
+            this.copyFolderVisible=true;
+        },
+
+        //选择拷贝目标桶
+        choosecopybucket(val){
+            this.objectcopyData=[]
+            const para = {bucketName : val}
+            console.log(para);
+            this.objectcopylist(para);
+        },
+
+        //拷贝对象的object列表数据,更新上传列表
+        objectcopylist(para){
+            listObject(para).then(response=>{
+                if(response){
+                    console.log(response);
+                    this.objectcopyData = response.data
+                }else{
+                }
+            }).catch()
+        },
+
+        copylistbyPrefix(row,event,column){
+            console.log(row.name);
+            const para={}
+            if("/"==((row.name.split("").reverse().join("")).substring(0,1)).split("").reverse().join("")){
+                console.log("isdir");
+                this.copysignal=true //选择路径
+                this.objectcopycurrentRow = row.name;
+                console.log(row.name.substring(0,row.name.length-1));
+                this.objectcopyPrefix = row.name.substring(0,row.name.length-1)
+                para.bucketName = this.copyBucket
+                para.objectPrefix = this.objectcopyPrefix
+                console.log(para);
+                this.listCopyObject(para)
+                this.oldObjectcopyPrefix = this.objectuplPrefix.substring(0,this.objectuplPrefix.length-this.objectuplPrefix.split("").reverse().indexOf("/")-1)
+                this.oldcopyCurrentRow = this.objectuplPrefix.substring(0,this.objectuplPrefix.length-this.objectuplPrefix.split("").reverse().indexOf("/"))
+                this.selectBucketName=this.copyBucket;
+                this.selectObjectFolder=row.name;
+            }else{
+                console.log("isnotdir");
+                this.copysignal=false //选择的不是路径
+            }
+        },
+
+        //更新objectcopyData的值
+        listCopyObject(para){
+            listObjectByPrefix(para).then(response=>{
+                this.objectcopyData = response.data
+            }).catch(error=>{console.log(error);})
+        },
+
+        //拷贝的返回上级
+        returnOldcopyCurrentRow(){
+            console.log(this.copyBucket);
+            console.log(this.oldcopyCurrentRow);
+            console.log(this.oldObjectcopyPrefix);
+            if(this.oldcopyCurrentRow==this.oldObjectcopyPrefix){
+                this.oldcopyCurrentRow=''
+                this.oldObjectcopyPrefix=''
+                this.objectcopycurrentRow=''
+                this.objectcopyPrefix=''
+                this.selectObjectFolder=''
+            }
+            const para={}
+            para.bucketName = this.copyBucket;
+            para.objectPrefix = this.oldObjectcopyPrefix;
+            console.log(para);
+            this.listCopyObject(para)
+            this.objectcopycurrentRow = this.oldcopyCurrentRow
+            this.objectcopyPrefix = this.oldObjectcopyPrefix
+            this.oldcopyCurrentRow = this.objectcopyPrefix.substring(0,this.objectcopyPrefix.length-this.objectcopyPrefix.split("").reverse().indexOf("/"))
+            this.oldObjectcopyPrefix = this.objectcopyPrefix.substring(0,this.objectcopyPrefix.length-this.objectcopyPrefix.split("").reverse().indexOf("/")-1)
+        },
+
+        //确定拷贝目标路径
+        returnCopyFolder(){
+            if(this.copysignal==true){
+                if(this.selectBucketName==''){this.selectBucketName=this.copyBucket}
+                this.copyBucketName=this.selectBucketName
+                this.copyObjectRow=this.selectObjectFolder
+                this.copyFolderVisible=false
+                this.copysignal=false
+            }else{
+                this.choosedir()
+            }
+        },
+
+        //提示选择路径进行拷贝
+        choosedir(){
+            this.$message.error('请选择文件目录');
+        },
+
+        //取消拷贝目标路径
+        returnCopyNull(){
+            this.copyBucketName=''
+            this.copyBucket=''
+            this.copyObjectRow=''
+            this.objectcopycurrentRow=''
+            this.objectcopyData=[]
+            this.copyFolderVisible = false
+            this.copysignal = false
+        },
+
+        //确认拷贝
+        returnCopy(){
+            const para={}
+            para.bucketNameOrg=this.bucket
+            para.bucketName=this.copyBucketName
+            para.folderNameOrg=this.objectcurrentRow
+            para.folderName=this.copyObjectRow
+            para.objectNameOrg=this.copyNameOrg
+            para.objectName=this.copyName
+            console.log(para);
+            fileCopy(para).then(response=>{
+                if(20000 == response.code){
+                    this.suc()
+                    this.copyBucketName=''
+                    this.copyBucket=''
+                    this.copyObjectRow=''
+                    this.objectcopycurrentRow=''
+                    this.objectcopyData=[]
+                }else{
+                    this.fai()
+                    this.copyBucketName=''
+                    this.copyBucket=''
+                    this.copyObjectRow=''
+                    this.objectcopycurrentRow=''
+                    this.objectcopyData=[]
+                }
+            })
+            this.copyVisible=false
+        },
+
+        //取消拷贝
+        returnCopyCancel(){
+            this.copyBucketName=''
+            this.copyObjectRow=''
+            this.copyName=''
+            this.copyBucketName=''
+            this.copyBucket=''
+            this.objectcopycurrentRow=''
+            this.objectcopyData=[]
+            this.copyVisible=false
+        },
+
+        //右键删除
+        deleteObject(){
+            if("/"==this.rightName.substring(this.rightName.length-1)){
+                this.choosefile()
+            }else{
+            console.log(this.bucket);
+            console.log(this.objectcurrentRow);
+            console.log(this.rightName.substring(this.objectcurrentRow.length));
+            const para={}
+            para.bucketName=this.bucket
+            para.folderName=this.objectcurrentRow
+            para.objectName=this.rightName.substring(this.objectcurrentRow.length)
+            this.removeobj(para)
+            }
+        },
+
     }
 
 }
@@ -681,6 +1018,33 @@ export default {
     font-size: 12px;
     box-shadow: 0 0 10px rgba(0, 0, 0, .4);
 }
+.menu__item {
+	display: block;
+	line-height: 20px;
+	text-align: center;
+	margin:10px;
+	cursor: default;
+}
+.menu__item:hover{
+	color: #FF0000;
+}
+
+.menu {
+    height: auto;
+    width: auto;
+    position: fixed;
+    font-size: 14px;
+    text-align: left;
+    border-radius: 10px;
+    border: 1px solid #c1c1c1;
+    background-color: #ffffff;
+}
+
+li:hover {
+    background-color: #E0E0E2;
+    color: white;
+}
+
 
 
 </style>

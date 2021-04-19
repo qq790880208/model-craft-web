@@ -9,6 +9,15 @@ export function getDataByName(params) {
   })
 }
 
+export function getAssignData(params) {
+  return request({
+    url: '/data/getAssignedData',
+    method: 'get',
+    params: params,
+    baseURL: 'http://192.168.19.239:8085'
+  })
+}
+
 export function getDataByTeam(params) {
   return request({
     url: '/data/getDataTeam',
@@ -67,6 +76,33 @@ export function assignLabel(params) {
   return request({
     url: '/userlabel/assignLabel',
     method: 'post',
+    params: params,
+    baseURL: 'http://192.168.19.239:8085'
+  })
+}
+
+export function addNewLabels(params) {
+  return request({
+    url: '/label/addNewLabel',
+    method: 'post',
+    params: params,
+    baseURL: 'http://192.168.19.239:8085'
+  })
+}
+
+export function assignNewData(params) {
+  return request({
+    url: '/userlabel/assignNewData',
+    method: 'post',
+    params: params,
+    baseURL: 'http://192.168.19.239:8085'
+  })
+}
+
+export function getNewFile(params) {
+  return request({
+    url: '/file/getFiles',
+    method: 'get',
     params: params,
     baseURL: 'http://192.168.19.239:8085'
   })

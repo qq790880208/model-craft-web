@@ -1,153 +1,47 @@
 <template>
   <div class="app-container">
-    <el-container>
-      <el-aside width="200px">
-        <el-header style="text-align:left">
-          <span class="team_manage"> 标注团队管理 </span>
-        </el-header>
-        <el-row>
-          <el-button type="primary" size="small" :disabled="isRole !=='admin'" @click="handleAdd">新增团队</el-button>
-          <el-button type="danger" size="small" :disabled="isRole !=='admin'" @click="handleDelete()">Del</el-button>
-        </el-row>
-        <el-table :data="teamsList" style="width: 100%;" fit> <!--@mouseover="mouseOn()" @mouseleave="mouseGo()" @row-click="openDetails(scope.$index, scope.row)-->
-          <!-- <el-table-column align="center" label="Team Name" width="200">
-            <template slot-scope="scope">
-              <span class="link-type" @click="openDetails(scope.$index, scope.row)">{{ scope.row.name }}</span>
-            </template>
-          </el-table-column> -->
-          <el-table-column align="left" width="200">
-            <template slot="header" slot-scope="scope">   <!-- slot-scope="scope" -->
-              <span>创建了<span style="font-size:20px"> {{ teamsList.length }} </span>个团队</span>
-            </template>
-            <template slot-scope="scope">
-              <span class="link-type" @click="openDetails(scope.$index, scope.row)">{{ scope.row.name }}</span>
-            </template>
-          </el-table-column>
-        </el-table>
-      </el-aside>
-      <el-container>
-        <el-header style="text-align: right; font-size: 12px">
-          <span class="team_data">团队详情</span>
-          <el-dropdown>
-            <i class="el-icon-setting" style="text-align: left">使用指南</i>
-            <el-dropdown-menu slot="dropdown">
-              <el-dropdown-item @click.native="showUseGuidance">查看</el-dropdown-item>
-              <el-dropdown-item @click.native="showManage">联系</el-dropdown-item>
-            </el-dropdown-menu>
-          </el-dropdown>
-        </el-header>
-        <el-main>
-          <el-col style="font-size: 15px">
-            <table width="600" @click="mouseOver">
-              <tr>
-                <td width="350">
-                  <span style="float: left">团队名称：</span>
-                  <div v-if="flag">
-                    <div style="float: left">{{ selectTeam.name }}</div>
-                  </div>
-                  <div v-else>
-                    <input v-model="selectTeam.name" type="text" style="float: left">
-                  </div>
-                </td>
-                <td width="250">
-                  <span style="float: left">团队成员：</span> <span>{{ rolesList.length }}</span>
-                </td>
-              </tr>
-              <tr>
-                <td width="350">
-                  <span style="float: left">团队信息：</span>
-                  <div v-if="flag">
-                    <div style="float: left">{{ selectTeam.descr }}</div>
-                  </div>
-                  <div v-else>
-                    <input v-model="selectTeam.descr" style="float: left">
-                  </div>
-                </td>
-                <td width="250">
-                  <span style="float: left">创建时间：</span> <span>{{ selectTeam.create_time | formatDate }}</span>
-                </td>
-              </tr>
-            </table>
-          </el-col>
-          <el-col>
-            <el-button type="primary" style="float:left;" size="small" :disabled="isRole !=='admin' && idLabel !=='TeamManager'" @click="handleAddUser">新增成员</el-button>
-            <el-button type="primary" style="float:left;" size="small" :disabled="isRole !=='admin' && idLabel !=='TeamManager'" @click="mouseLeave">保存编辑</el-button>
-          </el-col>
-          <el-table class="teamUser" :data="rolesList" style="width: 100%;" border @selection-change="selChange">
-            <el-table-column type="selection" width="55" :disabled="isRole !=='admin' && idLabel !=='TeamManager'" />
-            <!-- <el-table-column align="center" label="Role Key" width="120">
-              <template slot-scope="scope">
-                {{ scope.row.id }}
-              </template>
-            </el-table-column> -->
-            <el-table-column align="center" label="用户名字" width="120">
-              <template slot-scope="scope">
-                {{ scope.row.name }}
-              </template>
-            </el-table-column>
-            <el-table-column align="center" label="标注角色" width="120">
-              <template slot-scope="scope">
-                {{ scope.row.label_role }}
-              </template>
-            </el-table-column>
-            <el-table-column align="center" label="Description">
-              <template slot-scope="scope">
-                {{ scope.row.descr }}
-              </template>
-            </el-table-column>
-            <el-table-column align="center" label="Operations">
-              <template slot-scope="scope">
-                <el-button type="primary" size="small" :disabled="isRole !=='admin' && idLabel !=='TeamManager'" @click="handleEditUser(scope.$index, scope.row)">Edit</el-button>
-                <el-button type="danger" size="small" :disabled="isRole !=='admin' && idLabel !=='TeamManager'" @click="handleDeleteUser(scope.$index, scope.row)">Delete</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          <el-col :span="24" class="tool-bar">
-            <el-button type="danger" :disabled="seles.length===0 || isRole !=='admin' && idLabel !=='TeamManager'" style="float: left" @click="batchRemove">批量删除</el-button>
-            <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :total="rolesList.length" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
-          </el-col>
-        </el-main>
-      </el-container>
-    </el-container>
+    <div class="header">
+      <span class="title">
+        标注团队
+      </span>
+    </div>
+    <div class="content">
+      <div class="left">
+        <div class="button">
+          <el-row>
+            <el-button type="primary" plain size="small" :disabled="isRole !=='admin'" @click="handleAdd()">新增团队</el-button>
+            <el-button type="danger" plain size="small" :disabled="isRole !=='admin'" @click="handleDelete()">删除</el-button>
+          </el-row>
+        </div>
+        <div class="teamNum">
+          <span>团队列表</span>
+        </div>
+        <div class="teamdata">
+          <div class="list">
+            <div class="teamList" v-for="item in teamsList" v-bind:key="item.id"
+              @click="openDetails(item)" 
+              >
+              <el-card class="box-card" v-bind="item"
+              :style="{ border: '1px solid ' + markcolor(item.id) }">
+                <div slot="header">
+                  <span>{{ item.name }}</span>
+                </div>
+                <div>
+                  <i class="el-icon-user"> 1 </i> <span style="float: right"> {{item.create_time | formatDate}} </span> 
+                </div>
+              </el-card>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="right">
 
-    <!--团队编辑界面-->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
-      <el-form ref="editForm" :model="editForm" label-width="80px" :rules="editFormRules">
-        <el-form-item label="名字" prop="name">
-          <el-input v-model="editForm.name" auto-complete="off" />
-        </el-form-item>
-        <el-form-item label="描述">
-          <el-input v-model="editForm.descr" type="textarea" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="danger" @click.native="dialogFormVisible=false">取消</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createTeam">添加</el-button>
-        <el-button v-else type="primary" @click="dialogFormVisible=false, updateData">修改</el-button>
+        <h1>
+        右面
+        </h1>
       </div>
-    </el-dialog>
-    <!--用户编辑界面-->
-    <el-dialog :title="textMap[dialogStatusUser]" :visible.sync="dialogFormVisibleUser" :close-on-click-modal="false">
-      <el-form ref="editForm" :model="editFormUser" label-width="80px" :rules="editFormRulesUser">
-        <el-form-item label="名字" prop="name">
-          <el-input v-model="editFormUser.name" auto-complete="off" />
-        </el-form-item>
-        <el-form-item label="角色" prop="character">
-          <!--<el-input v-model="editFormUser.character" auto-complete="off" />-->
-          <el-select v-model="editFormUser.character" class="filter-item" placeholder="Please select">
-            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-form-item>
-        <el-form-item label="描述">
-          <el-input v-model="editFormUser.descr" type="textarea" />
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="danger" @click.native="dialogFormVisibleUser=false">取消</el-button>
-        <el-button v-if="dialogStatusUser=='create'" type="primary" @click="createUser">添加</el-button>
-        <el-button v-else type="primary" @click="updateDataUser">修改</el-button>
-      </div>
-    </el-dialog>
+    </div>
+    
   </div>
 </template>
 
@@ -155,10 +49,12 @@
 import { mapGetters } from 'vuex'
 import { getTeams, delTeams, addTeams, editTeams } from '@/api/team'
 import { addUser, batchDelUser, delUser, editUser, getTeamsUserPage } from '@/api/teamUser'
-import { getTeamPerm } from '@/api/userManage'
+import { getTeamPerm, getAllUser } from '@/api/userManage'
 import store from '@/store'
+import table from '@/views/newtrain/table.vue'
 
 export default {
+  components: { table },
   name: 'Dashboard',
   filters: {
     formatDate(nows) {
@@ -189,6 +85,15 @@ export default {
     }
   },
   data() {
+    //验证邮箱的规则
+    const checkEmail = (rule,value,cb) =>{
+      const regEmail = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
+      if(regEmail.test(value)){
+        //合法的邮箱
+        return cb()
+      }
+      cb(new Error("请输入合法的邮箱"))
+    }
     return {
       isRole: store.getters.role,
       seen: 'false',
@@ -210,12 +115,13 @@ export default {
       dialogStatusUser: '',
       dialogFormVisible: false,
       dialogFormVisibleUser: false,
+      options: [], // 所有用户
       editForm: {
         name: '',
         descr: ''
       },
       editFormUser: {
-        name: '',
+        email: '',
         character: '',
         descr: ''
       },
@@ -223,11 +129,14 @@ export default {
         name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
       },
       editFormRulesUser: {
-        name: [{ required: true, message: '请输入姓名', trigger: 'blur' }]
+        email: [
+          { required: true, message: '邮箱不能为空', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' }
+        ]
       },
       textMap: {
-        update: 'Edit',
-        create: 'Create'
+        update: '编辑',
+        create: '新增'
       },
       addFormVisible: false, // 新增界面是否显示
       addFormRules: {
@@ -239,12 +148,23 @@ export default {
     ...mapGetters([
       'name',
       'userid'
-    ])
+    ]),
+    boardColer(id) {
+      if (id == this.selectTeamId) {
+        return 'blue'
+      } else {
+        return 'white'
+      }
+    }
   },
   created() {
     this.getTeamsList()
   },
   methods: {
+    markcolor(id){
+        if(id === this.selectTeamId) return 'blue'
+        else return 'white'
+    },
     edit() {
       this.flag = false
     },
@@ -261,6 +181,8 @@ export default {
         this.flag = false
       }
     },
+
+    // 保存编辑
     mouseLeave: function() {
       this.flag = true
       // const para = Object.assign({}, this.selectTeam)
@@ -280,6 +202,8 @@ export default {
           })
         })
     },
+
+    // 得到团队列表
     getTeamsList: function() {
       const para = {
         name: store.getters.name,
@@ -289,6 +213,8 @@ export default {
         this.teamsList = response.data.items
       })
     },
+
+    // 分页
     handleSizeChange(val) {
       this.page_size = val
       this.getUsers()
@@ -297,6 +223,8 @@ export default {
       this.page = val
       this.getUsers()
     },
+
+    // 得到team的用户
     getUsers: function() {
       const para = {}
       para.id = this.selectTeam.id
@@ -309,11 +237,15 @@ export default {
         this.rolesList = response.data.items
       })
     },
+
     /* 显示团队的信息 */
-    openDetails: function(index, row) {
+    openDetails: function(row, event, column) {
+      console.log(row.id)
+      this.selectTeamId = row.id
       this.flag = true
       this.idLabel = ''
       this.selectTeam = Object.assign({}, row)
+      console.log(selectTeam)
       this.selectTeam.descr = this.teamsList[index].descr
       console.log(index)
       console.log(this.selectTeam)
@@ -344,6 +276,8 @@ export default {
       this.dialogFormVisible = true
       this.editForm = Object.assign({}, row)
     },
+
+    // 删除团队
     handleDelete: function() {
       this.$confirm('确认删除该记录吗?', '提示', {
         type: 'warning'
@@ -361,6 +295,8 @@ export default {
         })
         .catch(() => {})
     },
+
+    // 删除团队用户
     handleDeleteUser: function(index, row) {
       this.$confirm('确认删除该记录吗?', '提示', {
         type: 'warning'
@@ -379,6 +315,7 @@ export default {
         })
       console.log(index, row)
     },
+
     /* 添加用户数据 */
     handleAddUser: function() {
       this.dialogStatusUser = 'create'
@@ -388,6 +325,14 @@ export default {
         character: '',
         descr: ''
       }
+      this.getAllUserList()
+    },
+
+    // 得到所有的用户
+    getAllUserList: function() {
+      getAllUser().then(res => {
+        this.options = res.data.items
+      })
     },
     /* edit 用户数据 */
     handleEditUser: function(index, row) {
@@ -436,13 +381,13 @@ export default {
               console.log(222222222222222222222)
               console.log(para)
               addUser(para).then(res => {
-                this.message({
-                  message: '提交成功',
+                this.$message({
+                  message: '添加成功',
                   type: 'success'
                 })
+                this.getUsers()
               })
               this.dialogFormVisibleUser = false
-              this.getUsers()
             })
             .catch(e => {
               // 打印一下错误
@@ -539,32 +484,93 @@ export default {
     line-height: 320px;
   }
   .el-button--goon:hover {
-    background: red;
+    background: rgb(243, 10, 10);
   }
   .dialog-footer{
     text-align:center
   }
-  .app-container {
-    .roles-table {
-      margin-top: 30px;
-    }
-    .permission-tree {
-      margin-bottom: 30px;
-    }
+.app-container {
+  .roles-table {
+    margin-top: 30px;
   }
-  .team_wapper {
-    display: flex;
-    align-items: center;
-    margin-left: 40px;
+  .permission-tree {
+    margin-bottom: 30px;
   }
-  .team_data{
-    float: left;
-    font-size: 25px;
-  }
-  .useManage{
-    float: right;
-    font-size: 20px;
-  }
+  padding: 20px 20px 20px 5px;
+  background: #EEF3FF;
+  float:left;
+  width:100%;
+}
+.header {
+  width:100%;
+  padding: 16px 20px;
+}
+.header .title {
+  font-size: 18px;
+  font-weight: bolder;
+}
+.content {
+  width:100%;
+  padding: 0px 20px;
+}
+.left{
+  font-size: 16px;
+  width:20%;
+  min-height: 660px;
+  padding: 0px 2px;
+  float: left;
+    // position:absolute;
+    // display: flex;
+    // display: -webkit-flex;
+    // align-items:center;
+    // color: #008cff;
+  border-right:1px solid #b7d1f8;
+}
+.left .button {
+  margin-left: 12px;
+}
+.left .teamNum {
+  margin: 20px 0 10px 0px;
+}
+::v-deep .el-card__header {
+  padding: 8px 18px;
+  margin-left: 0px;
+  border-bottom: 1px solid #ffffff;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+::v-deep .el-card__body {
+    padding: 6px 18px;
+}
+.box-card {
+  border: 1px solid #faf4f4;
+}
+
+.teamList {
+  padding: 2px 8px 2px 0px;
+  margin: 2px 5px 2px 0px;
+}
+.el-card__body {
+    padding: 10px;
+}
+.right{
+  float: right;
+  padding: 0px 5px;
+  width: 79%;
+}
+.team_wapper {
+  display: flex;
+  align-items: center;
+  margin-left: 40px;
+}
+.team_data{
+  float: left;
+  font-size: 25px;
+}
+.useManage{
+  float: right;
+  font-size: 20px;
+}
   .team_manage{
     font-size: 25px;
     float: left;

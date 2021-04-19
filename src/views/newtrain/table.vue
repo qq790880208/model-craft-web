@@ -44,7 +44,7 @@
       </el-table-column>
       <el-table-column label="算法" width="160">
         <template slot-scope="scope">
-          <span>{{ scope.row.train_algo_name }}</span>
+          <span>{{ algorithmArray[scope.row.algo_id]}}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" width="120">
@@ -60,7 +60,7 @@
       </el-table-column>
       <el-table-column label="创建时间" width="160">
         <template slot-scope="scope">
-          <span>{{ scope.row.create_time }}</span>
+          <span>{{ formatDate(scope.row.create_time) }}</span>
         </template>
       </el-table-column>
       <el-table-column label="描述" width="120">
@@ -70,16 +70,16 @@
       </el-table-column>
       <el-table-column  label="创建者" width="120">
         <template slot-scope="scope">
-          <b>{{ scope.row.userId }}</b>
+          <b>{{ scope.row.user_id }}</b>
         </template>
       </el-table-column>
-      <el-table-column  label="进度" width="160">
+      <el-table-column  label="进度" width="250">
         <template slot-scope="scope">
-          <el-progress v-if="scope.row.status === 1" :text-inside="true" 
-          :stroke-width="26" :percentage="70" status="success"></el-progress>
+          <el-progress v-if="scope.row.status === 0" :text-inside="true" 
+          :stroke-width="26" :percentage="Mockprocess" status="success"></el-progress>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="300"> 
+      <el-table-column label="操作" width="400"> 
         <template slot-scope="scope">
             <el-button
             size="mini"
@@ -89,11 +89,14 @@
             @click="handleStop(scope.$index, scope.row)">终止</el-button>
           <el-button
             size="mini"
-            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
+            @click="handleDelete(scope.$index, scope.row)">
+            删除</el-button>
           <el-button
             size="mini"
-            @click="handleShow(scope.$index, scope.row)">可视化</el-button>
-
+            @click="handleShow()">可视化</el-button>
+          <el-button
+            size="mini"
+            @click="handleShowlog(scope.$index, scope.row)">日志</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -109,18 +112,35 @@
       :total="totalData">
     </el-pagination>
     <!-- 可视化 -->
-    <el-dialog :visible.sync="picVisible" title="当前训练">
+    <el-dialog :visible.sync="picVisible" title="当前训练" :show-close="false">
       <div>
          <visualt :dData="drawData.first" id="2"></visualt>
          <visualf :Data="drawData.second" id="1"></visualf>
       </div>
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="picVisible = false" >终止训练</el-button>
+        <el-button type="primary" @click="handleStop()" >终止训练</el-button>
       </div>
     </el-dialog>
-
+    <!-- 日志可视化 -->
+    <el-dialog
+      title="训练日志"
+      :visible.sync="logdialogVisible"
+      :show-close="false">
+      <el-input
+        type="textarea"
+        id="textarea_id"
+        :disabled="true"
+        :autosize="{ minRows: 20, maxRows: 20}"
+        placeholder="请输入内容"
+        v-model="logText">
+      </el-input>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="closeShowLog()">取 消</el-button>
+        <el-button type="primary" @click="closeShowLog()">确 定</el-button>
+      </span>
+    </el-dialog>
     <!-- 创建任务对话框 -->
-    <el-dialog title="任务信息" :visible.sync="dialogFormVisible">
+    <el-dialog title="任务信息" :visible.sync="dialogFormVisible" :show-close="false">
       <el-form :model="taskForm" :rules="rules" ref="taskForm" label-width="100px" class="demo-taskForm">
         <el-form-item label="任务名称" prop="name">
           <el-input v-model="taskForm.name"></el-input>
@@ -129,16 +149,12 @@
           <el-input type="textarea" v-model="taskForm.description"></el-input>
         </el-form-item>
         <el-form-item label="算法来源" prop="algorithm">
-          <!-- <el-select v-model="taskForm.algorithm" placeholder="请选择" @change="currentAlgorithm = taskForm.algorithm"> -->
-          <el-select v-model="taskForm.algorithm" placeholder="请选择">
+          <el-select v-model="taskForm.algorithm" placeholder="请选择" @change="currentAlgorithm = taskForm.algorithm">
             <div style="height:200px;" class="scrollbar">
               <el-scrollbar style="height:100%;">
-               <el-option label="yolov3-tensorflow" value="0"></el-option>
-               <el-option label="yolov3-pytorch" value="1"></el-option>
-               <el-option label="deeplab-tensorflow" value="2"></el-option>
-               <el-option label="deeplab-pytorch" value="3"></el-option>
-               <el-option label="deepspeech-tensorflow" value="4"></el-option>
-               <el-option label="deepspeech-pytorch" value="5"></el-option>
+               <el-option v-for="(item, index) in algorithmArray" :key="index"
+                :label="item" :value="index">
+                </el-option>
               </el-scrollbar>
             </div>
           </el-select>
@@ -168,14 +184,14 @@
         <el-form-item label="参数选择">
           <el-form>
             <div style="height:150px; " class="scrollbar">
-              <el-scrollbar style="height:100%; ">
+              <!-- <el-scrollbar style="height:100%; "> -->
                 <el-form-item v-for="(item, index) in paraNameList[currentAlgorithm]" :key="index">
                   <el-input  autocomplete="off" style="width: 35%;" :value=item></el-input>
                   <b style="margin-left:15px;">=</b>
                   <el-input autocomplete="off" style="width: 35%; margin-left:15px;" v-model=paraValueList[currentAlgorithm][index]>
                   </el-input>
                 </el-form-item>
-              </el-scrollbar>
+              <!-- </el-scrollbar> -->
             </div>
           </el-form>
         </el-form-item>
@@ -194,7 +210,7 @@
 import visual from "./visual"
 import visualf from "./visual1"
 import visualt from "./visual2"
-import {startTask, getDataByName,stopTask, getTableData1,deleteTask,  search, searchStatus, getVisualData, submitTask, getinitialPara} from '@/api/newTrain'
+import {startTask, showLog,getDataByName,stopTask, getTableData1,deleteTask,  search, searchStatus, getVisualData, submitTask, getinitialPara} from '@/api/newTrain'
 import store from '@/store'
 export default {
     components: {visual, visualf, visualt},
@@ -219,6 +235,8 @@ export default {
           }
         },
         picVisible:false,//可视化窗口
+        logdialogVisible:false,//日志可视化窗口
+        logText:'',//日志内容
         //创建任务部分数据
         dialogFormVisible:false,//创建任务窗口
         taskForm: {//临时保存创建的任务信息
@@ -245,18 +263,24 @@ export default {
             { required: true, message: '请选择输出位置', trigger: 'change' }
           ]
         },
+        algorithmArray:[
+          "Yolov3-TensorFlow",
+          "Yolov3-Pytorch",
+          "DeepLab-TensorFlow",
+          "DeepLab-Pytorch",
+          "DeepSpeech-TensorFlow"
+        ],
         paraNameList:[//六个算法的参数名称
-            ['epoch','batchsize','imgsize','epoch','batchsize','imgsize','epoch','batchsize','imgsize'],
-            ['epoch','batchsize','imgsize'],
-            ['epoch','batchsize','imgsize'],
+            ['epoch','batchsize','imgsize','epoch','batchsize'],
+            ['epoch','batchsize','imgsize','epoch'],
             ['epoch','batchsize','imgsize'],
             ['epoch','batchsize'],
             ['epoch','batchsize'],
+
           ],
         paraValueList:[//六个算法的参数数值
-            ['2','5','640','2','5','640','2','5','640'],
-            ['2','5','640'],
-            ['2','5','640'],
+            ['2','5','640','2','5'],
+            ['2','5','640','2'],
             ['2','5','640'],
             ['2','5'],
             ['2','5'],
@@ -295,11 +319,16 @@ export default {
           "pagesize":10,
           "query":""
         },
-        commonPara:{//四个按钮给后台传递的参数
-          'index':0
+        commonPara:{//三个按钮给后台传递的参数
+          'trainjob_id':0
+        },
+        showPara:{
+          'trainjob_id': 0
         },
         timer: null,//定时器
-        totalData:0//主界面显示数据库任务总数
+        timerLog:null,//日志定时器
+        totalData:0,//主界面显示数据库任务总数
+        Mockprocess:0 //模拟进度条
       }
     },
 
@@ -378,7 +407,9 @@ export default {
           'name':''
       }
         getDataByName(params).then(res =>{//从后台读取数据来源的目录
-          console.log(res)
+          //console.log(res)
+          this.initialPara.inputData.name = []
+          this.initialPara.inputData.uuid = []
           for(let i = 0;i < res.data.total;i++){
             this.initialPara.inputData.name.push(res.data.items[i].name)
             this.initialPara.inputData.uuid.push(res.data.items[i].uuid)
@@ -390,31 +421,72 @@ export default {
         
       }, 
       handleStart(index, row) {//开始某行训练
-        this.commonPara.index = index
-        console.log(row)
+        this.commonPara.trainjob_id = row.uuid
         startTask(this.commonPara).then(res=>{
           console.log(res)
+          //==需要重新获取用户列表
+          this.fetchData()
         })
-        //==重新获取表格数据
+        
       },
       handleDelete(index, row) {//删除某行
-        this.commonPara.index = index
-        deleteTask(this.commonPara).then(res=>{
-          console.log(res)
-        })
-        //==重新获取表格数据
+        this.$confirm('此操作将永久删除该训练记录?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          this.commonPara.trainjob_id = row.uuid
+          deleteTask(this.commonPara).then(res=>{
+            //==需要重新获取用户列表
+            console.log(res)
+            this.fetchData()
+            if(res.code === 20000){
+              this.$message({
+              type: 'success',
+              message: '删除成功!'
+              });  
+            }
+          })
+        }).catch(() => { 
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          });       
+        });
+        
+        
       },
-      handleStop(index, row) {//终止某行训练
-        this.commonPara.index = index
-        stopTask(this.commonPara).then(res=>{
-          console.log(res)
-        })
-        //==重新获取表格数据
+      handleStop() {//终止某行训练
+         this.$confirm('此操作将终止该任务训练, 是否继续?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          stopTask(this.showPara).then(res=>{
+            console.log(res)
+            //==需要重新获取用户列表
+            this.fetchData()
+          })
+          this.$message({
+            type: 'success',
+            message: '终止成功!'
+          });  
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消终止'
+          });          
+        });
+        
+        
       },
       handleShow(index, row) {//可视化某行 
         this.picVisible = true
-        this.commonPara.index = index
-        getVisualData(this.commonPara).then(res =>{
+        this.showPara.trainjob_id = row.trainjob_id
+        let tmp = {
+          'index': index
+        }
+        getVisualData(this.tmp).then(res =>{
           console.log(res)
           this.drawData.first.epoch = res.data.epoch
           this.drawData.second.epoch = res.data.epoch
@@ -422,6 +494,17 @@ export default {
           this.drawData.first.valLoss = res.data.valLoss
           this.drawData.second.valAccuaccy = res.data.valAccuaccy
         })
+      },
+      handleShowlog(index, row){//日志可视化
+        this.logdialogVisible = true
+        clearInterval(this.timerLog)
+        this.timerLog = null
+        this.setTimerLog()
+      },
+      closeShowLog(){
+        this.logdialogVisible = false
+        clearInterval(this.timerLog)
+        this.timerLog = null
       },
       formatDate(nows) {//转化时间
         var year = nows[0]
@@ -473,6 +556,7 @@ export default {
             this.tableData.push(obj)
           }
         })
+        
       },
 
 
@@ -502,10 +586,11 @@ export default {
         //console.log(this.taskPara)
         submitTask(this.taskPara).then(res => {
           console.log(res.data)
+          this.fetchData()
         })
         //==需要重新获取用户列表
-        this.tableData = []
-        this.fetchData()
+        this.dialogFormVisible = false
+        this.$refs[taskForm].resetFields()
       },
       cancelbtn(taskForm){
         this.dialogFormVisible = false
@@ -529,7 +614,24 @@ export default {
         if(this.timer == null) {
           this.timer = setInterval( () => {
               console.log('开始定时...每过一秒执行一次')
-              //]this.fetchData()
+              //this.fetchData()
+              
+              if (this.Mockprocess != 100){
+                this.Mockprocess = this.Mockprocess + 0.5
+              }
+          }, 1000)
+        }
+      },
+      setTimerLog() {//读取日志的定时器
+        if(this.timerLog == null) {
+          this.timerLog = setInterval( () => {
+              console.log('开始定时...每过一秒执行一次')
+              showLog().then(res =>{
+                console.log(res)
+                this.logText = res.data.content
+                const textarea = document.getElementById('textarea_id');
+                textarea.scrollTop = textarea.scrollHeight;
+              })
           }, 1000)
         }
       },
@@ -554,7 +656,7 @@ export default {
       this.fetchData()
       clearInterval(this.timer)
       this.timer = null
-      //this.setTimer()
+      this.setTimer()
     }
 }
 
@@ -577,5 +679,25 @@ export default {
 
   .el-pagination{
     margin-top:25px
+  }
+
+  .scrollbar {
+    overflow: auto;
+  }
+
+  .scrollbar::-webkit-scrollbar {
+    width: 10px;
+    height: 2px;
+  }
+
+  .scrollbar::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+    background-color: rgba(0,0,0,0.4);
+  }
+
+  .scrollbar::-webkit-scrollbar-track {
+    border-radius: 5px;
+    background-color: rgba(0,0,0,0.1);
   }
 </style>

@@ -1,14 +1,18 @@
 <template>
   <div class="ih-item">
     <a>
-      <span v-if="parentSelectList.indexOf(parentUuid)!=-1">
-          选中
-        </span>
+      <!-- <span v-if="parentSelectList.indexOf(parentUuid)!=-1">
+          <i class="checked">✓</i>
+      </span> -->
       <div >
+        <span class="checked" v-if="parentSelectList.indexOf(parentUuid)!=-1">
+          <i>✓</i>
+        </span>
         <img 
           :style="{
             height: 200+'px',
             border: '3px solid '+this.markcolor,
+            
           }
           "
           :src="imagesrc"
@@ -51,12 +55,12 @@
       return this.fatherimagesrc;
     },
     markcolor(){
-        if(this.ismarked===0) return '#ffffff'
-        else return '#ff0000'
+        if(this.ismarked===1) return '#ff0000'
+        else return '#ffffff'
     },
     ismarkedtext: function(){
-      if(this.ismarked===0) return '未标注'
-        else return '已标注'
+      if(this.ismarked===1) return '已标注'
+        else return '未标注'
     },
     isSelect: function() {
       if(this.isSelected === 1) return '选中'
@@ -133,5 +137,25 @@ position: absolute;
   left: 0;
   right: 0;
   text-align: right;
-} 
+}
+.checked {
+  font-size: 15px;
+ font-style: normal;
+ display: inline-block;
+ width: 18px;
+ border-radius: 15px;
+ height: 18px;
+ text-align: center;
+ line-height: 18px;
+ color: rgb(253, 253, 253);
+ vertical-align: middle;
+ margin: -2px 2px 1px 0px;
+ border: #f8f7f6 1px solid;
+ background-color: rgb(250, 0, 0);
+ margin: -6px;
+  margin-top: -382px;
+}
+.checked:hover {
+  margin-left: 0px;
+}
 </style>
