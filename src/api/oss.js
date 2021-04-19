@@ -79,3 +79,30 @@ export function listFolder(params) {
         baseURL: 'http://localhost:8089',
     })
 }
+
+export function fileRename(params) {
+    return request({
+        url: '/minio-service/fileRename',
+        method: 'get',
+        params: params,
+        baseURL: 'http://localhost:8089',
+    })
+}
+
+export function fileURL(params) {
+    return request({
+        url: '/minio-service/fileURL',
+        method: 'get',
+        params: params,
+        baseURL: 'http://localhost:8089',
+    })
+}
+
+export function fileCopy(params) {
+    return request({
+        url: '/minio-service/fileCopy',
+        method: 'get',
+        params: params,
+        baseURL: 'http://localhost:8089',
+    })
+}
