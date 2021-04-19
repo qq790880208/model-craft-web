@@ -55,12 +55,12 @@
       return this.fatherimagesrc;
     },
     markcolor(){
-        if(this.ismarked===0) return '#ffffff'
-        else return '#ff0000'
+        if(this.ismarked===1) return '#ff0000'
+        else return '#ffffff'
     },
     ismarkedtext: function(){
-      if(this.ismarked===0) return '未标注'
-        else return '已标注'
+      if(this.ismarked===1) return '已标注'
+        else return '未标注'
     },
     isSelect: function() {
       if(this.isSelected === 1) return '选中'

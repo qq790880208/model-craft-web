@@ -26,7 +26,8 @@ export function logout() {
   return request({
     url: '/user/logout',
     method: 'post',
-    baseURL: 'http://localhost:8083'
+    //params: { token },
+    baseURL: 'http://192.168.19.239:8088'
     //baseURL: 'http://localhost:9528/dev-api'
   })
 }
