@@ -1,5 +1,5 @@
 <template>
-  <section class="out-main">
+  <div class="app-container">
     <!--工具条-->
     <el-row :gutter="24" class="toolbar" style="padding-bottom: 10px;">
       <el-col :span="24">
@@ -25,21 +25,21 @@
     <el-table :data="users" highlight-current-row @selection-change="selsChange" style="width: 100%;">
       <el-table-column type="selection" width="60">
       </el-table-column>
-      <el-table-column type="index" align="center" label="index" width="70">
+      <el-table-column type="index" align="center" label="index" show-overflow-tooltip width="70">
       </el-table-column>
-      <el-table-column prop="name" align="center" label="姓名" width="150" sortable>
+      <el-table-column prop="name" align="center" label="姓名" show-overflow-tooltip width="150" sortable>
       </el-table-column>
-      <el-table-column prop="role" align="center" label="身份" width="120" sortable>
+      <el-table-column prop="role" align="center" label="身份" show-overflow-tooltip width="120" sortable>
       </el-table-column>
-      <el-table-column prop="email" align="center" label="邮箱" width="120" sortable>
+      <el-table-column prop="email" align="center" label="邮箱" show-overflow-tooltip width="120" sortable>
       </el-table-column>
-      <el-table-column prop="mobile" align="center" label="手机号" width="120" sortable>
+      <el-table-column prop="mobile" align="center" label="手机号" show-overflow-tooltip width="120" sortable>
       </el-table-column>
-      <el-table-column prop="password" align="center" label="密码" min-width="140" sortable>
+      <el-table-column prop="password" align="center" label="密码" show-overflow-tooltip min-width="140" sortable>
       </el-table-column>
-      <el-table-column prop="descr" align="center" label="用户描述" min-width="120" sortable>
+      <el-table-column prop="descr" align="center" label="用户描述" show-overflow-tooltip min-width="120" sortable>
       </el-table-column>
-      <el-table-column prop="create_time" align="center" label="创建时间" min-width="180" sortable>
+      <el-table-column prop="create_time" align="center" label="创建时间" show-overflow-tooltip min-width="180" sortable>
         <template slot-scope="scope">
           {{ scope.row.create_time | formatDate }}
          </template>
@@ -90,7 +90,7 @@
         <el-button v-else type="primary" @click="updateData">修改</el-button>
       </div>
     </el-dialog>
-  </section>
+  </div>
 </template>
 
 <script>
@@ -372,5 +372,8 @@ export default {
 <style scoped>
   .out-main{
     margin: 15px;
+  }
+  .app-container {
+    padding: 5px 20px 20px 15px;
   }
 </style>

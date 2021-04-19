@@ -58,6 +58,13 @@ export const constantRoutes = [
       name: 'userLabel',
       meta: { title: 'userLabel', resources: 'userLabel' },
       hidden: true
+    },
+    {
+      path: '/dataSet/message',
+      component: () => import('@/views/dataSet/message'),
+      name: 'message',
+      meta: { title: 'message', resources: 'message' },
+      hidden: true
     }
   ]
   }

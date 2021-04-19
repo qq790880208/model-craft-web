@@ -1,5 +1,5 @@
 <template>
-  <div class="dashboard-container">
+  <div class="app-container">
     <el-container>
     <el-header class="header">
       <span style="font-size: 20px">
@@ -17,16 +17,16 @@
               <el-row>
                 <el-button icon="el-icon-plus" @click="addData()">添加数据</el-button>
                 <el-button icon="el-icon-delete" @click="delData()">删除数据</el-button>
-                <!-- <el-button icon="el-icon-delete" @click="delLabel">删除标注数据</el-button> -->
                 <el-button icon="el-icon-cloudy" style="right" @click="startLabel" :style="{ display: visible}">开始标注</el-button>
               </el-row>
               <!-- @click="select(item)" -->
+              
               <div v-for="(item, index) in imagelargeArry" :key="index" style="
                 float:left;
                 margin-left:20px
                 margin-top:20px
                 " >
-                <myimage 
+                <myimage
                   :fatherimagesrc="item.url"
                   :ismarked="item.islabel"
                   :parentSelectList="selectList"

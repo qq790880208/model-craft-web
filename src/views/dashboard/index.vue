@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="app-container">
     <el-row :gutter="20" style="margin-top:50px; margin-left:50px">
       <el-col :span="8">
         <el-card>
@@ -7,7 +7,7 @@
             <span>个人信息中心</span>
           </div>
           <div class="name-role">
-            <span class="sender">{{name}} {{userid}} {{hhh}}</span>  
+            <span class="sender"> {{name}} </span>  
           </div>
           <el-divider></el-divider>
           <div class="relation-item">角色:  <div style="float: right; padding-right:20px;">{{role}}</div></div> 
@@ -33,17 +33,7 @@
           </el-form-item>
         </el-form>
       </el-card>
-      <el-botton @click="back" board>
-        <h1>开始标注</h1>
-      </el-botton>
     </el-row>
-    <div style="width: 300px; margin-left:100px; margin-top:100px">
-      <el-progress :percentage="50"></el-progress>
-      <el-progress :percentage="60" :format="format"></el-progress>
-      <el-progress :percentage="100" status="success"></el-progress>
-      <el-progress :percentage="100" status="warning"></el-progress>
-      <el-progress :percentage="50" status="exception"></el-progress>
-    </div>
   </div>
 </template>
 
