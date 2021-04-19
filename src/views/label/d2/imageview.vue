@@ -1,13 +1,12 @@
 <template>
   <!-- <el-row :gutter="20" style="margin-top: 50px"> -->
     <div style="user-select: none;">
-    <div class="dashboard-container" v-if="isimageview">
+    <div class="dashboard-container" v-if="!isimageview">
       <div>
       <el-button @click="returndataset" >返回数据集</el-button>
       <el-button @click="automark()" :loading="isloading">{{automarkbtntext}}</el-button>
       </div>
       <div v-for="(item, index) in imagelargeArry" :key="index" style="
-        float:left;
         margin-left:20px
       " >
       <miniimage style="margin-top:20px"
@@ -17,14 +16,14 @@
       ></miniimage>
       </div>
     </div>
-    <div class="dashboard-container"   v-if="!isimageview">
-      <el-button @click="returnimageview">返回</el-button>
-      <el-button @click="nextimage">下一张</el-button>
-      <el-button @click="previousimage">上一张</el-button>
-      <imageselect style="margin-top:20px"
+    <div class="dashboard-container" v-if="isimageview" style="margin-left:100px">
+      <el-button @click="returnimageview">返回图片预览</el-button>
+      <el-button @click="nextimage">下一张(N)</el-button>
+      <el-button @click="previousimage">上一张(P)</el-button>
+      <imageselect style="margin-top:20px" ref='imageselectref'
         :fatherimagesrc="this.imageArry[nownum]"
         :imageindex="this.nownum"
-        :premarktype="this.marktype"
+        :premarktype="this.testmarktype"
         :lastlabelArry="this.lastinfoArry[nownum]"
         @saveimageinfo="saveimageinfo"
       ></imageselect>
@@ -41,6 +40,22 @@ import miniimage from "@/components/miniimage.vue"
 import store from "@/store"
 //import axios from 'node_modules/axios';
 // import labelinfo from '@/components/labelinfo.vue'
+document.onkeydown = keyDownSearch;
+function keyDownSearch(e){
+  console.log("keydown!!!!!!!!!!!!")
+  let theEvent = e.event || window.event;
+  let code = theEvent.keyCode ||  theEvent.which || theEvent.charCode
+  if(code == 80){ //上一张
+    console.log("pppppppp!!!!!!!!!!!!!")
+    previousimage()
+    //return false;     
+  }
+  if(code == 78){ //下一张
+    console.log("nnnnnnnn!!!!!!!!!!!!!")
+    nextimage()
+  //return true;
+  }
+}
 export default {
   name: "Imageselect",
   data() {
@@ -113,9 +128,13 @@ export default {
     },
     //下一张图片
     nextimage: function () {
-      if (this.nownum < this.imageArry.length - 1) this.nownum++;
+      //if() return
+      if (this.nownum < this.imageArry.length - 1) {
+        this.nownum++;
+      }
+      this.$refs.imageselectref.saveinfo()
       console.log("nextimage", this.nownum);
-      console.log("nextimage infoArry", this.infoArry, this.infoArry.length);
+      //console.log("nextimage infoArry", this.infoArry, this.infoArry.length);
     },
     //上一张图片
     previousimage: function () {
@@ -187,6 +206,13 @@ export default {
           message:"请求图片失败",
           type: 'error'
           })
+          // for (let i = 0; i < testmarktype.length; i++) {
+          //   let a={};
+          // a["url"]=response.data.items[i].file_path
+          // a["islabel"]=response.data.items[i].is_label
+          // //a["index"]=i
+          // _this.imagelargeArry.push(a);
+          // }
       });
     },
     //get请求数据集的标签集
@@ -289,11 +315,13 @@ export default {
   },
   mounted: function () {
     //console.log(this.infoArry[0])
-    this.infoArry = new Array(this.imageArry.length);
     console.log("mounted!!!!", this.infoArry.length, this.infoArry);
     console.log("mounted!!!!uuid",store.getters.uuid,"mounted!!!!store.getters.userid",store.getters.userid)
     this.requireimage();
+    this.infoArry = new Array(this.imageArry.length);
     this.requiretag();
+    window.nextimage = this.nextimage;
+    window.previousimage = this.previousimage;
   },
   computed: {
     ...mapGetters(["name"]),

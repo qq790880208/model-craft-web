@@ -7,7 +7,7 @@
     style="width:150px" 
     clearable
     ></el-input> -->
-    <el-select v-model="value" filterable placeholder="请选择">
+    <el-select v-model="value" @change="changefatherinfo" filterable placeholder="请选择类别">
       <el-option
       v-for="item in typelabel"
       :key="item.value"
@@ -16,7 +16,7 @@
      </el-option>
     </el-select>
     <el-input style="width:150px" v-model="inputname" :disabled="true"></el-input>
-    <el-button @click="changefatherinfo" type="primary">保存</el-button>
+    <!-- <el-button @click="changefatherinfo" type="primary">保存</el-button> -->
     <el-button @click="deletefatherlabel" type="danger">删除</el-button>
     </el-row>
   </div>
