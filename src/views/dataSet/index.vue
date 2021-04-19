@@ -210,7 +210,7 @@
         </el-form>
         <el-divider></el-divider>
         <el-row>
-          <el-button icon="el-icon-upload2" circle @click="retuenOdlRow"></el-button>
+          <el-button icon="el-icon-upload2" type="text"  @click="retuenOdlRow">返回上级</el-button>
           <el-divider direction="vertical"></el-divider>
           <el-tag type="info" effect="light">当前路径：{{bucketlist}} ：{{objectcurrentRow}}</el-tag>
         </el-row>
@@ -233,7 +233,7 @@
         </el-form>
         <el-divider></el-divider>
         <el-row>
-          <el-button icon="el-icon-upload2" circle @click="retuenOdlRow"></el-button>
+          <el-button icon="el-icon-upload2" type="text"  @click="retuenOdlRow">返回上级</el-button>
           <el-divider direction="vertical"></el-divider>
           <el-tag type="info" effect="light">当前路径：{{bucketlist}} ：{{objectcurrentRow}}</el-tag>
         </el-row>
@@ -254,6 +254,7 @@ import { getLabel, getDataByName, createDataSet, deleteDataSet, assignLabel, get
 import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder } from '@/api/oss'
 import store from '@/store'
 import { getAllTeam, getSelectTeam } from '@/api/team'
+import {listBucket,listObject,listObjectByPrefix} from '@/api/oss'
 export default {
   namespaced: true,
   filters: {
