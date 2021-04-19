@@ -1,5 +1,5 @@
 <template>
-  <section class="out-main">
+  <div class="app-container">
     <!--工具条-->
     <el-row :gutter="24" class="toolbar" style="padding-bottom: 10px;">
       <el-col>
@@ -76,9 +76,9 @@
       </el-table-column>
       <el-table-column prop="time" align="center" label="耗时" min-width="120" sortable>
       </el-table-column>
-      <el-table-column prop="params" align="center" label="参数" width="220" sortable>
+      <el-table-column prop="params" align="center" label="参数" show-overflow-tooltip width="220" sortable>
       </el-table-column>
-      <el-table-column prop="create_time" align="center" label="创建时间" min-width="180" sortable>
+      <el-table-column prop="create_time" align="center" label="创建时间" show-overflow-tooltip min-width="180" sortable>
         <template slot-scope="scope">
           {{ scope.row.create_time | formatDate }}
          </template>
@@ -90,7 +90,7 @@
       <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
       </el-pagination>
     </el-col>
-  </section>
+  </div>
 </template>
 
 <script>
@@ -239,6 +239,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.app-container {
+    padding: 5px 20px 20px 15px;
+  }
 .out-main{
     margin: 15px;
   }

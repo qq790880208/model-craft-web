@@ -60,9 +60,9 @@ div:focus {
 }
 
 // main-container global css
-.app-container {
-  padding: 20px;
-}
+// .app-container {
+//   padding: 20px;
+// }
 
 .link-type,
 .link-type:focus {
@@ -72,4 +72,18 @@ div:focus {
   &:hover {
     color: rgb(32, 160, 255);
   }
+}
+
+.app-container {
+  .roles-table {
+    margin-top: 30px;
+  }
+  .permission-tree {
+    margin-bottom: 30px;
+  }
+  padding: 5px 20px 20px 5px;
+  background: #EEF3FF;
+  float:left;
+  width:100%;
+  min-height: 660px;
 }

@@ -107,3 +107,12 @@ export function getNewFile(params) {
     baseURL: 'http://192.168.19.239:8085'
   })
 }
+
+export function addTags(params) {
+  return request({
+    url: '/tag/add',
+    method: 'post',
+    params: params,
+    baseURL: 'http://192.168.19.239:8085'
+  })
+}
