@@ -41,7 +41,7 @@
           </span>
         </div>
         <div class="teamMssage">
-          <table>
+          <table style = "border-collapse:separate; border-spacing:10px;">
             <tr class="teamTr">
               <td width="350">
                 <span style="float: left">团队名称：</span>
@@ -116,7 +116,7 @@
             </el-table-column>
           </el-table>
           <el-col :span="24" class="tool-bar">
-            <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :total="rolesList.length" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+            <el-pagination layout="total, sizes ,prev, pager, next, jumper" :page-size="page_size" :total="rolesList.length" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
           </el-col>
         </div>
       </div>

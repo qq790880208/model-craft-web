@@ -15,7 +15,7 @@
         <el-table :data="dataSets" highlight-current-row style="width: 100%; margin: 20px 0px 0px 0px">
           <el-table-column prop="name" align="center" label="名称" min-width="120" sortable>
             <template slot-scope="scope">
-              <span class="link-type" @click="toDataSet(scope.row.name, scope.row.role_type, scope.row.uuid, scope.row.label_type)">{{ scope.row.name }}</span>
+              <span class="link-type" @click="toDataSet(scope.row)">{{ scope.row.name }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="type" align="center" label="标注类型" min-width="120" sortable>
@@ -51,7 +51,7 @@
           </el-table-column>
         </el-table>
         <el-col :span="24" class="toolbar">
-          <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
+          <el-pagination layout="total, sizes ,prev, pager, next, jumper" :page-size="page_size" :page-sizes="[1,5,10,20]" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
           </el-pagination>
         </el-col>
       </el-tab-pane>
@@ -64,10 +64,11 @@
             </el-input>
           </el-form-item>
         </el-form>
+        <!-- toDataSet(scope.row.name, scope.row.role_type, scope.row.uuid, scope.row.label_type) -->
         <el-table :data="dataSetAssigned" highlight-current-row style="width: 100%;">
           <el-table-column prop="name" align="center" label="名称" min-width="200" sortable>
             <template slot-scope="scope">
-              <span class="link-type" @click="toDataSet(scope.row.name, scope.row.role_type, scope.row.uuid, scope.row.label_type)">{{ scope.row.name }}</span>
+              <span class="link-type" @click="toDataSet(scope.row)">{{ scope.row.name }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="type" align="center" label="标注类型" min-width="120" sortable>
@@ -93,7 +94,7 @@
           </el-table-column>
         </el-table>
         <el-col :span="24" class="toolbar">
-          <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :total="total1" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
+          <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size"  :page-sizes="[1,5,10,20]"  :total="total1" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
             </el-pagination>
         </el-col>
       </el-tab-pane>
@@ -178,10 +179,6 @@
           <template>
             <el-select
               v-model="teamForm.teamValue"
-              multiple
-              filterable
-              allow-create
-              default-first-option
               placeholder="请选择团队">
               <el-option
                 v-for="item in teams"
@@ -254,7 +251,6 @@ import { getLabel, getDataByName, createDataSet, deleteDataSet, assignLabel, get
 import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder } from '@/api/oss'
 import store from '@/store'
 import { getAllTeam, getSelectTeam } from '@/api/team'
-import {listBucket,listObject,listObjectByPrefix} from '@/api/oss'
 export default {
   namespaced: true,
   filters: {
@@ -533,6 +529,12 @@ export default {
     handleClick(tab, event) {
       console.log(tab.name)
       this.activeName = tab.name
+      if(this.activeName == 'manager'){
+        this.getAssignDataSet()
+      }
+      if (this.activeName == 'allData') {
+        this.getDataSet()
+      }
     },
 
     // 设置标注进度条
@@ -599,13 +601,16 @@ export default {
     },
 
     // 展示数据
-    toDataSet: function(val, roleType, uuuid, ttype) {
-      console.log(ttype)
-      store.dispatch('data/changeUuid', uuuid)
-      store.dispatch('data/changeType', ttype)
+    toDataSet: function(val) {
+      console.log(val)
+      store.dispatch('data/changeUuid', val.uuid)
+      store.dispatch('data/changeType', val.label_type)
+      store.dispatch('data/changeDataSet',val)
       console.log(store.getters.uuid)
-      if (roleType != 0) {
-        this.$router.push({path:'/dataSet/message', query: {dataName: val, key: this.activeName}})
+      console.log(store.getters.type)
+      console.log(store.getters.dataSet)
+      if (val.role_type != 0) {
+        this.$router.push({path:'/dataSet/message', query: {dataName: val.name, key: this.activeName}})
       } else {
         this.toStartLabel(ttype)
       }
@@ -759,8 +764,7 @@ export default {
 
   },
   mounted() {
-    this.getDataSet(),
-    this.getAssignDataSet()
+    this.getDataSet()
   }
 }
 </script>

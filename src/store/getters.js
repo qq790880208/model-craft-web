@@ -15,6 +15,7 @@ const getters = {
   authority: state => state.user.authority,
   uuid: state => state.data.uuid,
   type: state => state.data.type,
-  dirPath: state => state.data.dirPath
+  dirPath: state => state.data.dirPath,
+  dataSet: state => state.data.dataSet
 }
 export default getters
