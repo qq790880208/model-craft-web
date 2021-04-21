@@ -1,27 +1,26 @@
 <template>
   <div class="app-container">
-    <el-container>
-    <el-header class="header">
+    <el-header>
       <span style="font-size: 20px">
-        {{this.$route.query.dataName}}
+        {{dataSet.name}}
       </span>
-      <el-button size="small" style="margin-left:100px" icon="el-icon-arrow-left" @click="toDataSet">
+      <el-button class="titlebutton" size="small" style="margin-left:100px" icon="el-icon-arrow-left" @click="toDataSet">
         返回数据集
       </el-button>
     </el-header>
-    <el-main>
+    <el-divider class="divider2"></el-divider>
+    <div class="content">
       <el-tabs :tab-position="tabPosition" style="height: 200px;">
         <el-tab-pane label="全部数据">
           <el-container>
             <el-main>
-              <el-row>
-                <el-button icon="el-icon-plus" @click="addData()">添加数据</el-button>
-                <el-button icon="el-icon-delete" @click="delData()">删除数据</el-button>
-                <el-button icon="el-icon-cloudy" style="right" @click="startLabel" :style="{ display: visible}">开始标注</el-button>
+              <el-row class="buttonList">
+                <el-button plain type="mini" icon="el-icon-plus" @click="addData()">添加数据</el-button>
+                <el-button type="mini" icon="el-icon-delete" @click="delData()">删除数据</el-button>
+                <el-button type="mini" icon="el-icon-cloudy" style="right" @click="startLabel" :style="{ display: visible}">开始标注</el-button>
               </el-row>
               <!-- @click="select(item)" -->
-              
-              <div v-for="(item, index) in imagelargeArry" :key="index" style="
+              <div class="dataList" v-for="(item, index) in imagelargeArry" :key="index" style="
                 float:left;
                 margin-left:20px
                 margin-top:20px
@@ -36,23 +35,12 @@
                 ></myimage>
               </div>
             </el-main>
-            <el-divider direction="vertical"></el-divider>
-            <el-aside width="350px" board>
-              <h1>
-                hhhhhhh
-              </h1>
-              <h1>
-                hhhhhhh
-              </h1>
-            </el-aside>
           </el-container>
         </el-tab-pane>
         <!-- <el-tab-pane label="未标注">未标注</el-tab-pane>
         <el-tab-pane label="已标注">已标注</el-tab-pane> -->
       </el-tabs>
-    </el-main>
-    </el-container>
-
+    </div>
     <el-dialog
       title="添加数据"
       :visible.sync="addDataDialogVisible"
@@ -106,7 +94,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getLabel, deleteData, addNewLabels, assignNewData, getNewFile } from '@/api/data'
-import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder } from '@/api/oss'
 import store from '@/store'
 import myimage from '@/components/myimage.vue'
 
@@ -133,7 +120,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'name'
+      'name',
+      'dataSet'
     ])
   },
   methods: {
@@ -234,8 +222,6 @@ export default {
     },
     startLabel: function() {
       const type = store.getters.type
-      const uuid = store.getters.uuid
-      const userid = store.getters.userid
       if(type == 0) {
         this.$router.push('/label/d2imageview')
       }
@@ -252,7 +238,7 @@ export default {
   },
   mounted() {
     this.getData()
-    if(this.$route.query.key == 'allData') {
+    if(dataSet.role_type === 2) {
       this.visible = 'none'
     }
   }
@@ -272,25 +258,34 @@ export default {
 .el-container {
   height: 600px;
 }
+.el-main{
+  padding: 5px 10px 10px 10px;
+}
 .el-header {
-    background-color: #e5e9ee;
+    font: 20px;
+    background-color: #EEF3FF;
     color: rgb(14, 13, 13);
     line-height: 60px;
 }
-.header {
-    font: 20px;
-    height:150px;
+.titlebutton{
+  border: #EEF3FF;
+  background: #EEF3FF;
 }
-.el-divider--vertical{
-  display:inline-block;
-  width:3px;
-  height:5em;		//更改竖向分割线长度
-  //margin:0 8px;
-  vertical-align:middle;
-  //position:relative;
-  color: rgb(0, 0, 0);
+.divider2{
+  margin: 0px 20px 1px 20px;
 }
 .main {
   margin-left: 50px;
+}
+.content {
+  margin: 5px 15px 10px 20px;
+  height: 650px;
+}
+.buttonList {
+  margin: 5px 10px 5px 10px ;
+}
+.dataList{
+  margin: 5px 10px 0px 10px;
+  padding: 1px 0px 2px 1px;
 }
 </style>

@@ -116,3 +116,21 @@ export function addTags(params) {
     baseURL: 'http://192.168.19.239:8085'
   })
 }
+
+export function getTags(params) {
+  return request({
+    url: '/tag/get',
+    method: 'get',
+    params: params,
+    baseURL: 'http://192.168.19.239:8085'
+  })
+}
+
+export function updateTags(params) {
+  return request({
+    url: '/tag/update',
+    method: 'put',
+    params: params,
+    baseURL: 'http://192.168.19.239:8085'
+  })
+}
