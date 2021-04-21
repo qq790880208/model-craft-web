@@ -1,7 +1,42 @@
 <template>
   <div class="polygon-body" style="width:100% ">
     <div>
-      <el-button
+
+
+      <div
+        :style="{
+          //background: 'rgb(192, 192, 192)',
+          //width:this.imagewidth+'px',
+          //marginLeft: (this.fabricObj.width-458) / 2 + 'px',
+          marginLeft: (this.canvaswidth-458) / 2 + 'px',
+          display: 'block',
+        }"
+      >
+        <el-radio-group v-model="radio" style="display: inline-block">
+          <el-radio-button label="mark" >标注</el-radio-button>
+          <el-radio-button label="drag" >拖动</el-radio-button>
+          <el-radio-button label="modify">修改</el-radio-button>
+        </el-radio-group>
+        <el-button-group style="display: inline-block">
+          <el-button
+            @click="fangda"
+            icon="el-icon-zoom-in"
+            :style="{ width: 80 + 'px' }"
+          ></el-button>
+          <el-button
+            @click="suoxiao"
+            icon="el-icon-zoom-out"
+            :style="{ width: 80 + 'px' }"
+          ></el-button>
+          <el-button
+            @click="huanyuan"
+            icon="el-icon-refresh"
+            :style="{ width: 80 + 'px' }"
+          ></el-button>
+        </el-button-group>
+      </div>
+
+      <!-- <el-button
         type="primary"
         icon="el-icon-edit"
         circle
@@ -17,9 +52,21 @@
       <el-button @click="suoxiao">缩小</el-button>
       <el-button @click="huanyuan">还原图片大小</el-button>
       <el-button @click="saveinfo" :disabled="isimagechange">保存 </el-button>
-      <el-button @click="updatelastdata" :disabled="isimagechange">查看上次标注数据</el-button>
+      <el-button @click="updatelastdata" :disabled="isimagechange">查看上次标注数据</el-button> -->
     </div>
     <!-- <el-button @click="Edit">test</el-button>-->
+    <div
+      :style="{
+        display: 'flex',
+      }"
+    >
+      <div id="leftdiv"
+        :style="{
+          maxWidth: 1000 + 'px',
+          maxHeight: 1000 + 'px',
+          //display:flex
+        }"
+      >
     <div class="polygon"
       :style="{
         //margin:' 0 auto',
@@ -34,52 +81,38 @@
         :height="canvasheight"
       ></canvas>
     </div>
-
+      </div>
+      <div class="el-divider el-divider--vertical"></div>
+      <div id="rightdiv" >
     <div class="infopolygon"
-      style="margin-left: 50px; border: 1px solid #666; width: 25%"
+      style="margin-left: 20px;"
     >
       <div v-for="(items, index) in premarktype" :key="index" style="float:left;margin-right: 20px;">
-        <el-button @click="changeinfo(items)">{{ items.name }}</el-button>
+        <el-button @click="changeinfo(items,index)" :style="{
+            width:120+'px',
+            marginBottom:10+'px',
+            background:(buttonindex==index)?items.color: 'rgba(0,0,0,0)'
+          }">{{ items.name }}</el-button>
       </div>
     </div>
-
-    <div class="delpolygon" style="width=50%;height=50%">
+    <el-divider></el-divider>
+    <div class="infopolygon" style="margin-left: 20px;">
       <!-- <div style="margin-left:50px;float:left;border:1px solid #666;width:25%"> -->
-      <el-button
-        v-for="(items, index) in polygonArray"
-        :key="index"
-        type="danger"
+      <div v-for="(items, index) in polygonArray" :key="index" style="float: left; margin-right: 20px">
+      <el-button :style="{
+            width:120+'px',
+            marginBottom:10+'px',
+          }"
+      type="danger" 
         @mouseover.native="infotip(index)"
         @mouseout.native="removetip(index)"
         @mousedown.native="deletemarked(index)"
-        style="float: left; margin-right: 20px"
         >删除{{ index + 1 }}
       </el-button>
+      </div>
     </div>
-
-    <!--<div style="text-align: center; margin: 0 auto">
-      <label style="color: blue"
-        ><b style="text-align: center"
-          >输入一个不大于标注个数的数字，鼠标放在删除上能看到将要删除的对象</b
-        ></label
-      >
-      <el-row>
-        <el-input
-          v-model="input"
-          placeholder="请输入内容"
-          style="width: 300px"
-          clearable
-        ></el-input>
-        
-        <el-button
-          @mouseover.native="infotip"
-          @mouseout.native="removetip"
-          @mousedown.native="deletemarked"
-          type="danger"
-          >删除</el-button
-        >
-      </el-row>
-      </div> -->
+    </div>
+  </div>
   </div>
 </template>
 <script>
@@ -161,10 +194,12 @@ export default {
   },
   data() {
     return {
+      radio:"mark",
+      buttonindex:-1,
       input: null,
       temproof: null,
       roof: null,
-      istrue: false,
+      //istrue: false,
       panning: false,
       zoom: 1,
 
@@ -184,11 +219,11 @@ export default {
       realpolygoninfoArray: [], //真实多边形对象信息数组
       tempArry: [], //高亮多边形
       //drawingObject: {}, //flag
-      drawingObject: {
-        type: "roof",
-        background: "",
-        border: "",
-      },
+      // drawingObject: {
+      //   type: "roof",
+      //   background: "",
+      //   border: "",
+      // },
       fabricObj: null, //画布对象
       fabricimageObj: null, //图片对象（未使用）
       //mouseFrom: {},
@@ -197,8 +232,6 @@ export default {
       markcolor: "rgba(0,128,128,0.5)", //标记颜色
       markinfo: null, //标记信息
       //isCanSelect: false,
-      //buttonstate: "拖动图片",
-      buttonstate: "正在标注(切换拖动图片)",
       buttonmouseoveflag: false, //高亮显示按钮的移入移出判断flag
       //imageurl:'http://localhost:9528/static/img/QQ%E5%9B%BE%E7%89%8720201120101655.ff1d6fd1.jpg',
       //localimage:'D:/VueProject/modelcraft-web/src/image/test2.jpg'
@@ -223,6 +256,7 @@ export default {
         this.fabricObj = new fabric.Canvas("label-canvas");
         this.fabricObj.selection = false;
         this.fabricEvent();
+        
         this.createBackgroundImage();
         //this.inputimage();
         // this.drawingObject.type="roof"
@@ -231,6 +265,7 @@ export default {
         setTimeout(() => {
           //由于this.createBackgroundImage函数总是最后加载，在这里设置更后延迟来更新图片标注信息
           this.updatelastdata();
+          console.log("wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwww",this.fabricObj.width)
         }, 510);
     });
   },
@@ -259,13 +294,17 @@ export default {
       //this.fabricEvent();
       //this.inputimage();
     },
+    radio(){
+      this.start();
+    },
   },
   methods: {
+      // handelClick(i) {
+      // //存储点击对象的index
+      // this.buttonindex = i;
+      // console.log("hahaha" + this.buttonindex);
+      // },
       Edit() {
-		// clone what are you copying since you
-		// may want copy and paste on different moment.
-		// and you do not want the changes happened
-		// later to reflect on the copy.
         if(!this.isimagechange){
         this.isimagechange=true;
         this.lines.forEach((item) => this.fabricObj.remove(item));
@@ -311,8 +350,6 @@ export default {
 		// 	poly.controls = fabric.Object.prototype.controls;
 		// }
 		//poly.hasBorders = !poly.edit;
-		this.fabricObj.renderAll();
-        this.emitfather()
         }
         else {
             this.isimagechange=false;
@@ -345,9 +382,9 @@ export default {
             //this.fabricObj.renderAll();
         }
         console.log("uppppppppppppdateeeeeeeeeeeee",this.realpolygoninfoArray)
+        }
         this.fabricObj.renderAll();
         this.emitfather()
-        }
 	},
     emitfather(){
         console.log("sonemit")
@@ -381,20 +418,13 @@ export default {
       this.zoom = 1;
       this.fabricObj.setZoom(1);
     },
-    changeinfo(item) {
+    changeinfo(item,i) {
       //切换标注类型（包括颜色）
+      console.log("changeinfo",i)
+      this.buttonindex = i;
       this.markcolor = item.color;
       this.markinfo = item.name;
     },
-    // deletelastpoint(){
-    //   console.log("ggggg")
-    //   //if(event.keykode===32) {console.log("223244356346")}
-    //   if(this.roofPoints.length>0){
-    //     this.roofPoints.pop();
-    //     this.realPoints.pop();
-    //     this.lines.pop();
-    //   }
-    // },
     saveinfo() {
       //保存标注信息时传递的信息
       //console.log("start!!!", this.realpolygoninfoArray);
@@ -463,7 +493,6 @@ export default {
       console.log("polygonArrayuuu", this.polygonArray);
       console.log("polygoninfoArrayuuu", this.polygoninfoArray);
       console.log("realpolygoninfoArrayuuu", this.realpolygoninfoArray);
-
       console.log("realPointsuuu", this.realPoints);
       console.log("linesuuu", this.lines);
       console.log("lineCounteruuu", this.lineCounter);
@@ -471,6 +500,8 @@ export default {
     createBackgroundImage() {
       //加载图片为背景
       let _this = this;
+      console.log(this.imagesrc)
+      if(this.imagesrc===null||this.imagesrc===undefined) return
       // console.log(this.fabricObj.width);
       // console.log(this.fabricObj.height);
       this.fabricimageObj = new fabric.Image.fromURL(
@@ -523,85 +554,66 @@ export default {
     },
     removetip(index) {
       if (this.buttonmouseoveflag) {
+        let tempcolor = this.markcolor
         console.log("removetemproof!");
         console.log("this.polygoninfoArray[index]!",this.polygoninfoArray[index]);
         var poly = this.fabricObj.getObjects()[index];
         this.findcolor(this.polygoninfoArray[index].info)
         poly.fill=this.markcolor
+        this.markcolor = tempcolor
         this.buttonmouseoveflag = false;
         this.fabricObj.renderAll();
       }
     },
     deletemarked(index) {
       //删除对应多边形
-      // if (this.input > this.polygonArray.length || this.input <= 0) {
-      //   return;
-      // }
-      // console.log("input", this.input);
       this.fabricObj.remove(this.polygonArray[index]);
       this.polygonArray.splice(index, 1);
       this.polygoninfoArray.splice(index, 1);
       this.realpolygoninfoArray.splice(index, 1);
-      // this.fabricObj.remove(this.polygonArray[this.input - 1]);
-      // this.polygonArray.splice(this.input - 1, 1);
-      // this.polygoninfoArray.splice(this.input - 1, 1);
-      // this.realpolygoninfoArray.splice(this.input - 1, 1);
     },
     start() {
-      console.log("this.drawingObject.type111",this.drawingObject.type);
       //切换画板上是否能标注的按钮
-      if (this.drawingObject.type == "roof") {
+      if(this.radio == "drag"){
         console.log("aaaa");
-        this.drawingObject.type = "";
+        //this.drawingObject.type = "";
         // this.lines.forEach(function(value, index, ar) {
         //   this.fabricObj.remove(value);
         // });
         //移除画的连续直线
         this.lines.forEach((item) => this.fabricObj.remove(item));
         //手动画的多边形存储的点数大于2时再生成图片
-        if (this.roofPoints.length > 2) {
-          this.makeRoof();
-          this.fabricObj.add(this.roof);
-          this.polygonArray.push(this.roof);
-          this.polygoninfoArray.push({
-            point: this.roofPoints,
-            info: this.markinfo,
-          });
-          this.realpolygoninfoArray.push({
-            point: this.realPoints,
-            info: this.markinfo,
-          });
-        }
+        // if (this.roofPoints.length > 2) {
+        //   this.makeRoof();
+        //   this.fabricObj.add(this.roof);
+        //   this.polygonArray.push(this.roof);
+        //   this.polygoninfoArray.push({
+        //     point: this.roofPoints,
+        //     info: this.markinfo,
+        //   });
+        //   this.realpolygoninfoArray.push({
+        //     point: this.realPoints,
+        //     info: this.markinfo,
+        //   });
+        // }
         this.fabricObj.renderAll();
         //清空直线和点数组和他们的计数
         this.roofPoints = [];
         this.realPoints = [];
         this.lines = [];
         this.lineCounter = 0;
-        this.buttonstate = "正在拖动图片(切换标注)";
-        //this.fabricimageObj.selectable=true
-        this.istrue = true;
-        //this.fabricObj.sendToBack(this.fabricimageObj);
-        //this.polygonArray.forEach(item => item.selectable=true)
-        // this.fabricObj.selectable=true;
-        // this.isCanSelect=true;
-      } else {
+        if(this.isimagechange) this.Edit();
+      } else if (this.radio == "mark"){
         console.log("bbbb");
-        this.drawingObject.type = "roof"; // roof type
-        this.buttonstate = "正在标注(切换拖动图片)";
-        //this.fabricimageObj.selectable=false
-        this.istrue = false;
-        //this.fabricObj.sendToBack(this.fabricimageObj);
-        //this.polygonArray.forEach(item => item.selectable=false)
-        // this.isCanSelect=false;
-        // this.fabricObj.selectable=false;
+        if(this.isimagechange) this.Edit();
+      } else {
+        console.log("cccc")
+        this.Edit()
       }
       console.log(this.polygonArray);
       console.log(this.polygoninfoArray);
     },
 
-    // &&e.pointer.x!=this.roofPoints[this.roofPoints.length-1].x
-    // &&e.pointer.y!=this.roofPoints[this.roofPoints.length-1].y
     fabricEvent() {
       this.fabricObj.on({
         // "object:selected":e =>{
@@ -631,7 +643,7 @@ export default {
         },
         "mouse:down": (e) => {
           if(this.isimagechange) return;
-          if(this.markinfo == null&&!this.istrue) {
+          if(this.markinfo == null&&this.radio == "mark") {
             this.$message({
             message: '您没有选中任何标签',
             type: 'warning'
@@ -642,12 +654,12 @@ export default {
           //console.log(e)
           console.log(e.e);
           console.log(this.fabricObj);
-          if (this.istrue === true) {
+          if (this.radio == "drag") {
             console.log("1111");
             this.panning = true;
             //this.fabricObj.selection = true;
           }
-          if (this.istrue === false && this.drawingObject.type == "roof") {
+          if (this.radio == "mark") {
             console.log("2222");
             //防止过长时间重复点一个点时点入栈
             if (
@@ -671,6 +683,8 @@ export default {
               a["y"] = e.absolutePointer.y;
               reala["x"] = e.absolutePointer.x / this.scalewidth;
               reala["y"] = e.absolutePointer.y / this.scaleheight;
+              // reala["x"] = e.absolutePointer.x ;
+              // reala["y"] = e.absolutePointer.y ;
               this.roofPoints.push(a);
               this.realPoints.push(reala);
               var points = [a.x, a.y, a.x, a.y];
@@ -686,10 +700,6 @@ export default {
               console.log(this.roofPoints.length);
             } else {
               console.log("click repeat!!!");
-              // console.log(e.pointer.x)
-              // console.log(e.pointer.y)
-              // console.log(this.roofPoints[this.roofPoints.length - 1].x)
-              // console.log(this.roofPoints[this.roofPoints.length - 1].y)
             }
           }
         },
@@ -697,17 +707,16 @@ export default {
             if(this.isimagechange) return;
                         //return;
           //鼠标移动时的直线绘制
-          if (this.istrue === true) {
+          if (this.radio == "drag") {
             if (this.panning && e && e.e) {
               var delta = new fabric.Point(e.e.movementX, e.e.movementY);
               this.fabricObj.relativePan(delta);
             }
           }
           if (
-            this.istrue === false &&
             this.lines[0] !== null &&
             this.lines[0] !== undefined &&
-            this.drawingObject.type == "roof"
+            this.radio == "mark"
           ) {
             // this.x = e.pointer.x;
             // this.y = e.pointer.y;
@@ -723,7 +732,7 @@ export default {
         },
         "mouse:dblclick": (e) => {
           //双击结束绘制按点生成多边形
-          if (this.drawingObject.type == "roof") {
+          if (this.radio == "mark") {
             // if (Math.abs(this.roofPoints[this.roofPoints.length-1].x-this.roofPoints[0].x)<10||
             // Math.abs(this.roofPoints[this.roofPoints.length-1].y-this.roofPoints[0].y)<10) {
             //             console.log("double click clean");
@@ -762,7 +771,7 @@ export default {
         },
         "mouse:up": (e) => {
           console.log("upupup");
-          if (this.istrue === true) {
+          if (this.radio == "drag") {
           this.panning = false;
           //this.fabricObj.selection = false;
           }
@@ -858,12 +867,25 @@ export default {
 }
 .delpolygon {
   margin-top: 20px;
+  vertical-align: top;
 }
 .polygon {
   display: inline-block;
 }
 .infopolygon {
   display: inline-block;
+  overflow:auto;
+  max-height:600px;
+  max-width:450px;
   vertical-align: top;
+}
+.el-divider--vertical {
+    display: inline-block;
+    background-color: #DCDFE6;
+    width: 1px;
+    height: 800px;
+    margin: 0 8px;
+    vertical-align: middle;
+    position: relative;
 }
 </style>

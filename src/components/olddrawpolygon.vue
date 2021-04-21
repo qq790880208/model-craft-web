@@ -1,6 +1,30 @@
 <template>
   <div class="polygon-body" style="width:100% ">
     <div>
+      <div
+        :style="{
+          //background: 'rgb(192, 192, 192)',
+          //width:this.imagewidth+'px',
+          marginLeft: 100 + 'px',
+          display: 'block',
+        }"
+      >
+        <el-radio-group v-model="radio" style="display: inline-block">
+          <el-radio-button label="mark" icon="el-icon-edit"
+            >标注</el-radio-button
+          >
+          <el-radio-button label="drag" icon="el-icon-rank"
+            >拖动</el-radio-button
+          >
+          <!-- <el-radio-button label="mark" icon="el-icon-edit"></el-radio-button>
+        <el-radio-button label="drag" icon="el-icon-rank"></el-radio-button> -->
+        </el-radio-group>
+      </div>
+
+
+
+
+
       <el-button
         type="primary"
         icon="el-icon-edit"
