@@ -16,14 +16,15 @@
       ></miniimage>
       </div>
     </div>
-  <div class="dashboard-container" v-if="isimageview">
+  <div class="dashboard-container" v-if="isimageview" style="margin-left:100px">
     <!-- <div class="dashboard-text">name: {{ name }}</div> -->
     <el-button :disabled="isdisablebutton" @click="returnimageview">返回图片预览</el-button>
-    <el-button :disabled="isdisablebutton" @click="nextimage">下一张</el-button>
-    <el-button :disabled="isdisablebutton" @click="previousimage" >上一张</el-button>
+    <el-button :disabled="isdisablebutton" @click="nextimage">下一张(N)</el-button>
+    <el-button :disabled="isdisablebutton" @click="previousimage" >上一张(P)</el-button>
+    <el-button :disabled="isdisablebutton" @click="skipimage">跳过当前图片(Q)</el-button>
     <!-- <el-button @click="requireimage">请求图片</el-button> -->
     <!-- <el-button @click="savelabel(nownum)">保存标注信息</el-button> -->
-    <drawpolygon style="margin-top:20px"
+    <drawpolygon style="margin-top:20px" ref='drawpolygonref'
       :fatherimagesrc="this.imageArry[nownum]"
       :imageindex="this.nownum"
       :premarktype="this.testmarktype"
@@ -44,6 +45,28 @@ import drawpolygon from "@/components/testdrawpolygon.vue";
 import request from "@/utils/request";
 import miniimage from "@/components/miniimage.vue"
 import store from "@/store"
+//页面键盘监听
+document.onkeydown = keyDownSearch;
+function keyDownSearch(e){
+  console.log("keydown!!!!!!!!!!!!")
+  let theEvent = e.event || window.event;
+  let code = theEvent.keyCode ||  theEvent.which || theEvent.charCode
+  if(code == 80){ //上一张
+    console.log("pppppppp!!!!!!!!!!!!!")
+    previousimage()
+    //return false;     
+  }
+  if(code == 78){ //下一张
+    console.log("nnnnnnnn!!!!!!!!!!!!!")
+    nextimage()
+  //return true;
+  }
+  if(code == 81){ //跳过
+    console.log("qqqqqqqq!!!!!!!!!!!!!")
+    skipimage()
+  }
+}
+
 export default {
   name: "Dashboard",
   data() {
@@ -76,15 +99,15 @@ export default {
         },
                 {
           name:"human2",
-          color:"rgba(0,128,0,0.75)"
+          color:"rgba(128,128,0,0.75)"
         },
                 {
           name:"human3",
-          color:"rgba(0,128,0,0.75)"
+          color:"rgba(0,128,128,0.75)"
         },
                 {
           name:"human4",
-          color:"rgba(0,128,0,0.75)"
+          color:"rgba(128,0,128,0.75)"
         },
       ],
       marktype: [],
@@ -105,6 +128,9 @@ export default {
     console.log("mounted!!!!uuid",store.getters.uuid,"mounted!!!!store.getters.userid",store.getters.userid)
     this.requireimage();
     this.requiretag();
+    window.nextimage = this.nextimage;
+    window.previousimage = this.previousimage;
+    window.skipimage = this.skipimage;
   },
   methods: {
     returndataset(){
@@ -120,14 +146,41 @@ export default {
     },
     //下一张图片
     nextimage: function () {
-      if (this.nownum < this.imageArry.length - 1) this.nownum++;
+      //if() return
+      if(this.isdisablebutton) {
+        console.log("您现在正在修改图片")
+        return
+      }
+      if (this.nownum < this.imageArry.length - 1) {
+        this.nownum++;
+      }
+      this.$refs.drawpolygonref.saveinfo()
       console.log("nextimage",this.nownum);
       console.log("nextimage infoArry",this.infoArry, this.infoArry.length);
     },
     //上一张图片
     previousimage: function () {
-      if (this.nownum > 0) this.nownum--;
+      //if() return
+      if(this.isdisablebutton) {
+        console.log("您现在正在修改图片")
+        return
+      }
+      if (this.nownum > 0) {
+        this.nownum--;
+      }
+      this.$refs.drawpolygonref.saveinfo()
       console.log("previousimage",this.nownum);
+    },
+    //跳过图片
+    skipimage: function(){
+      if(this.isdisablebutton) {
+        console.log("您现在正在修改图片")
+        return
+      }
+      if (this.nownum < this.imageArry.length - 1) {
+        this.nownum++;
+      }
+      console.log("skipimage", this.nownum);
     },
     closebutton: function(){
       console.log("fatherdisbtnnnnnnnnnnnnnnnnnnnnnnnnnnnn")

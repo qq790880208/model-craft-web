@@ -7,7 +7,9 @@
     style="width:150px" 
     clearable
     ></el-input> -->
-    <el-select v-model="value" @change="changefatherinfo" filterable placeholder="请选择类别">
+    <p style="width:40px;display:inline-block">{{nowindex}}、</p>
+    <el-input style="width:150px" v-model="inputname" :disabled="true"></el-input>
+    <el-select v-model="value" @change="changefatherinfo" filterable placeholder=" " style="width:40px" ref="selectref">
       <el-option
       v-for="item in typelabel"
       :key="item.value"
@@ -15,9 +17,9 @@
       :value="item.label">
      </el-option>
     </el-select>
-    <el-input style="width:150px" v-model="inputname" :disabled="true"></el-input>
+
     <!-- <el-button @click="changefatherinfo" type="primary">保存</el-button> -->
-    <el-button @click="deletefatherlabel" type="danger">删除</el-button>
+    <el-button @click="deletefatherlabel" type="danger" style="width:100px;margin-left:10px" >删除</el-button>
     </el-row>
   </div>
 </template>
@@ -33,6 +35,7 @@
    },
    props: {
      inputname:String,
+     nowindex:Number,
      typelabel: {
       type: Array,
       default: () => [],
@@ -41,8 +44,11 @@
    methods: {
      //通知父方法删除对应的div和标注框
      deletefatherlabel(){
-       console.log(this.input)
+       //console.log(this.input)
+       //this.value=this.inputname
        this.$emit("deletelabel")
+       //this.$refs.selectref.placeholder='请选择类别'
+
        //console.log("emit!!!!!!!!!")
      },
      //保存输入的标注信息
@@ -50,6 +56,7 @@
        console.log(this.value)
        console.log(this.inputname)
        this.$emit("changeinfo",this.value)
+       this.value=''
      }
    },
    components: {
