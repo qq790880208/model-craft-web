@@ -71,7 +71,7 @@
                       </td>
                       <td>
                         <span>
-                          /ww/ee/rr/
+                          {{ dataSet.output_path }}
                         </span>
                       </td>
                     </tr>
@@ -395,6 +395,8 @@ export default {
       console.log(params)
       getTags(params).then( res => {
         this.barChartData.tags = res.data.items
+        this.barChartData.nums = res.data.tagCounts
+        this.barChartData.nums2 = res.data.labelCounts
       })
     }
   },

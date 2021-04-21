@@ -94,7 +94,6 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getLabel, deleteData, addNewLabels, assignNewData, getNewFile } from '@/api/data'
-import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder } from '@/api/oss'
 import store from '@/store'
 import myimage from '@/components/myimage.vue'
 
@@ -223,8 +222,6 @@ export default {
     },
     startLabel: function() {
       const type = store.getters.type
-      const uuid = store.getters.uuid
-      const userid = store.getters.userid
       if(type == 0) {
         this.$router.push('/label/d2imageview')
       }
@@ -241,7 +238,7 @@ export default {
   },
   mounted() {
     this.getData()
-    if(this.$route.query.key == 'allData') {
+    if(dataSet.role_type === 2) {
       this.visible = 'none'
     }
   }

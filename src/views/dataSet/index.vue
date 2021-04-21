@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-tabs :tab-position="tabPosition" style="height: 200px;" v-model="activeName" @tab-click="handleClick">
+    <el-tabs style="height: 200px;" v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="我的数据集" name="allData">
         <el-form :inline="true" :model="filter" >
           <el-button plain style="text-align: left" type="primary" @click="createDataSet()">
@@ -26,7 +26,7 @@
           <el-table-column prop="done" align="center" label="标注进度" min-width="250" sortable>
             <template slot-scope="scope">
               <div style="width: 250px; margin:0px auto;">
-                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)" :format="format">
+                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)">
                 </el-progress>
                 <span>
                   {{scope.row.done}} / {{scope.row.tol}}
@@ -79,7 +79,7 @@
           <el-table-column prop="done" align="center" label="标注进度" min-width="260" sortable>
             <template slot-scope="scope">
               <div style="width: 250px; margin:0px auto;">
-                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)" :format="format">
+                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)">
                 </el-progress>
                 {{scope.row.done}} / {{scope.row.tol}}
               </div>
@@ -274,7 +274,6 @@ export default {
       }
       if (second == null) {
         second = '00'
-        console.log(hour.length)
       } else if (second.toString().length < 2) {
         second = '0' + second
       }
@@ -305,6 +304,7 @@ export default {
       dataSets: [],
       dataSetAssigned: [],
       total: 0,
+      total1: 0,
       page: 1,
       page_size: 20,
       dialogVisible: false,
@@ -341,7 +341,7 @@ export default {
       },
       teamForm: {
         dataSetName: '',
-        teamValue: [],
+        teamValue: '',
         dataSetUuid: ''
       },
       addFormRules: {
@@ -485,11 +485,12 @@ export default {
     // 显示标注团队对话框
     showTeamDialog(index, row) {
       this.getTeams()
-      this.teamForm.teamValue = []
+      this.teamForm.teamValue = ''
       // 得到标注团队
       const params = {
         dataSetUuid: row.uuid
       }
+      console.log(params)
       getSelectTeam(params).then(res => {
         this.selectTeams = res.data.items
         this.teamForm.teamValue = res.data.items
@@ -504,7 +505,7 @@ export default {
     addLabelTeam() {
       const params = {
         dataSetid: this.teamForm.dataSetUuid,
-        teamids: this.teamForm.teamValue.join(",")
+        teamid: this.teamForm.teamValue
       }
       console.log(params)
       assignLabel(params).then(res => {
@@ -577,7 +578,8 @@ export default {
         id: store.getters.userid,
         name: this.filter.name
       }
-      console.log("dadadadadad" + params)
+      console.log("dadadadadad")
+      console.log(params)
       getDataByName(params).then(res => {
         this.dataSets = res.data.items
         this.total = res.data.total
