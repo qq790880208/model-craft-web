@@ -1,12 +1,12 @@
 <template>
-  <!-- <el-row :gutter="20" style="margin-top: 50px"> -->
-    <div style="user-select: none;">
+  <div style="user-select: none;">
     <div class="dashboard-container" v-if="isimageview">
       <div>
       <el-button @click="returndataset" >返回数据集</el-button>
       <el-button @click="automark()" :loading="isloading">{{automarkbtntext}}</el-button>
       </div>
       <div v-for="(item, index) in imagelargeArry" :key="index" style="
+        display:inline-block;
         margin-left:20px
       " >
       <miniimage style="margin-top:20px"
@@ -21,7 +21,7 @@
       <el-button @click="nextimage">下一张(N)</el-button>
       <el-button @click="previousimage">上一张(P)</el-button>
       <el-button @click="skipimage">跳过当前图片(Q)</el-button>
-      <imageselect style="margin-top:20px" ref='imageselectref'
+      <imageselect style="margin-top:20px;" ref='imageselectref' 
         :fatherimagesrc="this.imageArry[nownum]"
         :imageindex="this.nownum"
         :premarktype="this.marktype"
@@ -43,7 +43,7 @@ import store from "@/store"
 //import axios from 'node_modules/axios';
 // import labelinfo from '@/components/labelinfo.vue'
 //页面键盘监听
-document.onkeydown = keyDownSearch;
+//document.onkeydown = keyDownSearch;
 function keyDownSearch(e){
   console.log("keydown!!!!!!!!!!!!")
   let theEvent = e.event || window.event;
@@ -94,15 +94,15 @@ export default {
         },
                 {
           name:"human2",
-          color:"rgba(0,128,0,0.75)"
+          color:"rgba(128,128,0,0.75)"
         },
                 {
           name:"human3",
-          color:"rgba(0,128,0,0.75)"
+          color:"rgba(0,128,128,0.75)"
         },
                 {
           name:"human4",
-          color:"rgba(0,128,0,0.75)"
+          color:"rgba(128,0,128,0.75)"
         },
       ],
       marktype: [],
@@ -128,6 +128,7 @@ export default {
       this.isimageview=!this.isimageview;
     },
     returnimageview(){
+        this.$refs.imageselectref.saveinfo()
         this.isimageview=!this.isimageview;
     },
     markarray: function (childinfoArry) {
@@ -136,6 +137,10 @@ export default {
     },
     //跳过图片
     skipimage: function(){
+      if(this.isimageview) {
+        console.log("处于预览界面");
+        return
+        }
       if (this.nownum < this.imageArry.length - 1) {
         this.nownum++;
       }
@@ -143,17 +148,23 @@ export default {
     },
     //下一张图片
     nextimage: function () {
-      //if() return
+      if(this.isimageview) {
+        console.log("处于预览界面");
+        return
+        }
       if (this.nownum < this.imageArry.length - 1) {
         this.$refs.imageselectref.saveinfo()
         this.nownum++;
       }
-
       console.log("nextimage", this.nownum);
       //console.log("nextimage infoArry", this.infoArry, this.infoArry.length);
     },
     //上一张图片
     previousimage: function () {
+        if(this.isimageview) {
+        console.log("处于预览界面");
+        return
+        }
       //if() return
       if (this.nownum > 0) {
         this.$refs.imageselectref.saveinfo()
@@ -171,7 +182,6 @@ export default {
     //get请求图片数据
     requireimage: function () {
       let _this = this;
-      console.log("asdasdasdasdadadaa")
       console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
       if(store.getters.dataSet.role_type === 2) {
         const params = {
@@ -219,7 +229,20 @@ export default {
         }
         //console.log("imageArry", _this.imageArry);
         //console.log("transforjson",JSON.stringify(_this.infoArry[0][0]))
-      })
+      }).catch(function(error){
+        console.log("error",error)
+          _this.$message({
+          message:"请求图片失败",
+          type: 'error'
+          })
+          // for (let i = 0; i < testmarktype.length; i++) {
+          //   let a={};
+          // a["url"]=response.data.items[i].file_path
+          // a["islabel"]=response.data.items[i].is_label
+          // //a["index"]=i
+          // _this.imagelargeArry.push(a);
+          // }
+      });
       }
       //////////////////////////////////////
       else{
@@ -337,6 +360,7 @@ export default {
         console.log("isab",isab);
         _this.$message({
           message:"保存成功",
+          duration:300,
           type: 'success'
           });
         _this.requireimage();
@@ -396,6 +420,10 @@ export default {
     window.nextimage = this.nextimage;
     window.previousimage = this.previousimage;
     window.skipimage = this.skipimage;
+    document.onkeydown = keyDownSearch;
+  },
+  destroyed(){
+    document.onkeydown = undefined;
   },
   computed: {
     ...mapGetters(["name"]),
