@@ -350,6 +350,7 @@ export default {
     return {
       radio: "mark",
       num: 1,
+      defaultlabel:null,
       imagewidth: 800, //图片宽度像素数
       imageheight: 800, //图片高度像素数
       scalewidth: null, //图片宽度缩放倍数
@@ -428,6 +429,7 @@ export default {
         console.log("42343423423423fsdd", this.labelArry[i]);
         //this.labelArry.push(this.lastlabelArry[i])
       }
+      this.defaultlabel=this.premarktype[0].name;
       for (let i = 0; i < this.premarktype.length; i++) {
         let a = {};
         a["value"] = i;
@@ -591,7 +593,7 @@ export default {
                 y1: top / this.scaleheight,
                 x2: (left + this.width) / this.scalewidth,
                 y2: (top + this.height) / this.scaleheight,
-                info: "default",
+                info: this.defaultlabel,
               });
               //完成标注
               console.log("box", this.boxArry);
