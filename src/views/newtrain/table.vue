@@ -11,17 +11,12 @@
       <el-col :span="3" :offset="9">
         <el-select v-model="selectedstatus" placeholder="请选择"
            @change="searchStatusTask">
+           <el-option label="全部状态" value="5"></el-option>
            <el-option label="未开始" value="0"></el-option>
            <el-option label="初始化" value="1"></el-option>
            <el-option label="运行中" value="2"></el-option>
            <el-option label="结束成功" value="3"></el-option>
            <el-option label="结束失败" value="4"></el-option>
-          <!-- <el-option
-            v-for="item in statusoptions"
-            :key="item"
-            :label="item"
-            :value="item">
-          </el-option> -->
         </el-select>
       </el-col>
       <el-col :span="3">
@@ -218,7 +213,7 @@ export default {
       return {
         //主页面部分数据
         statusoptions:['未开始', '初始化','运行中', '结束成功', '结束失败'],
-        selectedstatus:'',//顶部选择的状态
+        selectedstatus:'5',//顶部选择的状态
         tableData:[],
         
         //可视化部分数据
@@ -297,11 +292,11 @@ export default {
 
         //和后台交互传递的各种参数
         selectPara:{//顶部下拉框传递的参数
-          'para':''
+          'para':this.selectedstatus
         },
-        inputPara:{//顶部文本框传递的参数
-          'para':''
-        },
+        // inputPara:{//顶部文本框传递的参数
+        //   'para':''
+        // },
         taskPara:{//创建任务向后台提交的任务信息
           "algo_id": 0,
           "args": "string",
@@ -346,48 +341,38 @@ export default {
           this.queryInfo.pagenum = res.data.items.current
           this.queryInfo.pagesize = res.data.items.size
           this.totalData = res.data.items.total
-          this.tableData = []
-          for(let i = 0;i < res.data.items.records.length;i++){
-            let obj = {}
-            obj.name = res.data.items.records[i].name
-            obj.train_algo_name = res.data.items.records[i].train_algo_name
-            //obj.status = res.data.items[i].status
-            obj.status = res.data.items.records[i].status
-            obj.cost_time = res.data.items.records[i].cost_time
-            obj.create_time = this.formatDate(res.data.items.records[i].create_time) 
-            obj.descr = res.data.items.records[i].descr
-            obj.userId = res.data.items.records[i].user_id
-            this.tableData.push(obj)
-          }
+          this.tableData = res.data.items.records
+          // this.tableData = []
+          // for(let i = 0;i < res.data.items.records.length;i++){
+          //   let obj = {}
+          //   obj.name = res.data.items.records[i].name
+          //   obj.train_algo_name = res.data.items.records[i].train_algo_name
+          //   //obj.status = res.data.items[i].status
+          //   obj.status = res.data.items.records[i].status
+          //   obj.cost_time = res.data.items.records[i].cost_time
+          //   obj.create_time = this.formatDate(res.data.items.records[i].create_time) 
+          //   obj.descr = res.data.items.records[i].descr
+          //   obj.userId = res.data.items.records[i].user_id
+          //   this.tableData.push(obj)
+          // }
         })
         //==重新获取表格数据
         
       },
       searchStatusTask(){//下拉框排序查询
+        this.selectPara.para = this.selectedstatus
         let tmp = {
           "user_id": store.getters.userid,
           "curr": this.queryInfo.pagenum,
           "size": this.queryInfo.pagesize,
-          "tj_status": this.selectedstatus
+          "tj_status": this.selectPara.para
         }
         search(tmp).then(res=>{
           console.log(res.data)
           this.queryInfo.pagenum = res.data.items.current
           this.queryInfo.pagesize = res.data.items.size
           this.totalData = res.data.items.total
-          this.tableData = []
-          for(let i = 0;i < res.data.items.records.length;i++){
-            let obj = {}
-            obj.name = res.data.items.records[i].name
-            obj.train_algo_name = res.data.items.records[i].train_algo_name
-            //obj.status = res.data.items[i].status
-            obj.status = res.data.items.records[i].status
-            obj.cost_time = res.data.items.records[i].cost_time
-            obj.create_time = this.formatDate(res.data.items.records[i].create_time) 
-            obj.descr = res.data.items.records[i].descr
-            obj.userId = res.data.items.records[i].user_id
-            this.tableData.push(obj)
-          }
+          this.tableData = res.data.items.records
         })
       },
       createbtn:function(){//点击桌面的创建按钮
@@ -541,20 +526,21 @@ export default {
           this.queryInfo.pagenum = res.data.items.current
           this.queryInfo.pagesize = res.data.items.size
           this.totalData = res.data.items.total
-          this.tableData = []
-          for(let i = 0;i < res.data.items.records.length;i++){
-            let obj = {}
-            obj.name = res.data.items.records[i].name
-            obj.train_algo_name = res.data.items.records[i].train_algo_name
-            //obj.status = res.data.items[i].status
-            obj.status = res.data.items.records[i].status
-            obj.cost_time = res.data.items.records[i].cost_time
-            obj.create_time = this.formatDate(res.data.items.records[i].create_time) 
-            obj.descr = res.data.items.records[i].descr
-            obj.userId = res.data.items.records[i].user_id
+          this.tableData = res.data.items.records
+          // this.tableData = []
+          // for(let i = 0;i < res.data.items.records.length;i++){
+          //   let obj = {}
+          //   obj.name = res.data.items.records[i].name
+          //   obj.train_algo_name = res.data.items.records[i].train_algo_name
+          //   //obj.status = res.data.items[i].status
+          //   obj.status = res.data.items.records[i].status
+          //   obj.cost_time = res.data.items.records[i].cost_time
+          //   obj.create_time = this.formatDate(res.data.items.records[i].create_time) 
+          //   obj.descr = res.data.items.records[i].descr
+          //   obj.userId = res.data.items.records[i].user_id
             
-            this.tableData.push(obj)
-          }
+          //   this.tableData.push(obj)
+          // }
         })
         
       },
@@ -602,12 +588,28 @@ export default {
       handleSizeChange(newSize) {
         this.queryInfo.pagesize = newSize
         //==重新发起数据请求
-        this.fetchData()
+        if(this.queryInfo.query != ""){
+          console.log(this.queryInfo.query)
+        }
+        else if(this.selectedstatus != "5"){
+          this.searchStatusTask()
+        }
+        else{
+          this.fetchData()
+        }
       },
       handleCurrentChange(newPage) {
         this.queryInfo.pagenum = newPage
         //==重新发起数据请求
-        this.fetchData()
+        if(this.queryInfo.query != ""){
+          console.log(this.queryInfo.query)
+        }
+        else if(this.selectedstatus != "5"){
+          this.searchStatusTask()
+        }
+        else{
+          this.fetchData()
+        }
       },
       
       setTimer() {//定时器
