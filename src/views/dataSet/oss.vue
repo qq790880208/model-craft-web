@@ -1,7 +1,7 @@
 <template>
 <div class="folder-container">
     <el-row>
-        <el-col :span="12">
+        <el-col :span="16">
             <el-form>
             <el-form-item label="请选择桶:">
                 <el-radio-group v-model="bucket" @change="choosebucket">
@@ -10,11 +10,10 @@
             </el-form-item> 
         </el-form>
         </el-col>
-        <el-col :span="12">
+        <el-col :span="8">
             <el-button plain round @click="createbucketmsg">创建桶</el-button>
             <el-button plain round @click="removebucketmsg">删除桶</el-button>
             <el-button plain round @click="uploadobjectmsg">上传文件</el-button>
-            <el-button plain round @click="removeobjectmsg">删除文件</el-button>
         </el-col>
     </el-row>
     <el-divider></el-divider>
@@ -22,31 +21,41 @@
         <el-button icon="el-icon-upload2" type="text" @click="returnOldCurrentRow">返回上级</el-button>
         <el-divider direction="vertical"></el-divider>
         <el-button-group>
-            <el-button plain>当前路径：{{bucket}} ：{{objectcurrentRow}}</el-button>
+            <el-button plain class="dir">当前路径：{{bucket}} ：{{objectcurrentRow}}</el-button>
             <el-button  icon="el-icon-folder-add" @click="addFolder">创建文件夹</el-button>
             <el-button  icon="el-icon-folder-remove" @click="remFolder">删除文件夹</el-button>
         </el-button-group>
     </el-row> 
     <el-divider></el-divider>
     <el-row>
-        <el-table  :data="objectData" highlight-current-row @row-click="listbyPrefix" @row-contextmenu="rightClick" >
+        <el-table  :data="objectData" highlight-current-row @row-click="listbyPrefix" @row-contextmenu="rightClick" ref="multipleTable" @selection-change="handleSelectionChange">
+            <el-table-column type="selection" width="55"></el-table-column>
             <el-table-column prop="name" label="对象名"></el-table-column>
         </el-table>
         <div v-show="rightClickMenuVisible">
             <ul id="menu" class="menu">
-                <li class="menu__item" @click="downLoadObject">下载</li>
+                <li class="menu__item" @click="downLoadObject">文件外链</li>
                 <li class="menu__item" @click="renameObject">重命名</li>
                 <li class="menu__item" @click="copyObject">拷贝</li>
                 <li class="menu__item" @click="deleteObject">删除</li>
             </ul>
         </div>
     </el-row>
-    
+    <el-divider></el-divider>
+    <div style="margin-top: 20px">
+        <el-row>
+        <el-button plain @click="toggleSelection()">取消选择</el-button>
+        <el-popconfirm @onConfirm="allDelete" confirmButtonText='好的' cancelButtonText='不用了' icon="el-icon-info" iconColor="red" title="确定删除已选中的内容吗？">
+		<el-button plain slot="reference">批量删除</el-button>
+		</el-popconfirm>
+        <el-button plain @click="allCopy">批量拷贝</el-button>
+    </el-row>
+    </div>
     <!--上传文件dialog-->
     <el-dialog title="上传文件" :visible.sync="uploadObjectVisible">
             <el-button-group>
                 <el-button type="primary" @click="choosefolder = true">选择上传路径</el-button>
-                <el-button>{{uploadBucketName}} : {{uploadObjectFolder}}</el-button>
+                <el-button class="dir" plain>{{uploadBucketName}} : {{uploadObjectFolder}}</el-button>
             </el-button-group>
         <el-dialog width="30%" title="选择路径" :visible.sync="choosefolder" append-to-body :show-close="false">
             <el-form>
@@ -67,7 +76,7 @@
         </el-table>
         <div slot="footer" class="dialog-footer">
             <el-button @click="returnNull">取 消</el-button>
-            <el-button type="primary" @click="returnuplFolder">确定</el-button>
+            <el-button type="primary" @click="returnuplFolder" >确定</el-button>
         </div>
         </el-dialog>
         <el-divider></el-divider>
@@ -81,52 +90,24 @@
                 :on-change="handleChange"
                 :on-preview="handlePreview"
                 :on-remove="handleRemove"
-                multiple="multiple">
+                multiple="multiple"
+                v-loading="uploadLoading"
+                element-loading-text="上传中"
+                element-loading-spinner="el-icon-loading">
                 <el-button slot="trigger" size="small" type="primary" @click="delFile">选取文件</el-button>
             </el-upload>
         <el-divider></el-divider>
         <el-input placeholder="请输入文件名" v-model="uploadobjectName" clearable>
             <template slot="prepend">文件名：</template>
+            <template slot="append">{{uploadFilePostfix}}</template>
         </el-input>
+        <h5> <font color="#e6a23c">*注：1个文件上传时可自定义命名</font></h5>
         <div slot="footer" class="dialog-footer">
-            <el-button @click="uploadObjectVisible = false">取 消</el-button>
+            <el-button @click="uploadObjectNull">取 消</el-button>
             <el-button type="primary" @click="uploadObject">确 定</el-button>
         </div>
     </el-dialog>
 
-    <!--删除文件dialog-->
-    <el-dialog title="删除文件" :visible.sync="removefileVisible">
-        <el-button-group>
-                <el-button type="primary" @click="removefolder = true">选择删除文件</el-button>
-                <el-button>{{removeBucketName}} : {{removeObjectFolder}} : {{removeObjectName}}</el-button>
-        </el-button-group>
-        <el-dialog width="30%" title="选择路径" :visible.sync="removefolder" append-to-body :show-close="false">
-            <el-form>
-                <el-form-item label="请选择桶:">
-                    <el-radio-group v-model="delbucket" @change="choosedelbucket">
-                        <el-radio-button :label="item.name" :key="item.name" v-for="item in list">{{item.name}}</el-radio-button>
-                    </el-radio-group>
-                </el-form-item> 
-            </el-form>
-        <el-divider></el-divider>
-        <el-row>
-            <el-button icon="el-icon-upload2" type="text"  @click="returnOlddelCurrentRow">返回上级</el-button>
-            <el-divider direction="vertical"></el-divider>
-            <el-tag type="info" effect="light">当前路径：{{delbucket}} ：{{objectdelcurrentRow}}</el-tag>
-        </el-row> 
-        <el-table :data="objectdelData" highlight-current-row @row-click="dellistbyPrefix">
-            <el-table-column prop="name" label="请选择文件"></el-table-column>
-        </el-table>
-        <div slot="footer" class="dialog-footer">
-            <el-button @click="returndelNull">取 消</el-button>
-            <el-button type="primary" @click="returndelFolder">确定</el-button>
-        </div>
-        </el-dialog>
-        <div slot="footer" class="dialog-footer">
-            <el-button @click="removefileVisible = false">取 消</el-button>
-            <el-button type="primary" @click="removeObject">确 定</el-button>
-        </div>
-    </el-dialog>
 
     <!--删除文件夹-->
     <el-dialog title="删除文件夹" :visible.sync="remFolderVisible" width="30%" >
@@ -139,6 +120,7 @@
                 </el-radio-group>
             </el-form-item> 
         </el-form>
+        <h5> <font color="#e6a23c">*注：删除时确保文件夹为空</font></h5>
         <div slot="footer" class="dialog-footer">
             <el-button @click="remFolderVisible=false">取 消</el-button>
             <el-button type="primary" @click="delFol">确 定</el-button>
@@ -160,16 +142,57 @@
     <el-dialog title="拷贝" :visible.sync="copyVisible">
         <el-button-group>
             <el-button icon="el-icon-folder" size="medium">源文件</el-button>
-            <el-button size="medium">{{bucket}}:</el-button>
-            <el-button size="medium" v-show="objectcurrentRow">{{objectcurrentRow}}</el-button>
-            <el-button size="medium">{{copyNameOrg}}</el-button>
+            <el-button size="medium" class="dir" plain>{{bucket}}:</el-button>
+            <el-button size="medium" v-show="objectcurrentRow" class="dir" plain>{{objectcurrentRow}}</el-button>
+            <el-button size="medium" class="dir" plain>{{copyNameOrg}}</el-button>
         </el-button-group>
         <el-divider></el-divider>
         <el-button-group>
+            <el-button icon="el-icon-folder" size="medium" @click="copyFolder" type="primary">目标路径</el-button>
+            <el-button size="medium" v-show="copyBucketName" class="dir" plain>{{copyBucketName}}:</el-button>
+            <el-button size="medium" v-show="copyObjectRow" class="dir" plain>{{copyObjectRow}}</el-button>
+            <el-button size="medium" v-show="copyName" class="dir" plain>{{copyName}}</el-button>
+        </el-button-group>
+        <el-divider></el-divider>
+        <el-input v-model="copyName" placeholder="请输入新文件名" clearable>
+            <template slot="prepend">重命名文件（可选）:</template>
+            <template slot="append">{{copyNameOrg.substring(copyNameOrg.indexOf('.'))}}</template>
+        </el-input>
+        <h5> <font color="#e6a23c">*注：不输入新文件名将保留原名拷贝</font></h5>
+        <el-dialog width="30%" title="选择路径" :visible.sync="copyFolderVisible" append-to-body :show-close="false">
+            <el-form>
+                <el-form-item label="请选择桶:">
+                    <el-radio-group v-model="copyBucket" @change="choosecopybucket">
+                        <el-radio-button :label="item.name" :key="item.name" v-for="item in list">{{item.name}}</el-radio-button>
+                    </el-radio-group>
+                </el-form-item> 
+            </el-form>
+        <el-divider></el-divider>
+        <el-row>
+            <el-button icon="el-icon-upload2" type="text"  @click="returnOldcopyCurrentRow">返回上级</el-button>
+            <el-divider direction="vertical"></el-divider>
+            <el-tag type="info" effect="light">当前路径：{{copyBucket}} ：{{objectcopycurrentRow}}</el-tag>
+        </el-row> 
+        <el-table :data="objectcopyData" highlight-current-row @row-click="copylistbyPrefix">
+            <el-table-column prop="name" label="请选择位置"></el-table-column>
+        </el-table>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="returnCopyNull">取 消</el-button>
+            <el-button type="primary" @click="returnCopyFolder">确定</el-button>
+        </div>
+        </el-dialog>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="returnCopyCancel">取 消</el-button>
+            <el-button type="primary" @click="returnCopy">确 定</el-button>
+        </div>
+    </el-dialog>
+
+    <!--批量拷贝弹出框-->
+    <el-dialog title="选择目标路径" :visible.sync="multipleCopyVisible">
+        <el-button-group>
             <el-button icon="el-icon-folder" size="medium" @click="copyFolder">目标路径</el-button>
-            <el-button size="medium" v-show="copyBucketName">{{copyBucketName}}:</el-button>
-            <el-button size="medium" v-show="copyObjectRow">{{copyObjectRow}}</el-button>
-            <el-button size="medium" v-show="copyName">{{copyName}}</el-button>
+            <el-button size="medium" v-show="MultipleCopyBucketName" class="dir" plain>{{MultipleCopyBucketName}}:</el-button>
+            <el-button size="medium" v-show="MultipleCopyObjectRow" class="dir" plain>{{MultipleCopyObjectRow}}</el-button>
         </el-button-group>
         <el-dialog width="30%" title="选择路径" :visible.sync="copyFolderVisible" append-to-body :show-close="false">
             <el-form>
@@ -186,16 +209,16 @@
             <el-tag type="info" effect="light">当前路径：{{copyBucket}} ：{{objectcopycurrentRow}}</el-tag>
         </el-row> 
         <el-table :data="objectcopyData" highlight-current-row @row-click="copylistbyPrefix">
-            <el-table-column prop="name" label="请选择上传位置"></el-table-column>
+            <el-table-column prop="name" label="请选择位置"></el-table-column>
         </el-table>
         <div slot="footer" class="dialog-footer">
-            <el-button @click="returnCopyNull">取 消</el-button>
-            <el-button type="primary" @click="returnCopyFolder">确定</el-button>
+            <el-button @click="returnMultipleCopyNull">取 消</el-button>
+            <el-button type="primary" @click="returnMultipleCopyFolder">确定</el-button>
         </div>
         </el-dialog>
         <div slot="footer" class="dialog-footer">
-            <el-button @click="returnCopyCancel">取 消</el-button>
-            <el-button type="primary" @click="returnCopy">确 定</el-button>
+            <el-button @click="returnMultipleCopyCancel">取 消</el-button>
+            <el-button type="primary" @click="returnMultipleCopy">确 定</el-button>
         </div>
     </el-dialog>
 </div>
@@ -228,21 +251,9 @@ export default {
             uploadObjectFolder:'',//上传目标路径
             uploadobjectName:'',//上传文件名
             uploadFile:'',//要给后端的文件
+            uploadFilePostfix:'',//上传的后缀名
             uploadFilesignal:false,//上传文件判断信号
-            removefileVisible:false,//删除文件dialog框信号
-            removefolder:false,//删除文件路径dialog框信号
-            delbucket:'',//删除文件bucket
-            objectdelData:[],//删除文件列表
-            objectdelcurrentRow:'',//页面显示的删除路径
-            objectdelPrefix:'',//后端调用的删除路径
-            oldObjectdelPrefix:'',//删除文件后端调用的上级目录
-            olddelCurrentRow:'',//删除的上一级目录
-            delsignal:false,//是否选择文件
-            selectremBucketName:'',//选择删除文件的桶名
-            selectremObjectFolder:'',//选择删除文件的总路径（前缀+名称）
-            removeBucketName:'',//传给后端的删除桶名
-            removeObjectFolder:'',//传给后端的删除前缀
-            removeObjectName:'',//传给后端的文件名
+            uploadLoading:false,//文件上传加载
             fileList: [],
             multiple: true,
             formData: "",
@@ -267,7 +278,15 @@ export default {
             oldObjectcopyPrefix:'',//拷贝文件的上一级前缀名
             oldcopyCurrentRow:'',//拷贝文件的上级目录
             copysignal:false,//拷贝的选择具体文件信号控制
-            copyBucketName:''//拷贝的目标桶名
+            copyBucketName:'',//拷贝的目标桶名
+            multipleSelection:[],//多选选项
+            removesignal:0,//批量删除计数
+            multipleCopyVisible:false,//批量拷贝弹出框信号
+            removeSeleFolder:false,//删除是否选择文件夹
+            copySeleFolder:false,//拷贝是否选择文件夹
+            MultipleCopyBucketName:'',//批量拷贝的目标桶
+            MultipleCopyObjectRow:'',//批量拷贝的目标路径
+            multipleCopySignal:0,//批量拷贝计数
         }
     },
 
@@ -498,45 +517,101 @@ export default {
             this.oldObjectuplPrefix = this.objectuplPrefix.substring(0,this.objectuplPrefix.length-this.objectuplPrefix.split("").reverse().indexOf("/")-1)
         },
 
-        delFile() {
+    delFile() {
         this.fileList = [];
-        },
-        handleChange(file, fileList) {
-            this.fileList = fileList;
-        },
-        uplFile(file) {
+    },
+    handleChange(file, fileList) {
+        this.fileList = fileList;
+        this.uploadFilePostfix = file.name.substring(file.name.indexOf('.'))
+    },
+    uplFile(file) {
         this.formData.append("file", file.file);
-        },
-        handleRemove(file, fileList) {
+    },
+    handleRemove(file, fileList) {
         console.log(file, fileList);
-        },
-        handlePreview(file) {
+    },
+    handlePreview(file) {
         console.log(file);
-        },
+    },
 
-        uploadObject() {
-        let formData = new FormData();
-        formData.append("bucketName", this.uploadBucketName);
-        formData.append("folderName", this.uploadObjectFolder);
-        formData.append("file", this.fileList[0].raw);
-        formData.append("objectName", this.uploadobjectName);
-            return request({
-            url: "http://localhost:8089/minio-service/upload",
-            method: "post",
-            data: formData,
-            headers: {
-            "Content-Type": "multipart/form-data;charset=utf-8"
-            }
-        }).then(response => {
-            if(20000 == response.code){
+    uploadObject() {
+        this.uploadLoading=true
+        let multFileList = this.fileList
+        let multFileListLen = multFileList.length
+        let s=0
+        console.log(multFileList);
+        console.log(multFileListLen);
+        if(multFileListLen==1){
+            let formData = new FormData();
+            formData.append("bucketName", this.uploadBucketName);
+            console.log(this.uploadBucketName);
+            formData.append("folderName", this.uploadObjectFolder);
+            console.log(this.uploadObjectFolder);
+            formData.append("file", multFileList[0].raw);
+            console.log( multFileList[0].raw);
+            formData.append("objectName", this.uploadobjectName);
+            console.log(this.uploadobjectName);
+            upload(formData).then(response=>{
+                if(response.code==20000){
+                    this.uploadLoading=false
                     this.suc()
                     this.uploadObjectVisible = false
-                }else{
-                    this.fai()
-                }
-        })
-        .catch(err => {console.log(err);})
-        this.fresh()
+                    this.choosebucket(this.bucket)
+                    this.uploadBucketName=''
+                    this.uploadObjectFolder=''
+                    this.uploadobjectName=''
+                    this.uplbucket=''
+                    this.objectuplcurrentRow=''
+                    this.objectuplData=[]
+                    this.fileList=[]
+                    this.uploadFilePostfix=''
+                }else{this.fai()}
+            })
+        }else{
+            for(let i=0;i<multFileListLen;i++){
+            let formData = new FormData();
+            formData.append("bucketName", this.uploadBucketName);
+            console.log(this.uploadBucketName);
+            formData.append("folderName", this.uploadObjectFolder);
+            console.log(this.uploadObjectFolder);
+            formData.append("file", multFileList[i].raw);
+            console.log( multFileList[i].raw);
+            formData.append("objectName", '');
+            upload(formData).then(response=>{
+                if(response.code==20000){
+                    s++
+                    console.log(response);
+                    if(s==multFileListLen-1){
+                        this.uploadLoading=false
+                        this.suc()
+                        this.uploadObjectVisible = false
+                        this.choosebucket(this.bucket)
+                        this.uploadBucketName=''
+                        this.uploadObjectFolder=''
+                        this.uploadobjectName=''
+                        this.uplbucket=''
+                        this.objectuplcurrentRow=''
+                        this.objectuplData=[]
+                        this.fileList=[]
+                        this.uploadFilePostfix=''
+                    }
+                }else{this.fai()}
+            })
+        }
+        }
+    },
+
+    //上传文件的取消键
+    uploadObjectNull(){
+        this.uploadBucketName=''
+        this.uploadObjectFolder=''
+        this.uploadobjectName=''
+        this.uplbucket=''
+        this.objectuplcurrentRow=''
+        this.objectuplData=[]
+        this.fileList=[]
+        this.uploadFilePostfix=''
+        this.uploadObjectVisible = false
     },
 
         //返回内层dialog
@@ -557,125 +632,9 @@ export default {
             this.choosefolder = false
         },
 
-        //删除文件点击事件
-        removeobjectmsg(){
-            this.removefileVisible = true
-        },
-
-        //选择删除文件的bucket
-        choosedelbucket(val){
-            this.objectdelData=[]
-            this.objectdelcurrentRow=''
-            const para = {bucketName : val}
-            console.log(para);
-            this.objectdellist(para);
-        },
-
-        //删除文件的列表
-        objectdellist(para){
-            listObject(para).then(response=>{
-                if(response){
-                    console.log(response);
-                    this.objectdelData = response.data
-                }else{
-                }
-            }).catch()
-        },
-
-        dellistbyPrefix(row,event,column){
-            console.log(row.name);
-            const para={}
-            if("/"==((row.name.split("").reverse().join("")).substring(0,1)).split("").reverse().join("")){
-                console.log("isdir");
-                this.delsignal=false //未选择文件
-                this.objectdelcurrentRow = row.name;
-                console.log(row.name.substring(0,row.name.length-1));
-                this.objectdelPrefix = row.name.substring(0,row.name.length-1)
-                para.bucketName = this.delbucket
-                para.objectPrefix = this.objectdelPrefix
-                console.log(para);
-                this.listdelObject(para)
-                // this.oldCurrentRow = this.objectPrefix.split("").reverse().indexOf("/") 逆置然后求出第一个/在第几个位置 
-                this.oldObjectdelPrefix = this.objectdelPrefix.substring(0,this.objectdelPrefix.length-this.objectdelPrefix.split("").reverse().indexOf("/")-1)
-                this.olddelCurrentRow = this.objectdelPrefix.substring(0,this.objectdelPrefix.length-this.objectdelPrefix.split("").reverse().indexOf("/"))
-            }else{
-                console.log("isnotdir");
-                this.delsignal=true //选到了文件
-                this.selectremBucketName=this.delbucket;
-                this.selectremObjectFolder=row.name;
-            }
-        },
-
-        //更新objectdelData的值
-        listdelObject(para){
-            listObjectByPrefix(para).then(response=>{
-                this.objectdelData = response.data
-            }).catch(error=>{console.log(error);})
-        },
-
-        //删除的返回上一级事件
-        returnOlddelCurrentRow(){
-            if(this.olddelCurrentRow==this.oldObjectdelPrefix){
-                this.olddelCurrentRow=''
-                this.oldObjectdelPrefix=''
-                this.objectdelcurrentRow=''
-                this.objectdelPrefix=''
-            }
-            console.log(this.delbucket);
-            console.log(this.olddelCurrentRow);
-            console.log(this.oldObjectdelPrefix);
-            const para={}
-            para.bucketName = this.delbucket;
-            para.objectPrefix = this.oldObjectdelPrefix;
-            console.log(para);
-            this.listdelObject(para)
-            this.objectdelcurrentRow = this.olddelCurrentRow
-            this.objectdelPrefix = this.oldObjectdelPrefix
-            this.olddelCurrentRow = this.objectdelPrefix.substring(0,this.objectdelPrefix.length-this.objectdelPrefix.split("").reverse().indexOf("/"))
-            this.oldObjectdelPrefix = this.objectdelPrefix.substring(0,this.objectdelPrefix.length-this.objectdelPrefix.split("").reverse().indexOf("/")-1)
-        },
-
-        //返回待删除文件
-        returndelFolder(){
-            if(this.delsignal==true){
-                this.removeBucketName=this.selectremBucketName
-                this.removeObjectFolder=this.objectdelPrefix
-                this.removeObjectName=this.selectremObjectFolder.substring(this.objectdelcurrentRow.length,this.selectremObjectFolder.length)
-                this.delsignal=false
-                this.removefolder=false
-            }else{
-                this.choosefile()
-            }
-        },
-
         //提示选择文件进行删除
         choosefile(){
             this.$message.error('请选择文件');
-        },
-
-        //关闭并销毁数据
-        returndelNull(){
-            this.removeBucketName=''
-            this.removeObjectFolder=''
-            this.removeObjectName=''
-            this.delbucket=''
-            this.objectdelcurrentRow=''
-            this.objectdelData=[]
-            this.delsignal=false
-            this.removefolder=false
-        },
-
-        //删除文件
-        removeObject(){
-            const para={}
-            para.bucketName=this.removeBucketName
-            para.folderName=this.removeObjectFolder
-            para.objectName=this.removeObjectName
-            this.removeobj(para)
-            this.removeBucketName=''
-            this.removeObjectFolder=''
-            this.removeObjectName=''
-            this.fresh()
         },
 
         //后端删除一个文件
@@ -683,6 +642,18 @@ export default {
             removeFile(para).then(response=>{
                 if(20000 == response.code){
                     this.suc()
+                }else{
+                    this.fai()
+                }
+            })
+        },
+
+
+        //后端批量删除文件
+        removeobjs(para){
+            this.removesignal++
+            removeFile(para).then(response=>{
+                if(20000 == response.code){
                 }else{
                     this.fai()
                 }
@@ -719,7 +690,6 @@ export default {
 
         //在目录删除文件夹
         remFolder(){
-            this.remFolderVisible=true
             console.log(this.bucket);
             console.log(this.objectPrefix);
             const para={}
@@ -731,8 +701,11 @@ export default {
             listFolder(para).then(response=>{
                 if(response.message=="nofolder"){
                     this.choofolder()
+                }else{
+                    this.remFolderVisible=true
+                    this.folders = response.data
                 }
-            this.folders = response.data}).catch(()=>{})
+            }).catch(()=>{})
         },
         chooseremFolder(val){
             this.delfolder=val;
@@ -818,8 +791,10 @@ export default {
             console.log(para);
             fileURL(para).then(response=>{
                 if(20000 == response.code){
-                    this.suc()
                     console.log(response.data);
+                    this.$alert(response.data, '文件外链', {
+                        confirmButtonText: '确定',
+                    });
                 }else{
                     this.fai()
                 }
@@ -955,7 +930,7 @@ export default {
             para.folderNameOrg=this.objectcurrentRow
             para.folderName=this.copyObjectRow
             para.objectNameOrg=this.copyNameOrg
-            para.objectName=this.copyName
+            para.objectName=this.copyName+this.copyNameOrg.substring(this.copyNameOrg.indexOf('.'))
             console.log(para);
             fileCopy(para).then(response=>{
                 if(20000 == response.code){
@@ -1005,6 +980,135 @@ export default {
             }
         },
 
+        //当选择项发生变化时触发该事件
+        handleSelectionChange(val){
+            this.multipleSelection = val;
+            let data = this.multipleSelection
+            let  datalen = data.length;
+            for(let i=0;i < datalen ;i++){
+                console.log(data[i].name);
+                if('/'==data[i].name.substring(data[i].name.length-1)){
+                    console.log("is dir");
+                    this.removeSeleFolder=true
+                    this.copySeleFolder=true
+                }
+            }
+            console.log(this.multipleSelection);
+        },
+
+        //取消选中
+        toggleSelection(rows) {
+            if (rows) {
+                rows.forEach(row => {
+                    this.$refs.multipleTable.toggleRowSelection(row);});
+            } else {this.$refs.multipleTable.clearSelection();}
+        },
+
+        //批量删除
+        allDelete(){
+            let  multData = this.multipleSelection;
+            let  multDataLen = multData.length;
+            if(multDataLen<1){
+                this.choosefile()
+            }else if(this.removeSeleFolder==true){
+                this.choosefile()
+                this.removeSeleFolder=false
+            }else {
+                this.removesignal=0
+                let s=0
+                for(let i = 0; i < multDataLen ;i++){
+                    const para={}
+                    para.bucketName=this.bucket
+                    para.folderName=this.objectcurrentRow
+                    para.objectName=multData[i].name.substring(this.objectcurrentRow.length)
+                    console.log(para);
+                    this.removeobjs(para)
+                    s=i
+                }
+                if(this.removesignal==s+1){
+                    this.suc()
+                }else{this.fai()}
+                s=0
+                this.removesignal=0
+                this.choosebucket(this.bucket) //刷新到选中桶目录
+            }
+        },
+
+        //批量拷贝
+        allCopy(){
+            let  multData = this.multipleSelection;
+            let  multDataLen = multData.length;
+            if(multDataLen<1){
+                this.choosefile()//判断是否选了
+            }else if(this.copySeleFolder==true){
+                this.choosefile()//判断选的是不是文件
+                this.copySeleFolder=false
+            }else{
+                this.multipleCopyVisible=true
+            }
+        },
+
+        //返回批量拷贝目标文件路径
+        returnMultipleCopyFolder(){
+            if(this.copysignal==true){
+                if(this.selectBucketName==''){this.selectBucketName=this.copyBucket}
+                this.MultipleCopyBucketName=this.selectBucketName
+                this.MultipleCopyObjectRow=this.selectObjectFolder
+                this.copyFolderVisible=false
+                this.copysignal=false
+            }else{
+                this.choosedir()
+            }
+        },
+
+        //批量拷贝路径的取消键
+        returnMultipleCopyNull(){
+            this.MultipleCopyBucketName=''
+            this.copyBucket=''
+            this.MultipleCopyObjectRow=''
+            this.objectcopycurrentRow=''
+            this.objectcopyData=[]
+            this.copyFolderVisible = false
+            this.copysignal = false
+        },
+
+        //批量拷贝确认
+        returnMultipleCopy(){
+            let  multData = this.multipleSelection;
+            let  multDataLen = multData.length;
+            for(let i = 0; i < multDataLen ;i++){
+                const para={}
+                para.bucketName=this.MultipleCopyBucketName
+                para.folderName=this.MultipleCopyObjectRow
+                para.bucketNameOrg=this.bucket
+                para.folderNameOrg=this.objectcurrentRow
+                para.objectNameOrg=multData[i].name.substring(this.objectcurrentRow.length)
+                console.log(para);
+                this.multipleCopySignal++
+                fileCopy(para).then(response=>{
+                if(20000 == response.code){
+                }else{
+                }
+            })
+            }
+            console.log(multDataLen);
+            console.log(this.multipleCopySignal);
+            if(this.multipleCopySignal==multDataLen){
+                this.suc()
+                this.multipleCopySignal=0
+                this.multipleCopyVisible=false
+            }else{this.fai()}
+        },
+
+        //批量拷贝取消
+        returnMultipleCopyCancel(){
+            this.MultipleCopyBucketName=''
+            this.MultipleCopyObjectRow=''
+            this.copyBucket=''
+            this.objectcopycurrentRow=''
+            this.objectcopyData=[]
+            this.multipleCopyVisible=false
+        },
     }
 
 }
@@ -1026,7 +1130,7 @@ export default {
 	cursor: default;
 }
 .menu__item:hover{
-	color: #FF0000;
+	color: #f56c6c;
 }
 
 .menu {
@@ -1038,12 +1142,18 @@ export default {
     border-radius: 10px;
     border: 1px solid #c1c1c1;
     background-color: #ffffff;
+    z-index: 100;
 }
 
 li:hover {
-    background-color: #E0E0E2;
+    background-color: #f2f6fc;
     color: white;
 }
+
+.dir:hover{
+    cursor: text 
+}
+
 
 
 

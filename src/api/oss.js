@@ -53,11 +53,12 @@ export function removeFile(params) {
     })
 }
 
-export function upload(params) {
+export function upload(formData) {
     return request({
         url: '/minio-service/upload',
         method: 'post',
-        params: params,
+        data: formData,
+        headers: {"Content-Type": "multipart/form-data;charset=utf-8"},
         baseURL: 'http://localhost:8089',
     })
 }
