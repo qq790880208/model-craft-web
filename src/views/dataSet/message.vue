@@ -327,6 +327,22 @@ export default {
       this.$router.push('/data')
     },
 
+    toStartLabel: function() {
+      const ttype = this.dataSet.label_type
+      if(ttype == 0) {
+        this.$router.push('/label/d2imageview')
+      }
+      if(ttype == 1) {
+        this.$router.push({path:'/label/polygonimageview'})
+      }
+      if(ttype == 2) {
+        this.$router.push({path:'/label/d3'})
+      }
+      if(ttype == 3) {
+        this.$router.push({path:'/label/voice'})
+      }
+    },
+
     toDataManage: function() {
       this.$router.push('/dataSet/userLabel')
     },

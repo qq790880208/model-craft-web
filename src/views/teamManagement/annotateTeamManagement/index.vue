@@ -118,7 +118,12 @@
             </el-table-column>
           </el-table>
           <el-col :span="24" class="tool-bar">
-            <el-pagination layout="total, sizes ,prev, pager, next, jumper" :page-size="page_size" :total="rolesList.length" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+            <el-pagination layout="total, sizes, prev, pager, next, jumper" 
+            :page-size="page_size" 
+            :page-sizes="[2,3,4, 10, 12, 15]"
+            :total="userTotal" style="float: right" 
+            @size-change="handleSizeChange" 
+            @current-change="handleCurrentChange" />
           </el-col>
         </div>
       </div>
@@ -226,7 +231,7 @@ export default {
       selectTeam: [],
       teamsList: [],
       rolesList: [],
-      userTotal: '',
+      userTotal: 0,
       statusOptions: ['Label', 'TeamManager'],
       idLabel: '',
       dialogStatus: '',

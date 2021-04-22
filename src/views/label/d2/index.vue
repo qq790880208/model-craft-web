@@ -17,6 +17,7 @@
 import { mapGetters } from "vuex";
 import imageselect from "@/components/2dmark.vue";
 import request from "@/utils/request";
+import store from "@/store"
 //import axios from 'node_modules/axios';
 // import labelinfo from '@/components/labelinfo.vue'
 export default {
@@ -100,6 +101,7 @@ export default {
     },
     //put
     savelabel(i) {
+      console.log(store.getters.uuid)
       console.log(JSON.stringify(this.infoArry[i][0]));
       return request({
         url: "http://192.168.19.237:8082/label",
@@ -110,6 +112,7 @@ export default {
           //file_type: "rectangle",
           is_label: 1,
           uuid: this.uuidArry[i],
+          dataset_id: store.getters.uuid
         },
       }).then(function (response) {
         console.log(response);
