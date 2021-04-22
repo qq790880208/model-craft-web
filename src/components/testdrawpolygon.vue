@@ -273,7 +273,9 @@ export default {
     //监听图片变化
     imagesrc() {
       console.log("watch!!!!!!!!");
+      this.buttonindex=-1;
       this.createBackgroundImage();
+      setTimeout(() => {
       this.polygonArray.forEach((item) => {
         this.fabricObj.remove(item);
       });
@@ -291,6 +293,8 @@ export default {
       //this.drawingObject.type == "roof"
       this.updatelastdata();
       this.huanyuan();
+      this.buttonindex=-1
+      },10)
       //this.fabricEvent();
       //this.inputimage();
     },
@@ -453,7 +457,7 @@ export default {
       this.realPoints = [];
       this.lines = [];
       this.lineCounter = 0;
-
+      console.log("img11111111111111111",this.scalewidth,this.scaleheight)
       for (let i = 0; i < this.lastlabelArry.length; i++) {
         this.realpolygoninfoArray.push(this.lastlabelArry[i]);
         this.markinfo = this.lastlabelArry[i].info;
@@ -512,7 +516,7 @@ export default {
           console.log(_this.fabricObj.height);
           console.log(img.width);
           console.log(img.height);
-          if (img.width < 700 && img.height < 1000) {
+          if (img.width < 600 && img.height < 600) {
             _this.fabricObj.setWidth(1.5 * img.width);
             _this.fabricObj.setHeight(1.5 * img.height);
             // _this.fabricObj.setWidth(img.width);

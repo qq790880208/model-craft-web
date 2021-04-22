@@ -17,7 +17,7 @@
           @mousedown="entermark"
         >
       </div>
-        <div class="info">
+        <div class="info" style="{width:100%;}">
           <h3 style="color:rgba(255,255,255,1)"
           >{{ismarkedtext}}</h3>
           <!-- <p class="date">2013-4-12</p> -->
@@ -82,6 +82,7 @@ img:hover{
 .ih-item{           
     position: relative;
     /* width: 220px; */
+    display: inline-block;
     height: 200px;
     } 
     .ih-item .img img{
