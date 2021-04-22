@@ -50,7 +50,7 @@
    destroyed(){
     console.log("miniimageddddddddddddddddddddddddddddddddddddddddddddddddddddd")
    },
-    computed: {
+  computed: {
     imagesrc: function () {
       return this.fatherimagesrc;
     },

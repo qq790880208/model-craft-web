@@ -104,7 +104,7 @@ export const asyncRoutes = [
         component: () => import('@/views/label/d2/imageview'),
         name: 'd2view',
         meta: { title: '2D拉框标注', resources: 'd2' },
-        hidden: true
+        //hidden: true
       },
       {
         path: '/label/polygonimageview',

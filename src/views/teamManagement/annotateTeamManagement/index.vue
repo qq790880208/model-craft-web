@@ -9,8 +9,9 @@
       <div class="left">
         <div class="button">
           <el-row>
-            <el-button type="primary" plain size="mini" :disabled="isRole !=='admin'" @click="handleAdd()">新增团队</el-button>
-            <el-button type="danger" plain size="mini" :disabled="isRole !=='admin'" @click="handleDelete()">删除</el-button>
+            <!-- <el-button type="primary" plain size="mini" :disabled="isRole !=='admin'" @click="handleAdd()">新增团队</el-button> -->
+            <el-button type="primary" plain size="mini" @click="handleAdd()">新增团队</el-button>
+            <el-button type="danger" plain size="mini" @click="handleDelete()">删除</el-button>
           </el-row>
         </div>
         <div class="teamNum">
@@ -41,7 +42,7 @@
           </span>
         </div>
         <div class="teamMssage">
-          <table>
+          <table style = "border-collapse:separate; border-spacing:10px;">
             <tr class="teamTr">
               <td width="350">
                 <span style="float: left">团队名称：</span>
@@ -73,16 +74,17 @@
         </div>
         <el-row>
           <div class="teamuserButton">
-            <el-button type="primary" style="float:left;" size="mini" plain :disabled="isRole !=='admin' && idLabel !=='TeamManager'" @click="handleAddUser">新增成员</el-button>
-            <el-button type="danger" size="mini" plain :disabled="seles.length===0 || isRole !=='admin' && idLabel !=='TeamManager'" style="float: left" @click="batchRemove">批量删除</el-button>
-        </div>
+            <!-- <el-button type="primary" style="float:left;" size="mini" plain :disabled="idLabel !=='TeamManager'" @click="handleAddUser">新增成员</el-button> -->
+            <el-button type="primary" style="float:left;" size="mini" plain :disabled="idLabel !=='TeamManager'" @click="handleAddUser">新增成员</el-button>
+            <el-button type="danger" size="mini" plain :disabled="seles.length===0 || idLabel !=='TeamManager'" style="float: left" @click="batchRemove">批量删除</el-button>
+          </div>
         </el-row>
         <div class="teamUserMessage">
           <el-table class="showuser" :data="rolesList"
             style="width: 100%; font-size: 10px" border
             @selection-change="selChange"
             :cell-style="{padding: '8px'}">
-            <el-table-column type="selection" align="center" width="60" :disabled="isRole !=='admin' && idLabel !=='TeamManager'" />
+            <el-table-column type="selection" align="center" width="60" :disabled=" idLabel !=='TeamManager'" />
             <el-table-column align="center" label="用户名字" show-overflow-tooltip width="130" sortable>
               <template slot-scope="scope">
                 {{ scope.row.name }}
@@ -116,7 +118,7 @@
             </el-table-column>
           </el-table>
           <el-col :span="24" class="tool-bar">
-            <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :total="rolesList.length" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+            <el-pagination layout="total, sizes ,prev, pager, next, jumper" :page-size="page_size" :total="rolesList.length" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
           </el-col>
         </div>
       </div>

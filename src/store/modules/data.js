@@ -2,7 +2,8 @@ const getDefaultState = () => {
     return {
       uuid: '',
       type: '',
-      dirPath: ''
+      dirPath: '',
+      dataSet: []
     }
   }
   
@@ -17,6 +18,9 @@ const mutations = {
   },
   SET_DIRPATH: (state, dirPath) => {
     state.dirPath = dirPath
+  },
+  SET_DATASET: (state, dataSet) => {
+    state.dataSet = dataSet
   }
   
 }
@@ -30,6 +34,9 @@ const actions = {
   },
   changeDirPath({ commit }, data) {
     commit('SET_DIRPATH', data)
+  },
+  changeDataSet({ commit }, data) {
+    commit('SET_DATASET', data)
   }
 }
 
