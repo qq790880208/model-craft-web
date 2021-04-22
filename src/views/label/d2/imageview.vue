@@ -1,7 +1,7 @@
 <template>
   <!-- <el-row :gutter="20" style="margin-top: 50px"> -->
     <div style="user-select: none;">
-    <div class="dashboard-container" v-if="!isimageview">
+    <div class="dashboard-container" v-if="isimageview">
       <div>
       <el-button @click="returndataset" >返回数据集</el-button>
       <el-button @click="automark()" :loading="isloading">{{automarkbtntext}}</el-button>
@@ -16,7 +16,7 @@
       ></miniimage>
       </div>
     </div>
-    <div class="dashboard-container" v-if="isimageview" style="margin-left:100px">
+    <div class="dashboard-container" v-if="!isimageview" style="margin-left:100px">
       <el-button @click="returnimageview">返回图片预览</el-button>
       <el-button @click="nextimage">下一张(N)</el-button>
       <el-button @click="previousimage">上一张(P)</el-button>
@@ -24,7 +24,7 @@
       <imageselect style="margin-top:20px" ref='imageselectref'
         :fatherimagesrc="this.imageArry[nownum]"
         :imageindex="this.nownum"
-        :premarktype="this.testmarktype"
+        :premarktype="this.marktype"
         :lastlabelArry="this.lastinfoArry[nownum]"
         @saveimageinfo="saveimageinfo"
       ></imageselect>
@@ -145,9 +145,10 @@ export default {
     nextimage: function () {
       //if() return
       if (this.nownum < this.imageArry.length - 1) {
+        this.$refs.imageselectref.saveinfo()
         this.nownum++;
       }
-      this.$refs.imageselectref.saveinfo()
+
       console.log("nextimage", this.nownum);
       //console.log("nextimage infoArry", this.infoArry, this.infoArry.length);
     },
@@ -155,9 +156,9 @@ export default {
     previousimage: function () {
       //if() return
       if (this.nownum > 0) {
+        this.$refs.imageselectref.saveinfo()
         this.nownum--;
       }
-      this.$refs.imageselectref.saveinfo()
       console.log("previousimage", this.nownum);
     },
     //保存图片标注信息
@@ -170,8 +171,9 @@ export default {
     //get请求图片数据
     requireimage: function () {
       let _this = this;
+      console.log("asdasdasdasdadadaa")
       console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
-      if(store.getters.dataSet === 2) {
+      if(store.getters.dataSet.role_type === 2) {
         const params = {
           datasetuuid: store.getters.uuid
         }
@@ -318,7 +320,7 @@ export default {
       console.log("save",JSON.stringify(this.infoArry[i][0]));
       let isab
       if(this.infoArry[i][0].length>0) isab=1
-      else isab=0
+      else isab=2
       return request({
         url: "http://192.168.19.237:8082/label",
         method: "put",
@@ -328,6 +330,7 @@ export default {
           //file_type: "rectangle",
           is_label: isab,
           uuid: this.uuidArry[i],
+          dataset_id: store.getters.uuid
         },
       }).then(function (response) {
         console.log(response);

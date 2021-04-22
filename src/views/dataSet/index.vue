@@ -251,10 +251,6 @@ import { getLabel, getDataByName, createDataSet, deleteDataSet, assignLabel, get
 import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder } from '@/api/oss'
 import store from '@/store'
 import { getAllTeam, getSelectTeam } from '@/api/team'
-<<<<<<< HEAD
-=======
-//import {listBucket,listObject,listObjectByPrefix} from '@/api/oss'
->>>>>>> dev
 export default {
   namespaced: true,
   filters: {
