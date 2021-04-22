@@ -135,8 +135,9 @@
           <el-input style="width: 90%" v-model="form.output"></el-input><el-button  @click="showOssOutputDialog()" icon="el-icon-folder-add"></el-button>
             {{outputObject}}
         </el-form-item>
-        <el-form-item label="添加标签集" prop="label">
-          <el-tag
+        <el-form-item label="添加标签集" prop="tagss">
+          <el-tag 
+           v-model="form.label"
             :key="tag"
             v-for="tag in form.label"
             closable
@@ -295,6 +296,15 @@ export default {
     }
   },
   data() {
+    const validateTags = (rule, values, cb) => {
+      console.log('1231213213')
+      console.log(values)
+      if(this.form.label.length>0){
+        //合法的邮箱
+        return cb()
+      }
+      cb(new Error("请输入标签"))
+    }
     return {
       activeName: 'allData',
       message: '',
@@ -350,7 +360,8 @@ export default {
         labelType: [{ required: true, message: '请选择', trigger: 'blur' }],
         input: [{ required: true, message: '请选择', trigger: 'blur' }],
         output: [{ required: true, message: '请选择', trigger: 'blur' }],
-        label: [{ required: true, message: '请选择', trigger: 'blur' }]
+        tagss: [
+          { validator: validateTags, trigger: 'blur'}]
       },
       // 0 2D拉框，1 像素级（多边形），2 3D拉框, 3 语音
       labels: [
@@ -428,35 +439,42 @@ export default {
 
     // 添加数据集 
     add() {
-      const params = {
-        userid: store.getters.userid,
-        labelType: this.form.labelType,
-        name: this.form.name,
-        descr: this.form.descr,
-        input: this.form.input,  // 格式：/data/dataset/0022f6831fbe40b0bd4aae781f202517/input
-        output: this.form.output
-      }
-      console.log(this.form.label.toString())  //labels
-      createDataSet(params).then(res => {
-        this.$message({
-          message: '添加成功',
-          type: 'success'
-        })
-        this.getDataSet()
-        const para = {
-        tags: this.form.label.toString(),
-        datasetname: this.form.name
-      }
-      addTags(para).then(res => {
-        this.$message({
-          message: '添加成功',
-          type: 'success'
-        })
+      this.$refs.form.validate(valid => {
+        if (valid) {
+          const params = {
+            userid: store.getters.userid,
+            labelType: this.form.labelType,
+            name: this.form.name,
+            descr: this.form.descr,
+            input: this.form.input,  // 格式：/data/dataset/0022f6831fbe40b0bd4aae781f202517/input
+            output: this.form.output
+          }
+          console.log(this.form.label.toString())  //labels
+          createDataSet(params).then(res => {
+            this.$message({
+              message: '添加成功',
+              type: 'success'
+            })
+            this.getDataSet()
+            const para = {
+              tags: this.form.label.toString(),
+              datasetname: this.form.name
+            }
+            addTags(para).then(res => {
+              this.$message({
+                message: '添加成功',
+                type: 'success'
+              })
+            })
+          })
+          console.log(this.form)
+          this.dialogVisible = false
+        } else {
+          console.log(this.form.label)
+          this.$message.error('请正确填写表单')
+          return false
+        }
       })
-      })
-      
-      console.log(this.form)
-      this.dialogVisible = false
     },
 
     // 删除数据集

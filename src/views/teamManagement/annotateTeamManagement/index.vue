@@ -441,7 +441,7 @@ export default {
       this.dialogStatusUser = 'create'
       this.dialogFormVisibleUser = true
       this.editFormUser = {
-        name: '',
+        email: '',
         character: '',
         descr: ''
       }
