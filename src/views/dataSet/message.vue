@@ -42,7 +42,7 @@
                         </span>
                       </td>
                       <td>
-                        <span >
+                        <span class="test">
                           {{dataSet.input_path}}
                         </span>
                       </td>
@@ -50,16 +50,16 @@
                   </table>
                 </el-col>
                 <el-col :span="8">
-                  <table style = "border-collapse:separate; border-spacing:15px;">
+                  <table>
                     <tr>
-                      <td class="tdd">
+                      <td>
                         <span>
-                          版本
+                          描述
                         </span>
                       </td>
-                      <td class="tdd">
+                      <td>
                         <span>
-                          --
+                          {{ dataSet.descr }}
                         </span>
                       </td>
                     </tr>
@@ -70,7 +70,7 @@
                         </span>
                       </td>
                       <td>
-                        <span>
+                        <span class="test">
                           {{ dataSet.output_path }}
                         </span>
                       </td>
@@ -78,7 +78,7 @@
                   </table>
                 </el-col>
                 <el-col :span="8">
-                  <table style = "border-collapse:separate; border-spacing:15px;">
+                  <table>
                     <tr>
                       <td>
                         <span>
@@ -94,12 +94,12 @@
                     <tr>
                       <td>
                         <span>
-                          描述
+                          
                         </span>
                       </td>
                       <td>
                         <span>
-                          {{ dataSet.descr }}
+                          
                         </span>
                       </td>
                     </tr>
@@ -181,7 +181,7 @@
                 </el-col>
                 <el-col :xs="24" :sm="24" :lg="8">
                   <div class="chart-wrapper">
-                    7777777777
+                    
                   </div>
                 </el-col>
               </el-row>
@@ -465,13 +465,14 @@ table{
 }
 table td{ 
   max-width:275px; 
+  height: 40px;
   word-wrap:
   break-word; 
   text-overflow:ellipsis; 
   white-space:nowrap; 
   overflow:hidden; 
 }
-table td:hover{ 
+table .test:hover{ 
   white-space:normal; 
   overflow:auto;
 }
