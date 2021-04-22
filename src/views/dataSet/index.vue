@@ -1,21 +1,21 @@
 <template>
-  <div class="dashboard-container">
-    <el-tabs :tab-position="tabPosition" style="height: 200px;" v-model="activeName" @tab-click="handleClick">
+  <div class="app-container">
+    <el-tabs style="height: 200px;" v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="我的数据集" name="allData">
         <el-form :inline="true" :model="filter" >
-          <el-button style="text-align: left" min type="primary" @click="createDataSet()">
+          <el-button plain style="text-align: left" type="primary" @click="createDataSet()">
             创建数据集
           </el-button>
-          <el-form-item >
-            <el-input v-model="filter.name" placeholder="请输入查询名称" >
+          <el-form-item class="dataSer">
+            <el-input v-model="filter.name" placeholder="请输入查询的数据集名称" >
               <el-button slot="append" icon="el-icon-search" @click="getDataSet()"></el-button>
             </el-input>
           </el-form-item>
         </el-form>
-        <el-table :data="dataSets" highlight-current-row style="width: 100%;">
+        <el-table :data="dataSets" highlight-current-row style="width: 100%; margin: 20px 0px 0px 0px">
           <el-table-column prop="name" align="center" label="名称" min-width="120" sortable>
             <template slot-scope="scope">
-              <span class="link-type" @click="toDataSet(scope.row.name, scope.row.role_type, scope.row.uuid, scope.row.label_type)">{{ scope.row.name }}</span>
+              <span class="link-type" @click="toDataSet(scope.row)">{{ scope.row.name }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="type" align="center" label="标注类型" min-width="120" sortable>
@@ -26,7 +26,7 @@
           <el-table-column prop="done" align="center" label="标注进度" min-width="250" sortable>
             <template slot-scope="scope">
               <div style="width: 250px; margin:0px auto;">
-                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)" :format="format">
+                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)">
                 </el-progress>
                 <span>
                   {{scope.row.done}} / {{scope.row.tol}}
@@ -44,14 +44,14 @@
           <el-table-column label="操作" align="center" width="300">
             <template slot-scope="scope">
               <!-- <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button> -->
-              <el-button type="success" size="small" @click="toStartLabel(scope.row.label_type)">开始标注</el-button>
-              <el-button type="primary" size="small" @click="showTeamDialog(scope.$index, scope.row)">添加标注团队</el-button>
-              <el-button type="danger" size="small" @click="handleDel(scope.$index, scope.row)">删除</el-button>
+              <el-button type="success" plain size="mini" @click="toStartLabel(scope.row.label_type)">开始标注</el-button>
+              <el-button type="primary" plain size="mini" @click="showTeamDialog(scope.$index, scope.row)">添加标注团队</el-button>
+              <el-button type="danger" plain size="mini" @click="handleDel(scope.$index, scope.row)">删除</el-button>
             </template>
           </el-table-column>
         </el-table>
         <el-col :span="24" class="toolbar">
-          <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
+          <el-pagination layout="total, sizes ,prev, pager, next, jumper" :page-size="page_size" :page-sizes="[1,5,10,20]" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
           </el-pagination>
         </el-col>
       </el-tab-pane>
@@ -64,10 +64,11 @@
             </el-input>
           </el-form-item>
         </el-form>
+        <!-- toDataSet(scope.row.name, scope.row.role_type, scope.row.uuid, scope.row.label_type) -->
         <el-table :data="dataSetAssigned" highlight-current-row style="width: 100%;">
           <el-table-column prop="name" align="center" label="名称" min-width="200" sortable>
             <template slot-scope="scope">
-              <span class="link-type" @click="toDataSet(scope.row.name, scope.row.role_type, scope.row.uuid, scope.row.label_type)">{{ scope.row.name }}</span>
+              <span class="link-type" @click="toDataSet(scope.row)">{{ scope.row.name }}</span>
             </template>
           </el-table-column>
           <el-table-column prop="type" align="center" label="标注类型" min-width="120" sortable>
@@ -78,7 +79,7 @@
           <el-table-column prop="done" align="center" label="标注进度" min-width="260" sortable>
             <template slot-scope="scope">
               <div style="width: 250px; margin:0px auto;">
-                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)" :format="format">
+                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)">
                 </el-progress>
                 {{scope.row.done}} / {{scope.row.tol}}
               </div>
@@ -93,7 +94,7 @@
           </el-table-column>
         </el-table>
         <el-col :span="24" class="toolbar">
-          <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :total="total1" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
+          <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size"  :page-sizes="[1,5,10,20]"  :total="total1" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
             </el-pagination>
         </el-col>
       </el-tab-pane>
@@ -178,10 +179,6 @@
           <template>
             <el-select
               v-model="teamForm.teamValue"
-              multiple
-              filterable
-              allow-create
-              default-first-option
               placeholder="请选择团队">
               <el-option
                 v-for="item in teams"
@@ -250,7 +247,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getLabel, getDataByName, createDataSet, deleteDataSet, assignLabel, getAssignData } from '@/api/data'
+import { getLabel, getDataByName, createDataSet, deleteDataSet, assignLabel, getAssignData, addTags } from '@/api/data'
 import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder } from '@/api/oss'
 import store from '@/store'
 import { getAllTeam, getSelectTeam } from '@/api/team'
@@ -277,7 +274,6 @@ export default {
       }
       if (second == null) {
         second = '00'
-        console.log(hour.length)
       } else if (second.toString().length < 2) {
         second = '0' + second
       }
@@ -308,6 +304,7 @@ export default {
       dataSets: [],
       dataSetAssigned: [],
       total: 0,
+      total1: 0,
       page: 1,
       page_size: 20,
       dialogVisible: false,
@@ -344,7 +341,7 @@ export default {
       },
       teamForm: {
         dataSetName: '',
-        teamValue: [],
+        teamValue: '',
         dataSetUuid: ''
       },
       addFormRules: {
@@ -439,13 +436,25 @@ export default {
         input: this.form.input,  // 格式：/data/dataset/0022f6831fbe40b0bd4aae781f202517/input
         output: this.form.output
       }
+      console.log(this.form.label.toString())  //labels
       createDataSet(params).then(res => {
         this.$message({
           message: '添加成功',
           type: 'success'
         })
         this.getDataSet()
+        const para = {
+        tags: this.form.label.toString(),
+        datasetname: this.form.name
+      }
+      addTags(para).then(res => {
+        this.$message({
+          message: '添加成功',
+          type: 'success'
+        })
       })
+      })
+      
       console.log(this.form)
       this.dialogVisible = false
     },
@@ -476,11 +485,12 @@ export default {
     // 显示标注团队对话框
     showTeamDialog(index, row) {
       this.getTeams()
-      this.teamForm.teamValue = []
+      this.teamForm.teamValue = ''
       // 得到标注团队
       const params = {
         dataSetUuid: row.uuid
       }
+      console.log(params)
       getSelectTeam(params).then(res => {
         this.selectTeams = res.data.items
         this.teamForm.teamValue = res.data.items
@@ -495,7 +505,7 @@ export default {
     addLabelTeam() {
       const params = {
         dataSetid: this.teamForm.dataSetUuid,
-        teamids: this.teamForm.teamValue.join(",")
+        teamid: this.teamForm.teamValue
       }
       console.log(params)
       assignLabel(params).then(res => {
@@ -520,6 +530,12 @@ export default {
     handleClick(tab, event) {
       console.log(tab.name)
       this.activeName = tab.name
+      if(this.activeName == 'manager'){
+        this.getAssignDataSet()
+      }
+      if (this.activeName == 'allData') {
+        this.getDataSet()
+      }
     },
 
     // 设置标注进度条
@@ -562,7 +578,8 @@ export default {
         id: store.getters.userid,
         name: this.filter.name
       }
-      console.log("dadadadadad" + params)
+      console.log("dadadadadad")
+      console.log(params)
       getDataByName(params).then(res => {
         this.dataSets = res.data.items
         this.total = res.data.total
@@ -586,13 +603,16 @@ export default {
     },
 
     // 展示数据
-    toDataSet: function(val, roleType, uuuid, ttype) {
-      console.log(ttype)
-      store.dispatch('data/changeUuid', uuuid)
-      store.dispatch('data/changeType', ttype)
+    toDataSet: function(val) {
+      console.log(val)
+      store.dispatch('data/changeUuid', val.uuid)
+      store.dispatch('data/changeType', val.label_type)
+      store.dispatch('data/changeDataSet',val)
       console.log(store.getters.uuid)
-      if (roleType != 0) {
-        this.$router.push({path:'/dataSet/userLabel', query: {dataName: val, key: this.activeName}})
+      console.log(store.getters.type)
+      console.log(store.getters.dataSet)
+      if (val.role_type != 0) {
+        this.$router.push({path:'/dataSet/message', query: {dataName: val.name, key: this.activeName}})
       } else {
         this.toStartLabel(ttype)
       }
@@ -746,8 +766,7 @@ export default {
 
   },
   mounted() {
-    this.getDataSet(),
-    this.getAssignDataSet()
+    this.getDataSet()
   }
 }
 </script>
@@ -777,5 +796,11 @@ export default {
   margin-left: 10px;
   vertical-align: bottom;
  
+}
+.dataSer {
+  margin: 0px 0px 0px 10px;
+}
+.app-container{
+  padding: 10px 20px 10px 20px;
 }
 </style>

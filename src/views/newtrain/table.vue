@@ -11,17 +11,17 @@
       <el-col :span="3" :offset="9">
         <el-select v-model="selectedstatus" placeholder="请选择"
            @change="searchStatusTask">
-          <el-option
-            v-for="item in statusoptions"
-            :key="item"
-            :label="item"
-            :value="item">
-          </el-option>
+           <el-option label="全部状态" value="5"></el-option>
+           <el-option label="未开始" value="0"></el-option>
+           <el-option label="初始化" value="1"></el-option>
+           <el-option label="运行中" value="2"></el-option>
+           <el-option label="结束成功" value="3"></el-option>
+           <el-option label="结束失败" value="4"></el-option>
         </el-select>
       </el-col>
       <el-col :span="3">
         <el-input v-model="queryInfo.query" placeholder="请输入名称查询" style="width:75dx"
-        :clearable="true" >
+        :clearable="true" @change="fetchData">
         </el-input>
       </el-col>
       <el-col :span="1" style="margin-left:5px">
@@ -101,7 +101,7 @@
       @size-change="handleSizeChange"
       @current-change="handleCurrentChange"
       :current-page="queryInfo.pagenum"
-      :page-sizes="[10, 12, 15]"
+      :page-sizes="[2,3,4, 10, 12, 15]"
       :page-size="queryInfo.pagesize"
       layout="total, sizes, prev, pager, next, jumper"
       :total="totalData">
@@ -212,8 +212,8 @@ export default {
     data() {
       return {
         //主页面部分数据
-        statusoptions:['初始化','运行中', '运行结束'],
-        selectedstatus:'',//顶部选择的状态
+        statusoptions:['未开始', '初始化','运行中', '结束成功', '结束失败'],
+        selectedstatus:'5',//顶部选择的状态
         tableData:[],
         
         //可视化部分数据
@@ -292,11 +292,11 @@ export default {
 
         //和后台交互传递的各种参数
         selectPara:{//顶部下拉框传递的参数
-          'para':''
+          'para':this.selectedstatus
         },
-        inputPara:{//顶部文本框传递的参数
-          'para':''
-        },
+        // inputPara:{//顶部文本框传递的参数
+        //   'para':''
+        // },
         taskPara:{//创建任务向后台提交的任务信息
           "algo_id": 0,
           "args": "string",
@@ -311,7 +311,8 @@ export default {
         queryInfo:{//按照页数和也页面大小，定时请求后台渲染表格数据
           "user_id":store.getters.userid,
           "pagenum":1,
-          "pagesize":10
+          "pagesize":10,
+          "query":""
         },
         commonPara:{//三个按钮给后台传递的参数
           'trainjob_id':0
@@ -329,15 +330,49 @@ export default {
     methods: {
       //主页面部分
       searchTask(){//输入框查询
-        search(this.searchinput).then(res=>{
+      let tmp = {
+          "user_id": store.getters.userid,
+          "curr": this.queryInfo.pagenum,
+          "size": this.queryInfo.pagesize,
+          "tj_name": this.queryInfo.query
+        }
+        search(tmp).then(res=>{
           console.log(res.data)
+          this.queryInfo.pagenum = res.data.items.current
+          this.queryInfo.pagesize = res.data.items.size
+          this.totalData = res.data.items.total
+          this.tableData = res.data.items.records
+          // this.tableData = []
+          // for(let i = 0;i < res.data.items.records.length;i++){
+          //   let obj = {}
+          //   obj.name = res.data.items.records[i].name
+          //   obj.train_algo_name = res.data.items.records[i].train_algo_name
+          //   //obj.status = res.data.items[i].status
+          //   obj.status = res.data.items.records[i].status
+          //   obj.cost_time = res.data.items.records[i].cost_time
+          //   obj.create_time = this.formatDate(res.data.items.records[i].create_time) 
+          //   obj.descr = res.data.items.records[i].descr
+          //   obj.userId = res.data.items.records[i].user_id
+          //   this.tableData.push(obj)
+          // }
         })
         //==重新获取表格数据
         
       },
       searchStatusTask(){//下拉框排序查询
-        searchStatus(this.selectedstatus).then(res =>{
+        this.selectPara.para = this.selectedstatus
+        let tmp = {
+          "user_id": store.getters.userid,
+          "curr": this.queryInfo.pagenum,
+          "size": this.queryInfo.pagesize,
+          "tj_status": this.selectPara.para
+        }
+        search(tmp).then(res=>{
           console.log(res.data)
+          this.queryInfo.pagenum = res.data.items.current
+          this.queryInfo.pagesize = res.data.items.size
+          this.totalData = res.data.items.total
+          this.tableData = res.data.items.records
         })
       },
       createbtn:function(){//点击桌面的创建按钮
@@ -482,12 +517,30 @@ export default {
       },
       fetchData(){//从后台拉取列表数据
         let tmp = {
-          "user_id": store.getters.userid 
+          "user_id": store.getters.userid,
+          "curr": this.queryInfo.pagenum,
+          "size": this.queryInfo.pagesize 
         }
         getTableData1(tmp).then(res => { 
-          this.tableData = res.data.items
-          this.totalData = this.tableData.length
-          console.log(this.tableData)
+          //console.log(res)
+          this.queryInfo.pagenum = res.data.items.current
+          this.queryInfo.pagesize = res.data.items.size
+          this.totalData = res.data.items.total
+          this.tableData = res.data.items.records
+          // this.tableData = []
+          // for(let i = 0;i < res.data.items.records.length;i++){
+          //   let obj = {}
+          //   obj.name = res.data.items.records[i].name
+          //   obj.train_algo_name = res.data.items.records[i].train_algo_name
+          //   //obj.status = res.data.items[i].status
+          //   obj.status = res.data.items.records[i].status
+          //   obj.cost_time = res.data.items.records[i].cost_time
+          //   obj.create_time = this.formatDate(res.data.items.records[i].create_time) 
+          //   obj.descr = res.data.items.records[i].descr
+          //   obj.userId = res.data.items.records[i].user_id
+            
+          //   this.tableData.push(obj)
+          // }
         })
         
       },
@@ -535,10 +588,28 @@ export default {
       handleSizeChange(newSize) {
         this.queryInfo.pagesize = newSize
         //==重新发起数据请求
+        if(this.queryInfo.query != ""){
+          console.log(this.queryInfo.query)
+        }
+        else if(this.selectedstatus != "5"){
+          this.searchStatusTask()
+        }
+        else{
+          this.fetchData()
+        }
       },
       handleCurrentChange(newPage) {
         this.queryInfo.pagenum = newPage
         //==重新发起数据请求
+        if(this.queryInfo.query != ""){
+          console.log(this.queryInfo.query)
+        }
+        else if(this.selectedstatus != "5"){
+          this.searchStatusTask()
+        }
+        else{
+          this.fetchData()
+        }
       },
       
       setTimer() {//定时器
