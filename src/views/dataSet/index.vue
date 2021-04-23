@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-tabs style="height: 200px;" v-model="activeName" @tab-click="handleClick">
+    <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="我的数据集" name="allData">
         <el-form :inline="true" :model="filter" >
           <el-button plain style="text-align: left" type="primary" @click="createDataSet()">
@@ -129,11 +129,9 @@
         </el-form-item>
         <el-form-item label="数据集输入位置" prop="input">
           <el-input style="width: 90%" v-model="form.input"></el-input><el-button @click="showOssInputDialog()" icon="el-icon-folder-add"></el-button>
-            {{inputObject}}
         </el-form-item>
         <el-form-item   label="数据集输出位置" prop="output">
           <el-input style="width: 90%" v-model="form.output"></el-input><el-button  @click="showOssOutputDialog()" icon="el-icon-folder-add"></el-button>
-            {{outputObject}}
         </el-form-item>
         <el-form-item label="添加标签集" prop="tagss">
           <el-tag 
@@ -632,7 +630,7 @@ export default {
       if (val.role_type != 0) {
         this.$router.push({path:'/dataSet/message', query: {dataName: val.name, key: this.activeName}})
       } else {
-        this.toStartLabel(ttype)
+        this.toStartLabel(store.getters.type)
       }
     },
 
@@ -729,6 +727,7 @@ export default {
     returnInput(){
       this.inputBucket=this.selectBucket
       this.inputObject=this.selectObject
+      this.form.input = this.selectObject
       this.bucketlist=''
       this.list=[]
       this.objectList=[]
@@ -757,6 +756,7 @@ export default {
     returnOutput(){
       this.outputBucket=this.selectBucket
       this.outputObject=this.selectObject
+      this.form.output = this.selectObject
       this.bucketlist=''
       this.list=[]
       this.objectList=[]
@@ -819,6 +819,9 @@ export default {
   margin: 0px 0px 0px 10px;
 }
 .app-container{
-  padding: 10px 20px 10px 20px;
+  padding: 10px 20px 50px 20px;
+}
+.el-table{
+  height: 90%;
 }
 </style>
