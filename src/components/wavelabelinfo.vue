@@ -1,15 +1,25 @@
 <template>
   <div>
     <el-row>
+      <p style="width:40px;display:inline-block">{{nowindex}}、</p>
     <el-input 
-    v-model="input" 
-    placeholder="请输入内容" 
-    style="width:300px" 
+    v-model="input1" 
+    placeholder="请输入拼音" 
+    style="width:150px" 
+    @blur="changefatherinfo1"
     clearable
     ></el-input>
-    <el-input style="width:300px" v-model="inputname" :disabled="true"></el-input>
-    <el-button @click="changefatherinfo" type="primary">保存</el-button>
-    <el-button @click="deletefatherlabel" type="danger">删除</el-button>
+    <el-input style="width:150px" v-model="inputname1" :disabled="true" ></el-input>
+    <el-input 
+    v-model="input2" 
+    placeholder="请输入汉字 " 
+    style="width:150px" 
+    @blur="changefatherinfo2"
+    clearable
+    ></el-input>
+    <el-input style="width:150px" v-model="inputname2" :disabled="true" ></el-input>
+    <!-- <el-button @click="changefatherinfo" type="primary">保存</el-button> -->
+    <el-button @click="deletefatherlabel" type="danger" style="width:100px;margin-left:10px">删除</el-button>
     </el-row>
   </div>
 </template>
@@ -19,25 +29,35 @@
    name:'',
    data () {
      return {
-       input: ""
+       input1: "",
+       input2: ""
      }
    },
    props: {
-     inputname:String
+     nowindex:Number,
+     inputname1:String,
+     inputname2:String
    },
    methods: {
      //通知父方法删除对应的div和标注框
      deletefatherlabel(){
-       console.log(this.input)
+       console.log(this.input1)
+       console.log(this.input2)
        this.$emit("deletelabel")
        //console.log("emit!!!!!!!!!")
      },
      //保存输入的标注信息
-     changefatherinfo(){
-       console.log(this.input)
-       console.log(this.inputname)
-       this.$emit("changeinfo",this.input)
-       this.input=""
+     changefatherinfo1(){
+       console.log(this.input1)
+       console.log(this.inputname1)
+       this.$emit("changeinfo1",this.input1)
+       this.input1=""
+     },
+     changefatherinfo2(){
+       console.log(this.input2)
+       console.log(this.inputname2)
+       this.$emit("changeinfo2",this.input2)
+       this.input2=""
      }
    },
    components: {

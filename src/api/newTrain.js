@@ -105,6 +105,6 @@ export function getDataByName(params) {//创建任务时获取数据集
       url: '/data/getdataSet',
       method: 'get',
       params: params,
-      baseURL: 'http://192.168.19.239:8085'
+      baseURL: 'http://192.168.19.207:8085'
     })
   }
