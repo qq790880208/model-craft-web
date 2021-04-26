@@ -21,10 +21,10 @@
         }"
       >
         <el-radio-group v-model="radio" style="display: inline-block">
-          <el-radio-button label="mark" icon="el-icon-edit"
+          <el-radio-button label="mark" class="el-icon-edit"
             >标注</el-radio-button
           >
-          <el-radio-button label="drag" icon="el-icon-rank"
+          <el-radio-button label="drag" class="el-icon-rank"
             >拖动</el-radio-button
           >
           <!-- <el-radio-button label="mark" icon="el-icon-edit"></el-radio-button>
@@ -478,6 +478,7 @@ export default {
       //删除对应标注
       this.boxArry.splice(i, 1);
       this.labelArry.splice(i, 1);
+      this.b_i=-1;
       console.log(this.boxArry);
       console.log(this.labelArry);
     },
