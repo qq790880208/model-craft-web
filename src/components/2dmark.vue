@@ -271,20 +271,38 @@ export default {
     //保证图片加载完成之后读取数据
     image.onload = () => {
       console.log("image onload ");
-
+      this.imagewidth = image.width;
+      this.imageheight = image.height;
+      this.scalewidth = 1;
+      this.scaleheight = 1;
+      // if (image.width < 600 && image.height < 600) {
+      //   this.imagewidth = image.width * 1.5;
+      //   this.imageheight = image.height * 1.5;
+      //   this.scalewidth = 1.5;
+      //   this.scaleheight = 1.5;
+      // } else {
+      //   this.imagewidth = image.width;
+      //   this.imageheight = image.height;
+      //   this.scalewidth = 1;
+      //   this.scaleheight = 1;
+      // }
       if (image.width < 600 && image.height < 600) {
-        this.imagewidth = image.width * 1.5;
-        this.imageheight = image.height * 1.5;
-        this.scalewidth = 1.5;
-        this.scaleheight = 1.5;
-      } else {
-        this.imagewidth = image.width;
-        this.imageheight = image.height;
-        this.scalewidth = 1;
-        this.scaleheight = 1;
+        while(this.imagewidth < 600 && this.imageheight < 600) {
+          this.imagewidth *=1.5;
+          this.imageheight *=1.5;
+          this.scalewidth *=1.5;
+          this.scaleheight *=1.5;
+        }
       }
-
-      console.log(this.imagewidth);
+      if(image.width > 1000 || image.height > 1000){
+          while(this.imagewidth > 1000 || this.imageheight > 1000) {
+          this.imagewidth /=1.5;
+          this.imageheight /=1.5;
+          this.scalewidth /=1.5;
+          this.scaleheight /=1.5;
+        }
+      }
+      console.log("thisssssssssssssssss.imagewidth",this.imagewidth);
       console.log(this.imageheight);
       console.log(this.scalewidth);
       console.log(this.scaleheight);
@@ -324,23 +342,41 @@ export default {
       //保证图片加载完成之后读取数据
       image.onload = () => {
         console.log("image onload ");
-
-        if (image.width < 600 && image.height < 600) {
-          this.imagewidth = image.width * 1.5;
-          this.imageheight = image.height * 1.5;
-          this.scalewidth = 1.5;
-          this.scaleheight = 1.5;
-        } else {
-          this.imagewidth = image.width;
-          this.imageheight = image.height;
-          this.scalewidth = 1;
-          this.scaleheight = 1;
+      this.imagewidth = image.width;
+      this.imageheight = image.height;
+      this.scalewidth = 1;
+      this.scaleheight = 1;
+      // if (image.width < 600 && image.height < 600) {
+      //   this.imagewidth = image.width * 1.5;
+      //   this.imageheight = image.height * 1.5;
+      //   this.scalewidth = 1.5;
+      //   this.scaleheight = 1.5;
+      // } else {
+      //   this.imagewidth = image.width;
+      //   this.imageheight = image.height;
+      //   this.scalewidth = 1;
+      //   this.scaleheight = 1;
+      // }
+      if (image.width < 600 && image.height < 600) {
+        while(this.imagewidth < 600 && this.imageheight < 600) {
+          this.imagewidth *=1.5;
+          this.imageheight *=1.5;
+          this.scalewidth *=1.5;
+          this.scaleheight *=1.5;
         }
-
-        console.log(this.imagewidth);
-        console.log(this.imageheight);
-        console.log(this.scalewidth);
-        console.log(this.scaleheight);
+      }
+      if(image.width > 1000 || image.height > 1000){
+          while(this.imagewidth > 1000 || this.imageheight > 1000) {
+          this.imagewidth /=1.5;
+          this.imageheight /=1.5;
+          this.scalewidth /=1.5;
+          this.scaleheight /=1.5;
+        }
+      }
+      console.log("thisssssssssssssssss.imagewidth",this.imagewidth);
+      console.log(this.imageheight);
+      console.log(this.scalewidth);
+      console.log(this.scaleheight);
         (this.boxArry = []), (this.labelArry = []), (this.num = 1);
         this.updatelastdata();
       };
