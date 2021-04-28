@@ -44,7 +44,7 @@
           <el-table-column label="操作" align="center" width="300">
             <template slot-scope="scope">
               <!-- <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button> -->
-              <el-button type="success" plain size="mini" @click="toStartLabel(scope.row.label_type)">开始标注</el-button>
+              <el-button type="success" plain size="mini" @click="toStartLabel(scope.row, scope.row.label_type)">开始标注</el-button>
               <el-button type="primary" plain size="mini" @click="showTeamDialog(scope.$index, scope.row)">添加标注团队</el-button>
               <el-button type="danger" plain size="mini" @click="handleDel(scope.$index, scope.row)">删除</el-button>
             </template>
@@ -129,11 +129,9 @@
         </el-form-item>
         <el-form-item label="数据集输入位置" prop="input">
           <el-input style="width: 90%" v-model="form.input"></el-input><el-button @click="showOssInputDialog()" icon="el-icon-folder-add"></el-button>
-            {{inputObject}}
         </el-form-item>
         <el-form-item   label="数据集输出位置" prop="output">
           <el-input style="width: 90%" v-model="form.output"></el-input><el-button  @click="showOssOutputDialog()" icon="el-icon-folder-add"></el-button>
-            {{outputObject}}
         </el-form-item>
         <el-form-item label="添加标签集" prop="tagss">
           <el-tag 
@@ -532,7 +530,7 @@ export default {
           type: 'success'
         })
         this.teamDialogVisible = false
-      })
+      }).catch(err=>{})
     },
 
     // 得到所有的标注团队
@@ -632,12 +630,15 @@ export default {
       if (val.role_type != 0) {
         this.$router.push({path:'/dataSet/message', query: {dataName: val.name, key: this.activeName}})
       } else {
-        this.toStartLabel(ttype)
+        this.toStartLabel(val, ttype)
       }
     },
 
     // 开始标注
-    toStartLabel: function(ttype) {
+    toStartLabel: function(val, ttype) {
+      store.dispatch('data/changeUuid', val.uuid)
+      store.dispatch('data/changeType', val.label_type)
+      store.dispatch('data/changeDataSet',val)
       if(ttype == 0) {
         this.$router.push('/label/d2imageview')
       }
@@ -729,6 +730,7 @@ export default {
     returnInput(){
       this.inputBucket=this.selectBucket
       this.inputObject=this.selectObject
+      this.form.input = this.selectObject
       this.bucketlist=''
       this.list=[]
       this.objectList=[]
@@ -757,6 +759,7 @@ export default {
     returnOutput(){
       this.outputBucket=this.selectBucket
       this.outputObject=this.selectObject
+      this.form.output = this.selectObject
       this.bucketlist=''
       this.list=[]
       this.objectList=[]

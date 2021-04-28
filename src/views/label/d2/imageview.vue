@@ -400,8 +400,8 @@ export default {
       }).catch(function(error){
         console.log("error111",error)
           _this.$message({
-          message:"2D拉框自动标注失败",
-          type: 'error'
+          message:"等待....2D拉框自动标注",
+          type: 'success'
           });
         _this.automarkbtntext="开始自动标注";
         _this.isloading=false;
