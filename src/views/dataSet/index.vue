@@ -630,11 +630,7 @@ export default {
       if (val.role_type != 0) {
         this.$router.push({path:'/dataSet/message', query: {dataName: val.name, key: this.activeName}})
       } else {
-<<<<<<< HEAD
         this.toStartLabel(val, ttype)
-=======
-        this.toStartLabel(store.getters.type)
->>>>>>> dev
       }
     },
 

@@ -195,7 +195,7 @@ export default {
          _this.imagelargeArry=[]
         console.log("get图片结果", response);
         for (let i = 0; i < response.data.items.length; i++) {
-          console.log("testtttttttttt",response.data.items[i].label_data);
+          //console.log("testtttttttttt",response.data.items[i].label_data);
           if(response.data.items[i].label_data!==undefined) {
           let tempa = JSON.parse(response.data.items[i].label_data);
           let len = eval(tempa).length;
@@ -222,7 +222,7 @@ export default {
         //   console.log("uuid", response.data.items[i].uuid);
         //   console.log("is_label", response.data.items[i].is_label);
           //_this.islabelArry.push(response.data.items[i].is_label)
-          console.log("3ffafnzxvnkzjxc", _this.imagelargeArry);
+          //console.log("3ffafnzxvnkzjxc", _this.imagelargeArry);
           _this.uuidArry.push(response.data.items[i].uuid);
           //console.log("3213331232", _this.uuidArry);
           _this.imageArry.push(response.data.items[i].file_path);
@@ -259,7 +259,7 @@ export default {
          _this.imagelargeArry=[]
         console.log("get图片结果", response);
         for (let i = 0; i < response.data.items.length; i++) {
-          console.log("testtttttttttt",response.data.items[i].label_data);
+          //console.log("testtttttttttt",response.data.items[i].label_data);
           if(response.data.items[i].label_data!==undefined) {
           let tempa = JSON.parse(response.data.items[i].label_data);
           let len = eval(tempa).length;
@@ -286,7 +286,7 @@ export default {
         //   console.log("uuid", response.data.items[i].uuid);
         //   console.log("is_label", response.data.items[i].is_label);
           //_this.islabelArry.push(response.data.items[i].is_label)
-          console.log("3ffafnzxvnkzjxc", _this.imagelargeArry);
+          //console.log("3ffafnzxvnkzjxc", _this.imagelargeArry);
           _this.uuidArry.push(response.data.items[i].uuid);
           //console.log("3213331232", _this.uuidArry);
           _this.imageArry.push(response.data.items[i].file_path);
