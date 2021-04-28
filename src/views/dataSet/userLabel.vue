@@ -10,7 +10,7 @@
     </el-header>
     <el-divider class="divider2"></el-divider>
     <div class="content">
-      <el-tabs :tab-position="tabPosition" style="height: 200px;">
+      <el-tabs style="height: 200px;">
         <el-tab-pane label="全部数据">
           <el-container>
             <el-main>
@@ -25,11 +25,12 @@
                 margin-left:20px
                 margin-top:20px
                 " >
+                <!-- :parentSelectList="selectList" -->
                 <myimage
                   :fatherimagesrc="item.url"
                   :ismarked="item.islabel"
                   :parentSelectList="selectList"
-                  :parentUuid="item.uuid"
+                  :parentUuid="index"
                   @select="select(index)"
                   @childSelectList = "fromChildList($event)"
                 ></myimage>
@@ -112,6 +113,7 @@ export default {
       imagelargeArry:[],
       selectList: [],
       multipleSelection: [],
+      showData: [],
       newPaths: []  //新的文件路径
     }
   },
@@ -151,14 +153,22 @@ export default {
         uuids: uuidss
       }
       console.log('uuuuuuuuuu')
+      console.log(this.selectList)
       console.log(params)
-      deleteData(params).then(res => {
-        this.$message({
-          message: '删除成功',
-          type: 'success'
-        })
-        this.getData()
-      })
+      let multData = this.selectList
+      let list = this.showData
+      console.log(list)
+      let  multDataLen = multData.length;
+      for(let i = 0; i < multDataLen; i++) {
+        console.log(list[i])
+      }
+      // deleteData(params).then(res => {
+      //   this.$message({
+      //     message: '删除成功',
+      //     type: 'success'
+      //   })
+      //   this.getData()
+      // })
     },
     addData() {
       this.addDataDialogVisible = true
@@ -210,6 +220,9 @@ export default {
       }
       getLabel(params).then(response => {
         console.log("response",response)
+        this.showData = response.data.items
+        console.log('adasdad')
+        console.log(this.showData)
         for (let i = 0; i < response.data.items.length; i++) {
           let a={};
           a["uuid"] = response.data.items[i].uuid  // label的uuid
@@ -238,7 +251,9 @@ export default {
   },
   mounted() {
     this.getData()
-    if(dataSet.role_type === 2) {
+    console.log("qweqweqwe")
+    console.log(store.getters.dataSet.role_type)
+    if(store.getters.dataSet.role_type === 2) {
       this.visible = 'none'
     }
   }
