@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-tabs style="height: 200px;" v-model="activeName" @tab-click="handleClick">
+    <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="我的数据集" name="allData">
         <el-form :inline="true" :model="filter" >
           <el-button plain style="text-align: left" type="primary" @click="createDataSet()">
@@ -630,7 +630,11 @@ export default {
       if (val.role_type != 0) {
         this.$router.push({path:'/dataSet/message', query: {dataName: val.name, key: this.activeName}})
       } else {
+<<<<<<< HEAD
         this.toStartLabel(val, ttype)
+=======
+        this.toStartLabel(store.getters.type)
+>>>>>>> dev
       }
     },
 
@@ -822,6 +826,9 @@ export default {
   margin: 0px 0px 0px 10px;
 }
 .app-container{
-  padding: 10px 20px 10px 20px;
+  padding: 10px 20px 50px 20px;
+}
+.el-table{
+  height: 90%;
 }
 </style>
