@@ -128,25 +128,6 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/newtrain',
-    component: Layout,
-    name: 'newtrain',
-    redirect: '/newtrain/table',
-    meta: {
-      title: '训练管理',
-      resources: 'newtrain',
-      icon: 'skill'
-    },
-    children: [
-      {
-        path: '/newtrain/table',
-        component: () => import('@/views/newtrain/table'),
-        name: 'newTable',
-        meta: { title: '训练管理',  resources: 'newTable', icon: 'skill' }
-      }
-    ]
-  },
-  {
     path: '/dataSet',
     component: Layout,
     name: 'dataSet',
@@ -169,6 +150,25 @@ export const asyncRoutes = [
         name: 'oss manage',
         meta: { title: '对象存储', resources: 'oss', icon: 'tree' }
       },
+    ]
+  },
+  {
+    path: '/newtrain',
+    component: Layout,
+    name: 'newtrain',
+    redirect: '/newtrain/table',
+    meta: {
+      title: '训练管理',
+      resources: 'newtrain',
+      icon: 'skill'
+    },
+    children: [
+      {
+        path: '/newtrain/table',
+        component: () => import('@/views/newtrain/table'),
+        name: 'newTable',
+        meta: { title: '训练管理',  resources: 'newTable', icon: 'skill' }
+      }
     ]
   },
   {
