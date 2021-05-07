@@ -930,7 +930,8 @@ export default {
             para.folderNameOrg=this.objectcurrentRow
             para.folderName=this.copyObjectRow
             para.objectNameOrg=this.copyNameOrg
-            para.objectName=this.copyName+this.copyNameOrg.substring(this.copyNameOrg.indexOf('.'))
+            if(this.copyName!=''){this.copyName=this.copyName+this.copyNameOrg.substring(this.copyNameOrg.indexOf('.'))}
+            para.objectName=this.copyName
             console.log(para);
             fileCopy(para).then(response=>{
                 if(20000 == response.code){
@@ -940,6 +941,7 @@ export default {
                     this.copyObjectRow=''
                     this.objectcopycurrentRow=''
                     this.objectcopyData=[]
+                    this.copyName=''
                 }else{
                     this.fai()
                     this.copyBucketName=''
@@ -947,6 +949,7 @@ export default {
                     this.copyObjectRow=''
                     this.objectcopycurrentRow=''
                     this.objectcopyData=[]
+                    this.copyName=''
                 }
             })
             this.copyVisible=false
