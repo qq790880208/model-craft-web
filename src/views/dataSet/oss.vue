@@ -227,6 +227,7 @@
 <script>
 import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder,fileRename,fileURL,fileCopy } from '@/api/oss'
 import request from "@/utils/request"
+import store from '@/store'
 export default {
     data(){
         return{
@@ -551,6 +552,7 @@ export default {
             console.log( multFileList[0].raw);
             formData.append("objectName", this.uploadobjectName);
             console.log(this.uploadobjectName);
+            formData.append("userid", store.getters.userid)
             upload(formData).then(response=>{
                 if(response.code==20000){
                     this.uploadLoading=false
@@ -577,6 +579,7 @@ export default {
             formData.append("file", multFileList[i].raw);
             console.log( multFileList[i].raw);
             formData.append("objectName", '');
+            formData.append("userid", store.getters.userid)
             upload(formData).then(response=>{
                 if(response.code==20000){
                     s++
@@ -932,6 +935,7 @@ export default {
             para.objectNameOrg=this.copyNameOrg
             if(this.copyName!=''){this.copyName=this.copyName+this.copyNameOrg.substring(this.copyNameOrg.indexOf('.'))}
             para.objectName=this.copyName
+            para.userid=store.getters.userid
             console.log(para);
             fileCopy(para).then(response=>{
                 if(20000 == response.code){
@@ -1085,6 +1089,7 @@ export default {
                 para.folderName=this.MultipleCopyObjectRow
                 para.bucketNameOrg=this.bucket
                 para.folderNameOrg=this.objectcurrentRow
+                para.userid=store.getters.userid
                 para.objectNameOrg=multData[i].name.substring(this.objectcurrentRow.length)
                 console.log(para);
                 this.multipleCopySignal++

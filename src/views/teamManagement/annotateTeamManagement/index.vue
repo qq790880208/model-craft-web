@@ -441,7 +441,7 @@ export default {
       this.dialogStatusUser = 'create'
       this.dialogFormVisibleUser = true
       this.editFormUser = {
-        name: '',
+        email: '',
         character: '',
         descr: ''
       }
@@ -618,7 +618,7 @@ body > .el-container {
 .left{
   font-size: 16px;
   width:20%;
-  min-height: 660px;
+  min-height: 760px;
   padding: 0px 2px;
   float: left;
     // position:absolute;

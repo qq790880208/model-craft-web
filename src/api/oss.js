@@ -4,6 +4,7 @@ export function listBucket() {
     return request({
         url: '/minio-service/listBucketname',
         method: 'get',
+        //baseURL: 'http://localhost:8089'
         baseURL: 'http://localhost:8089'
     })
 }
@@ -59,7 +60,7 @@ export function upload(formData) {
         method: 'post',
         data: formData,
         headers: {"Content-Type": "multipart/form-data;charset=utf-8"},
-        baseURL: 'http://localhost:8089',
+        baseURL: 'http://localhost:8089'
     })
 }
 
@@ -68,7 +69,7 @@ export function createFolder(params) {
         url: '/minio-service/createFolder',
         method: 'get',
         params: params,
-        baseURL: 'http://localhost:8089',
+        baseURL: 'http://localhost:8089'
     })
 }
 
@@ -77,7 +78,7 @@ export function listFolder(params) {
         url: '/minio-service/listFolder',
         method: 'get',
         params: params,
-        baseURL: 'http://localhost:8089',
+        baseURL: 'http://localhost:8089'
     })
 }
 
@@ -86,7 +87,7 @@ export function fileRename(params) {
         url: '/minio-service/fileRename',
         method: 'get',
         params: params,
-        baseURL: 'http://localhost:8089',
+        baseURL: 'http://localhost:8089'
     })
 }
 
@@ -95,7 +96,7 @@ export function fileURL(params) {
         url: '/minio-service/fileURL',
         method: 'get',
         params: params,
-        baseURL: 'http://localhost:8089',
+        baseURL: 'http://localhost:8089'
     })
 }
 
@@ -104,6 +105,6 @@ export function fileCopy(params) {
         url: '/minio-service/fileCopy',
         method: 'get',
         params: params,
-        baseURL: 'http://localhost:8089',
+        baseURL: 'http://localhost:8089'
     })
 }

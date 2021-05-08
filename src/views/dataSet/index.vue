@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-tabs style="height: 200px;" v-model="activeName" @tab-click="handleClick">
+    <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="我的数据集" name="allData">
         <el-form :inline="true" :model="filter" >
           <el-button plain style="text-align: left" type="primary" @click="createDataSet()">
@@ -44,7 +44,7 @@
           <el-table-column label="操作" align="center" width="300">
             <template slot-scope="scope">
               <!-- <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button> -->
-              <el-button type="success" plain size="mini" @click="toStartLabel(scope.row.label_type)">开始标注</el-button>
+              <el-button type="success" plain size="mini" @click="toStartLabel(scope.row, scope.row.label_type)">开始标注</el-button>
               <el-button type="primary" plain size="mini" @click="showTeamDialog(scope.$index, scope.row)">添加标注团队</el-button>
               <el-button type="danger" plain size="mini" @click="handleDel(scope.$index, scope.row)">删除</el-button>
             </template>
@@ -129,14 +129,13 @@
         </el-form-item>
         <el-form-item label="数据集输入位置" prop="input">
           <el-input style="width: 90%" v-model="form.input"></el-input><el-button @click="showOssInputDialog()" icon="el-icon-folder-add"></el-button>
-            {{inputObject}}
         </el-form-item>
         <el-form-item   label="数据集输出位置" prop="output">
           <el-input style="width: 90%" v-model="form.output"></el-input><el-button  @click="showOssOutputDialog()" icon="el-icon-folder-add"></el-button>
-            {{outputObject}}
         </el-form-item>
-        <el-form-item label="添加标签集" prop="label">
-          <el-tag
+        <el-form-item label="添加标签集" prop="tagss">
+          <el-tag 
+           v-model="form.label"
             :key="tag"
             v-for="tag in form.label"
             closable
@@ -295,6 +294,15 @@ export default {
     }
   },
   data() {
+    const validateTags = (rule, values, cb) => {
+      console.log('1231213213')
+      console.log(values)
+      if(this.form.label.length>0){
+        //合法的邮箱
+        return cb()
+      }
+      cb(new Error("请输入标签"))
+    }
     return {
       activeName: 'allData',
       message: '',
@@ -350,7 +358,8 @@ export default {
         labelType: [{ required: true, message: '请选择', trigger: 'blur' }],
         input: [{ required: true, message: '请选择', trigger: 'blur' }],
         output: [{ required: true, message: '请选择', trigger: 'blur' }],
-        label: [{ required: true, message: '请选择', trigger: 'blur' }]
+        tagss: [
+          { validator: validateTags, trigger: 'blur'}]
       },
       // 0 2D拉框，1 像素级（多边形），2 3D拉框, 3 语音
       labels: [
@@ -428,35 +437,42 @@ export default {
 
     // 添加数据集 
     add() {
-      const params = {
-        userid: store.getters.userid,
-        labelType: this.form.labelType,
-        name: this.form.name,
-        descr: this.form.descr,
-        input: this.form.input,  // 格式：/data/dataset/0022f6831fbe40b0bd4aae781f202517/input
-        output: this.form.output
-      }
-      console.log(this.form.label.toString())  //labels
-      createDataSet(params).then(res => {
-        this.$message({
-          message: '添加成功',
-          type: 'success'
-        })
-        this.getDataSet()
-        const para = {
-        tags: this.form.label.toString(),
-        datasetname: this.form.name
-      }
-      addTags(para).then(res => {
-        this.$message({
-          message: '添加成功',
-          type: 'success'
-        })
+      this.$refs.form.validate(valid => {
+        if (valid) {
+          const params = {
+            userid: store.getters.userid,
+            labelType: this.form.labelType,
+            name: this.form.name,
+            descr: this.form.descr,
+            input: this.form.input,  // 格式：/data/dataset/0022f6831fbe40b0bd4aae781f202517/input
+            output: this.form.output
+          }
+          console.log(this.form.label.toString())  //labels
+          createDataSet(params).then(res => {
+            this.$message({
+              message: '添加成功',
+              type: 'success'
+            })
+            this.getDataSet()
+            const para = {
+              tags: this.form.label.toString(),
+              datasetname: this.form.name
+            }
+            addTags(para).then(res => {
+              this.$message({
+                message: '添加成功',
+                type: 'success'
+              })
+            })
+          })
+          console.log(this.form)
+          this.dialogVisible = false
+        } else {
+          console.log(this.form.label)
+          this.$message.error('请正确填写表单')
+          return false
+        }
       })
-      })
-      
-      console.log(this.form)
-      this.dialogVisible = false
     },
 
     // 删除数据集
@@ -514,7 +530,7 @@ export default {
           type: 'success'
         })
         this.teamDialogVisible = false
-      })
+      }).catch(err=>{})
     },
 
     // 得到所有的标注团队
@@ -614,12 +630,15 @@ export default {
       if (val.role_type != 0) {
         this.$router.push({path:'/dataSet/message', query: {dataName: val.name, key: this.activeName}})
       } else {
-        this.toStartLabel(ttype)
+        this.toStartLabel(val, ttype)
       }
     },
 
     // 开始标注
-    toStartLabel: function(ttype) {
+    toStartLabel: function(val, ttype) {
+      store.dispatch('data/changeUuid', val.uuid)
+      store.dispatch('data/changeType', val.label_type)
+      store.dispatch('data/changeDataSet',val)
       if(ttype == 0) {
         this.$router.push('/label/d2imageview')
       }
@@ -711,6 +730,7 @@ export default {
     returnInput(){
       this.inputBucket=this.selectBucket
       this.inputObject=this.selectObject
+      this.form.input = this.selectObject
       this.bucketlist=''
       this.list=[]
       this.objectList=[]
@@ -739,6 +759,7 @@ export default {
     returnOutput(){
       this.outputBucket=this.selectBucket
       this.outputObject=this.selectObject
+      this.form.output = this.selectObject
       this.bucketlist=''
       this.list=[]
       this.objectList=[]
@@ -801,6 +822,9 @@ export default {
   margin: 0px 0px 0px 10px;
 }
 .app-container{
-  padding: 10px 20px 10px 20px;
+  padding: 10px 20px 50px 20px;
+}
+.el-table{
+  height: 90%;
 }
 </style>

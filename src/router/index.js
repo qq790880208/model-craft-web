@@ -104,13 +104,14 @@ export const asyncRoutes = [
         component: () => import('@/views/label/d2/imageview'),
         name: 'd2view',
         meta: { title: '2D拉框标注', resources: 'd2' },
-        //hidden: true
+        hidden: true
       },
       {
         path: '/label/polygonimageview',
         component: () => import ('@/views/label/polygon/imageview'),
         name: 'polygon',
-        meta: { title: '像素级标注', resources: 'polygon' }
+        meta: { title: '像素级标注', resources: 'polygon' },
+        hidden: true
       },
       {
         path: '/label/voice',
@@ -123,25 +124,6 @@ export const asyncRoutes = [
         component: () => import ('@/views/label/d3/index'),
         name: 'd3',
         meta: { title: '3D标注', resources: 'd3' }
-      }
-    ]
-  },
-  {
-    path: '/newtrain',
-    component: Layout,
-    name: 'newtrain',
-    redirect: '/newtrain/table',
-    meta: {
-      title: '训练管理',
-      resources: 'newtrain',
-      icon: 'skill'
-    },
-    children: [
-      {
-        path: '/newtrain/table',
-        component: () => import('@/views/newtrain/table'),
-        name: 'newTable',
-        meta: { title: '训练管理',  resources: 'newTable', icon: 'skill' }
       }
     ]
   },
@@ -168,6 +150,25 @@ export const asyncRoutes = [
         name: 'oss manage',
         meta: { title: '对象存储', resources: 'oss', icon: 'tree' }
       },
+    ]
+  },
+  {
+    path: '/newtrain',
+    component: Layout,
+    name: 'newtrain',
+    redirect: '/newtrain/table',
+    meta: {
+      title: '训练管理',
+      resources: 'newtrain',
+      icon: 'skill'
+    },
+    children: [
+      {
+        path: '/newtrain/table',
+        component: () => import('@/views/newtrain/table'),
+        name: 'newTable',
+        meta: { title: '训练管理',  resources: 'newTable', icon: 'skill' }
+      }
     ]
   },
   {

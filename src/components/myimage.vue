@@ -34,7 +34,9 @@
    data () {
      return {
        input: "",
+       //parentSelectList: [],
        visible: false
+       
      }
    },
    props: {
@@ -43,8 +45,8 @@
        type: Number,
        default: false,
      },
-     parentSelectList: [],
      parentUuid: '',
+     parentSelectList: '',
      ishighlight:Boolean
    },
    destroyed(){
@@ -87,6 +89,8 @@
         }else{
           console.log('不存在')
           this.parentSelectList.push(this.parentUuid)
+          console.log('seleeeeeeeeeeeeeeeeeeeeee')
+          console.log(this.parentSelectList)
         }
         this.$emit("childSelectList", this.parentSelectList)
       },
