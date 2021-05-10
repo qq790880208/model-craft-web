@@ -553,6 +553,9 @@ export default {
             formData.append("objectName", this.uploadobjectName);
             console.log(this.uploadobjectName);
             formData.append("userid", store.getters.userid)
+            console.log('sssssssssssssssssssssssss')
+            console.log(store.getters.uuid)
+            formData.append("dataset_id", store.getters.uuid)
             upload(formData).then(response=>{
                 if(response.code==20000){
                     this.uploadLoading=false
@@ -580,6 +583,9 @@ export default {
             console.log( multFileList[i].raw);
             formData.append("objectName", '');
             formData.append("userid", store.getters.userid)
+            console.log('sssssssssssssssssssssssss')
+            console.log(store.getters.uuid)
+            formData.append("dataset_id", store.getters.uuid)
             upload(formData).then(response=>{
                 if(response.code==20000){
                     s++

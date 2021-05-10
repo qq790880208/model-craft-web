@@ -15,9 +15,10 @@
           <el-container>
             <el-main>
               <el-row class="buttonList">
-                <el-button plain type="mini" icon="el-icon-plus" @click="addData()">添加数据</el-button>
+                <el-button plain type="mini" icon="el-icon-plus" @click="uploadobjectmsg">上传文件</el-button>
                 <el-button type="mini" icon="el-icon-delete" @click="delData()">删除数据</el-button>
                 <el-button type="mini" icon="el-icon-cloudy" style="right" @click="startLabel" :style="{ display: visible}">开始标注</el-button>
+                <el-button plain type="mini" icon="el-icon-refresh" @click="fresh()">同步数据源</el-button>
               </el-row>
               <!-- @click="select(item)" -->
               <div class="dataList" v-for="(item, index) in imagelargeArry" :key="index" style="
@@ -89,12 +90,71 @@
         <el-button type="primary" @click="add()">确 定</el-button>
       </span>
     </el-dialog>
+
+    <!--上传文件dialog-->
+    <el-dialog title="上传文件" :visible.sync="uploadObjectVisible">
+            <el-button-group>
+                <el-button>上传路径</el-button>
+                <el-button class="dir" plain>{{uploadBucketName}} : {{uploadObjectFolder}}</el-button>
+            </el-button-group>
+        <!-- <el-dialog width="30%" title="选择路径" :visible.sync="choosefolder" append-to-body :show-close="false">
+            <el-form>
+                <el-form-item label="请选择桶:">
+                    <el-radio-group v-model="uplbucket" @change="chooseuplbucket">
+                        <el-radio-button :label="item.name" :key="item.name" v-for="item in list">{{item.name}}</el-radio-button>
+                    </el-radio-group>
+                </el-form-item> 
+            </el-form>
+        <el-divider></el-divider>
+        <el-row>
+            <el-button icon="el-icon-upload2" type="text"  @click="returnOlduplCurrentRow">返回上级</el-button>
+            <el-divider direction="vertical"></el-divider>
+            <el-tag type="info" effect="light">当前路径：{{uplbucket}} ：{{objectuplcurrentRow}}</el-tag>
+        </el-row> 
+        <el-table :data="objectuplData" highlight-current-row @row-click="upllistbyPrefix">
+            <el-table-column prop="name" label="请选择上传位置"></el-table-column>
+        </el-table>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="returnNull">取 消</el-button>
+            <el-button type="primary" @click="returnuplFolder" >确定</el-button>
+        </div>
+        </el-dialog> -->
+        <el-divider></el-divider>
+            <el-upload
+                class="upload"
+                ref="upload"
+                action="string"
+                :file-list="fileList"
+                :auto-upload="false"
+                :http-request="uplFile"
+                :on-change="handleChange"
+                :on-preview="handlePreview"
+                :on-remove="handleRemove"
+                multiple="multiple"
+                v-loading="uploadLoading"
+                element-loading-text="上传中"
+                element-loading-spinner="el-icon-loading">
+                <el-button slot="trigger" size="small" type="primary" @click="delFile">选取文件</el-button>
+            </el-upload>
+        <el-divider></el-divider>
+        <el-input placeholder="请输入文件名" v-model="uploadobjectName" clearable>
+          <template slot="prepend">文件名：</template>
+          <template slot="append">{{uploadFilePostfix}}</template>
+        </el-input>
+        <h5> <font color="#e6a23c">*注：1个文件上传时可自定义命名</font></h5>
+        <div slot="footer" class="dialog-footer">
+          <el-button @click="uploadObjectNull">取 消</el-button>
+          <el-button type="primary" @click="uploadObject">确 定</el-button>
+        </div>
+    </el-dialog>
   </div>
+  
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { getLabel, deleteData, addNewLabels, assignNewData, getNewFile } from '@/api/data'
+import { getLabel, refresh, deleteData, addNewLabels, assignNewData, getNewFile } from '@/api/data'
+import{ listBucket,uploadNew, listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder,fileRename,fileURL,fileCopy } from '@/api/oss'
 import store from '@/store'
 import myimage from '@/components/myimage.vue'
 
@@ -102,9 +162,32 @@ export default {
   name: 'Dashboard',
   data() {
     return {
+      bucket:'modelcraft',//双向绑定已选择的bucket(默认值设为modelcraft)
       visible: '',
       message: '',
+      list:[],//bucket radio的数据
+      objectData:[],//object table的数据
       addDataDialogVisible: false,
+      uploadObjectVisible:false,//上传文件dialog框信号
+      choosefolder: false,
+      uplbucket:'',//上传对象bucket
+      uploadBucketName:'',//上传目标桶
+      uploadObjectFolder:'',//上传目标路径
+      uploadobjectName:'',//上传文件名
+      uploadFile:'',//要给后端的文件
+      uploadFilePostfix:'',//上传的后缀名
+      uploadFilesignal:false,//上传文件判断信号
+      uploadLoading:false,//文件上传加载
+      objectuplData:[],//上传对象列表
+      objectuplcurrentRow:'',//页面显式的上传路径
+      objectuplPrefix:'',//后端调用的上传路径
+      objectPrefix:'',//后端调用的路径
+      oldCurrentRow:'',//上一级目录
+      olduplCurrentRow:'',//上传的上一级目录
+      oldObjectuplPrefix:'',//上传的后端调用上级目录
+      selectBucketName:'',//内层dialog选中的bucket
+      selectObjectFolder:'',//内层dialog选中的目录
+      fileList: [],
       urls: [],
       tableData: [],
       doneurls: [],
@@ -126,6 +209,12 @@ export default {
       'dataSet'
     ])
   },
+
+  created (){
+        this.bucketlist()
+        this.choosebucket("modelcraft")//(默认值设为modelcraft)
+    },
+
   methods: {
     handleClose(done) {
       this.$confirm('确认关闭？')
@@ -160,7 +249,16 @@ export default {
       console.log(list)
       let  multDataLen = multData.length;
       for(let i = 0; i < multDataLen; i++) {
+        console.log(i)
+        let n = multData[i]
         console.log(list[i])
+        const params = {}
+        params.bucketName = list[n].bucket
+        params.folderName = list[n].dir_path
+        params.objectName = list[n].file_name
+        console.log('21312312312')
+        console.log(params)
+        this.removeobjs(params)
       }
       // deleteData(params).then(res => {
       //   this.$message({
@@ -170,40 +268,358 @@ export default {
       //   this.getData()
       // })
     },
-    addData() {
-      this.addDataDialogVisible = true
-      const params = {
-        dataSetUuid: store.getters.uuid,
-      }
-      getNewFile(params).then(res => {
-        this.tableData = res.data.items
+    removeobjs(params){ 
+      removeFile(params).then(response=>{
+        if(20000 == response.code){
+          this.suc()
+          this.getData()
+        }else{
+          this.fai()
+          this.getData()
+        }
       })
     },
-    add() {
-      console.log(this.multipleSelection)
+
+    suc(){//成功提醒
+      this.$message({
+        message: '成功',
+          type: 'success'
+      })
+    },
+
+    fai(){//失败提醒
+      this.$message.error('发生错误');
+    },
+
+    //上传文件点击事件
+    uploadobjectmsg(){
+      this.uploadObjectVisible=true
+      this.uploadObjectFolder = store.getters.dataSet.input_path
+      this.uploadBucketName = store.getters.dataSet.bucket
+      //this.uploadBucketName = store.getters.dataSet.bucket
+    },
+
+    uploadObject() {
+        this.uploadLoading=true
+        let multFileList = this.fileList
+        let multFileListLen = multFileList.length
+        let s=0
+        console.log(multFileList);
+        console.log(multFileListLen);
+        if(multFileListLen==1){
+            let formData = new FormData();
+            formData.append("bucketName", this.uploadBucketName);
+            console.log(this.uploadBucketName);
+            formData.append("folderName", this.uploadObjectFolder);
+            console.log(this.uploadObjectFolder);
+            formData.append("file", multFileList[0].raw);
+            console.log( multFileList[0].raw);
+            formData.append("objectName", this.uploadobjectName);
+            console.log(this.uploadobjectName);
+            formData.append("userid", store.getters.userid)
+            console.log('sssssssssssssssssssssssss')
+            console.log(store.getters.uuid)
+            formData.append("dataset_id", store.getters.uuid)
+            uploadNew(formData).then(response=>{
+                if(response.code==20000){
+                    this.uploadLoading=false
+                    this.suc()
+                    this.getData()
+                    this.uploadObjectVisible = false
+                    this.uploadBucketName=''
+                    this.uploadObjectFolder=''
+                    this.uploadobjectName=''
+                    this.uplbucket=''
+                    this.objectuplcurrentRow=''
+                    this.objectuplData=[]
+                    this.fileList=[]
+                    this.uploadFilePostfix=''
+                }else{this.fai()}
+            })
+        }else{
+            for(let i=0;i<multFileListLen;i++){
+            let formData = new FormData();
+            formData.append("bucketName", this.uploadBucketName);
+            console.log(this.uploadBucketName);
+            formData.append("folderName", this.uploadObjectFolder);
+            console.log(this.uploadObjectFolder);
+            formData.append("file", multFileList[i].raw);
+            console.log( multFileList[i].raw);
+            formData.append("objectName", '');
+            formData.append("userid", store.getters.userid)
+            console.log('sssssssssssssssssssssssss')
+            console.log(store.getters.uuid)
+            formData.append("dataset_id", store.getters.uuid)
+            uploadNew(formData).then(response=>{
+                if(response.code==20000){
+                    s++
+                    console.log(response);
+                    if(s==multFileListLen-1){
+                        this.uploadLoading=false
+                        this.suc()
+                        this.getData()
+                        this.uploadObjectVisible = false 
+                        this.uploadBucketName=''
+                        this.uploadObjectFolder=''
+                        this.uploadobjectName=''
+                        this.uplbucket=''
+                        this.objectuplcurrentRow=''
+                        this.objectuplData=[]
+                        this.fileList=[]
+                        this.uploadFilePostfix=''
+                    }
+                }else{
+                  this.fai()
+                }
+            })
+        }
+        }
+    },
+
+    //上传文件的取消键
+    uploadObjectNull(){
+        this.uploadBucketName=''
+        this.uploadObjectFolder=''
+        this.uploadobjectName=''
+        this.uplbucket=''
+        this.objectuplcurrentRow=''
+        this.objectuplData=[]
+        this.fileList=[]
+        this.uploadFilePostfix=''
+        this.uploadObjectVisible = false
+    },
+
+    //返回内层dialog
+        returnuplFolder(){
+            if(this.selectBucketName==''){this.selectBucketName=this.uplbucket}
+            this.uploadBucketName=this.selectBucketName
+            this.uploadObjectFolder=this.selectObjectFolder
+            this.choosefolder = false
+        },
+
+        //清空内层dialog返回值
+        returnNull(){
+            this.uploadBucketName=''
+            this.uploadObjectFolder=''
+            this.uplbucket=''
+            this.objectuplcurrentRow=''
+            this.objectuplData=[]
+            this.choosefolder = false
+        },
+
+    //上传对象的object列表数据,更新上传列表
+        objectupllist(para){
+            listObject(para).then(response=>{
+                if(response){
+                    console.log(response);
+                    this.objectuplData = response.data
+                }else{
+                }
+            }).catch()
+        },
+
+    //根据前缀名递归列上传object列表
+        upllistbyPrefix(row,event,column){
+            console.log(row.name);
+            const para={}
+            if("/"==((row.name.split("").reverse().join("")).substring(0,1)).split("").reverse().join("")){
+                console.log("isdir");
+                this.objectuplcurrentRow = row.name;
+                console.log(row.name.substring(0,row.name.length-1));
+                this.objectuplPrefix = row.name.substring(0,row.name.length-1)
+                para.bucketName = this.uplbucket
+                para.objectPrefix = this.objectuplPrefix
+                console.log(para);
+                this.listuplObject(para)
+                // this.oldCurrentRow = this.objectPrefix.split("").reverse().indexOf("/") 逆置然后求出第一个/在第几个位置 
+                this.oldObjectuplPrefix = this.objectuplPrefix.substring(0,this.objectuplPrefix.length-this.objectuplPrefix.split("").reverse().indexOf("/")-1)
+                this.olduplCurrentRow = this.objectuplPrefix.substring(0,this.objectuplPrefix.length-this.objectuplPrefix.split("").reverse().indexOf("/"))
+            }else{
+                console.log("isnotdir");
+            }
+            this.selectBucketName=this.uplbucket;
+            this.selectObjectFolder=row.name;
+        },
+
+        //更新objectuplData的值
+        listuplObject(para){
+            listObjectByPrefix(para).then(response=>{
+                this.objectuplData = response.data
+            }).catch(error=>{console.log(error);})
+        },
+
+        //上传的返回上一级事件
+        returnOlduplCurrentRow(){
+            console.log(this.uplbucket);
+            console.log(this.olduplCurrentRow);
+            console.log(this.oldObjectuplPrefix);
+            if(this.olduplCurrentRow==this.oldObjectuplPrefix){
+                this.olduplCurrentRow=''
+                this.oldObjectuplPrefix=''
+                this.objectuplcurrentRow=''
+                this.objectuplPrefix=''
+                this.selectObjectFolder=''
+            }
+            const para={}
+            para.bucketName = this.uplbucket;
+            para.objectPrefix = this.oldObjectuplPrefix;
+            console.log(para);
+            this.listuplObject(para)
+            this.objectuplcurrentRow = this.olduplCurrentRow
+            this.objectuplPrefix = this.oldObjectuplPrefix
+            this.olduplCurrentRow = this.objectuplPrefix.substring(0,this.objectuplPrefix.length-this.objectuplPrefix.split("").reverse().indexOf("/"))
+            this.oldObjectuplPrefix = this.objectuplPrefix.substring(0,this.objectuplPrefix.length-this.objectuplPrefix.split("").reverse().indexOf("/")-1)
+        },
+    //获取bucketlist
+        bucketlist(){
+            listBucket().then(response=>{
+            this.list = response.data}).catch(()=>{})
+        },
+    //选bucket
+        choosebucket(val){
+            this.objectData=[]
+            this.objectcurrentRow=''
+            this.objectPrefix=''
+            const para = {bucketName : val}
+            console.log(para);
+            this.objectlist(para);
+        },
+
+        //根据bucket列object
+        objectlist(para){
+            listObject(para).then(response=>{
+                if(response){
+                    console.log(response);
+                    this.objectData = response.data
+                }else{
+                }
+            }).catch()
+        },
+
+        //选择上传对象的bucket
+        chooseuplbucket(val){
+            this.objectuplData=[]
+            const para = {bucketName : val}
+            console.log(para);
+            this.objectupllist(para);
+        },
+
+    //根据object前缀递归列object
+        listbyPrefix(row,event,column){
+            console.log(row.name);
+            const para={}
+            if("/"==((row.name.split("").reverse().join("")).substring(0,1)).split("").reverse().join("")){
+                console.log("isdir");
+                this.objectcurrentRow = row.name;
+                console.log(row.name.substring(0,row.name.length-1));
+                this.objectPrefix = row.name.substring(0,row.name.length-1)
+                para.bucketName = this.bucket
+                para.objectPrefix = this.objectPrefix
+                console.log(para);
+                this.listObject(para)
+                // this.oldCurrentRow = this.objectPrefix.split("").reverse().indexOf("/") 逆置然后求出第一个/在第几个位置 
+                this.oldObjectPrefix = this.objectPrefix.substring(0,this.objectPrefix.length-this.objectPrefix.split("").reverse().indexOf("/")-1)
+                this.oldCurrentRow = this.objectPrefix.substring(0,this.objectPrefix.length-this.objectPrefix.split("").reverse().indexOf("/"))
+            }else{
+                console.log("isnotdir");
+            }
+        },
+        //更新objectData的值
+        listObject(para){
+            listObjectByPrefix(para).then(response=>{
+                this.objectData = response.data
+            }).catch(error=>{console.log(error);})
+        },
+
+        //返回上一级
+        returnOldCurrentRow(){
+            console.log("start");
+            console.log(this.bucket);
+            console.log(this.oldCurrentRow);
+            console.log(this.oldObjectPrefix);
+            if(this.oldCurrentRow==this.oldObjectPrefix){
+                this.oldCurrentRow=''
+                this.oldObjectPrefix=''
+                this.objectcurrentRow=''
+                this.objectPrefix=''
+            }
+            const para={}
+            para.bucketName = this.bucket;
+            para.objectPrefix = this.oldObjectPrefix;
+            console.log(para);
+            this.listObject(para)
+            this.objectcurrentRow = this.oldCurrentRow
+            this.objectPrefix = this.oldObjectPrefix
+            this.oldCurrentRow = this.objectPrefix.substring(0,this.objectPrefix.length-this.objectPrefix.split("").reverse().indexOf("/"))
+            this.oldObjectPrefix = this.objectPrefix.substring(0,this.objectPrefix.length-this.objectPrefix.split("").reverse().indexOf("/")-1)
+        },
+
+        
+    delFile() {
+      this.fileList = [];
+    },
+    handleChange(file, fileList) {
+        this.fileList = fileList;
+        this.uploadFilePostfix = file.name.substring(file.name.indexOf('.'))
+    },
+    uplFile(file) {
+        this.formData.append("file", file.file);
+    },
+    handleRemove(file, fileList) {
+        console.log(file, fileList);
+    },
+    handlePreview(file) {
+        console.log(file);
+    },
+
+    fresh() {
       const params = {
         dataSetUuid: store.getters.uuid,
-        fileUuids: this.multipleSelection
+        path: store.getters.dataSet.input_path
       }
-      console.log(params)
-      addNewLabels(params).then(res => {
+      refresh(params).then(res => {
         this.$message({
-          message: '添加成功',
+          message: '更新成功',
           type: 'success'
         })
         this.getData()
-        const newparams = {
-        datasetuuid: store.getters.uuid
-        }
-        assignNewData(newparams).then(res => {
-          this.$message({
-            message: '成功',
-            type: 'success'
-          })
-        })
       })
-      this.addDataDialogVisible = false
     },
+
+    // addData() {
+    //   this.addDataDialogVisible = true
+    //   const params = {
+    //     dataSetUuid: store.getters.uuid,
+    //   }
+    //   getNewFile(params).then(res => {
+    //     this.tableData = res.data.items
+    //   })
+    // },
+    // add() {
+    //   console.log(this.multipleSelection)
+    //   const params = {
+    //     dataSetUuid: store.getters.uuid,
+    //     fileUuids: this.multipleSelection
+    //   }
+    //   console.log(params)
+    //   addNewLabels(params).then(res => {
+    //     this.$message({
+    //       message: '添加成功',
+    //       type: 'success'
+    //     })
+    //     this.getData()
+    //     const newparams = {
+    //     datasetuuid: store.getters.uuid
+    //     }
+    //     assignNewData(newparams).then(res => {
+    //       this.$message({
+    //         message: '成功',
+    //         type: 'success'
+    //       })
+    //     })
+    //   })
+    //   this.addDataDialogVisible = false
+    // },
     cancel() {
       this.addDataDialogVisible = false
       this.tableData = []
@@ -253,7 +669,7 @@ export default {
     this.getData()
     console.log("qweqweqwe")
     console.log(store.getters.dataSet.role_type)
-    if(store.getters.dataSet.role_type === 2) {
+    if(store.getters.dataSet.role_type !== 2) {
       this.visible = 'none'
     }
   }

@@ -23,7 +23,9 @@
               @click="openDetails(item)" 
               >
               <el-card class="box-card" v-bind="item"
-              :style="{ border: '1px solid ' + markcolor(item.id) }">
+              :style="{ border: '1px solid ' + markcolor(item.id) 
+                      }"
+                      >
                 <div slot="header">
                   <span>{{ item.name }}</span>
                 </div>

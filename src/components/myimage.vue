@@ -1,18 +1,17 @@
 <template>
   <div class="ih-item">
-    <a>
-      <!-- <span v-if="parentSelectList.indexOf(parentUuid)!=-1">
-          <i class="checked">✓</i>
-      </span> -->
+    <a> 
       <div >
-        <span class="checked" v-if="parentSelectList.indexOf(parentUuid)!=-1">
-          <i>✓</i>
+        <span v-if="parentSelectList.indexOf(parentUuid)!=-1"> 
+          <div class="topic-shade">
+            <img src="./imag/checkbox.png" style="width: 20px;height: 20px;" alt />
+          </div>
         </span>
+        
         <img 
           :style="{
             height: 200+'px',
-            border: '3px solid '+this.markcolor,
-            
+            border: '1px dashed '+ markcolor1
           }
           "
           :src="imagesrc"
@@ -67,6 +66,10 @@
     isSelect: function() {
       if(this.isSelected === 1) return '选中'
       else return ''
+    },
+    markcolor1(){
+        if(this.parentSelectList.indexOf(this.parentUuid) !== -1) return '#1334ed'
+        else return '#ffffff'
     }
   },
   methods:{
@@ -106,7 +109,7 @@
 
 <style scpoed>
 img:hover{
-  filter: blur(3px);
+  filter: blur(1px);
 }
 .ih-item{           
     position: relative;
@@ -142,7 +145,7 @@ position: absolute;
   right: 0;
   text-align: right;
 }
-.checked {
+/* .checked {
   font-size: 15px;
  font-style: normal;
  display: inline-block;
@@ -158,8 +161,17 @@ position: absolute;
  background-color: rgb(250, 0, 0);
  margin: -6px;
   margin-top: -382px;
-}
+} */
 .checked:hover {
   margin-left: 0px;
 }
+.topic-shade{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  position: absolute;
+  left: 5px;
+  top: 5px;
+}
+
 </style>

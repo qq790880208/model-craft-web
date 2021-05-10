@@ -190,9 +190,9 @@
         </el-tabs>
       </div>
     </div>
-
+<!-- 修改数据集的tag -->
     <el-dialog
-      title="提示"
+      title="修改数据集"
       :visible.sync="changeDialogVisible"
       width="30%"
       :before-close="handleClose">
@@ -235,6 +235,40 @@
       </div>
     </el-dialog>
 
+<!-- 添加标注团队 -->
+    <el-dialog
+      title="创建团队标注任务"
+      :visible.sync="teamDialogVisible"
+      :before-close="handleCloseDialog"
+      width="40%"
+      >
+      <el-form :model='teamForm' ref="teamForm" label-width="100px" label-position="left">
+        <el-form-item label="团队名称">
+          <span>
+            {{teamForm.dataSetName}}
+          </span>
+        </el-form-item>
+        <el-form-item label="标注团队">
+          <template>
+            <el-select
+              v-model="teamForm.teamValue"
+              placeholder="请选择团队">
+              <el-option
+                v-for="item in teams"
+                :key="item.value"
+                :label="item.name"
+                :value="item.id">
+              </el-option>
+            </el-select>
+          </template>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancel()">取 消</el-button>
+        <el-button type="primary" @click="addLabelTeam()">确 定</el-button>
+      </div>
+    </el-dialog>
+
   </div>
   
 </template>
@@ -243,6 +277,9 @@
 import { mapGetters } from 'vuex'
 import  BarChart  from './BarChart'
 import { getTags, updateTags } from '@/api/data'
+import { getAllTeam, getSelectTeam } from '@/api/team'
+import { getLabel, getDataByName, createDataSet, deleteDataSet, assignLabel, getAssignData, addTags } from '@/api/data'
+import store from '@/store'
 
 export default {
   components: { BarChart },
@@ -292,6 +329,14 @@ export default {
   data() {
     return {
       changeDialogVisible: false,
+      teamDialogVisible: false,
+      oldTeam: '',
+      teamForm: {
+        dataSetName: '',
+        teamValue: '',
+        dataSetUuid: ''
+      },
+      teams: [], // 所有团队
       dataForm: {
         name: '',
         descr: '',
@@ -317,6 +362,15 @@ export default {
     ])
   },
   methods: {
+    // dialog 关闭
+    handleCloseDialog(done) {
+      this.$confirm('确认关闭？')
+        .then(_ => {
+          done();
+          this.teamDialogVisible = false
+        })
+        .catch(_ => {});
+    },
     // tabs 切换
     handleClick(tab, event) {
       console.log(tab, event);
@@ -345,6 +399,62 @@ export default {
 
     toDataManage: function() {
       this.$router.push('/dataSet/userLabel')
+    },
+
+    showTeamDialog: function() {
+      this.getTeams()
+      this.teamForm.teamValue = ''
+      // 得到标注团队
+      const params = {
+        dataSetUuid: store.getters.uuid
+      }
+      console.log(params)
+      getSelectTeam(params).then(res => {
+        this.selectTeams = res.data.items
+        this.teamForm.teamValue = res.data.items.name
+        this.oldTeam = res.data.items
+        this.teamForm.dataSetName = store.getters.dataSet.name
+        this.teamForm.dataSetUuid = store.getters.dataSet.uuid
+        this.teamDialogVisible = true
+      })
+    },
+    cancel() {
+      this.dialogVisible = false
+      this.teamDialogVisible = false
+    },
+
+    // 添加标注团队
+    addLabelTeam() {
+      if(this.teamForm.teamValue === this.oldTeam.name){
+        this.teamForm.teamValue = this.oldTeam.id
+      }
+      const params = {
+        dataSetid: this.teamForm.dataSetUuid,
+        teamid: this.teamForm.teamValue
+      }
+      console.log(params)
+      assignLabel(params).then(res => {
+        this.teamDialogVisible = false
+        this.$message({
+          message: '添加成功',
+          type: 'success'
+        })
+        // this.teamDialogVisible = false
+      }).catch(function(error){
+        this.$message({
+          message: '不能给数据集创建者分配数据',
+          type: 'error'
+        })
+      })
+    },
+
+    // 得到所有的标注团队
+    getTeams() {
+      getAllTeam().then(res => {
+        var team = res.data.items
+        this.teams = team
+        console.log(this.teams)
+      })
     },
 
     // 修改标签
