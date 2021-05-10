@@ -181,7 +181,7 @@
               placeholder="请选择团队">
               <el-option
                 v-for="item in teams"
-                :key="item.id"
+                :key="item.value"
                 :label="item.name"
                 :value="item.id">
               </el-option>
@@ -309,6 +309,7 @@ export default {
       filter: {
         name: ''
       },
+      oldTeam: '',
       dataSets: [],
       dataSetAssigned: [],
       total: 0,
@@ -381,6 +382,7 @@ export default {
         .then(_ => {
           done();
           this.dialogVisible = false
+          this.teamDialogVisible = false
         })
         .catch(_ => {});
     },
@@ -438,6 +440,8 @@ export default {
     // 添加数据集 
     add() {
       this.$refs.form.validate(valid => {
+        console.log('mnbmbnbm')
+        console.log(this.inputBucket)
         if (valid) {
           const params = {
             userid: store.getters.userid,
@@ -445,7 +449,8 @@ export default {
             name: this.form.name,
             descr: this.form.descr,
             input: this.form.input,  // 格式：/data/dataset/0022f6831fbe40b0bd4aae781f202517/input
-            output: this.form.output
+            output: this.form.output,
+            bucket: this.inputBucket
           }
           console.log(this.form.label.toString())  //labels
           createDataSet(params).then(res => {
@@ -509,28 +514,37 @@ export default {
       console.log(params)
       getSelectTeam(params).then(res => {
         this.selectTeams = res.data.items
-        this.teamForm.teamValue = res.data.items
+        this.teamForm.teamValue = res.data.items.name
+        this.oldTeam = res.data.items
+        this.teamForm.dataSetName = row.name
+        this.teamDialogVisible = true
+        this.teamForm.dataSetUuid = row.uuid
       })
-      this.teamForm.dataSetName = row.name
-      this.teamDialogVisible = true
-      
-      this.teamForm.dataSetUuid = row.uuid
     },
 
     // 添加标注团队
     addLabelTeam() {
+      if(this.teamForm.teamValue === this.oldTeam.name){
+        this.teamForm.teamValue = this.oldTeam.id
+      }
       const params = {
         dataSetid: this.teamForm.dataSetUuid,
         teamid: this.teamForm.teamValue
       }
       console.log(params)
       assignLabel(params).then(res => {
+        this.teamDialogVisible = false
         this.$message({
           message: '添加成功',
           type: 'success'
         })
-        this.teamDialogVisible = false
-      }).catch(err=>{})
+        // this.teamDialogVisible = false
+      }).catch(function(error) {
+        this.$message({
+          message: '不能给数据集创建者分配数据',
+          type: 'error'
+        })
+      })
     },
 
     // 得到所有的标注团队
@@ -627,32 +641,31 @@ export default {
       console.log(store.getters.uuid)
       console.log(store.getters.type)
       console.log(store.getters.dataSet)
-      if (val.role_type != 0) {
+      if (val.role_type !== 0) {
         this.$router.push({path:'/dataSet/message', query: {dataName: val.name, key: this.activeName}})
       } else {
-<<<<<<< HEAD
-        this.toStartLabel(val, ttype)
-=======
-        this.toStartLabel(store.getters.type)
->>>>>>> dev
+        console.log('898989')
+        this.toStartLabel(val, val.label_type)
       }
     },
 
     // 开始标注
-    toStartLabel: function(val, ttype) {
+    toStartLabel: function(val, type) {
+      console.log('wodedededed')
+      console.log(val)
       store.dispatch('data/changeUuid', val.uuid)
       store.dispatch('data/changeType', val.label_type)
       store.dispatch('data/changeDataSet',val)
-      if(ttype == 0) {
+      if(type === 0) {
         this.$router.push('/label/d2imageview')
       }
-      if(ttype == 1) {
+      if(type === 1) {
         this.$router.push({path:'/label/polygonimageview'})
       }
-      if(ttype == 2) {
+      if(type === 2) {
         this.$router.push({path:'/label/d3'})
       }
-      if(ttype == 3) {
+      if(type === 3) {
         this.$router.push({path:'/label/voice'})
       }
     },

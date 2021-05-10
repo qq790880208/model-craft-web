@@ -5,10 +5,7 @@
 <script>
 import echarts from 'echarts'
 require('echarts/theme/macarons') // echarts theme
-// require('echarts/lib/chart/bar')
-// // 引入提示框和标题组件
-// require('echarts/lib/component/tooltip')
-// require('echarts/lib/component/title')
+
 import resize from './mixins/resize'
 
 const animationDuration = 1000
@@ -51,7 +48,6 @@ export default {
     this.$nextTick(() => {
       this.initChart()
     })
-    
   },
   beforeDestroy() {
     if (!this.chart) {

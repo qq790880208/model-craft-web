@@ -64,6 +64,16 @@ export function upload(formData) {
     })
 }
 
+export function uploadNew(formData) {
+    return request({
+        url: '/minio-service/uploadNew',
+        method: 'post',
+        data: formData,
+        headers: {"Content-Type": "multipart/form-data;charset=utf-8"},
+        baseURL: 'http://192.168.19.207:8089'
+    })
+}
+
 export function createFolder(params) {
     return request({
         url: '/minio-service/createFolder',

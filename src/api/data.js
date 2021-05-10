@@ -108,6 +108,15 @@ export function getNewFile(params) {
   })
 }
 
+export function refresh(params) {
+  return request({
+    url: '/label/fresh',
+    method: 'put',
+    params: params,
+    baseURL: 'http://192.168.19.207:8085'
+  })
+}
+
 export function addTags(params) {
   return request({
     url: '/tag/add',
