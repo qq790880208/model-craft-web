@@ -113,7 +113,7 @@ export function refresh(params) {
     url: '/label/fresh',
     method: 'put',
     params: params,
-    baseURL: 'http://192.168.19.207:8085'
+    baseURL: 'http://192.168.19.207:8089'
   })
 }
 
