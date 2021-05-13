@@ -2,16 +2,17 @@
   <div class="ih-item">
     <a> 
       <div >
-        <span v-if="parentSelectList.indexOf(parentUuid)!=-1"> 
+        <div v-if="parentSelectList.indexOf(parentUuid)!=-1" class="checked"> 
           <div class="topic-shade">
             <img src="./imag/checkbox.png" style="width: 20px;height: 20px;" alt />
           </div>
-        </span>
-        
-        <img 
+        </div>
+        <img class="test1"
           :style="{
+            //hover: 'filter: blur(1px);}',
+            //filter:'blur(1px)',
             height: 200+'px',
-            border: '1px dashed '+ markcolor1
+            border: '3px solid '+ markcolor1
           }
           "
           :src="imagesrc"
@@ -23,6 +24,9 @@
           <h3 style="color:rgba(255,255,255,1)"
           >{{ismarkedtext}}</h3>
       </div>
+      <!-- <div class="info" style="width:100%;height:100%;color:rgba(64,128,192,1)">
+
+      </div> -->
     </a>
   </div>
 </template>
@@ -69,7 +73,7 @@
     },
     markcolor1(){
         if(this.parentSelectList.indexOf(this.parentUuid) !== -1) return '#1334ed'
-        else return '#ffffff'
+        else return '#EEF3FF'
     }
   },
   methods:{
@@ -108,11 +112,16 @@
 </script>
 
 <style scpoed>
-img:hover{
+img.test1:hover{
+  /* filter: brightness(50%); */
+  color:rgba(128,255,255,1)
+}
+.testimg :hover{
   filter: blur(1px);
 }
 .ih-item{           
     position: relative;
+
     height: 200px;
     } 
     .ih-item .img img{
@@ -120,7 +129,7 @@ img:hover{
     max-width: 100%;
     } 
 .ih-item .info {
-position: absolute;
+  position: absolute;
     top: 150px;
     bottom: 0;
     left: 0;
@@ -138,6 +147,7 @@ position: absolute;
 .ih-item a:hover .info {
     opacity: 1;    /*有opacity有0变成1*/            
 }
+
 .ih-item .select {
   top: 0px;
   bottom: 150px;
@@ -162,16 +172,17 @@ position: absolute;
  margin: -6px;
   margin-top: -382px;
 } */
-.checked:hover {
+/* .checked:hover {
   margin-left: 0px;
-}
+} */
 .topic-shade{
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
   position: absolute;
-  left: 5px;
-  top: 5px;
+  left: 3px;
+  top: 3px;
+  
 }
 
 </style>

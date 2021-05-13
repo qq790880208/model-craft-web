@@ -16,9 +16,10 @@
             <el-main>
               <el-row class="buttonList">
                 <el-button plain type="mini" icon="el-icon-plus" @click="uploadobjectmsg">上传文件</el-button>
-                <el-button type="mini" icon="el-icon-delete" @click="delData()">删除数据</el-button>
-                <el-button type="mini" icon="el-icon-cloudy" style="right" @click="startLabel" :style="{ display: visible}">开始标注</el-button>
+                <el-button plain type="mini" icon="el-icon-delete" @click="delData()">删除数据</el-button>
+                <el-button plain type="mini" icon="el-icon-cloudy" style="right" @click="startLabel" :style="{ display: visible}">开始标注</el-button>
                 <el-button plain type="mini" icon="el-icon-refresh" @click="fresh()">同步数据源</el-button>
+                <el-button plain type="mini" icon="el-icon-refresh" @click="assign()">分配</el-button>
               </el-row>
               <!-- @click="select(item)" -->
               <div class="dataList" v-for="(item, index) in imagelargeArry" :key="index" style="
@@ -88,6 +89,21 @@
       <span slot="footer" class="dialog-footer">
         <el-button @click="cancel()">取 消</el-button>
         <el-button type="primary" @click="add()">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog
+      title="分配给团队成员"
+      :visible.sync = "assignDiaglogVisible"
+      width="30%"
+      :before-close="handleClose"
+    >
+      <span>
+        hello
+      </span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="assignDiaglogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="assignDiaglogVisible = false">确 定</el-button>
       </span>
     </el-dialog>
 
@@ -167,6 +183,7 @@ export default {
       message: '',
       list:[],//bucket radio的数据
       objectData:[],//object table的数据
+      assignDiaglogVisible: false,
       addDataDialogVisible: false,
       uploadObjectVisible:false,//上传文件dialog框信号
       choosefolder: false,
@@ -575,15 +592,18 @@ export default {
     fresh() {
       const params = {
         dataSetUuid: store.getters.uuid,
-        path: store.getters.dataSet.input_path
+        path: store.getters.dataSet.input_path,
+        bucketName: store.getters.dataSet.bucket,
+        userid: store.getters.userid
       }
       refresh(params).then(res => {
-        this.$message({
-          message: '更新成功',
-          type: 'success'
-        })
+        this.suc()
         this.getData()
       })
+    },
+
+    assign() {
+      this.assignDiaglogVisible = true
     },
 
     // addData() {
