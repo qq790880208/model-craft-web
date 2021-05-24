@@ -169,7 +169,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getLabel, refresh, deleteData, addNewLabels, assignNewData, getNewFile } from '@/api/data'
+import { getLabel, refresh, assignByNewTeamUser, assignLabelDataChange, deleteData, addNewLabels, assignNewData, getNewFile } from '@/api/data'
 import{ listBucket,uploadNew, listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder,fileRename,fileURL,fileCopy } from '@/api/oss'
 import store from '@/store'
 import myimage from '@/components/myimage.vue'
@@ -228,9 +228,9 @@ export default {
   },
 
   created (){
-        this.bucketlist()
-        this.choosebucket("modelcraft")//(默认值设为modelcraft)
-    },
+    this.bucketlist()
+    this.choosebucket("modelcraft")//(默认值设为modelcraft)
+  },
 
   methods: {
     handleClose(done) {
@@ -603,7 +603,21 @@ export default {
     },
 
     assign() {
-      this.assignDiaglogVisible = true
+      const params = {
+        datasetuuid: store.getters.uuid,
+        userid: store.getters.userid
+      }
+      assignByNewTeamUser(params).then(res => {
+      })
+      const param = {
+        datasetuuid: store.getters.uuid,
+      }
+      assignLabelDataChange(param).then(res => {
+        this.$message({
+          message: '分配成功',
+          type: 'success'
+        })
+      })
     },
 
     // addData() {
