@@ -71,7 +71,7 @@
             <el-divider direction="vertical"></el-divider>
             <el-tag type="info" effect="light">当前路径：{{uplbucket}} ：{{objectuplcurrentRow}}</el-tag>
         </el-row> 
-        <el-table :data="objectuplData" highlight-current-row @row-click="upllistbyPrefix">
+        <el-table :data="objectuplData" height="250" highlight-current-row @row-click="upllistbyPrefix">
             <el-table-column prop="name" label="请选择上传位置"></el-table-column>
         </el-table>
         <div slot="footer" class="dialog-footer">
