@@ -117,7 +117,8 @@ export default {
           this.loginForm.password = md5.digest('hex')
           console.log(this.loginForm)
           this.$store.dispatch('user/login', this.loginForm).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
+            //this.$router.push({ path: this.redirect || '/' })
+            this.$router.push('/')
             this.loading = false
           }).catch(() => {
             this.loading = false

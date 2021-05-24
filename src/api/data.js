@@ -143,3 +143,39 @@ export function updateTags(params) {
     baseURL: 'http://192.168.19.207:8085'
   })
 }
+
+export function assignByNewTeamUser(params) {
+  return request({
+    url: '/userlabel/reAssignByAddUser',
+    method: 'put',
+    params: params,
+    baseURL: 'http://192.168.19.207:8085'
+  })
+}
+
+export function assignLabelDataChange(params) {
+  return request({
+    url: '/userlabel/assignNewData',
+    method: 'post',
+    params: params,
+    baseURL: 'http://192.168.19.207:8085'
+  })
+}
+
+export function outTimeReAssign(params) {
+  return request({
+    url: '/userlabel/reAssign',
+    method: 'post',
+    params: params,
+    baseURL: 'http://192.168.19.207:8085'
+  })
+}
+
+export function getNewLabels(params) {
+  return request({
+    url: '/userlabel/getNewLabel',
+    method: 'get',
+    params: params,
+    baseURL: 'http://192.168.19.207:8085'
+  })
+}

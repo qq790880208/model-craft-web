@@ -4,6 +4,7 @@
       <div>
       <el-button @click="returndataset" >返回数据集</el-button>
       <el-button @click="automark()" :loading="isloading">{{automarkbtntext}}</el-button>
+      <el-button @click="newlabel" v-if="isalllabeled">申请新任务</el-button>
       </div>
       <div v-for="(item, index) in imagelargeArry" :key="index" style="
         display:inline-block;
@@ -40,6 +41,7 @@ import imageselect from "@/components/2dmark.vue";
 import request from "@/utils/request";
 import miniimage from "@/components/miniimage.vue"
 import store from "@/store"
+import {outTimeReAssign, getNewLabels} from '@/api/data'
 //import axios from 'node_modules/axios';
 // import labelinfo from '@/components/labelinfo.vue'
 //页面键盘监听
@@ -107,6 +109,9 @@ export default {
       ],
       marktype: [],
       nownum: 0,
+      isalllabeled: false,
+      starttimer:null,
+      nowseconds:0,
       isimageview: true,
       automarkbtntext:"开始自动标注",
       isloading:false,
@@ -135,6 +140,17 @@ export default {
       this.infoArry = childinfoArry;
       console.log("222" + this.infoArry);
     },
+    newlabel(){
+      console.log("申请新图片")
+      console.log(store.getters.userid)
+      const params = {
+        id: store.getters.userid,
+        datasetuuid: store.getters.dataSet.uuid
+      }
+      getNewLabels(params).then(res => {
+        this.requireimage()
+      })
+    },
     //跳过图片
     skipimage: function(){
       if(this.isimageview) {
@@ -145,6 +161,7 @@ export default {
         this.nownum++;
       }
       console.log("skipimage", this.nownum);
+      this.nowseconds = 0;
     },
     //下一张图片
     nextimage: function () {
@@ -182,6 +199,7 @@ export default {
     //get请求图片数据
     requireimage: function () {
       let _this = this;
+      this.isalllabeled = true;
       console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
       if(store.getters.dataSet.role_type === 2) {
         const params = {
@@ -212,6 +230,7 @@ export default {
           _this.lastinfoArry.push(arr);
           console.log("lastinfoArry", response.data.items[i].is_label);
           }
+          if(response.data.items[i].is_label!=1) _this.isalllabeled=false;
           let a={};
           a["url"]=response.data.items[i].file_path
           a["islabel"]=response.data.items[i].is_label
@@ -339,6 +358,7 @@ export default {
     //put更新数据
     savelabel(i) {
       let _this=this
+      this.nowseconds = 0;
       //_this.$message('开始保存');
       console.log("save",JSON.stringify(this.infoArry[i][0]));
       let isab
@@ -375,6 +395,7 @@ export default {
         _this.requiretag();
       });
     },
+
     //post半自动标注
     automark(){
       let _this = this;
@@ -410,6 +431,7 @@ export default {
       });
     }
   },
+
   mounted: function () {
     //console.log(this.infoArry[0])
     console.log("mounted!!!!", this.infoArry.length, this.infoArry);
@@ -421,9 +443,28 @@ export default {
     window.previousimage = this.previousimage;
     window.skipimage = this.skipimage;
     document.onkeydown = keyDownSearch;
+    this.starttimer = setInterval(()=>{
+      this.nowseconds++;
+      console.log(this.nowseconds,"my定时器！！！！")
+      if(this.nowseconds>=300){
+        console.log("超时")
+        const params = {
+            userId: store.getters.userid,
+            dataSetId: store.getters.dataSet.user_id,
+            dataSetUuid: store.getters.uuid
+        }
+        outTimeReAssign(params)
+        this.$store.dispatch('user/logout')
+        this.$router.push('/login?redirect=${this.$route.fullPath}')
+        location.reload()
+      }
+      },1000);
   },
   destroyed(){
     document.onkeydown = undefined;
+    clearInterval(this.starttimer);
+    this.starttimer=null;
+    this.nowseconds=0;
   },
   computed: {
     ...mapGetters(["name"]),

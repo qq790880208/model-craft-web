@@ -4,6 +4,7 @@
       <div>
       <el-button @click="returndataset" >返回数据集</el-button>
       <el-button @click="automark()" :loading="isloading">{{automarkbtntext}}</el-button>
+      <el-button @click="newlabel" v-if="isalllabeled">申请新任务</el-button>
       </div>
       <div v-for="(item, index) in imagelargeArry" :key="index" style="
         display:inline-block;
@@ -46,6 +47,7 @@ import drawpolygon from "@/components/testdrawpolygon.vue";
 import request from "@/utils/request";
 import miniimage from "@/components/miniimage.vue"
 import store from "@/store"
+import {outTimeReAssign} from '@/api/data'
 //页面键盘监听
 function keyDownSearch(e){
   console.log("keydown!!!!!!!!!!!!")
@@ -112,6 +114,9 @@ export default {
       ],
       marktype: [],
       nownum: 0,
+      isalllabeled: false,
+      starttimer:null,
+      nowseconds:0,
       isdisablebutton:false,
       isimageview: true,
       automarkbtntext:"开始自动标注",
@@ -132,6 +137,22 @@ export default {
     window.previousimage = this.previousimage;
     window.skipimage = this.skipimage;
     document.onkeydown = keyDownSearch;
+        this.starttimer = setInterval(()=>{
+      this.nowseconds++;
+      console.log(this.nowseconds,"my定时器！！！！")
+      if(this.nowseconds>=600){
+        console.log("超时")
+        const params = {
+            userId: store.getters.userId,
+            dataSetId: store.getters.dataSet.user_id,
+            dataSetUuid: store.getters.uuid
+        }
+        //outTimeReAssign(params)
+        this.$store.dispatch('user/logout')
+        this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+        location.reload()
+      }
+      },1000);
   },
   methods: {
     returndataset(){
@@ -145,6 +166,9 @@ export default {
     returnimageview(){
         this.$refs.drawpolygonref.saveinfo()
         this.isimageview=!this.isimageview;
+    },
+    newlabel(){
+      console.log("申请新图片")
     },
     //下一张图片
     nextimage: function () {
@@ -193,6 +217,7 @@ export default {
         this.nownum++;
       }
       console.log("skipimage", this.nownum);
+      this.nowseconds = 0;
     },
     closebutton: function(){
       console.log("fatherdisbtnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
@@ -209,6 +234,7 @@ export default {
     requireimage: function () {
       console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
       let _this = this;
+      this.isalllabeled = true;
       if(store.getters.dataSet.role_type === 2) {
         const params = {
           datasetuuid: store.getters.uuid
@@ -234,7 +260,9 @@ export default {
           //   _this.imagesize.push(imagea)
           // }
           // console.log("ima",_this.imagesize)
+          if(response.data.items[i].is_label!=1) _this.isalllabeled=false;
           if(response.data.items[i].label_data!==undefined) {
+          
           let tempa = JSON.parse(response.data.items[i].label_data)
           let len = eval(tempa).length;
           console.log("len", len);
@@ -386,6 +414,7 @@ export default {
     //put请求
     savelabel(i) {
       let _this=this
+      this.nowseconds = 0;
       console.log("put111",JSON.stringify(this.infoArry[i][0]),this.uuidArry[i]);
       let isab
       if(this.infoArry[i][0].length>0) isab=1
@@ -458,6 +487,9 @@ export default {
   },
   destroyed(){
     document.onkeydown = undefined;
+    clearInterval(this.starttimer);
+    this.starttimer=null;
+    this.nowseconds=0;
   },
   computed: {
     ...mapGetters(["name"]),

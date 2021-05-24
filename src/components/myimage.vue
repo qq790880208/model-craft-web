@@ -116,9 +116,9 @@ img.test1:hover{
   /* filter: brightness(50%); */
   color:rgba(128,255,255,1)
 }
-.testimg :hover{
+/* .testimg :hover{
   filter: blur(1px);
-}
+} */
 .ih-item{           
     position: relative;
 

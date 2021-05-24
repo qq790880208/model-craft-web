@@ -63,17 +63,17 @@
           <span>{{ scope.row.descr}}</span>
         </template>
       </el-table-column>
-      <el-table-column  label="创建者" width="120">
+      <!-- <el-table-column  label="创建者" width="120">
         <template slot-scope="scope">
           <b>{{ scope.row.user_id }}</b>
         </template>
-      </el-table-column>
-      <el-table-column  label="进度" width="250">
+      </el-table-column> -->
+      <!-- <el-table-column  label="进度" width="250">
         <template slot-scope="scope">
           <el-progress v-if="scope.row.status === 0" :text-inside="true" 
           :stroke-width="26" :percentage="Mockprocess" status="success"></el-progress>
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column label="操作" width="400"> 
         <template slot-scope="scope">
             <el-button
