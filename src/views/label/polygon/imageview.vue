@@ -113,6 +113,8 @@ export default {
         },
       ],
       marktype: [],
+      nopnum: 0, //标记上一张下一张的数字
+      unable:false,
       nownum: 0,
       isalllabeled: false,
       starttimer:null,
@@ -164,7 +166,9 @@ export default {
       this.isimageview=!this.isimageview;
     },
     returnimageview(){
+        this.nopnum=0;
         this.$refs.drawpolygonref.saveinfo()
+        this.nownum=0;
         this.isimageview=!this.isimageview;
     },
     newlabel(){
@@ -172,6 +176,7 @@ export default {
     },
     //下一张图片
     nextimage: function () {
+      if(this.unable) return
       if(this.isimageview) {
         console.log("处于预览界面");
         return
@@ -181,14 +186,17 @@ export default {
         return
       }
       if (this.nownum < this.imageArry.length - 1) {
+        this.nopnum=1;
+        this.unable=true
         this.$refs.drawpolygonref.saveinfo()
-        this.nownum++;
+        //this.nownum++;
       }
       console.log("nextimage",this.nownum);
       console.log("nextimage infoArry",this.infoArry, this.infoArry.length);
     },
     //上一张图片
     previousimage: function () {
+      if(this.unable) return
       if(this.isimageview) {
         console.log("处于预览界面");
         return
@@ -198,8 +206,10 @@ export default {
         return
       }
       if (this.nownum > 0) {
+        this.nopnum=2;
+        this.unable=true
         this.$refs.drawpolygonref.saveinfo()
-        this.nownum--;
+        //this.nownum--;
       }
       console.log("previousimage",this.nownum);
     },
@@ -439,7 +449,11 @@ export default {
           type: 'success'
           });
         _this.requireimage();
-        _this.requiretag();
+        _this.requiretag().then(function(){
+          if(_this.nopnum==1) _this.nownum++;
+          if(_this.nopnum==2) _this.nownum--;
+          _this.unable=false;
+        });;
       }).catch(function(error){
         console.log("error",error)
           _this.$message({

@@ -65,9 +65,9 @@
     >
       <div
         :style="{
-          maxWidth: 1000 + 'px',
-          maxHeight: 1000 + 'px',
-          //display:flex
+          Width: 1000 + 'px',
+          Height: 1000 + 'px',
+          display:'inline-block'
         }"
       >
         <div
@@ -357,20 +357,20 @@ export default {
       //   this.scalewidth = 1;
       //   this.scaleheight = 1;
       // }
-      if (image.width < 600 && image.height < 600) {
-        while(this.imagewidth < 600 && this.imageheight < 600) {
-          this.imagewidth *=1.5;
-          this.imageheight *=1.5;
-          this.scalewidth *=1.5;
-          this.scaleheight *=1.5;
+      if (image.width < 800 && image.height < 800) {
+        while(this.imagewidth < 800 && this.imageheight < 800) {
+          this.imagewidth *=1.1;
+          this.imageheight *=1.1;
+          this.scalewidth *=1.1;
+          this.scaleheight *=1.1;
         }
       }
       if(image.width > 1000 || image.height > 1000){
           while(this.imagewidth > 1000 || this.imageheight > 1000) {
-          this.imagewidth /=1.5;
-          this.imageheight /=1.5;
-          this.scalewidth /=1.5;
-          this.scaleheight /=1.5;
+          this.imagewidth /=1.1;
+          this.imageheight /=1.1;
+          this.scalewidth /=1.1;
+          this.scaleheight /=1.1;
         }
       }
       console.log("thisssssssssssssssss.imagewidth",this.imagewidth);
