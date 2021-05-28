@@ -133,6 +133,7 @@ export default {
     entermark(index){
       console.log("faaaaaaaaaaaatherenter!")
       this.nownum=index;
+      this.isnowlabel();
       this.isimageview=!this.isimageview;
     },
     returnimageview(){
@@ -203,6 +204,19 @@ export default {
       }
       console.log("previousimage", this.nownum);
     },
+    //post修改正在标注标识
+    isnowlabel:function(){
+      let _this = this;
+      return request({
+        url:
+          "http://192.168.19.207:8085/label/setLabeling?uuid="+this.uuidArry[this.nownum],
+        method: "post",
+        //timeout:_this.lastinfoArry.length*5000,
+        //params: query
+      }).then(function (response) {
+        console.log(response);
+      })
+    },
     //post生成xml
     generateXML:function () {
       let _this = this;
@@ -214,7 +228,25 @@ export default {
         //params: query
       }).then(function (response) {
         console.log(response);
-        })
+        _this.$message({
+          message:"xml生成成功",
+          duration:300,
+          type: 'success'
+          });
+      }).catch(function(error){
+        console.log("error",error)
+          _this.$message({
+          message:"xml生成失败",
+          type: 'error'
+          })
+          // for (let i = 0; i < testmarktype.length; i++) {
+          //   let a={};
+          // a["url"]=response.data.items[i].file_path
+          // a["islabel"]=response.data.items[i].is_label
+          // //a["index"]=i
+          // _this.imagelargeArry.push(a);
+          // }
+      });
     },
     //保存图片标注信息
     saveimageinfo: function (markinfo, imageeindex) {
@@ -412,8 +444,15 @@ export default {
           });
         _this.requireimage();
         _this.requiretag().then(function(){
-          if(_this.nopnum==1) _this.nownum++;
-          if(_this.nopnum==2) _this.nownum--;
+          if(_this.nopnum==1) {
+            _this.nownum++;
+            _this.isnowlabel();
+          }
+          if(_this.nopnum==2) {
+            _this.nownum--;
+            _this.isnowlabel();
+          }
+          
           _this.unable=false;
         });
 
