@@ -163,6 +163,7 @@ export default {
     entermark(index){
       console.log("faaaaaaaaaaaatherenter!")
       this.nownum=index;
+      this.isnowlabel();
       this.isimageview=!this.isimageview;
     },
     returnimageview(){
@@ -232,6 +233,19 @@ export default {
     closebutton: function(){
       console.log("fatherdisbtnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
       this.isdisablebutton=!this.isdisablebutton
+    },
+    //post修改正在标注标识
+    isnowlabel:function(){
+      let _this = this;
+      return request({
+        url:
+          "http://192.168.19.207:8085/label/setLabeling?uuid="+this.uuidArry[this.nownum],
+        method: "post",
+        //timeout:_this.lastinfoArry.length*5000,
+        //params: query
+      }).then(function (response) {
+        console.log(response);
+      })
     },
     //保存图片标注信息
     saveimageinfo: function (markinfo, imageeindex) {
@@ -450,8 +464,14 @@ export default {
           });
         _this.requireimage();
         _this.requiretag().then(function(){
-          if(_this.nopnum==1) _this.nownum++;
-          if(_this.nopnum==2) _this.nownum--;
+          if(_this.nopnum==1) {
+            _this.nownum++;
+            _this.isnowlabel();
+          }
+          if(_this.nopnum==2) {
+            _this.nownum--;
+            _this.isnowlabel();
+          }
           _this.unable=false;
         });;
       }).catch(function(error){
