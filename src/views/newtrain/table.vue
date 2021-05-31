@@ -84,8 +84,7 @@
             @click="handleStop(scope.$index, scope.row)">终止</el-button>
           <el-button
             size="mini"
-            @click="handleDelete(scope.$index, scope.row)">
-            删除</el-button>
+            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
           <el-button
             size="mini"
             @click="handleShow()">可视化</el-button>
@@ -135,8 +134,8 @@
       </span>
     </el-dialog>
     <!-- 创建任务对话框 -->
-    <el-dialog title="任务信息" :visible.sync="dialogFormVisible" :show-close="false">
-      <el-form :model="taskForm" :rules="rules" ref="taskForm" label-width="100px" class="demo-taskForm">
+    <el-dialog title="任务信息" :visible.sync="dialogFormVisible" :show-close="true" >
+      <el-form :model="taskForm" :rules="rules" ref="taskForm" label-width="100px" class="demo-taskForm" v-if="dialogFormVisible">
         <el-form-item label="任务名称" prop="name">
           <el-input v-model="taskForm.name"></el-input>
         </el-form-item>
@@ -144,7 +143,7 @@
           <el-input type="textarea" v-model="taskForm.description"></el-input>
         </el-form-item>
         <el-form-item label="算法来源" prop="algorithm">
-          <el-select v-model="taskForm.algorithm" placeholder="请选择" @change="currentAlgorithm = taskForm.algorithm">
+          <el-select v-model="taskForm.algorithm" placeholder="请选择" @change="cachange(taskForm.algorithm)">
             <div style="height:200px;" class="scrollbar">
               <el-scrollbar style="height:100%;">
                <el-option v-for="(item, index) in algorithmArray" :key="index"
@@ -176,19 +175,33 @@
             </div>
           </el-select>
         </el-form-item>
-        <el-form-item label="参数选择">
+        <el-form-item label="参数选择" >
           <el-form>
             <div style="height:150px; " class="scrollbar">
               <!-- <el-scrollbar style="height:100%; "> -->
                 <el-form-item v-for="(item, index) in paraNameList[currentAlgorithm]" :key="index">
-                  <el-input  autocomplete="off" style="width: 35%;" :value=item></el-input>
+                  <p sty autocomplete="off" style="width: 15%;display: inline-block" >{{item}}</p>
                   <b style="margin-left:15px;">=</b>
-                  <el-input autocomplete="off" style="width: 35%; margin-left:15px;" v-model=paraValueList[currentAlgorithm][index]>
+                  <el-input autocomplete="off" style="width: 35%; margin-left:15px;"  v-model=paraValueList[currentAlgorithm][index]>
                   </el-input>
                 </el-form-item>
+                <div v-if="isdisplaytl">
+                <p sty autocomplete="off" style="width: 15%;display: inline-block" >transferLearning</p>
+                <b style="margin-left:15px;" >=</b>
+                <el-select v-model="transferLearningValue" placeholder="请选择" style="width: 35%; margin-left:15px;" >
+                  <div style="height:150px;" class="scrollbar" >
+                    <el-scrollbar style="height:100%;">
+                      <el-option v-for="(item, index) in transferLearningList" :key="index"
+                      :label="item" :value="item">
+                      </el-option>
+                    </el-scrollbar>
+                  </div>
+                </el-select>
+                </div>
               <!-- </el-scrollbar> -->
             </div>
           </el-form>
+
         </el-form-item>
         
       </el-form>
@@ -215,7 +228,7 @@ export default {
         statusoptions:['未开始', '初始化','运行中', '结束成功', '结束失败'],
         selectedstatus:'5',//顶部选择的状态
         tableData:[],
-        
+        //currentAlgorithm = taskForm.algorithm">
         //可视化部分数据
         drawData:{
           first:{
@@ -266,7 +279,7 @@ export default {
           "DeepSpeech-TensorFlow"
         ],
         paraNameList:[//六个算法的参数名称
-            ['epoch','batchsize','imgsize','epoch','batchsize'],
+            ['epoch','batchsize'],
             ['epoch','batchsize','imgsize','epoch'],
             ['epoch','batchsize','imgsize'],
             ['epoch','batchsize'],
@@ -274,12 +287,20 @@ export default {
 
           ],
         paraValueList:[//六个算法的参数数值
-            ['2','5','640','2','5'],
+            ['2','5'],
             ['2','5','640','2'],
             ['2','5','640'],
             ['2','5'],
             ['2','5'],
         ],
+        transferLearningList:[//transferLearning参数
+          "none",
+          "darknet",
+          "no_output",
+          "fine_tune",
+          "frozen",
+        ],
+        transferLearningValue:"none",
         initialPara:{
           inputData:{
             name:[],
@@ -288,7 +309,7 @@ export default {
           outpath:[],
         },//创建任务时从后台传入的数据源和输出路径
         currentAlgorithm:0,//创建任务时目前选中的代码
-
+        isdisplaytl:false,
 
         //和后台交互传递的各种参数
         selectPara:{//顶部下拉框传递的参数
@@ -328,6 +349,15 @@ export default {
     },
 
     methods: {
+      cachange(testdata){
+        this.currentAlgorithm=testdata;
+        if(testdata==0) this.isdisplaytl=true;
+        else this.isdisplaytl=false;
+      },
+      clearForm(){
+        this.isdisplaytl=false;
+        this.$refs['taskForm'].resetFields()
+      },
       //主页面部分
       searchTask(){//输入框查询
       let tmp = {
@@ -549,14 +579,23 @@ export default {
       //创建任务部分
       create(taskForm){//提交创建
         this.$refs[taskForm].validate((valid) => {
+          console.log("vaild",valid)
           if (valid) {
             alert('创建成功!');
             this.dialogFormVisible = false
           } else {
             console.log('创建失败!!');
-            return false;
+            return callback();
           }
         })
+        
+        let temlist1 = JSON.parse(JSON.stringify(this.paraNameList[this.taskForm.algorithm]))
+        let temlist2 = JSON.parse(JSON.stringify(this.paraValueList[this.taskForm.algorithm]))
+        if(this.isdisplaytl) {
+          temlist1.push("transferLearning")
+          temlist2.push(this.transferLearningValue)
+        }
+        console.log(this.paraNameList[this.taskForm.algorithm],"das",this.paraValueList[this.taskForm.algorithm])
         this.taskForm.paras.push(this.paraNameList[this.taskForm.algorithm])
         this.taskForm.paras.push(this.paraValueList[this.taskForm.algorithm])
 
@@ -568,7 +607,8 @@ export default {
         this.taskPara.user_id = JSON.stringify(this.taskForm.user_id)
         this.taskPara.uuid = this.taskForm.uuid
         this.taskPara.path = this.taskForm.outpath
-
+        this.isdisplaytl=false
+        //console.log(this.isdisplaytl);
         //console.log(this.taskPara)
         submitTask(this.taskPara).then(res => {
           console.log(res.data)
