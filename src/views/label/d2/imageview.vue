@@ -442,6 +442,7 @@ export default {
           duration:300,
           type: 'success'
           });
+        console.log("save success!!!!!!!!!!!!!!")
         _this.requireimage();
         _this.requiretag().then(function(){
           if(_this.nopnum==1) {

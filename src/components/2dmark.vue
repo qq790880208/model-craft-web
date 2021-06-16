@@ -765,8 +765,8 @@ export default {
             else this.boxArry[this.b_i].width = 1;
             if (top < oheight) this.boxArry[this.b_i].height = oheight - top;
             else this.boxArry[this.b_i].height = 1;
-            this.labelArry[this.b_i].x1 =
-              this.boxArry[this.b_i].left / this.scalewidth;
+            // this.labelArry[this.b_i].x1 =
+            //   this.boxArry[this.b_i].left / this.scalewidth;
             this.labelArry[this.b_i].y1 =
               this.boxArry[this.b_i].top / this.scaleheight;
             if (left > 0)
@@ -777,14 +777,14 @@ export default {
               this.labelArry[this.b_i].x2 =
                 (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
                 this.scalewidth;
-            if (top < oheight)
-              this.labelArry[this.b_i].y2 =
-                (this.scaleheight * this.labelArry[this.b_i].y1 + top + 7) /
-                this.scaleheight;
-            else
-              this.labelArry[this.b_i].y2 =
-                (this.scaleheight * this.labelArry[this.b_i].y1 + 1) /
-                this.scaleheight;
+            // if (top < oheight)
+            //   this.labelArry[this.b_i].y2 =
+            //     (this.scaleheight * this.labelArry[this.b_i].y1 + top + 7) /
+            //     this.scaleheight;
+            // else
+            //   this.labelArry[this.b_i].y2 =
+            //     (this.scaleheight * this.labelArry[this.b_i].y1 + 1) /
+            //     this.scaleheight;
           }
           if (mtype === 3) {
             //左下角的点
@@ -798,16 +798,16 @@ export default {
             else this.boxArry[this.b_i].height = 1;
             this.labelArry[this.b_i].x1 =
               this.boxArry[this.b_i].left / this.scalewidth;
-            this.labelArry[this.b_i].y1 =
-              this.boxArry[this.b_i].top / this.scaleheight;
-            if (left < owidth)
-              this.labelArry[this.b_i].x2 =
-                (this.scalewidth * this.labelArry[this.b_i].x1 + left + 7) /
-                this.scalewidth;
-            else
-              this.labelArry[this.b_i].x2 =
-                (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
-                this.scalewidth;
+            // this.labelArry[this.b_i].y1 =
+            //   this.boxArry[this.b_i].top / this.scaleheight;
+            // if (left < owidth)
+            //   this.labelArry[this.b_i].x2 =
+            //     (this.scalewidth * this.labelArry[this.b_i].x1 + left + 7) /
+            //     this.scalewidth;
+            // else
+            //   this.labelArry[this.b_i].x2 =
+            //     (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
+            //     this.scalewidth;
             if (top > 0)
               this.labelArry[this.b_i].y2 =
                 (this.scaleheight * this.labelArry[this.b_i].y1 + top + 7) /
@@ -892,6 +892,7 @@ export default {
                 (this.scaleheight * this.labelArry[this.b_i].y1 + 1) /
                 this.scaleheight;
           }
+          //console.log("thisbox","x1",this.labelArry[this.b_i].x1,"y1",this.labelArry[this.b_i].y1,"x2",this.labelArry[this.b_i].x2,"y2",this.labelArry[this.b_i].y2)
         }
       };
       document.onmouseup = (e) => {
