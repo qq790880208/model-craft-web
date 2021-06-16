@@ -7,7 +7,7 @@ export function getListByPage(params) {
     url: '/log/findPage',
     method: 'get',
     params: params,
-    baseURL: 'http://192.168.19.207:8083'
+    baseURL: 'http://10.19.1.77:8083'
   })
 }
 
@@ -16,6 +16,6 @@ export function batchRemoveList(params) {
         url: '/log/delete',
         method: 'delete',
         params: params,
-        baseURL: 'http://192.168.19.207:8083'
+        baseURL: 'http://10.19.1.77:8083'
     })
 }

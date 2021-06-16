@@ -5,7 +5,7 @@ export function startTask(query){
     method:'post',
     params: query,
     //baseURL: 'http://localhost:9528/dev-api'
-    baseURL: 'http://192.168.19.237:8084'
+    baseURL: 'http://10.19.1.181:8084'
   })
 }
 
@@ -15,7 +15,7 @@ export function stopTask(query){
     method:'post',
     params: query,
     //baseURL: 'http://localhost:9528/dev-api'
-    baseURL: 'http://192.168.19.237:8084'
+    baseURL: 'http://10.19.1.181:8084'
   })
 }
 
@@ -25,7 +25,7 @@ export function deleteTask(query){
     method:'delete',
     params: query,
     //baseURL: 'http://localhost:9528/dev-api'
-    baseURL: 'http://192.168.19.237:8084'
+    baseURL: 'http://10.19.1.181:8084'
   })
 }
 
@@ -34,7 +34,7 @@ export function showLog(){
     url:'/train/log',
     method:'post',
     //baseURL: 'http://localhost:9528/dev-api'
-    baseURL: 'http://192.168.19.237:8084'
+    baseURL: 'http://10.19.1.181:8084'
   })
 }
 
@@ -51,7 +51,7 @@ export function search(query){//输入框查询
     params:query,
     url:'/train/search',
     method:'get',
-    baseURL: 'http://192.168.19.237:8084'
+    baseURL: 'http://10.19.1.181:8084'
   })
 }
 
@@ -78,7 +78,7 @@ export function submitTask(query){
     url:'/train',
     method:'post',
     data: query,
-    baseURL: 'http://192.168.19.237:8084'
+    baseURL: 'http://10.19.1.181:8084'
   })
 }
 
@@ -96,7 +96,7 @@ export function getTableData1(query){
     params:query,
     url:'/train',
     method:'get',
-    baseURL: 'http://192.168.19.237:8084'
+    baseURL: 'http://10.19.1.181:8084'
   })
 }
 
@@ -105,6 +105,6 @@ export function getDataByName(params) {//创建任务时获取数据集
       url: '/data/getdataSet',
       method: 'get',
       params: params,
-      baseURL: 'http://192.168.19.207:8085'
+      baseURL: 'http://10.19.1.77:8085'
     })
   }
