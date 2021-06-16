@@ -76,9 +76,9 @@
         </div>
         <el-row>
           <div class="teamuserButton">
-            <!-- <el-button type="primary" style="float:left;" size="mini" plain :disabled="idLabel !=='TeamManager'" @click="handleAddUser">新增成员</el-button> -->
-            <el-button type="primary" style="float:left;" size="mini" plain :disabled="idLabel !=='TeamManager'" @click="handleAddUser">新增成员</el-button>
-            <el-button type="danger" size="mini" plain :disabled="seles.length===0 || idLabel !=='TeamManager'" style="float: left" @click="batchRemove">批量删除</el-button>
+            <!-- <el-button type="primary" style="float:left;" size="mini" plain :disabled="idLabel !=='团队管理员'" @click="handleAddUser">新增成员</el-button> -->
+            <el-button type="primary" style="float:left;" size="mini" plain :disabled="idLabel !=='团队管理员'" @click="handleAddUser">新增成员</el-button>
+            <el-button type="danger" size="mini" plain :disabled="seles.length===0 || idLabel !=='团队管理员'" style="float: left" @click="batchRemove">批量删除</el-button>
           </div>
         </el-row>
         <div class="teamUserMessage">
@@ -86,7 +86,7 @@
             style="width: 100%; font-size: 10px" border
             @selection-change="selChange"
             :cell-style="{padding: '8px'}">
-            <el-table-column type="selection" align="center" width="60" :disabled=" idLabel !=='TeamManager'" />
+            <el-table-column type="selection" align="center" width="60" :disabled=" idLabel !=='团队管理员'" />
             <el-table-column align="center" label="用户名字" show-overflow-tooltip width="130" sortable>
               <template slot-scope="scope">
                 {{ scope.row.name }}
@@ -114,8 +114,8 @@
             </el-table-column>
             <el-table-column align="left" label="操作" min-width="150">
               <template slot-scope="scope">
-                <el-button class="me" size="mini" :disabled="idLabel !=='TeamManager'" @click="handleEditUser(scope.$index, scope.row)">编辑</el-button>
-                <el-button class="me" size="mini" :disabled="idLabel !=='TeamManager'" @click="handleDeleteUser(scope.$index, scope.row)">删除</el-button>
+                <el-button class="me" size="mini" :disabled="idLabel !=='团队管理员'" @click="handleEditUser(scope.$index, scope.row)">编辑</el-button>
+                <el-button class="me" size="mini" :disabled="idLabel !=='团队管理员'" @click="handleDeleteUser(scope.$index, scope.row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -234,7 +234,7 @@ export default {
       teamsList: [],
       rolesList: [],
       userTotal: 0,
-      statusOptions: ['Label', 'TeamManager'],
+      statusOptions: ['Label', '团队管理员'],
       idLabel: '',
       dialogStatus: '',
       dialogStatusUser: '',
@@ -303,7 +303,7 @@ export default {
       }
     },
     mouseOver: function() {
-      if (this.isRole !== 'admin' || this.idLabel !== 'TeamManager') {
+      if (this.isRole !== 'admin' || this.idLabel !== '团队管理员') {
         this.flag = true
       } else {
         this.flag = false

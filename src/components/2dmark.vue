@@ -5,13 +5,10 @@
       userSelect: 'none',
     }"
   >
-    <div
-      :style="{
+    <div :style="{
         //background: 'rgb(192, 192, 192)',
         //width:this.imagewidth+'px',
-        display: 'block',
-      }"
-    >
+        display: 'block',}">
       <div
         :style="{
           //background: 'rgb(192, 192, 192)',
@@ -65,16 +62,18 @@
     >
       <div
         :style="{
-          Width: 1000 + 'px',
-          Height: 1000 + 'px',
-          display:'inline-block'
+          maxWidth: 1000 + 'px',
+          maxHeight: 1000 + 'px',
+          //display:flex
         }"
       >
         <div
           class="content"
           :style="{
-            width: this.imagewidth + 'px',
-            height: this.imageheight + 'px',
+            //width: this.imagewidth + 'px',
+            //height: this.imageheight + 'px',
+            width: 1000 + 'px',
+            height: 750 + 'px',
             //float: 'left',
             display: 'inline-block',
             marginLeft: 0 + 'px',
@@ -86,8 +85,12 @@
             :style="{
               transform: 'scale(' + num + ')',
               position: 'relative',
-              width: '100%',
-              height: '100%',
+              //width: '100%',
+              //height: '100%',
+              width: this.imagewidth + 'px',
+              height: this.imageheight + 'px',
+              marginLeft: this.mleft + 'px',
+              marginTop: this.mtop + 'px',
               display: 'inline-block',
               //float:left
             }"
@@ -112,7 +115,7 @@
                 left: item.left + 'px',
                 top: item.top + 'px',
                 //background: item.mymarkcolor,
-                background: 'rgba(43,100,206,0.5)',
+                background: item.color,
                 //border: '5px solid #666',
                 border: 'none',
               }"
@@ -128,41 +131,77 @@
           <div class="bc" @mousedown.stop="move(false,8, $event)" v-if="b_i == index"> {{ index + 1 }} </div> -->
               <div
                 class="ltc"
+                :style="{
+                  width:item.width>30?item.height>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
+                  height:item.height>30?item.width>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
+                }"
                 @mousedown.stop="move(false, 1, $event)"
                 v-if="b_i == index"
               ></div>
               <div
                 class="rtc"
+                :style="{
+                  width:item.width>30?item.height>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
+                  height:item.height>30?item.width>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
+                }"
                 @mousedown.stop="move(false, 2, $event)"
                 v-if="b_i == index"
               ></div>
               <div
                 class="lbc"
+                :style="{
+                  width:item.width>30?item.height>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
+                  height:item.height>30?item.width>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
+                }"
                 @mousedown.stop="move(false, 3, $event)"
                 v-if="b_i == index"
               ></div>
               <div
                 class="rbc"
+                :style="{
+                  width:item.width>30?item.height>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
+                  height:item.height>30?item.width>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
+                }"
                 @mousedown.stop="move(false, 4, $event)"
                 v-if="b_i == index"
               ></div>
               <div
                 class="tc"
+                :style="{
+                  width:item.width>30?item.height>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
+                  height:item.height>30?item.width>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
+                  left:item.width>30?(item.width-6)/2+'px':(item.width-4)/2+'px',
+                }"
                 @mousedown.stop="move(false, 5, $event)"
                 v-if="b_i == index"
               ></div>
               <div
                 class="lc"
+                :style="{
+                  width:item.width>30?item.height>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
+                  height:item.height>30?item.width>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
+                  top:item.height>30?(item.height-6)/2+'px':(item.height-4)/2+'px',
+                }"
                 @mousedown.stop="move(false, 6, $event)"
                 v-if="b_i == index"
               ></div>
               <div
                 class="rc"
+                :style="{
+                  width:item.width>30?item.height>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
+                  height:item.height>30?item.width>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
+                  top:item.height>30?(item.height-6)/2+'px':(item.height-4)/2+'px',
+                }"
                 @mousedown.stop="move(false, 7, $event)"
                 v-if="b_i == index"
               ></div>
               <div
                 class="bc"
+                :style="{
+                  width:item.width>30?item.height>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
+                  height:item.height>30?item.width>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
+                  left:item.width>30?(item.width-6)/2+'px':(item.width-4)/2+'px',
+                }"
                 @mousedown.stop="move(false, 8, $event)"
                 v-if="b_i == index"
               ></div>
@@ -260,65 +299,10 @@ export default {
   //   console.log("2dmarkddddddddddddddddddddddddddddddddddddddddddddddddddddd")
   // },
   mounted: function () {
-    //加载时获取图片分辨率并设置div大小为图片的大小（有缩放）
-    let image = new Image();
-    image.src = this.imagesrc;
-    // if(image.width===0&&image.height===0){
-    //   console("reread")
-    // image.src = null;
-    // image.src = this.imagesrc;
-    // }
-    //保证图片加载完成之后读取数据
-    image.onload = () => {
-      console.log("image onload ");
-      this.imagewidth = image.width;
-      this.imageheight = image.height;
-      this.scalewidth = 1;
-      this.scaleheight = 1;
-      // if (image.width < 600 && image.height < 600) {
-      //   this.imagewidth = image.width * 1.5;
-      //   this.imageheight = image.height * 1.5;
-      //   this.scalewidth = 1.5;
-      //   this.scaleheight = 1.5;
-      // } else {
-      //   this.imagewidth = image.width;
-      //   this.imageheight = image.height;
-      //   this.scalewidth = 1;
-      //   this.scaleheight = 1;
-      // }
-      if (image.width < 600 && image.height < 600) {
-        while(this.imagewidth < 600 && this.imageheight < 600) {
-          this.imagewidth *=1.5;
-          this.imageheight *=1.5;
-          this.scalewidth *=1.5;
-          this.scaleheight *=1.5;
-        }
-      }
-      if(image.width > 1000 || image.height > 1000){
-          while(this.imagewidth > 1000 || this.imageheight > 1000) {
-          this.imagewidth /=1.5;
-          this.imageheight /=1.5;
-          this.scalewidth /=1.5;
-          this.scaleheight /=1.5;
-        }
-      }
-      console.log("thisssssssssssssssss.imagewidth",this.imagewidth);
-      console.log(this.imageheight);
-      console.log(this.scalewidth);
-      console.log(this.scaleheight);
-      (this.boxArry = []), (this.labelArry = []), (this.num = 1);
-      this.updatelastdata();
-    };
-    ////////////////
-    for (let i = 0; i < this.premarktype.length; i++) {
-      let a = {};
-      a["value"] = i;
-      a["label"] = this.premarktype[i].name;
-      this.markinfoArry.push(a);
-      //this.markcolorArry.push(this.premarktype[i].color)
-    }
-    console.log("markinfoArry", this.markinfoArry);
-    /////////////////////
+    this.imagechange();
+    this.defaultlabel=this.premarktype[0].name;
+    this.defaultcolor=this.premarktype[0].color;
+    //this.updatelastdata();
   },
   components: {
     labelinfo,
@@ -331,55 +315,8 @@ export default {
   watch: {
     //监听图片变化
     imagesrc() {
-      //加载时获取图片分辨率并设置div大小为图片的大小（有缩放）
-      let image = new Image();
-      image.src = this.imagesrc;
-      // if(image.width===0&&image.height===0){
-      //   console("reread")
-      // image.src = null;
-      // image.src = this.imagesrc;
-      // }
-      //保证图片加载完成之后读取数据
-      image.onload = () => {
-        console.log("image onload ");
-      this.imagewidth = image.width;
-      this.imageheight = image.height;
-      this.scalewidth = 1;
-      this.scaleheight = 1;
-      // if (image.width < 600 && image.height < 600) {
-      //   this.imagewidth = image.width * 1.5;
-      //   this.imageheight = image.height * 1.5;
-      //   this.scalewidth = 1.5;
-      //   this.scaleheight = 1.5;
-      // } else {
-      //   this.imagewidth = image.width;
-      //   this.imageheight = image.height;
-      //   this.scalewidth = 1;
-      //   this.scaleheight = 1;
-      // }
-      if (image.width < 800 && image.height < 800) {
-        while(this.imagewidth < 800 && this.imageheight < 800) {
-          this.imagewidth *=1.1;
-          this.imageheight *=1.1;
-          this.scalewidth *=1.1;
-          this.scaleheight *=1.1;
-        }
-      }
-      if(image.width > 1000 || image.height > 1000){
-          while(this.imagewidth > 1000 || this.imageheight > 1000) {
-          this.imagewidth /=1.1;
-          this.imageheight /=1.1;
-          this.scalewidth /=1.1;
-          this.scaleheight /=1.1;
-        }
-      }
-      console.log("thisssssssssssssssss.imagewidth",this.imagewidth);
-      console.log(this.imageheight);
-      console.log(this.scalewidth);
-      console.log(this.scaleheight);
-        (this.boxArry = []), (this.labelArry = []), (this.num = 1);
-        this.updatelastdata();
-      };
+      this.imagechange();
+      //this.updatelastdata();
     },
   },
   data() {
@@ -387,6 +324,7 @@ export default {
       radio: "mark",
       num: 1,
       defaultlabel:null,
+      defaultcolor:null,
       imagewidth: 800, //图片宽度像素数
       imageheight: 800, //图片高度像素数
       scalewidth: null, //图片宽度缩放倍数
@@ -398,6 +336,8 @@ export default {
       //imagesrc:require('@/'+this.fatherimagesrc+'.jpg'),
       isTrue: false, //移动标注和缩放标注的切换标识
       isTrue2: false, //拖动图片和标注的切换标识
+      mleft:0,
+      mtop:0,
       width: "",
       height: "",
       left: "",
@@ -433,8 +373,65 @@ export default {
         }
       });
     },
+    imagechange(){
+          //加载时获取图片分辨率并设置div大小为图片的大小（有缩放）
+          console.log("imagechange!")
+    let image = new Image();
+    image.src = this.imagesrc;
+    // if(image.width===0&&image.height===0){
+    //   console("reread")
+    // image.src = null;
+    // image.src = this.imagesrc;
+    // }
+    //保证图片加载完成之后读取数据
+    image.onload = () => {
+      console.log("image onload ");
+      this.imagewidth = image.width;
+      this.imageheight = image.height;
+      this.scalewidth = 1;
+      this.scaleheight = 1;
+      
+      // if (image.width < 600 && image.height < 600) {
+      //   this.imagewidth = image.width * 1.5;
+      //   this.imageheight = image.height * 1.5;
+      //   this.scalewidth = 1.5;
+      //   this.scaleheight = 1.5;
+      // } else {
+      //   this.imagewidth = image.width;
+      //   this.imageheight = image.height;
+      //   this.scalewidth = 1;
+      //   this.scaleheight = 1;
+      // }
+      if (image.width < 800 && image.height < 600) {
+        while(this.imagewidth < 800 && this.imageheight < 600) {
+          this.imagewidth *=1.1;
+          this.imageheight *=1.1;
+          this.scalewidth *=1.1;
+          this.scaleheight *=1.1;
+        }
+      }
+      if(image.width > 1000 || image.height > 750){
+          while(this.imagewidth > 1000 || this.imageheight > 750) {
+          this.imagewidth /=1.1;
+          this.imageheight /=1.1;
+          this.scalewidth /=1.1;
+          this.scaleheight /=1.1;
+        }
+      }
+      this.mleft=(1000-this.imagewidth)/2
+      this.mtop=(750-this.imageheight)/2
+      console.log("thisssssssssssssssss.imagewidth",this.imagewidth);
+      console.log(this.imageheight);
+      console.log(this.scalewidth);
+      console.log(this.scaleheight);
+      (this.boxArry = []), (this.labelArry = []);
+      this.updatelastdata();
+      this.huanyuan();
+    }
+    },
     updatelastdata() {
       //将从后台读取到的标注信息更新在前端
+      console.log("update!")
       console.log("image select lastlabelArry", this.lastlabelArry);
       this.b_i = -1;
       this.boxArry = [];
@@ -448,11 +445,13 @@ export default {
         let height = Number(
           this.lastlabelArry[i].y2 - this.lastlabelArry[i].y1
         );
+        this.findcolor(this.lastlabelArry[i].info)
         this.boxArry.push({
           width: width * this.scalewidth,
           height: height * this.scaleheight,
           left: left * this.scalewidth,
           top: top * this.scaleheight,
+          color: this.markcolor
         });
         console.log("llllllllll", left, top, width, height);
         this.labelArry.push({
@@ -462,16 +461,16 @@ export default {
           y2: top + height,
           info: this.lastlabelArry[i].info,
         });
+        console.log("scale!",this.scalewidth,this.scaleheight)
         console.log("42343423423423fsdd", this.labelArry[i]);
         //this.labelArry.push(this.lastlabelArry[i])
       }
-      this.defaultlabel=this.premarktype[0].name;
-      for (let i = 0; i < this.premarktype.length; i++) {
+      for(let i =0;i<this.premarktype.length;i++){
         let a = {};
         a["value"] = i;
         a["label"] = this.premarktype[i].name;
+        a["color"] = this.premarktype[i].color;
         this.markinfoArry.push(a);
-        //this.markcolorArry.push(this.premarktype[i].color)
       }
       console.log("markinfoArry", this.markinfoArry);
       //console.log("markcolorArry", this.markcolorArry);
@@ -505,6 +504,7 @@ export default {
         this.tempArry[1],
         this.tempArry[2]
       );
+      console.log("22222zzzzz", this.tempArry);
       this.tempArry = [];
       console.log("22222", this.tempArry);
       //  this.$emit('saveimageinfo',this.boxArry,this.fatherimagesrc,this.imageindex)
@@ -522,6 +522,8 @@ export default {
       //保存标注信息
       //console.log("father"+input,i)
       this.labelArry[i].info = input;
+      this.findcolor(this.labelArry[i].info);
+      this.boxArry[i].color = this.markcolor;
     },
     gai() {
       this.isTrue2 = !this.isTrue2;
@@ -542,7 +544,7 @@ export default {
       console.log("dsadasdasdsadsadasdasdsadsad", this.radio);
       odiv.style.left = this.imageleft + "px";
       odiv.style.top = this.imagetop + "px";
-      console.log(odiv);
+      //console.log(odiv);
       this.b_i = -1;
       console.log(
         "this.imageleft",
@@ -553,9 +555,11 @@ export default {
       //拖动图片的相对位置
       let left2 = this.imageleft;
       let top2 = this.imagetop;
+      let left3 = this.mleft;
+      let top3 = this.mtop;
       //算出鼠标相对元素的位置
-      let disX = e.clientX + this.imageleft - odiv.offsetLeft;
-      let disY = e.clientY + this.imagetop - odiv.offsetTop;
+      let disX = e.clientX + left2 + left3 - odiv.offsetLeft;
+      let disY = e.clientY + top2 + top3 - odiv.offsetTop;
       //  let disX = (e.clientX - odiv.offsetLeft) / this.num;
       //  let disY = (e.clientY - odiv.offsetTop) / this.num;
       console.log("disxy", disX, disY);
@@ -602,19 +606,24 @@ export default {
           //  let top = disY - odiv.getBoundingClientRect().y;
           let left = (disX - odiv.getBoundingClientRect().x) / this.num;
           let top = (disY - odiv.getBoundingClientRect().y) / this.num;
+          console.log("testttttttttt",odiv.getBoundingClientRect().x);
           //console.log("this.imageleft",this.imageleft,"this.imagetop",this.imagetop);
           console.log(e.target.offsetLeft);
-          this.width = (e.clientX - disX) / this.num;
-          this.height = (e.clientY - disY) / this.num;
+          let Dnumberx=e.clientX - disX;
+          let Dnumbery=e.clientY - disY;
+          this.width = Math.abs(Dnumberx) / this.num;
+          this.height = Math.abs(Dnumbery) / this.num;
           this.biaozhuWidth = this.width;
           this.biaozhuHeight = this.height;
-          this.biaozhuLeft = left;
-          this.biaozhuTop = top;
+          if(Dnumberx>=0) this.biaozhuLeft = left;
+          else this.biaozhuLeft = left+Dnumberx / this.num;
+          if(Dnumbery>=0) this.biaozhuTop = top;
+          else this.biaozhuTop = top+Dnumbery / this.num;
           document.onmouseup = (e) => {
             let left = (disX - odiv.getBoundingClientRect().x) / this.num;
             let top = (disY - odiv.getBoundingClientRect().y) / this.num;
-            this.width = (e.clientX - disX) / this.num;
-            this.height = (e.clientY - disY) / this.num;
+            this.width = Math.abs(Dnumberx) / this.num;
+            this.height = Math.abs(Dnumbery) / this.num;
 
             console.log(e.target.getBoundingClientRect(), disX, disY);
 
@@ -622,14 +631,15 @@ export default {
               this.boxArry.push({
                 width: this.width,
                 height: this.height,
-                left: left,
-                top: top,
+                left: Dnumberx>=0?left:left+Dnumberx/ this.num,
+                top: Dnumbery>=0?top:top+Dnumbery/ this.num,
+                color:this.defaultcolor,
               });
               this.labelArry.push({
-                x1: left / this.scalewidth,
-                y1: top / this.scaleheight,
-                x2: (left + this.width) / this.scalewidth,
-                y2: (top + this.height) / this.scaleheight,
+                x1: Dnumberx>=0?left / this.scalewidth:(left+Dnumberx/ this.num) / this.scalewidth,
+                y1: Dnumbery>=0?top / this.scaleheight:(top+Dnumbery/ this.num) / this.scaleheight,
+                x2: Dnumberx>=0?(left + this.width) / this.scalewidth:left / this.scalewidth,
+                y2: Dnumbery>=0?(top + this.height) / this.scaleheight:top / this.scaleheight,
                 info: this.defaultlabel,
               });
               //完成标注
@@ -672,27 +682,27 @@ export default {
         //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
         let left = (e.clientX - disX) / this.num;
         let top = (e.clientY - disY) / this.num;
-        console.log(
-          "owidth",
-          owidth,
-          "oleft",
-          oleft,
-          "left",
-          left,
-          "oheight",
-          oheight,
-          "otop",
-          otop,
-          "top",
-          top
-        );
-        console.log(
-          "width",
-          this.boxArry[this.b_i].width,
-          "height",
-          this.boxArry[this.b_i].height
-        );
-        //绑定元素位置到positionX和positionY上面
+        // console.log(
+        //   "owidth",
+        //   owidth,
+        //   "oleft",
+        //   oleft,
+        //   "left",
+        //   left,
+        //   "oheight",
+        //   oheight,
+        //   "otop",
+        //   otop,
+        //   "top",
+        //   top
+        // );
+        // console.log(
+        //   "width",
+        //   this.boxArry[this.b_i].width,
+        //   "height",
+        //   this.boxArry[this.b_i].height
+        // );
+        // //绑定元素位置到positionX和positionY上面
         //  this.positionX = top * this.num;
         //  this.positionY = left * this.num;
         //  console.log(this.positionX,this.positionY)

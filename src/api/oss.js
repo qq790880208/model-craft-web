@@ -5,7 +5,7 @@ export function listBucket() {
         url: '/minio-service/listBucketname',
         method: 'get',
         //baseURL: 'http://localhost:8089'
-        baseURL: 'http://192.168.19.207:8089'
+        baseURL: 'http://10.19.1.77:8089'
     })
 }
 
@@ -14,7 +14,7 @@ export function listObject(params) {
         url: '/minio-service/listObjectByPrefix',
         method: 'get',
         params: params,
-        baseURL: 'http://192.168.19.207:8089'
+        baseURL: 'http://10.19.1.77:8089'
     })
 }
 
@@ -23,7 +23,7 @@ export function listObjectByPrefix(params) {
         url: '/minio-service/listObjectByPrefix',
         method: 'get',
         params: params,
-        baseURL: 'http://192.168.19.207:8089'
+        baseURL: 'http://10.19.1.77:8089'
     })
 }
 
@@ -32,7 +32,7 @@ export function createBucket(params) {
         url: '/minio-service/createBucket',
         method: 'get',
         params: params,
-        baseURL: 'http://192.168.19.207:8089'
+        baseURL: 'http://10.19.1.77:8089'
     })
 }
 
@@ -41,7 +41,7 @@ export function removeBucket(params) {
         url: '/minio-service/removeBucket',
         method: 'get',
         params: params,
-        baseURL: 'http://192.168.19.207:8089'
+        baseURL: 'http://10.19.1.77:8089'
     })
 }
 
@@ -50,7 +50,7 @@ export function removeFile(params) {
         url: '/minio-service/removeFile',
         method: 'get',
         params: params,
-        baseURL: 'http://192.168.19.207:8089'
+        baseURL: 'http://10.19.1.77:8089'
     })
 }
 
@@ -61,7 +61,7 @@ export function upload(formData) {
         data: formData,
         headers: {"Content-Type": "multipart/form-data;charset=utf-8"},
         timeout:1000000,
-        baseURL: 'http://192.168.19.207:8089'
+        baseURL: 'http://10.19.1.77:8089'
     })
 }
 
@@ -71,7 +71,7 @@ export function uploadNew(formData) {
         method: 'post',
         data: formData,
         headers: {"Content-Type": "multipart/form-data;charset=utf-8"},
-        baseURL: 'http://192.168.19.207:8089'
+        baseURL: 'http://10.19.1.77:8089'
     })
 }
 
@@ -80,7 +80,7 @@ export function createFolder(params) {
         url: '/minio-service/createFolder',
         method: 'get',
         params: params,
-        baseURL: 'http://192.168.19.207:8089'
+        baseURL: 'http://10.19.1.77:8089'
     })
 }
 
@@ -89,7 +89,7 @@ export function listFolder(params) {
         url: '/minio-service/listFolder',
         method: 'get',
         params: params,
-        baseURL: 'http://192.168.19.207:8089'
+        baseURL: 'http://10.19.1.77:8089'
     })
 }
 
@@ -98,7 +98,7 @@ export function fileRename(params) {
         url: '/minio-service/fileRename',
         method: 'get',
         params: params,
-        baseURL: 'http://192.168.19.207:8089'
+        baseURL: 'http://10.19.1.77:8089'
     })
 }
 
@@ -107,7 +107,7 @@ export function fileURL(params) {
         url: '/minio-service/fileURL',
         method: 'get',
         params: params,
-        baseURL: 'http://192.168.19.207:8089'
+        baseURL: 'http://10.19.1.77:8089'
     })
 }
 
@@ -116,6 +116,6 @@ export function fileCopy(params) {
         url: '/minio-service/fileCopy',
         method: 'get',
         params: params,
-        baseURL: 'http://192.168.19.207:8089'
+        baseURL: 'http://10.19.1.77:8089'
     })
 }
