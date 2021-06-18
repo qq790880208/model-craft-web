@@ -241,6 +241,12 @@ export default {
       panning: false,
       zoom: 1,
 
+      temtwopoint:[],
+      testcirclearray:[],
+      testcirclecount:0,
+      generateline:[],
+      temlineobj:null,
+
       //controlsObjectArryCount:0,
       imagechangebtntext: "修改图形",
       isimagechange: false,
@@ -366,8 +372,8 @@ export default {
         this.imagechangebtntext = "正在修改图形";
         let _this = this;
         for (let i = 0; i < this.polygonArray.length; i++) {
-          var poly = this.fabricObj.getObjects()[i];
-          console.log(poly);
+          let poly = this.fabricObj.getObjects()[i];
+                    console.log("tuj904ut420tjh4io3h",poly,i);
           //this.fabricObj.setActiveObject(poly);
           poly.edit = true;
           poly.selectable = true;
@@ -398,15 +404,13 @@ export default {
             return acc;
           }, {});
         }
-        // else {
-        // poly.cornerColor = 'blue';
-        // poly.cornerStyle = 'rect';
-        // 	poly.controls = fabric.Object.prototype.controls;
-        // }
-        //poly.hasBorders = !poly.edit;
+        for(let i = 0; i < this.testcirclearray.length; i++){
+          this.fabricObj.add(this.testcirclearray[i])
+        }
       } else {
         this.isimagechange = false;
-
+        this.clearobj();
+        this.testcirclearray.forEach((item) => this.fabricObj.remove(item));
         this.imagechangebtntext = "修改图形";
         console.log("realpolygoninfoArray", this.realpolygoninfoArray);
         this.realpolygoninfoArray = [];
@@ -437,18 +441,29 @@ export default {
           });
           //this.fabricObj.renderAll();
         }
+        for(let i = 0; i < this.lineArray.length; i++){
+          console.log("lineinfoArray", this.lineinfoArray[i]);
+          console.log("reallineinfoArray", this.reallineinfoArray[i]);
+          console.log("lineArray", this.lineArray[i]);
+          console.log(
+            "this.fabricObj.getObjects()[i]",
+            this.fabricObj.getObjects()[i]
+          );
+          var poly = this.fabricObj.getObjects()[i];
+          //poly.isselect = false;
+          this.fabricObj.discardActiveObject(poly);
+          poly.edit = false;
+          poly.selectable = false;
+        }
         console.log("uppppppppppppdateeeeeeeeeeeee", this.realpolygoninfoArray);
       }
       this.fabricObj.renderAll();
       this.emitfather();
     },
     clearobj(){//移除画的连续直线和点
-        console.log("llines1",this.llines)
         this.temlines.forEach((item) => this.fabricObj.remove(item));
         this.temcircles.forEach((item) => this.fabricObj.remove(item));
         this.llines.forEach((item) => this.fabricObj.remove(item));
-        //this.fabricObj.remove(this.llines[0])
-        console.log("llines2",this.llines)
         this.roofPoints = [];
         this.realPoints = [];
         this.linePoints = [];
@@ -466,6 +481,8 @@ export default {
       this.lineArray = [];
       this.lineinfoArray = [];
       this.reallineinfoArray = [];
+      this.testcirclearray=[];
+      this.testcirclecount = 0;
     },
     emitfather() {
       console.log("sonemit");
@@ -723,6 +740,7 @@ export default {
         this.clearobj();
         this.fabricObj.renderAll();
         console.log("eeee");
+        //this.fabricObj.on("moved",console.log("eventmoved!!!!!!"))
         this.Edit();
       }
       console.log(this.polygonArray);
@@ -761,6 +779,8 @@ export default {
 
         },
         "mouse:down": (e) => {
+          // console.log("eeeeeeeeeeee",e)
+          // if(e.)
           if (this.isimagechange) return;
           if (this.markinfo == null && this.radio == "polygonmark") {
             this.$message({
@@ -843,10 +863,11 @@ export default {
             console.log("3333");
             let a = {};
             let reala = {};
+            //this.fabricObj.add(this.testpoint)
             a["x"] = e.absolutePointer.x;
             a["y"] = e.absolutePointer.y;
             reala["x"] = e.absolutePointer.x / this.scalewidth;
-            reala["y"] = e.absolutePointer.y / this.scaleheight;
+            reala["y"] = e.absolutePointer.y / this.scaleheight;            
             this.linePoints.push(a);
             this.realLinePoints.push(reala);
             let points = [a.x, a.y, a.x, a.y];
@@ -854,12 +875,46 @@ export default {
                 new fabric.Line(points, {
                   strokeWidth: 3,
                   selectable: false,
+                  hasBorders: false,
+                  hasControls: false,
+                  //transparentCorners:false ,
+                  //strokeUniform :true,
                   //stroke: this.markcolor,
                   stroke:"red",
                 })
               );
             this.fabricObj.add(this.llines[0]);
             console.log("llinesddddd",this.llines)
+
+
+            let apoint = new fabric.Circle({
+                  radius: 5,
+                  fill: "green",
+                  selectable: true,
+                  hasBorders: false,
+                  hasControls: false,
+                  top:a.y-5,
+                  left:a.x-5,
+            })
+            apoint.bringToFront();
+            apoint.id=this.testcirclecount
+            apoint.on("moving",()=>{
+              //console.log(apoint.id)
+              this.lineArray[apoint.id/2].set({
+                x1:apoint.left+5,
+                y1:apoint.top+5
+                })
+              // this.lineArray[apoint.id/2+apoint.id%2].x1=apoint.left
+              // this.lineArray[apoint.id/2+apoint.id%2].y1=apoint.top
+              //console.log("amoving!!!")
+              })
+            //this.temtwopoint.push(apoint);
+            //this.temtwopoint.push(bpoint);
+            //this.testcirclearray.push(this.temtwopoint)
+            this.testcirclearray.push(apoint)
+            //this.fabricObj.add(this.testcirclearray[this.testcirclecount])
+            this.testcirclecount++;
+
             }
             else if(this.radio == "linemark" && this.linePoints.length == 1){
                 //防止过长时间重复点一个点时点入栈
@@ -875,6 +930,46 @@ export default {
                   a["y"] = e.absolutePointer.y;
                   reala["x"] = e.absolutePointer.x / this.scalewidth;
                   reala["y"] = e.absolutePointer.y / this.scaleheight;
+
+                  let bpoint = new fabric.Circle({
+                      radius: 5,
+                      fill: "green",
+                      selectable: true,
+                      hasBorders: false,
+                      hasControls: false,
+                      top:a.y-5,
+                      left:a.x-5,
+                  })
+                  bpoint.bringToFront();
+                  bpoint.id=this.testcirclecount;
+                  bpoint.on("moving",()=>{
+                    this.lineArray[(bpoint.id-1)/2].set({
+                        x2:bpoint.left+5,
+                        y2:bpoint.top+5
+                    })
+                    // this.lineArray[apoint.id/2+apoint.id%2].x1=apoint.left
+                    // this.lineArray[apoint.id/2+apoint.id%2].y1=apoint.top
+                  })
+                  //this.temtwopoint.push(apoint);
+                  //this.temtwopoint.push(bpoint);
+                  //this.testcirclearray.push(this.temtwopoint)
+                  this.testcirclearray.push(bpoint)
+                  //this.fabricObj.add(this.testcirclearray[this.testcirclecount])
+                  this.testcirclecount++;
+                  // this.testcirclearray[0][1].top=a.y-5
+                  // this.testcirclearray[0][1].left=a.x-5
+                  // // this.testcirclearray.push(this.temtwopoint)
+                  // //this.fabricObj.add(this.testcirclearray[0][1])
+                  // this.generateline.push(
+                  //     new fabric.Line([this.testcirclearray[0][0].left,this.testcirclearray[0][0].top,
+                  //     this.testcirclearray[0][1].left,this.testcirclearray[0][1].top], {
+                  //         strokeWidth: 5,
+                  //         selectable: true,
+                  //         stroke: "blue",
+                  //       }
+                  //   ))
+                  // this.fabricObj.add(this.generateline[0])
+
                   this.llines[0].set({
                     x2:a.x,
                     y2:a.y
@@ -905,6 +1000,7 @@ export default {
                 console.log("click repeat!!!");
               }
             }
+          
           // } else {
           //     console.log("click repeat!!!");
           //   }
@@ -948,6 +1044,7 @@ export default {
             })
             this.fabricObj.renderAll();
           }
+        
         },
         "mouse:dblclick": (e) => {
           //双击结束绘制按点生成多边形
