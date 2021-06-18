@@ -11,7 +11,9 @@
         }"
       >
         <el-radio-group v-model="radio" style="display: inline-block">
-          <el-radio-button label="mark">标注</el-radio-button>
+          <el-radio-button label="pointmark">点标注</el-radio-button>
+          <el-radio-button label="linemark">线标注</el-radio-button>
+          <el-radio-button label="polygonmark">多边形标注</el-radio-button>
           <el-radio-button label="drag">拖动</el-radio-button>
           <el-radio-button label="modify">修改</el-radio-button>
         </el-radio-group>
@@ -68,17 +70,24 @@
       >
         <div
           class="polygon"
+          ref="outdiv"
           :style="{
+            //width:'1000px',
+            //height:'750px',
             //margin:' 0 auto',
             //width:canvaswidth+'px',
             //height:canvasheight+'px',
           }"
         >
-          <canvas
+          <!-- <canvas
             id="label-canvas"
             class="canvas"
             :width="canvaswidth"
             :height="canvasheight"
+          ></canvas> -->
+          <canvas
+            id="label-canvas"
+            class="canvas"
           ></canvas>
         </div>
       </div>
@@ -221,11 +230,13 @@ export default {
   },
   data() {
     return {
-      radio: "mark",
+      radio: "polygonmark",
       buttonindex: -1,
       input: null,
       temproof: null,
       roof: null,
+      line:null,
+      cicle:null,
       //istrue: false,
       panning: false,
       zoom: 1,
@@ -233,13 +244,28 @@ export default {
       //controlsObjectArryCount:0,
       imagechangebtntext: "修改图形",
       isimagechange: false,
-
+      imagewidth:null,
+      imageheight:null,
       scalewidth: null, //图片宽度缩放倍数
       scaleheight: null, //图片高度缩放倍数
+      linePoints: [], //线点数组
+      realLinePoints:[], //真实线点数组
+      circlePoints:[],  //点数组
+      realCirclePoints:[],  //真实点数组
       roofPoints: [], //多边形点数组
       realPoints: [], //真实多边形点数组
-      lines: [], //线数组
-      lineCounter: 0, //线计数
+      temlines: [], //多边形标记时候的线数组
+      temlineCounter: 0, //多边形标记时候的线计数
+      temcircles: [], //多边形标记时候的点数组
+      temcircleCounter: 0,//多边形标记时候的点计数
+      llines:[], //线标记时候的线数组
+      llinesCounter: 0, //线标记时候的线计数
+      lineArray: [], //线对象数组
+      lineinfoArray: [], //线对象信息数组
+      reallineinfoArray: [], //真实线对象信息数组
+      circleArray: [], //点对象数组
+      circleArray: [], //点对象信息数组
+      realcircleArray: [], //真实点对象信息数组
       polygonArray: [], //多边形对象数组
       polygoninfoArray: [], //多边形对象信息数组
       realpolygoninfoArray: [], //真实多边形对象信息数组
@@ -308,15 +334,11 @@ export default {
         this.polygonArray.forEach((item) => {
           this.fabricObj.remove(item);
         });
-        this.lines.forEach((item) => this.fabricObj.remove(item));
-
-        this.polygonArray = [];
-        this.polygoninfoArray = [];
-        this.realpolygoninfoArray = [];
-        this.roofPoints = [];
-        this.realPoints = [];
-        this.lines = [];
-        this.lineCounter = 0;
+        this.lineArray.forEach((item) => {
+          this.fabricObj.remove(item);
+        });
+        this.clearinfo();
+        this.clearobj();
         this.markinfo = null;
         if (this.isimagechange) this.Edit();
         //this.drawingObject.type == "roof"
@@ -340,14 +362,9 @@ export default {
     Edit() {
       if (!this.isimagechange) {
         this.isimagechange = true;
-        this.lines.forEach((item) => this.fabricObj.remove(item));
-        this.roofPoints = [];
-        this.realPoints = [];
-        this.lines = [];
-        this.lineCounter = 0;
+        this.clearobj();
         this.imagechangebtntext = "正在修改图形";
         let _this = this;
-
         for (let i = 0; i < this.polygonArray.length; i++) {
           var poly = this.fabricObj.getObjects()[i];
           console.log(poly);
@@ -425,6 +442,31 @@ export default {
       this.fabricObj.renderAll();
       this.emitfather();
     },
+    clearobj(){//移除画的连续直线和点
+        console.log("llines1",this.llines)
+        this.temlines.forEach((item) => this.fabricObj.remove(item));
+        this.temcircles.forEach((item) => this.fabricObj.remove(item));
+        this.llines.forEach((item) => this.fabricObj.remove(item));
+        //this.fabricObj.remove(this.llines[0])
+        console.log("llines2",this.llines)
+        this.roofPoints = [];
+        this.realPoints = [];
+        this.linePoints = [];
+        this.realLinePoints = [];
+        this.temlines = [];
+        this.temcircles = [];
+        this.llines = [];
+        this.temlineCounter = 0;
+        this.temcircleCounter = 0;
+    },
+    clearinfo(){
+      this.polygonArray = [];
+      this.polygoninfoArray = [];
+      this.realpolygoninfoArray = [];
+      this.lineArray = [];
+      this.lineinfoArray = [];
+      this.reallineinfoArray = [];
+    },
     emitfather() {
       console.log("sonemit");
       this.$emit("closebutton");
@@ -484,14 +526,8 @@ export default {
       this.polygonArray.forEach((item) => {
         this.fabricObj.remove(item);
       });
-      this.lines.forEach((item) => this.fabricObj.remove(item));
-      this.polygonArray = [];
-      this.polygoninfoArray = [];
-      this.realpolygoninfoArray = [];
-      this.roofPoints = [];
-      this.realPoints = [];
-      this.lines = [];
-      this.lineCounter = 0;
+      this.clearinfo();
+      this.clearobj();
       console.log("img11111111111111111", this.scalewidth, this.scaleheight);
       for (let i = 0; i < this.lastlabelArry.length; i++) {
         this.realpolygoninfoArray.push(this.lastlabelArry[i]);
@@ -533,8 +569,8 @@ export default {
       console.log("polygoninfoArrayuuu", this.polygoninfoArray);
       console.log("realpolygoninfoArrayuuu", this.realpolygoninfoArray);
       console.log("realPointsuuu", this.realPoints);
-      console.log("linesuuu", this.lines);
-      console.log("lineCounteruuu", this.lineCounter);
+      console.log("linesuuu", this.temlines);
+      console.log("lineCounteruuu", this.temlineCounter);
     },
     createBackgroundImage() {
       //加载图片为背景
@@ -546,30 +582,34 @@ export default {
       this.fabricimageObj = new fabric.Image.fromURL(
         this.imagesrc,
         function (img) {
-          let imagewidth = img.width;
-          let imageheight = img.height;
+          _this.imagewidth = img.width;
+          _this.imageheight = img.height;
           _this.scalewidth = 1;
           _this.scaleheight = 1;
           // console.log(_this.fabricObj)
           if (img.width < 600 && img.height < 600) {
-            while (imagewidth < 600 && imageheight < 600) {
-              imagewidth *= 1.5;
-              imageheight *= 1.5;
+            while (_this.imagewidth < 600 && _this.imageheight < 600) {
+              _this.imagewidth *= 1.5;
+              _this.imageheight *= 1.5;
               _this.scalewidth *= 1.5;
               _this.scaleheight *= 1.5;
             }
           }
           if (img.width > 1000 || img.height > 1000) {
-            while (imagewidth > 1000 || imageheight > 1000) {
-              imagewidth /= 1.5;
-              imageheight /= 1.5;
+            while (_this.imagewidth > 1000 || _this.imageheight > 1000) {
+              _this.imagewidth /= 1.5;
+              _this.imageheight /= 1.5;
               _this.scalewidth /= 1.5;
               _this.scaleheight /= 1.5;
             }
           }
           
-          _this.fabricObj.setWidth(imagewidth);
-          _this.fabricObj.setHeight(imageheight);
+          // _this.fabricObj.setWidth(imagewidth);
+          // _this.fabricObj.setHeight(imageheight);
+          _this.fabricObj.setWidth(1000);
+          _this.fabricObj.setHeight(750);
+          // _this.$refs.outdiv.height=750;
+          // _this.$refs.outdiv.width=1000;
           // if (img.width < 600 && img.height < 600) {
           //   _this.fabricObj.setWidth(1.5 * img.width);
           //   _this.fabricObj.setHeight(1.5 * img.height);
@@ -583,6 +623,8 @@ export default {
           // _this.scaleheight = _this.fabricObj.height / img.height;
           console.log(img.width);
           console.log(img.height);
+          console.log(_this.imagewidth);
+          console.log(_this.imageheight);
           console.log(_this.fabricObj.width);
           console.log(_this.fabricObj.height);
           console.log(_this.scalewidth);
@@ -641,12 +683,11 @@ export default {
       //切换画板上是否能标注的按钮
       if (this.radio == "drag") {
         console.log("aaaa");
+        this.clearobj();
         //this.drawingObject.type = "";
         // this.lines.forEach(function(value, index, ar) {
         //   this.fabricObj.remove(value);
         // });
-        //移除画的连续直线
-        this.lines.forEach((item) => this.fabricObj.remove(item));
         //手动画的多边形存储的点数大于2时再生成图片
         // if (this.roofPoints.length > 2) {
         //   this.makeRoof();
@@ -662,17 +703,26 @@ export default {
         //   });
         // }
         this.fabricObj.renderAll();
-        //清空直线和点数组和他们的计数
-        this.roofPoints = [];
-        this.realPoints = [];
-        this.lines = [];
-        this.lineCounter = 0;
         if (this.isimagechange) this.Edit();
-      } else if (this.radio == "mark") {
+      } else if (this.radio == "polygonmark") {
+        this.clearobj();
+        this.fabricObj.renderAll();
         console.log("bbbb");
         if (this.isimagechange) this.Edit();
-      } else {
+      } else if (this.radio == "linemark") {
+        this.clearobj();
+        this.fabricObj.renderAll();
         console.log("cccc");
+        if (this.isimagechange) this.Edit();
+      } else if (this.radio == "pointmark") {
+        this.clearobj();
+        this.fabricObj.renderAll();
+        console.log("dddd");
+        if (this.isimagechange) this.Edit();
+      } else {
+        this.clearobj();
+        this.fabricObj.renderAll();
+        console.log("eeee");
         this.Edit();
       }
       console.log(this.polygonArray);
@@ -687,32 +737,41 @@ export default {
         "mouse:wheel": (e) => {
           //删除上一个点
           //console.log(e)
+          if(this.radio == "polygonmark"){
           if (this.roofPoints.length > 0) {
             let x = e.absolutePointer.x;
             let y = e.absolutePointer.y;
-            if (this.lineCounter >= 2) {
-              this.lines[this.lineCounter - 2].set({
+            if (this.temlineCounter >= 2) {
+              this.temlines[this.temlineCounter - 2].set({
                 x2: x,
                 y2: y,
               });
             }
-            this.fabricObj.remove(this.lines[this.lineCounter - 1]);
-            //this.fabricObj.renderAll();
-            //this.fabricObj.remove(this.lines[this.lineCounter+1]);
+            this.fabricObj.remove(this.temlines[this.temlineCounter - 1]);
+            this.fabricObj.remove(this.temcircles[this.temcircleCounter-1]);
             this.roofPoints.pop();
             this.realPoints.pop();
-            this.lines.pop();
-            this.lineCounter--;
+            this.temlines.pop();
+            this.temcircles.pop();
+            this.temlineCounter--;
+            this.temcircleCounter--;
             this.fabricObj.renderAll();
           }
+          }
+
         },
         "mouse:down": (e) => {
           if (this.isimagechange) return;
-          if (this.markinfo == null && this.radio == "mark") {
+          if (this.markinfo == null && this.radio == "polygonmark") {
             this.$message({
               message: "您没有选中任何标签",
               type: "warning",
             });
+            return;
+          }
+          if(e.absolutePointer.x>this.imagewidth||e.absolutePointer.y>this.imageheight
+          ||e.absolutePointer.x<0||e.absolutePointer.y<0){
+            console.log("超出图片范围");
             return;
           }
           //点击生成多边形的边框并且将点加入数组
@@ -724,7 +783,7 @@ export default {
             this.panning = true;
             //this.fabricObj.selection = true;
           }
-          if (this.radio == "mark") {
+          if (this.radio == "polygonmark") {
             console.log("2222");
             //防止过长时间重复点一个点时点入栈
             if (
@@ -752,21 +811,103 @@ export default {
               // reala["y"] = e.absolutePointer.y ;
               this.roofPoints.push(a);
               this.realPoints.push(reala);
-              var points = [a.x, a.y, a.x, a.y];
-              this.lines.push(
+              let points = [a.x, a.y, a.x, a.y];
+              this.temlines.push(
                 new fabric.Line(points, {
                   strokeWidth: 3,
                   selectable: false,
                   stroke: this.markcolor,
                 })
               );
-              this.fabricObj.add(this.lines[this.lineCounter]);
-              this.lineCounter++;
+              this.temcircles.push(
+                new fabric.Circle({
+                  radius: 5,
+                  fill: this.markcolor,
+                  selectable: false,
+                  top:a.y-5,
+                  left:a.x-5,
+                })
+              )
+              //console.log("newcircle",newcircle)
+              this.fabricObj.add(this.temcircles[this.temcircleCounter])
+              this.fabricObj.add(this.temlines[this.temlineCounter]);
+              this.temcircleCounter++;
+              this.temlineCounter++;
+              
               console.log(this.roofPoints.length);
             } else {
               console.log("click repeat!!!");
             }
           }
+          if (this.radio == "linemark" && this.linePoints.length == 0){
+            console.log("3333");
+            let a = {};
+            let reala = {};
+            a["x"] = e.absolutePointer.x;
+            a["y"] = e.absolutePointer.y;
+            reala["x"] = e.absolutePointer.x / this.scalewidth;
+            reala["y"] = e.absolutePointer.y / this.scaleheight;
+            this.linePoints.push(a);
+            this.realLinePoints.push(reala);
+            let points = [a.x, a.y, a.x, a.y];
+            this.llines.push(
+                new fabric.Line(points, {
+                  strokeWidth: 3,
+                  selectable: false,
+                  //stroke: this.markcolor,
+                  stroke:"red",
+                })
+              );
+            this.fabricObj.add(this.llines[0]);
+            console.log("llinesddddd",this.llines)
+            }
+            else if(this.radio == "linemark" && this.linePoints.length == 1){
+                //防止过长时间重复点一个点时点入栈
+              if (
+              ((e.absolutePointer.x !=
+                  this.linePoints[0].x ||
+                  e.absolutePointer.y !=
+                    this.linePoints[0].y))
+              ) {
+                  let a = {};
+                  let reala = {};
+                  a["x"] = e.absolutePointer.x;
+                  a["y"] = e.absolutePointer.y;
+                  reala["x"] = e.absolutePointer.x / this.scalewidth;
+                  reala["y"] = e.absolutePointer.y / this.scaleheight;
+                  this.llines[0].set({
+                    x2:a.x,
+                    y2:a.y
+                  })
+                  this.line=this.llines[0]
+                  this.linePoints.push(a);
+                  this.realLinePoints.push(reala);
+                  this.lineArray.push(this.line);
+                  this.lineinfoArray.push({
+                    point:this.linePoints
+                  })
+                  this.reallineinfoArray.push({
+                    point:this.realLinePoints
+                  })
+                  this.fabricObj.remove(this.llines[0])
+                  this.fabricObj.add(this.line)
+                  this.fabricObj.renderAll();
+                  this.linePoints=[];
+                  this.realLinePoints=[];
+                  this.line=null;
+                  this.llines=[];
+                  console.log("linearray",this.lineArray)
+                  console.log("lineinfoarray",this.lineinfoArray)
+                  console.log("reallineinfoarray",this.reallineinfoArray)
+                  console.log("llinesttttt",this.llines[0])
+              }
+              else{
+                console.log("click repeat!!!");
+              }
+            }
+          // } else {
+          //     console.log("click repeat!!!");
+          //   }
         },
         "mouse:move": (e) => {
           if (this.isimagechange) return;
@@ -779,25 +920,38 @@ export default {
             }
           }
           if (
-            this.lines[0] !== null &&
-            this.lines[0] !== undefined &&
-            this.radio == "mark"
+            this.temlines[0] !== null &&
+            this.temlines[0] !== undefined &&
+            this.radio == "polygonmark"
           ) {
             // this.x = e.pointer.x;
             // this.y = e.pointer.y;
             this.x = e.absolutePointer.x;
             this.y = e.absolutePointer.y;
             //console.log(this.lineCounter)
-            this.lines[this.lineCounter - 1].set({
+            this.temlines[this.temlineCounter - 1].set({
               x2: this.x,
               y2: this.y,
             });
             this.fabricObj.renderAll();
           }
+          if (
+            this.llines[0] !== null &&
+            this.llines[0] !== undefined &&
+            this.radio == "linemark"
+          ){
+            this.x = e.absolutePointer.x;
+            this.y = e.absolutePointer.y;
+            this.llines[0].set({
+              x2:this.x,
+              y2:this.y
+            })
+            this.fabricObj.renderAll();
+          }
         },
         "mouse:dblclick": (e) => {
           //双击结束绘制按点生成多边形
-          if (this.radio == "mark") {
+          if (this.radio == "polygonmark") {
             // if (Math.abs(this.roofPoints[this.roofPoints.length-1].x-this.roofPoints[0].x)<10||
             // Math.abs(this.roofPoints[this.roofPoints.length-1].y-this.roofPoints[0].y)<10) {
             //             console.log("double click clean");
@@ -807,7 +961,8 @@ export default {
             // this.lineCounter = 0;
             // }
             console.log(this.roofPoints.length);
-            this.lines.forEach((item) => this.fabricObj.remove(item));
+            this.temlines.forEach((item) => this.fabricObj.remove(item));
+            this.temcircles.forEach((item) => this.fabricObj.remove(item));
             if (this.roofPoints.length > 2) {
               //阻止生成2个点以下的对象，包括空白对象，点对象，线对象
               // canvas.remove(lines[lineCounter - 1]);
@@ -830,8 +985,10 @@ export default {
             //clear arrays
             this.roofPoints = [];
             this.realPoints = [];
-            this.lines = [];
-            this.lineCounter = 0;
+            this.temlines = [];
+            this.temcircles = [];
+            this.temlineCounter = 0;
+            this.temcircleCounter = 0;
           }
         },
         "mouse:up": (e) => {
@@ -889,6 +1046,9 @@ export default {
       //     console.log("selected");
       //   },
       // });
+    },
+    makeline(){
+
     },
     findcolor(abcdefg) {
       this.premarktype.forEach((item) => {

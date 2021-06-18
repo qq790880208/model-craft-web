@@ -141,8 +141,8 @@ export default {
     document.onkeydown = keyDownSearch;
         this.starttimer = setInterval(()=>{
       this.nowseconds++;
-      console.log(this.nowseconds,"my定时器！！！！")
-      if(this.nowseconds>=600){
+      //console.log(this.nowseconds,"my定时器！！！！")
+      if(this.nowseconds>=60000){
         console.log("超时")
         const params = {
             userId: store.getters.userId,
@@ -177,7 +177,10 @@ export default {
     },
     //下一张图片
     nextimage: function () {
-      if(this.unable) return
+      if(this.unable) {
+        console.log("uuuuuuuuuuuuuuuuunnnnnnnnnnnnnnnnaaaaaaaaaaaaaableeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+        return
+      }
       if(this.isimageview) {
         console.log("处于预览界面");
         return
