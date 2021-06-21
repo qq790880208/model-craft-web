@@ -10,6 +10,7 @@
           display: 'block',
         }"
       >
+      <el-button @click="saveinfo" :disabled="isimagechange">保存 </el-button>
         <el-radio-group v-model="radio" style="display: inline-block">
           <el-radio-button label="pointmark">点标注</el-radio-button>
           <el-radio-button label="linemark">线标注</el-radio-button>
@@ -115,7 +116,7 @@
         <div class="infopolygon" style="margin-left: 20px">
           <!-- <div style="margin-left:50px;float:left;border:1px solid #666;width:25%"> -->
           <div
-            v-for="(items, index) in polygonArray"
+            v-for="(items, index) in allobjArray"
             :key="index"
             style="float: left; margin-right: 20px"
           >
@@ -201,8 +202,8 @@ function actionHandler(eventData, transform, x, y, objjjjjjj) {
         (mouseLocalPosition.y * polygonBaseSize.y) / size.y +
         polygon.pathOffset.y,
     };
-  console.log("currentControl", currentControl);
-  console.log("mouseLocalPosition", mouseLocalPosition);
+  //console.log("currentControl", currentControl);
+  //console.log("mouseLocalPosition", mouseLocalPosition);
   polygon.points[currentControl.pointIndex] = finalPointPosition;
   return true;
 }
@@ -216,8 +217,8 @@ export default {
       default: () => [],
     },
     lastlabelArry: {
-      type: Array,
-      default: () => [],
+      type: Object,
+      default: () => {},
     },
     canvaswidth: {
       type: Number,
@@ -240,6 +241,12 @@ export default {
       //istrue: false,
       panning: false,
       zoom: 1,
+      //havefabricobj:false,
+
+      allobjArray:[],
+      polygonId:0,
+      lineId:0,
+      pointId:0,
 
       temtwopoint:[],
       testcirclearray:[],
@@ -275,7 +282,7 @@ export default {
       polygonArray: [], //多边形对象数组
       polygoninfoArray: [], //多边形对象信息数组
       realpolygoninfoArray: [], //真实多边形对象信息数组
-      tempArry: [], //高亮多边形
+      //tempArry: [], //高亮多边形
       //drawingObject: {}, //flag
       // drawingObject: {
       //   type: "roof",
@@ -334,6 +341,7 @@ export default {
     //监听图片变化
     imagesrc() {
       console.log("watch!!!!!!!!");
+      this.havefabricobj=false
       this.buttonindex = -1;
       this.createBackgroundImage();
       setTimeout(() => {
@@ -367,12 +375,14 @@ export default {
     // },
     Edit() {
       if (!this.isimagechange) {
+        console.log("caonima",this.fabricObj._objects)
+        this.fabricObj.hoverCursor="move";
         this.isimagechange = true;
         this.clearobj();
         this.imagechangebtntext = "正在修改图形";
         let _this = this;
         for (let i = 0; i < this.polygonArray.length; i++) {
-          let poly = this.fabricObj.getObjects()[i];
+          let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.polygonArray[i])];
                     console.log("tuj904ut420tjh4io3h",poly,i);
           //this.fabricObj.setActiveObject(poly);
           poly.edit = true;
@@ -409,6 +419,7 @@ export default {
         }
       } else {
         this.isimagechange = false;
+        this.fabricObj.hoverCursor="default";
         this.clearobj();
         this.testcirclearray.forEach((item) => this.fabricObj.remove(item));
         this.imagechangebtntext = "修改图形";
@@ -473,8 +484,15 @@ export default {
         this.llines = [];
         this.temlineCounter = 0;
         this.temcircleCounter = 0;
+        console.log("count",this.testcirclearray.length,"objarr",this.testcirclearray)
+        if(this.testcirclearray.length%2==1&&this.testcirclearray.length>0) { //移除未完成线段的单个端点
+          console.log("delete one")
+          //this.testcirclecount--;
+          this.testcirclearray.pop();
+        }
     },
     clearinfo(){
+      this.allobjArray=[];
       this.polygonArray = [];
       this.polygoninfoArray = [];
       this.realpolygoninfoArray = [];
@@ -482,7 +500,7 @@ export default {
       this.lineinfoArray = [];
       this.reallineinfoArray = [];
       this.testcirclearray=[];
-      this.testcirclecount = 0;
+      //this.testcirclecount = 0;
     },
     emitfather() {
       console.log("sonemit");
@@ -526,14 +544,18 @@ export default {
     saveinfo() {
       //保存标注信息时传递的信息
       //console.log("start!!!", this.realpolygoninfoArray);
+      let tempArry = []
       //变为深拷贝
-      this.tempArry.push(JSON.parse(JSON.stringify(this.realpolygoninfoArray)));
+      //tempArry.push(JSON.parse(JSON.stringify(this.realpolygoninfoArray})));
+      tempArry.push(JSON.parse(JSON.stringify({"polygon":this.realpolygoninfoArray})));
+      //tempArry.push(JSON.parse(JSON.stringify({"line":this.reallineinfoArray})));
       //this.tempArry[0]=this.boxArry
       // this.tempArry.push(this.fatherimagesrc);
       // this.tempArry.push(this.imageindex);
-      this.$emit("saveimageinfo", this.tempArry, this.imageindex);
-      this.tempArry = [];
-      console.log("22222", this.tempArry);
+      console.log("11111", tempArry);
+      this.$emit("saveimageinfo", tempArry, this.imageindex);
+      tempArry = [];
+      console.log("22222", tempArry);
       //  this.$emit('saveimageinfo',this.boxArry,this.fatherimagesrc,this.imageindex)
       //  console.log(this.boxArry,this.fatherimagesrc,this.imageindex)
     },
@@ -568,6 +590,7 @@ export default {
         console.log("this.roof", this.roof);
         this.fabricObj.add(this.roof);
         this.polygonArray.push(this.roof);
+        this.allobjArray.push(this.roof);
         this.polygoninfoArray.push({
           point: this.roofPoints,
           info: this.markinfo,
@@ -580,6 +603,8 @@ export default {
         this.roofPoints = [];
       }
       this.fabricObj.renderAll();
+      this.fabricObj.hoverCursor="default";
+      this.havefabricobj=true;
       // console.log("realpolygoninfoArray", this.realpolygoninfoArray);
       console.log("fabricobjuuu", this.fabricObj);
       console.log("polygonArrayuuu", this.polygonArray);
@@ -664,11 +689,28 @@ export default {
       );
     },
     infotip(index) {
+      //console.log(this.fabricObj)
+      console.log("eotu23tu042982904823",this.testcirclearray,this.testcirclearray.length)
       if (!this.buttonmouseoveflag) {
-        var poly = this.fabricObj.getObjects()[index];
-        console.log(this.polygoninfoArray[index]);
-        console.log(this.realpolygoninfoArray[index]);
-        poly.fill = "rgba(0,0,0,1)";
+        let poly = this.fabricObj.getObjects()[index];
+        console.log("tesjiodshovdhsbsngs",poly,poly.type,poly.numid)
+        if(poly.type=="polygon"){
+          let index2 = this.polygonArray.indexOf(poly)
+          console.log("index2",index2)
+          console.log(this.polygoninfoArray[index2]);
+          console.log(this.realpolygoninfoArray[index2]);
+          poly.fill = "rgba(0,0,0,1)";
+        }
+        if(poly.type=="line"){
+          console.log("islinein")
+          let index2 = this.lineArray.indexOf(poly)
+          console.log(this.lineinfoArray[index2]);
+          console.log(this.reallineinfoArray[index2]);
+          poly.set({
+            stroke:"black"
+          });
+        }
+
         this.buttonmouseoveflag = true;
         this.fabricObj.renderAll();
       }
@@ -682,19 +724,48 @@ export default {
           this.polygoninfoArray[index]
         );
         var poly = this.fabricObj.getObjects()[index];
-        this.findcolor(this.polygoninfoArray[index].info);
-        poly.fill = this.markcolor;
-        this.markcolor = tempcolor;
+        if(poly.type=="polygon"){
+          let index2 = this.polygonArray.indexOf(poly)
+          this.findcolor(this.polygoninfoArray[index2].info);
+          poly.fill = this.markcolor;
+          this.markcolor = tempcolor;
+        }
+        if(poly.type=="line"){
+          console.log("islineout")
+          poly.set({
+            stroke:"red"
+          });
+        }
         this.buttonmouseoveflag = false;
         this.fabricObj.renderAll();
       }
     },
     deletemarked(index) {
-      //删除对应多边形
-      this.fabricObj.remove(this.polygonArray[index]);
-      this.polygonArray.splice(index, 1);
-      this.polygoninfoArray.splice(index, 1);
-      this.realpolygoninfoArray.splice(index, 1);
+      //删除对应形状
+      var poly = this.fabricObj.getObjects()[index]
+      console.log(poly)
+      if(poly.type=="polygon"){
+        let index2 = this.polygonArray.indexOf(poly)
+        this.fabricObj.remove(this.polygonArray[index2]);
+        this.polygonArray.splice(index2, 1);
+        this.allobjArray.splice(index,1);
+        this.polygoninfoArray.splice(index2, 1);
+        this.realpolygoninfoArray.splice(index2, 1);
+        //this.polygonId--;
+      }
+      if(poly.type=="line"){
+        let index2 = this.lineArray.indexOf(poly)
+        this.fabricObj.remove(this.lineArray[index2]);
+        this.fabricObj.remove(this.testcirclearray[2*index2])
+        this.fabricObj.remove(this.testcirclearray[2*index2+1])
+        this.testcirclearray.splice(2*index2,2)
+        //this.testcirclecount-=2;
+        this.lineArray.splice(index2, 1);
+        this.allobjArray.splice(index,1);
+        this.lineinfoArray.splice(index2, 1);
+        this.reallineinfoArray.splice(index2, 1);
+        //this.lineId--;
+      }
     },
     start() {
       //切换画板上是否能标注的按钮
@@ -883,40 +954,13 @@ export default {
                   stroke:"red",
                 })
               );
+              //this.llines[0].type="line"
             this.fabricObj.add(this.llines[0]);
             console.log("llinesddddd",this.llines)
-
-
-            let apoint = new fabric.Circle({
-                  radius: 5,
-                  fill: "green",
-                  selectable: true,
-                  hasBorders: false,
-                  hasControls: false,
-                  top:a.y-5,
-                  left:a.x-5,
-            })
-            apoint.bringToFront();
-            apoint.id=this.testcirclecount
-            apoint.on("moving",()=>{
-              //console.log(apoint.id)
-              this.lineArray[apoint.id/2].set({
-                x1:apoint.left+5,
-                y1:apoint.top+5
-                })
-              // this.lineArray[apoint.id/2+apoint.id%2].x1=apoint.left
-              // this.lineArray[apoint.id/2+apoint.id%2].y1=apoint.top
-              //console.log("amoving!!!")
-              })
-            //this.temtwopoint.push(apoint);
-            //this.temtwopoint.push(bpoint);
-            //this.testcirclearray.push(this.temtwopoint)
-            this.testcirclearray.push(apoint)
-            //this.fabricObj.add(this.testcirclearray[this.testcirclecount])
-            this.testcirclecount++;
+            this.makeLineEndPoint(a);
 
             }
-            else if(this.radio == "linemark" && this.linePoints.length == 1){
+            else if(this.radio == "linemark" && this.linePoints.length == 1){ //创建线段
                 //防止过长时间重复点一个点时点入栈
               if (
               ((e.absolutePointer.x !=
@@ -930,54 +974,13 @@ export default {
                   a["y"] = e.absolutePointer.y;
                   reala["x"] = e.absolutePointer.x / this.scalewidth;
                   reala["y"] = e.absolutePointer.y / this.scaleheight;
-
-                  let bpoint = new fabric.Circle({
-                      radius: 5,
-                      fill: "green",
-                      selectable: true,
-                      hasBorders: false,
-                      hasControls: false,
-                      top:a.y-5,
-                      left:a.x-5,
-                  })
-                  bpoint.bringToFront();
-                  bpoint.id=this.testcirclecount;
-                  bpoint.on("moving",()=>{
-                    this.lineArray[(bpoint.id-1)/2].set({
-                        x2:bpoint.left+5,
-                        y2:bpoint.top+5
-                    })
-                    // this.lineArray[apoint.id/2+apoint.id%2].x1=apoint.left
-                    // this.lineArray[apoint.id/2+apoint.id%2].y1=apoint.top
-                  })
-                  //this.temtwopoint.push(apoint);
-                  //this.temtwopoint.push(bpoint);
-                  //this.testcirclearray.push(this.temtwopoint)
-                  this.testcirclearray.push(bpoint)
-                  //this.fabricObj.add(this.testcirclearray[this.testcirclecount])
-                  this.testcirclecount++;
-                  // this.testcirclearray[0][1].top=a.y-5
-                  // this.testcirclearray[0][1].left=a.x-5
-                  // // this.testcirclearray.push(this.temtwopoint)
-                  // //this.fabricObj.add(this.testcirclearray[0][1])
-                  // this.generateline.push(
-                  //     new fabric.Line([this.testcirclearray[0][0].left,this.testcirclearray[0][0].top,
-                  //     this.testcirclearray[0][1].left,this.testcirclearray[0][1].top], {
-                  //         strokeWidth: 5,
-                  //         selectable: true,
-                  //         stroke: "blue",
-                  //       }
-                  //   ))
-                  // this.fabricObj.add(this.generateline[0])
-
-                  this.llines[0].set({
-                    x2:a.x,
-                    y2:a.y
-                  })
-                  this.line=this.llines[0]
                   this.linePoints.push(a);
                   this.realLinePoints.push(reala);
+                  this.makeLineEndPoint(a);
+                  this.makeLine(this.linePoints);
+
                   this.lineArray.push(this.line);
+                  this.allobjArray.push(this.line)
                   this.lineinfoArray.push({
                     point:this.linePoints
                   })
@@ -1067,6 +1070,7 @@ export default {
               console.log(this.roof);
               this.fabricObj.add(this.roof);
               this.polygonArray.push(this.roof);
+              this.allobjArray.push(this.roof);
               this.polygoninfoArray.push({
                 point: this.roofPoints,
                 info: this.markinfo,
@@ -1136,6 +1140,9 @@ export default {
         left: left,
         top: top,
       });
+      this.roof.type="polygon";
+      this.roof.numid=this.polygonId;
+      this.polygonId++;
       console.log("create!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.roof);
       // this.roof.on({
       //   selected: (e) => {
@@ -1144,9 +1151,82 @@ export default {
       //   },
       // });
     },
-    makeline(){
-
+    makeLine(alinePoints){
+      console.log("alinePoints",alinePoints)
+      let twopoints=[alinePoints[0].x,alinePoints[0].y,alinePoints[1].x,alinePoints[1].y]
+      this.line=new fabric.Line(twopoints,{
+                  strokeWidth: 3,
+                  selectable: false,
+                  hasBorders: false,
+                  hasControls: false,
+                  //transparentCorners:false ,
+                  //strokeUniform :true,
+                  //stroke: this.markcolor,
+                  stroke:"red",
+                })
+                this.line.type="line"
+                this.line.numid=this.lineId
+                this.lineId++;
+                console.log("this.line",this.line)
     },
+    makeLineEndPoint(a){
+            let apoint = new fabric.Circle({
+                  radius: 5,
+                  fill: "green",
+                  selectable: true,
+                  hasBorders: false,
+                  hasControls: false,
+                  top:a.y-5,
+                  left:a.x-5,
+            })
+            apoint.bringToFront();
+            //console.log("this.testcirclecount",this.testcirclecount)
+            //apoint.id=this.testcirclecount
+            if(this.testcirclearray.length%2==0){
+              apoint.on("moving",()=>{//移动修改坐标
+              this.lineArray[this.testcirclearray.indexOf(apoint)/2].set({
+                x1:apoint.left+5,
+                y1:apoint.top+5
+                })
+              })
+              apoint.on("moved",()=>{//移动完成修改数据
+                //console.log(this.scalewidth,",",this.scaleheight)
+                // console.log(this.lineArray[this.testcirclearray.indexOf(apoint)/2])
+                // console.log(this.lineinfoArray[this.testcirclearray.indexOf(apoint)/2])
+                // console.log(this.reallineinfoArray[this.testcirclearray.indexOf(apoint)/2])
+              this.lineinfoArray[this.testcirclearray.indexOf(apoint)/2].point[0].x=apoint.left+5
+              this.lineinfoArray[this.testcirclearray.indexOf(apoint)/2].point[0].y=apoint.top+5
+              this.reallineinfoArray[this.testcirclearray.indexOf(apoint)/2].point[0].x=(apoint.left+5)/this.scalewidth
+              this.reallineinfoArray[this.testcirclearray.indexOf(apoint)/2].point[0].y=(apoint.top+5)/this.scaleheight
+              })
+            }
+            else{
+              apoint.on("moving",()=>{//移动修改坐标
+              this.lineArray[(this.testcirclearray.indexOf(apoint)-1)/2].set({
+                x2:apoint.left+5,
+                y2:apoint.top+5
+                })
+              })
+              apoint.on("moved",()=>{//移动完成修改数据
+                // console.log(this.lineArray[(this.testcirclearray.indexOf(apoint)-1)/2])
+                // console.log(this.lineinfoArray[(this.testcirclearray.indexOf(apoint)-1)/2])
+                // console.log(this.reallineinfoArray[(this.testcirclearray.indexOf(apoint)-1)/2])
+              this.lineinfoArray[(this.testcirclearray.indexOf(apoint)-1)/2].point[1].x=apoint.left+5
+              this.lineinfoArray[(this.testcirclearray.indexOf(apoint)-1)/2].point[1].y=apoint.top+5
+              this.reallineinfoArray[(this.testcirclearray.indexOf(apoint)-1)/2].point[1].x=(apoint.left+5)/this.scalewidth
+              this.reallineinfoArray[(this.testcirclearray.indexOf(apoint)-1)/2].point[1].y=(apoint.top+5)/this.scaleheight
+              })
+            }
+
+            this.testcirclearray.push(apoint)
+            //this.testcirclecount++;
+    },
+    // findindex(poly,type){
+    //   if(type=="polygon"){
+    //     console.log("fjaiojfu34u239yt84hbgjkrvjkrwbvjki nv983r8239")
+    //     return this.polygonArray.indexOf(poly)
+    //   }
+    // },
     findcolor(abcdefg) {
       this.premarktype.forEach((item) => {
         console.log("infind", abcdefg);
