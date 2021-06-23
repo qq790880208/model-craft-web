@@ -272,9 +272,9 @@ export default {
          _this.imagelargeArry=[]
         console.log("get图片结果", response);
         for (let i = 0; i < response.data.items.length; i++) {
-          //console.log("testtttttttttt",response.data.items[i].label_data);
+          console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data).rectangle);
           if(response.data.items[i].label_data!==undefined) {
-          let tempa = JSON.parse(response.data.items[i].label_data);
+          let tempa = JSON.parse(response.data.items[i].label_data).rectangle;
           let len = eval(tempa).length;
           //console.log("len", len);
           let arr = [];
@@ -337,7 +337,7 @@ export default {
          _this.imagelargeArry=[]
         console.log("get图片结果", response);
         for (let i = 0; i < response.data.items.length; i++) {
-          //console.log("testtttttttttt",response.data.items[i].label_data);
+          console.log("testtttttttttt",response.data.items[i].label_data);
           if(response.data.items[i].label_data!==undefined) {
           let tempa = JSON.parse(response.data.items[i].label_data);
           let len = eval(tempa).length;
@@ -419,15 +419,15 @@ export default {
       let _this=this
       this.nowseconds = 0;
       //_this.$message('开始保存');
-      console.log("save",JSON.stringify(this.infoArry[i][0]));
+      console.log("save",JSON.stringify(this.infoArry[i]));
       let isab
-      if(this.infoArry[i][0].length>0) isab=1
+      if(this.infoArry[i].rectangle.length>0) isab=1
       else isab=2
       return request({
         url: "http://10.19.1.181:8082/label",
         method: "put",
         data: {
-          label_data: JSON.stringify(this.infoArry[i][0]),
+          label_data: JSON.stringify(this.infoArry[i]),
           //"last_update_by": "liaoziheng",
           //file_type: "rectangle",
           is_label: isab,
