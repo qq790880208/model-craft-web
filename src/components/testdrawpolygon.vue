@@ -669,16 +669,16 @@ export default {
           _this.scalewidth = 1;
           _this.scaleheight = 1;
           // console.log(_this.fabricObj)
-          if (img.width < 750 && img.height < 750) {
-            while (_this.imagewidth < 750 && _this.imageheight < 750) {
+          if (img.width < 450 && img.height < 600) {
+            while (_this.imagewidth < 450 && _this.imageheight < 600) {
               _this.imagewidth *= 1.1;
               _this.imageheight *= 1.1;
               _this.scalewidth *= 1.1;
               _this.scaleheight *= 1.1;
             }
           }
-          if (img.width > 1000 || img.height > 1000) {
-            while (_this.imagewidth > 1000 || _this.imageheight > 1000) {
+          if (img.width > 750 || img.height > 1000) {
+            while (_this.imagewidth > 750 || _this.imageheight > 1000) {
               _this.imagewidth /= 1.1;
               _this.imageheight /= 1.1;
               _this.scalewidth /= 1.1;

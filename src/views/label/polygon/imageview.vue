@@ -4,6 +4,7 @@
       <div>
       <el-button @click="returndataset" >返回数据集</el-button>
       <el-button @click="automark()" :loading="isloading">{{automarkbtntext}}</el-button>
+      <el-button @click="generateXML">生成xml文件</el-button>
       <el-button @click="newlabel" v-if="isalllabeled">申请新任务</el-button>
       </div>
       <div v-for="(item, index) in imagelargeArry" :key="index" style="
@@ -256,6 +257,37 @@ export default {
       console.log("save success", markinfo, imageeindex);
       console.log("thisinfoArry", this.infoArry);
       this.savelabel(this.nownum)
+    },
+    //post生成xml
+    generateXML:function () {
+      let _this = this;
+      return request({
+        url:
+          "http://10.19.1.181:8082/dataset/save?dataset_id="+store.getters.uuid,
+        method: "post",
+        //timeout:_this.lastinfoArry.length*5000,
+        //params: query
+      }).then(function (response) {
+        console.log(response);
+        _this.$message({
+          message:"xml生成成功",
+          duration:300,
+          type: 'success'
+          });
+      }).catch(function(error){
+        console.log("error",error)
+          _this.$message({
+          message:"xml生成失败",
+          type: 'error'
+          })
+          // for (let i = 0; i < testmarktype.length; i++) {
+          //   let a={};
+          // a["url"]=response.data.items[i].file_path
+          // a["islabel"]=response.data.items[i].is_label
+          // //a["index"]=i
+          // _this.imagelargeArry.push(a);
+          // }
+      });
     },
     //get请求图片数据
     requireimage: function () {
