@@ -331,7 +331,7 @@ export default {
       scaleheight: null, //图片高度缩放倍数
       boxArry: [], //显示的div对象数组
       labelArry: [], //标注信息保存数组
-      tempArry: [], //临时数组，用来传递信息
+      //tempArry: [], //临时对象
       //testsc:"image/test2",
       //imagesrc:require('@/'+this.fatherimagesrc+'.jpg'),
       isTrue: false, //移动标注和缩放标注的切换标识
@@ -492,21 +492,18 @@ export default {
       //保存时传递的信息
       console.log("start!!!", this.boxArry);
       //变为深拷贝
-      this.tempArry.push(JSON.parse(JSON.stringify(this.labelArry)));
+      let tempArry={}
+      tempArry.rectangle=JSON.parse(JSON.stringify(this.labelArry))
+     // this.tempArry.push(JSON.parse(JSON.stringify(this.labelArry)));
       //this.tempArry[0]=this.boxArry
-      this.tempArry.push(this.fatherimagesrc);
-      this.tempArry.push(this.imageindex);
-      this.$emit("saveimageinfo", this.tempArry, this.imageindex);
-      console.log(
-        "11111",
-        this.tempArry,
-        this.tempArry[0],
-        this.tempArry[1],
-        this.tempArry[2]
-      );
-      console.log("22222zzzzz", this.tempArry);
+      //this.tempArry.push(this.fatherimagesrc);
+      //this.tempArry.push(this.imageindex);
+      console.log("11111",tempArry,);
+      this.$emit("saveimageinfo", tempArry, this.imageindex);
+      console.log("11111",tempArry,);
+      console.log("22222zzzzz", tempArry);
       this.tempArry = [];
-      console.log("22222", this.tempArry);
+      console.log("22222", tempArry);
       //  this.$emit('saveimageinfo',this.boxArry,this.fatherimagesrc,this.imageindex)
       //  console.log(this.boxArry,this.fatherimagesrc,this.imageindex)
     },

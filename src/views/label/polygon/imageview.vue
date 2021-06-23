@@ -274,7 +274,7 @@ export default {
         _this.imagelargeArry=[]
         console.log("get response.data.items",response.data.items);
         for (let i = 0; i < response.data.items.length; i++) {
-          console.log(response.data.items[i]);
+          console.log("get items",[i],response.data.items[i]);
           //读取图片分辨率
           // let image = new Image();
           // image.src = response.data.items[i].file_path; 
@@ -291,20 +291,11 @@ export default {
           if(response.data.items[i].label_data!==undefined) {
           
           let tempa = JSON.parse(response.data.items[i].label_data)
-          let len = eval(tempa).length;
-          console.log("len", len);
+          // let len = eval(tempa).length;
+          // console.log("len", len);
           console.log("tempa",tempa)
-          //   let arr=[];
-          // for (let i = 0; i < len; i++) {
-          //   arr[i] = []; //js中二维数组必须进行重复的声明，否则会undefind
-          //   arr[i].x1 = tempa[i].x1;
-          //   arr[i].y1 = tempa[i].y1;
-          //   arr[i].x2 = tempa[i].x2;
-          //   arr[i].y2 = tempa[i].y2;
-          //   arr[i].info = tempa[i].info;
-          // }
           _this.lastinfoArry.push(tempa)
-          console.log("lastinfoArry", response.data.items[i].is_label);
+          console.log("lastinfoArry", _this.lastinfoArry[i]);
         }
           let a={};
           a["url"]=response.data.items[i].file_path
@@ -442,15 +433,16 @@ export default {
     savelabel(i) {
       let _this=this
       this.nowseconds = 0;
-      console.log("put111",JSON.stringify(this.infoArry[i][0]),this.uuidArry[i]);
+      console.log("put000no",this.infoArry[i])
+      console.log("put000",JSON.stringify(this.infoArry[i]))
       let isab
-      if(this.infoArry[i][0].length>0) isab=1
+      if(this.infoArry[i].polygon.length>0||this.infoArry[i].line.length>0) isab=1
       else isab=2
       return request({
         url: "http://10.19.1.181:8082/label",
         method: "put",
         data: {
-          label_data: JSON.stringify(this.infoArry[i][0]),
+          label_data: JSON.stringify(this.infoArry[i]),
           //"last_update_by": "liaoziheng",
           //file_type: "polygon",
           is_label: isab,
