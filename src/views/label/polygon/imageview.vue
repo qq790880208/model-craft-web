@@ -468,7 +468,7 @@ export default {
       console.log("put000no",this.infoArry[i])
       console.log("put000",JSON.stringify(this.infoArry[i]))
       let isab
-      if(this.infoArry[i].polygon.length>0||this.infoArry[i].line.length>0) isab=1
+      if(this.infoArry[i].polygon.length>0||this.infoArry[i].line.length>0||this.infoArry[i].circle.length>0) isab=1
       else isab=2
       return request({
         url: "http://10.19.1.181:8082/label",

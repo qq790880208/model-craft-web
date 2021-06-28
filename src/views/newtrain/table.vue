@@ -275,23 +275,16 @@ export default {
           "Yolov3-TensorFlow",
           "Yolov3-Pytorch",
           "DeepLab-TensorFlow",
-          "DeepLab-Pytorch",
-          "DeepSpeech-TensorFlow"
         ],
         paraNameList:[//六个算法的参数名称
             ['epoch','batchsize'],
             ['epoch','batchsize','imgsize','epoch'],
             ['epoch','batchsize','imgsize'],
-            ['epoch','batchsize'],
-            ['epoch','batchsize'],
-
           ],
         paraValueList:[//六个算法的参数数值
             ['2','5'],
             ['2','5','640','2'],
             ['2','5','640'],
-            ['2','5'],
-            ['2','5'],
         ],
         transferLearningList:[//transferLearning参数
           "none",
