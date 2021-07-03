@@ -13,7 +13,7 @@
           <div class="relation-item">角色:  <div style="float: right; padding-right:20px;">{{role}}</div></div> 
           <div class="relation-item">描述:  <div style="float: right; padding-right:20px;">{{descr}}</div></div>
           <el-divider></el-divider>
-          <el-button type="primary" style="margin-left: 250px" @click="changePassword">修改密码</el-button>
+          <el-button type="primary" style="margin-left: 65%" @click="changePassword">修改密码</el-button>
         </el-card> 
       </el-col>
       <el-card style="margin-right:300px"  v-show="show">

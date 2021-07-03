@@ -76,9 +76,9 @@
         </div>
         <el-row>
           <div class="teamuserButton">
-            <!-- <el-button type="primary" style="float:left;" size="mini" plain :disabled="idLabel !=='TeamManager'" @click="handleAddUser">新增成员</el-button> -->
-            <el-button type="primary" style="float:left;" size="mini" plain :disabled="idLabel !=='TeamManager'" @click="handleAddUser">新增成员</el-button>
-            <el-button type="danger" size="mini" plain :disabled="seles.length===0 || idLabel !=='TeamManager'" style="float: left" @click="batchRemove">批量删除</el-button>
+            <!-- <el-button type="primary" style="float:left;" size="mini" plain :disabled="idLabel !=='团队管理员'" @click="handleAddUser">新增成员</el-button> -->
+            <el-button type="primary" style="float:left;" size="mini" plain :disabled="idLabel !=='团队管理员'" @click="handleAddUser">新增成员</el-button>
+            <el-button type="danger" size="mini" plain :disabled="seles.length===0 || idLabel !=='团队管理员'" style="float: left" @click="batchRemove">批量删除</el-button>
           </div>
         </el-row>
         <div class="teamUserMessage">
@@ -86,7 +86,7 @@
             style="width: 100%; font-size: 10px" border
             @selection-change="selChange"
             :cell-style="{padding: '8px'}">
-            <el-table-column type="selection" align="center" width="60" :disabled=" idLabel !=='TeamManager'" />
+            <el-table-column type="selection" align="center" width="60" :disabled=" idLabel !=='团队管理员'" />
             <el-table-column align="center" label="用户名字" show-overflow-tooltip width="130" sortable>
               <template slot-scope="scope">
                 {{ scope.row.name }}
@@ -114,8 +114,8 @@
             </el-table-column>
             <el-table-column align="left" label="操作" min-width="150">
               <template slot-scope="scope">
-                <el-button class="me" size="mini" :disabled="idLabel !=='TeamManager'" @click="handleEditUser(scope.$index, scope.row)">编辑</el-button>
-                <el-button class="me" size="mini" :disabled="idLabel !=='TeamManager'" @click="handleDeleteUser(scope.$index, scope.row)">删除</el-button>
+                <el-button class="me" size="mini" :disabled="idLabel !=='团队管理员'" @click="handleEditUser(scope.$index, scope.row)">编辑</el-button>
+                <el-button class="me" size="mini" :disabled="idLabel !=='团队管理员'" @click="handleDeleteUser(scope.$index, scope.row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -154,8 +154,8 @@
         <el-form-item label="邮箱" prop="email">
           <el-input v-model="editFormUser.email" placeholder="请输入邮箱" :disabled="dialogStatusUser === 'update'"></el-input>
         </el-form-item>
-        <el-form-item label="角色" prop="character">
-          <el-select v-model="editFormUser.character" class="filter-item" placeholder="Please select">
+        <el-form-item label="角色" prop="label_role">
+          <el-select v-model="editFormUser.label_role" placeholder="请选择">
             <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
           </el-select>
         </el-form-item>
@@ -234,7 +234,7 @@ export default {
       teamsList: [],
       rolesList: [],
       userTotal: 0,
-      statusOptions: ['Label', 'TeamManager'],
+      statusOptions: [ '标注员', '团队管理员'],
       idLabel: '',
       dialogStatus: '',
       dialogStatusUser: '',
@@ -247,7 +247,7 @@ export default {
       },
       editFormUser: {
         email: '',
-        character: '',
+        label_role: '',
         descr: ''
       },
       editFormRules: {
@@ -303,7 +303,7 @@ export default {
       }
     },
     mouseOver: function() {
-      if (this.isRole !== 'admin' || this.idLabel !== 'TeamManager') {
+      if (this.isRole !== 'admin' || this.idLabel !== '团队管理员') {
         this.flag = true
       } else {
         this.flag = false
@@ -396,6 +396,7 @@ export default {
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.editForm = Object.assign({}, row)
+    
     },
 
     // 删除团队
@@ -444,7 +445,7 @@ export default {
       this.dialogFormVisibleUser = true
       this.editFormUser = {
         email: '',
-        character: '',
+        label_role: '',
         descr: ''
       }
       this.getAllUserList()
@@ -460,7 +461,9 @@ export default {
     handleEditUser: function(index, row) {
       this.dialogStatusUser = 'update'
       this.dialogFormVisibleUser = true
+      console.log(row)
       this.editFormUser = Object.assign({}, row)
+      console.log(this.editFormUser)
     },
     updateDataUser: function() {
       this.$refs.editForm.validate(valid => {
@@ -474,7 +477,7 @@ export default {
                 name: temp.name,
                 descr: temp.descr,
                 teamid: this.selectTeam.id,
-                character: temp.character
+                character: temp.label_role
               }
               console.log(para)
               editUser(para).then(res => {
@@ -498,8 +501,13 @@ export default {
         if (valid) {
           this.$confirm('确认提交吗？', '提示', {})
             .then(() => {
-              const params = Object.assign({}, this.editFormUser)
-              params.team = this.selectTeamId
+              console.log(this.editFormUser)
+              const params = {
+                email: this.editFormUser.email,
+                descr: this.editFormUser.descr,
+                character: this.editFormUser.label_role,
+                team: this.selectTeamId
+              }
               console.log(222222222222222222222)
               console.log(params)
               addUser(params).then(res => {

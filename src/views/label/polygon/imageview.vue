@@ -313,7 +313,7 @@ export default {
       else {
       return request({
         url: 
-        "http://192.168.19.237:8082/label?dataset_uuid="+store.getters.uuid+"&user_id="+store.getters.userid,
+         "http://10.19.1.77:8085/userlabel/getLabel?dataset_uuid="+store.getters.uuid+"&user_id="+store.getters.userid,
         method: "get",
         //params: query
       }).then(function (response) {
@@ -391,7 +391,7 @@ export default {
       this.marktype=[]
       return request({
         url:
-          "http://192.168.19.237:8082/dataset/tag?dataset_uuid="+store.getters.uuid,
+          "http://10.19.1.181:8082/dataset/tag?dataset_uuid="+store.getters.uuid,
         method: "get",
         //params: query
       }).then(function (response) {
@@ -420,7 +420,7 @@ export default {
       if(this.infoArry[i][0].length>0) isab=1
       else isab=2
       return request({
-        url: "http://192.168.19.237:8082/label",
+        url: "http://10.19.1.181:8082/label",
         method: "put",
         data: {
           label_data: JSON.stringify(this.infoArry[i][0]),
@@ -458,7 +458,7 @@ export default {
       _this.isloading=true;
       return request({
         url:
-          "http://192.168.19.237:8082/dataset/auto?dataset_id="+store.getters.uuid,
+          "http://10.19.1.181:8082/dataset/auto?dataset_id="+store.getters.uuid,
         method: "post",
         timeout:15000,
         //params: query
