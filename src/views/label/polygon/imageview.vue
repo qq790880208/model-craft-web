@@ -4,6 +4,7 @@
       <div>
       <el-button @click="returndataset" >返回数据集</el-button>
       <el-button @click="automark()" :loading="isloading">{{automarkbtntext}}</el-button>
+      <el-button @click="generateXML">生成xml文件</el-button>
       <el-button @click="newlabel" v-if="isalllabeled">申请新任务</el-button>
       </div>
       <div v-for="(item, index) in imagelargeArry" :key="index" style="
@@ -113,6 +114,8 @@ export default {
         },
       ],
       marktype: [],
+      nopnum: 0, //标记上一张下一张的数字
+      unable:false,
       nownum: 0,
       isalllabeled: false,
       starttimer:null,
@@ -139,8 +142,8 @@ export default {
     document.onkeydown = keyDownSearch;
         this.starttimer = setInterval(()=>{
       this.nowseconds++;
-      console.log(this.nowseconds,"my定时器！！！！")
-      if(this.nowseconds>=600){
+      //console.log(this.nowseconds,"my定时器！！！！")
+      if(this.nowseconds>=60000){
         console.log("超时")
         const params = {
             userId: store.getters.userId,
@@ -161,10 +164,13 @@ export default {
     entermark(index){
       console.log("faaaaaaaaaaaatherenter!")
       this.nownum=index;
+      this.isnowlabel();
       this.isimageview=!this.isimageview;
     },
     returnimageview(){
+        this.nopnum=0;
         this.$refs.drawpolygonref.saveinfo()
+        this.nownum=0;
         this.isimageview=!this.isimageview;
     },
     newlabel(){
@@ -172,6 +178,10 @@ export default {
     },
     //下一张图片
     nextimage: function () {
+      if(this.unable) {
+        console.log("uuuuuuuuuuuuuuuuunnnnnnnnnnnnnnnnaaaaaaaaaaaaaableeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+        return
+      }
       if(this.isimageview) {
         console.log("处于预览界面");
         return
@@ -181,14 +191,17 @@ export default {
         return
       }
       if (this.nownum < this.imageArry.length - 1) {
+        this.nopnum=1;
+        this.unable=true
         this.$refs.drawpolygonref.saveinfo()
-        this.nownum++;
+        //this.nownum++;
       }
       console.log("nextimage",this.nownum);
       console.log("nextimage infoArry",this.infoArry, this.infoArry.length);
     },
     //上一张图片
     previousimage: function () {
+      if(this.unable) return
       if(this.isimageview) {
         console.log("处于预览界面");
         return
@@ -198,8 +211,10 @@ export default {
         return
       }
       if (this.nownum > 0) {
+        this.nopnum=2;
+        this.unable=true
         this.$refs.drawpolygonref.saveinfo()
-        this.nownum--;
+        //this.nownum--;
       }
       console.log("previousimage",this.nownum);
     },
@@ -223,12 +238,56 @@ export default {
       console.log("fatherdisbtnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
       this.isdisablebutton=!this.isdisablebutton
     },
+    //post修改正在标注标识
+    isnowlabel:function(){
+      let _this = this;
+      return request({
+        url:
+          "http://10.19.1.77:8085/label/setLabeling?uuid="+this.uuidArry[this.nownum],
+        method: "post",
+        //timeout:_this.lastinfoArry.length*5000,
+        //params: query
+      }).then(function (response) {
+        console.log(response);
+      })
+    },
     //保存图片标注信息
     saveimageinfo: function (markinfo, imageeindex) {
       this.infoArry[imageeindex] = markinfo;
       console.log("save success", markinfo, imageeindex);
       console.log("thisinfoArry", this.infoArry);
       this.savelabel(this.nownum)
+    },
+    //post生成xml
+    generateXML:function () {
+      let _this = this;
+      return request({
+        url:
+          "http://10.19.1.181:8082/dataset/save?dataset_id="+store.getters.uuid,
+        method: "post",
+        //timeout:_this.lastinfoArry.length*5000,
+        //params: query
+      }).then(function (response) {
+        console.log(response);
+        _this.$message({
+          message:"xml生成成功",
+          duration:300,
+          type: 'success'
+          });
+      }).catch(function(error){
+        console.log("error",error)
+          _this.$message({
+          message:"xml生成失败",
+          type: 'error'
+          })
+          // for (let i = 0; i < testmarktype.length; i++) {
+          //   let a={};
+          // a["url"]=response.data.items[i].file_path
+          // a["islabel"]=response.data.items[i].is_label
+          // //a["index"]=i
+          // _this.imagelargeArry.push(a);
+          // }
+      });
     },
     //get请求图片数据
     requireimage: function () {
@@ -247,7 +306,7 @@ export default {
         _this.imagelargeArry=[]
         console.log("get response.data.items",response.data.items);
         for (let i = 0; i < response.data.items.length; i++) {
-          console.log(response.data.items[i]);
+          console.log("get items",[i],response.data.items[i]);
           //读取图片分辨率
           // let image = new Image();
           // image.src = response.data.items[i].file_path; 
@@ -264,20 +323,11 @@ export default {
           if(response.data.items[i].label_data!==undefined) {
           
           let tempa = JSON.parse(response.data.items[i].label_data)
-          let len = eval(tempa).length;
-          console.log("len", len);
+          // let len = eval(tempa).length;
+          // console.log("len", len);
           console.log("tempa",tempa)
-          //   let arr=[];
-          // for (let i = 0; i < len; i++) {
-          //   arr[i] = []; //js中二维数组必须进行重复的声明，否则会undefind
-          //   arr[i].x1 = tempa[i].x1;
-          //   arr[i].y1 = tempa[i].y1;
-          //   arr[i].x2 = tempa[i].x2;
-          //   arr[i].y2 = tempa[i].y2;
-          //   arr[i].info = tempa[i].info;
-          // }
           _this.lastinfoArry.push(tempa)
-          console.log("lastinfoArry", response.data.items[i].is_label);
+          console.log("lastinfoArry", _this.lastinfoArry[i]);
         }
           let a={};
           a["url"]=response.data.items[i].file_path
@@ -313,7 +363,11 @@ export default {
       else {
       return request({
         url: 
+<<<<<<< HEAD
          "http://10.19.1.77:8085/userlabel/getLabel?dataset_uuid="+store.getters.uuid+"&user_id="+store.getters.userid,
+=======
+        "http://10.19.1.181:8082/label?dataset_uuid="+store.getters.uuid+"&user_id="+store.getters.userid,
+>>>>>>> dev
         method: "get",
         //params: query
       }).then(function (response) {
@@ -415,15 +469,16 @@ export default {
     savelabel(i) {
       let _this=this
       this.nowseconds = 0;
-      console.log("put111",JSON.stringify(this.infoArry[i][0]),this.uuidArry[i]);
+      console.log("put000no",this.infoArry[i])
+      console.log("put000",JSON.stringify(this.infoArry[i]))
       let isab
-      if(this.infoArry[i][0].length>0) isab=1
+      if(this.infoArry[i].polygon.length>0||this.infoArry[i].line.length>0||this.infoArry[i].circle.length>0) isab=1
       else isab=2
       return request({
         url: "http://10.19.1.181:8082/label",
         method: "put",
         data: {
-          label_data: JSON.stringify(this.infoArry[i][0]),
+          label_data: JSON.stringify(this.infoArry[i]),
           //"last_update_by": "liaoziheng",
           //file_type: "polygon",
           is_label: isab,
@@ -439,7 +494,17 @@ export default {
           type: 'success'
           });
         _this.requireimage();
-        _this.requiretag();
+        _this.requiretag().then(function(){
+          if(_this.nopnum==1) {
+            _this.nownum++;
+            _this.isnowlabel();
+          }
+          if(_this.nopnum==2) {
+            _this.nownum--;
+            _this.isnowlabel();
+          }
+          _this.unable=false;
+        });;
       }).catch(function(error){
         console.log("error",error)
           _this.$message({

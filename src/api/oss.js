@@ -60,6 +60,7 @@ export function upload(formData) {
         method: 'post',
         data: formData,
         headers: {"Content-Type": "multipart/form-data;charset=utf-8"},
+        timeout:1000000,
         baseURL: 'http://10.19.1.77:8089'
     })
 }

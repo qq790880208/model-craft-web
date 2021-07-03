@@ -14,7 +14,7 @@ export function stopTask(query) {
     url: '/train/stop',
     method: 'post',
     params: query,
-    // baseURL: 'http://localhost:9528/dev-api'
+    //baseURL: 'http://localhost:9528/dev-api'
     baseURL: 'http://10.19.1.181:8084'
   })
 }
@@ -24,16 +24,16 @@ export function deleteTask(query) {
     url: '/train',
     method: 'delete',
     params: query,
-    // baseURL: 'http://localhost:9528/dev-api'
+    //baseURL: 'http://localhost:9528/dev-api'
     baseURL: 'http://10.19.1.181:8084'
   })
 }
 
 export function showLog() {
   return request({
-    url: '/train/log',
-    method: 'post',
-    // baseURL: 'http://localhost:9528/dev-api'
+    url:'/train/log',
+    method:'post',
+    //baseURL: 'http://localhost:9528/dev-api'
     baseURL: 'http://10.19.1.181:8084'
   })
 }

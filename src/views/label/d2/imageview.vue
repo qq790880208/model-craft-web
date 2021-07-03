@@ -4,6 +4,7 @@
       <div>
       <el-button @click="returndataset" >返回数据集</el-button>
       <el-button @click="automark()" :loading="isloading">{{automarkbtntext}}</el-button>
+      <el-button @click="generateXML">生成xml文件</el-button>
       <el-button @click="newlabel" v-if="isalllabeled">申请新任务</el-button>
       </div>
       <div v-for="(item, index) in imagelargeArry" :key="index" style="
@@ -108,6 +109,8 @@ export default {
         },
       ],
       marktype: [],
+      nopnum: 0, //标记下一张上一张还是返回的数字
+      unable: false, //防止连续切换图片
       nownum: 0,
       isalllabeled: false,
       starttimer:null,
@@ -130,10 +133,13 @@ export default {
     entermark(index){
       console.log("faaaaaaaaaaaatherenter!")
       this.nownum=index;
+      this.isnowlabel();
       this.isimageview=!this.isimageview;
     },
     returnimageview(){
+        this.nopnum=0;
         this.$refs.imageselectref.saveinfo()
+        this.nownum=0;
         this.isimageview=!this.isimageview;
     },
     markarray: function (childinfoArry) {
@@ -165,29 +171,82 @@ export default {
     },
     //下一张图片
     nextimage: function () {
+      if(this.unable) {
+        //console.log("unable!!!!!!!!!!!!!!!!!!!!")
+        return
+      }
       if(this.isimageview) {
         console.log("处于预览界面");
         return
         }
       if (this.nownum < this.imageArry.length - 1) {
+        this.nopnum=1;
+        this.unable=true
         this.$refs.imageselectref.saveinfo()
-        this.nownum++;
+        //this.nownum++;
       }
       console.log("nextimage", this.nownum);
       //console.log("nextimage infoArry", this.infoArry, this.infoArry.length);
     },
     //上一张图片
     previousimage: function () {
+        if(this.unable) return
         if(this.isimageview) {
         console.log("处于预览界面");
         return
         }
       //if() return
       if (this.nownum > 0) {
+        this.nopnum=2;
+        this.unable=true
         this.$refs.imageselectref.saveinfo()
-        this.nownum--;
+        //this.nownum--;
       }
       console.log("previousimage", this.nownum);
+    },
+    //post修改正在标注标识
+    isnowlabel:function(){
+      let _this = this;
+      return request({
+        url:
+          "http://10.19.1.77:8085/label/setLabeling?uuid="+this.uuidArry[this.nownum],
+        method: "post",
+        //timeout:_this.lastinfoArry.length*5000,
+        //params: query
+      }).then(function (response) {
+        console.log(response);
+      })
+    },
+    //post生成xml
+    generateXML:function () {
+      let _this = this;
+      return request({
+        url:
+          "http://10.19.1.181:8082/dataset/save?dataset_id="+store.getters.uuid,
+        method: "post",
+        //timeout:_this.lastinfoArry.length*5000,
+        //params: query
+      }).then(function (response) {
+        console.log(response);
+        _this.$message({
+          message:"xml生成成功",
+          duration:300,
+          type: 'success'
+          });
+      }).catch(function(error){
+        console.log("error",error)
+          _this.$message({
+          message:"xml生成失败",
+          type: 'error'
+          })
+          // for (let i = 0; i < testmarktype.length; i++) {
+          //   let a={};
+          // a["url"]=response.data.items[i].file_path
+          // a["islabel"]=response.data.items[i].is_label
+          // //a["index"]=i
+          // _this.imagelargeArry.push(a);
+          // }
+      });
     },
     //保存图片标注信息
     saveimageinfo: function (markinfo, imageeindex) {
@@ -213,9 +272,9 @@ export default {
          _this.imagelargeArry=[]
         console.log("get图片结果", response);
         for (let i = 0; i < response.data.items.length; i++) {
-          //console.log("testtttttttttt",response.data.items[i].label_data);
           if(response.data.items[i].label_data!==undefined) {
-          let tempa = JSON.parse(response.data.items[i].label_data);
+          console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data).rectangle);
+          let tempa = JSON.parse(response.data.items[i].label_data).rectangle;
           let len = eval(tempa).length;
           //console.log("len", len);
           let arr = [];
@@ -278,7 +337,7 @@ export default {
          _this.imagelargeArry=[]
         console.log("get图片结果", response);
         for (let i = 0; i < response.data.items.length; i++) {
-          //console.log("testtttttttttt",response.data.items[i].label_data);
+          console.log("testtttttttttt",response.data.items[i].label_data);
           if(response.data.items[i].label_data!==undefined) {
           let tempa = JSON.parse(response.data.items[i].label_data);
           let len = eval(tempa).length;
@@ -339,7 +398,7 @@ export default {
         method: "get",
         //params: query
       }).then(function (response) {
-        console.log(response)
+        //console.log("taggggggggggggggggggggggggggggggggggggg",response)
         for (let i = 0; i < response.data.items.length; i++) {
           let a={};
           a["name"]=response.data.items[i].name
@@ -360,15 +419,15 @@ export default {
       let _this=this
       this.nowseconds = 0;
       //_this.$message('开始保存');
-      console.log("save",JSON.stringify(this.infoArry[i][0]));
+      console.log("save",JSON.stringify(this.infoArry[i]));
       let isab
-      if(this.infoArry[i][0].length>0) isab=1
+      if(this.infoArry[i].rectangle.length>0) isab=1
       else isab=2
       return request({
         url: "http://10.19.1.181:8082/label",
         method: "put",
         data: {
-          label_data: JSON.stringify(this.infoArry[i][0]),
+          label_data: JSON.stringify(this.infoArry[i]),
           //"last_update_by": "liaoziheng",
           //file_type: "rectangle",
           is_label: isab,
@@ -383,8 +442,21 @@ export default {
           duration:300,
           type: 'success'
           });
+        console.log("save success!!!!!!!!!!!!!!")
         _this.requireimage();
-        _this.requiretag();
+        _this.requiretag().then(function(){
+          if(_this.nopnum==1) {
+            _this.nownum++;
+            _this.isnowlabel();
+          }
+          if(_this.nopnum==2) {
+            _this.nownum--;
+            _this.isnowlabel();
+          }
+          
+          _this.unable=false;
+        });
+
       }).catch(function(error){
         console.log("error",error)
           _this.$message({
@@ -402,11 +474,12 @@ export default {
       _this.$message('开始2D拉框自动标注');
       _this.automarkbtntext="标注中";
       _this.isloading=true;
+      console.log("图片长度预留时间",_this.lastinfoArry.length*5000)
       return request({
         url:
           "http://10.19.1.181:8082/dataset/auto?dataset_id="+store.getters.uuid,
         method: "post",
-        timeout:15000,
+        timeout:_this.lastinfoArry.length*5000,
         //params: query
       }).then(function (response) {
         console.log(response);
@@ -445,8 +518,8 @@ export default {
     document.onkeydown = keyDownSearch;
     this.starttimer = setInterval(()=>{
       this.nowseconds++;
-      console.log(this.nowseconds,"my定时器！！！！")
-      if(this.nowseconds>=300){
+      //console.log(this.nowseconds,"my定时器！！！！")
+      if(this.nowseconds>=30000){
         console.log("超时")
         const params = {
             userId: store.getters.userid,
