@@ -65,6 +65,13 @@ export const constantRoutes = [
       name: 'message',
       meta: { title: 'message', resources: 'message' },
       hidden: true
+    },
+    {
+      path: '/dataSet/audit',
+      component: () => import('@/views/dataSet/audit'),
+      name: 'audit',
+      meta: { title: 'audit', resources: 'audit' },
+      hidden: true
     }
   ]
   }

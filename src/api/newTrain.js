@@ -9,27 +9,27 @@ export function startTask(query){
   })
 }
 
-export function stopTask(query){
+export function stopTask(query) {
   return request({
-    url:'/train/stop',
-    method:'post',
+    url: '/train/stop',
+    method: 'post',
     params: query,
     //baseURL: 'http://localhost:9528/dev-api'
     baseURL: 'http://10.19.1.181:8084'
   })
 }
 
-export function deleteTask(query){
+export function deleteTask(query) {
   return request({
-    url:'/train',
-    method:'delete',
+    url: '/train',
+    method: 'delete',
     params: query,
     //baseURL: 'http://localhost:9528/dev-api'
     baseURL: 'http://10.19.1.181:8084'
   })
 }
 
-export function showLog(){
+export function showLog() {
   return request({
     url:'/train/log',
     method:'post',
