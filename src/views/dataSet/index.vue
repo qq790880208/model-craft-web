@@ -60,7 +60,7 @@
         <el-form :inline="true" :model="filter" >
           <el-form-item>
             <el-input v-model="filter.name" placeholder="请输入查询名称" >
-              <el-button slot="append" icon="el-icon-search" @click="getDataSetByManager()"></el-button>
+              <el-button slot="append" icon="el-icon-search" @click="getAssignDataSet()"></el-button>
             </el-input>
           </el-form-item>
         </el-form>
@@ -98,7 +98,92 @@
             </el-pagination>
         </el-col>
       </el-tab-pane>
+
+      <el-tab-pane label="审核任务" name="audit">
+        <el-form :inline="true" :model="filter" >
+          <el-form-item>
+            <el-input v-model="filter.name" placeholder="请输入查询名称" >
+              <el-button slot="append" icon="el-icon-search" @click="getAuditDataSet()"></el-button>
+            </el-input>
+          </el-form-item>
+        </el-form>
+        <el-table :data="dataSetAudit" highlight-current-row style="width: 100%;">
+          <el-table-column prop="name" align="center" label="名称" min-width="200" sortable>
+            <template slot-scope="scope">
+              <span class="link-type" @click="toAudit(scope.row)">{{ scope.row.name }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="type" align="center" label="审核类型" min-width="120" sortable>
+            <template slot-scope="scope">
+              {{ scope.row.label_type | formatType }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="done" align="center" label="审核进度" min-width="260" sortable>
+            <template slot-scope="scope">
+              <div style="width: 250px; margin:0px auto;">
+                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)">
+                </el-progress>
+                {{scope.row.done}} / {{scope.row.tol}}
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="descr" align="center" label="描述" min-width="150" sortable>
+          </el-table-column>
+          <el-table-column prop="create_time" align="center" label="创建时间" min-width="180" sortable>
+            <template slot-scope="scope">
+              {{ scope.row.create_time | formatDate }}
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-col :span="24" class="toolbar">
+          <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size"  :page-sizes="[1,5,10,20]"  :total="total2" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
+            </el-pagination>
+        </el-col>
+      </el-tab-pane>
+
+      <el-tab-pane label="验收任务" name="accept">
+        <el-form :inline="true" :model="filter" >
+          <el-form-item>
+            <el-input v-model="filter.name" placeholder="请输入查询名称" >
+              <el-button slot="append" icon="el-icon-search" @click="getAcceptDataSet()"></el-button>
+            </el-input>
+          </el-form-item>
+        </el-form>
+        <el-table :data="dataSetAccept" highlight-current-row style="width: 100%;">
+          <el-table-column prop="name" align="center" label="名称" min-width="200" sortable>
+            <template slot-scope="scope">
+              <span class="link-type" @click="toAccept(scope.row)">{{ scope.row.name }}</span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="type" align="center" label="验收类型" min-width="120" sortable>
+            <template slot-scope="scope">
+              {{ scope.row.label_type | formatType }}
+            </template>
+          </el-table-column>
+          <el-table-column prop="done" align="center" label="审核进度" min-width="260" sortable>
+            <template slot-scope="scope">
+              <div style="width: 250px; margin:0px auto;">
+                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)">
+                </el-progress>
+                {{scope.row.done}} / {{scope.row.tol}}
+              </div>
+            </template>
+          </el-table-column>
+          <el-table-column prop="rate" align="center" label="验收比例" min-width="150" sortable>
+             <div class="block">
+              <el-slider v-model="rate"></el-slider>
+             </div>
+          </el-table-column>
+          
+        </el-table>
+        <el-col :span="24" class="toolbar">
+          <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size"  :page-sizes="[1,5,10,20]"  :total="total3" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
+            </el-pagination>
+        </el-col>
+      </el-tab-pane>
+      
     </el-tabs>
+
 
     <el-dialog
       title="创建数据集"
@@ -250,6 +335,8 @@ import { getLabel, getDataByName, createDataSet, deleteDataSet, assignLabel, get
 import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder } from '@/api/oss'
 import store from '@/store'
 import { getAllTeam, getSelectTeam } from '@/api/team'
+import { getAuditData } from '@/api/audit'
+import { getAcceptData, setAcceptDataApi } from '@/api/accept'
 export default {
   namespaced: true,
   filters: {
@@ -304,6 +391,7 @@ export default {
       cb(new Error("请输入标签"))
     }
     return {
+      value: 20,
       activeName: 'allData',
       message: '',
       filter: {
@@ -312,8 +400,12 @@ export default {
       oldTeam: '',
       dataSets: [],
       dataSetAssigned: [],
+      dataSetAudit: [],
+      dataSetAccept: [],
       total: 0,
       total1: 0,
+      total2: 0,
+      total3: 0,
       page: 1,
       page_size: 20,
       dialogVisible: false,
@@ -376,6 +468,10 @@ export default {
     ])
   },
   methods: {
+    datachange(dataRate) {
+      return dataRate
+
+    },
     // dialog 关闭
     handleCloseDialog(done) {
       this.$confirm('确认关闭？')
@@ -386,7 +482,6 @@ export default {
         })
         .catch(_ => {});
     },
-
     // 添加标签
     handleClose(tag) {
       this.form.label.splice(this.form.label.indexOf(tag), 1);
@@ -566,6 +661,12 @@ export default {
       if (this.activeName == 'allData') {
         this.getDataSet()
       }
+      if(this.activeName == 'audit') {
+        this.getAuditDataSet()
+      }
+      if(this.activeName == 'accept') {
+        this.getAcceptDataSet()
+      }
     },
 
     // 设置标注进度条
@@ -588,7 +689,13 @@ export default {
       }
       if (this.activeName == 'manager') {
         this.getAssignDataSet()
-      }   
+      }
+      if(this.activeName == 'audit') {
+        this.getAuditDataSet()
+      }
+      if(this.activeName == 'accept') {
+        this.getAcceptDataSet()
+      }
     },
     handleCurrentChange(val) {
       this.page = val
@@ -597,6 +704,12 @@ export default {
       }
       if (this.activeName == 'manager') {
         this.getAssignDataSet()
+      }
+      if(this.activeName == 'audit') {
+        this.getAuditDataSet()
+      }
+      if(this.activeName == 'accept') {
+        this.getAcceptDataSet()
       }
     },
 
@@ -632,6 +745,95 @@ export default {
       this.filter.name = ''
     },
 
+    // 得到审核数据集
+    getAuditDataSet: function() {
+      const params = {
+        page: this.page,
+        pagesize: this.page_size,
+        userId: store.getters.userid,
+        name: this.filter.name
+      }
+      getAuditData(params).then(res =>{
+        this.dataSetAudit = res.data.items
+        this.total2 = res.data.total
+      })
+      this.filters.name = ''
+    },
+
+    // 得到验收数据集
+    getAcceptDataSet: function() {
+      const params = {
+        page: this.page,
+        pagesize: this.page_size,
+        userId: store.getters.userid,
+        name: this.filter.name
+      }
+      getAcceptData(params).then(res =>{
+        this.dataSetAccept = res.data.items
+        this.total3 = res.data.total
+      })
+      this.filters.name = ''
+    },
+
+    toAudit: function(val) {
+      console.log(val)
+      store.dispatch('data/changeUuid', val.uuid)
+      store.dispatch('data/changeType', val.label_type)
+      store.dispatch('data/changeDataSet',val)
+      // this.$router.push({path:'/dataSet/audit'})
+      // this.$router.push({path: '/dataSet/polygonaudit'})
+      this.$router.push({path: '/dataSet/3Daudit'})
+      if(val.label_type === 0) {
+        this.$router.push({path: '/dataSet/2DauditPre'})
+      }
+      if(val.label_type === 1) {
+        this.$router.push({path: '/dataSet/polygonaudit'})
+      }
+      if(val.label_type === 2) {
+        this.$router.push({path: '/dataSet/3Daudit'})
+      }
+      if(val.label_type === 3) {
+        this.$router.push({path:'/label/voice'})
+      }
+    },
+
+    toAccept: function(val) {
+      console.log(val)
+      store.dispatch('data/changeUuid', val.uuid)
+      store.dispatch('data/changeType', val.label_type)
+      store.dispatch('data/changeDataSet',val)
+      // this.$router.push({path:'/dataSet/audit'})
+      // this.$router.push({path: '/dataSet/polygonaudit'})
+      // this.$router.push({path: '/dataSet/3Daudit'})
+      const params = {
+        dataSetUuid: val.uuid,
+        rate: 50,
+        userId: store.getters.userid
+      }
+      console.log(params)
+      // setAcceptDataApi(params)
+      this.setAuditDatas(params)
+      if(val.label_type === 0) {
+        this.$router.push({path: '/dataSet/2DauditPre'})
+      }
+      if(val.label_type === 1) {
+        this.$router.push({path: '/dataSet/polygonaudit'})
+      }
+      if(val.label_type === 2) {
+        this.$router.push({path: '/dataSet/3Daudit'})
+      }
+      if(val.label_type === 3) {
+        this.$router.push({path:'/label/voice'})
+      }
+    },
+    setAuditDatas(params) {
+      setAcceptDataApi(params).then(res =>{
+        this.$message({
+          message: '添加成功',
+          type: 'success'
+          })
+      })
+    },
     // 展示数据
     toDataSet: function(val) {
       console.log(val)
@@ -658,9 +860,11 @@ export default {
       store.dispatch('data/changeDataSet',val)
       if(type === 0) {
         this.$router.push('/label/d2imageview')
+        // this.$router.push({path: '/dataSet/2DauditPre'})
       }
       if(type === 1) {
         this.$router.push({path:'/label/polygonimageview'})
+        // this.$router.push({path: '/dataSet/2DauditPre'})
       }
       if(type === 2) {
         this.$router.push({path:'/label/d3'})
