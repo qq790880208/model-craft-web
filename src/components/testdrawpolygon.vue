@@ -129,7 +129,7 @@
               @mouseover.native="infotip(index)"
               @mouseout.native="removetip(index)"
               @mousedown.native="deletemarked(index)"
-              >删除{{ index + 1 }}
+              >{{ index + 1 }}、{{items.type=="polygon"?"多边形":items.type=="line"?"线":"点"}}
             </el-button>
           </div>
         </div>
@@ -576,10 +576,13 @@ export default {
     updatelastdata() {
       //查看上次标注保存的信息
       console.log("image select lastlabelArry", this.lastlabelArry);
+      if(this.lastlabelArry==undefined) return
 
       // this.clearinfo();
       // this.clearobj();
       console.log("img11111111111111111", this.scalewidth, this.scaleheight);
+      //if(this.lastlabelArry.line!=undefined) console.log("gahga")
+      if(this.lastlabelArry.line!=null&&this.lastlabelArry.line!=undefined){
       //线
       for (let i = 0; i < this.lastlabelArry.line.length; i++) {
         for (let j = 0; j < this.lastlabelArry.line[i].point.length; j++) {
@@ -609,6 +612,9 @@ export default {
         this.linePoints=[];
         this.realLinePoints=[];
       }
+      }
+
+      if(this.lastlabelArry.polygon!=null&&this.lastlabelArry.polygon!=undefined){
       //多边形
       for (let i = 0; i < this.lastlabelArry.polygon.length; i++) {
         this.realpolygoninfoArray.push(this.lastlabelArry.polygon[i]);
@@ -644,6 +650,9 @@ export default {
         console.log("roofPointsuuu", this.roofPoints);
         this.roofPoints = [];
       }
+      }
+
+      if(this.lastlabelArry.circle!=null&&this.lastlabelArry.circle!=undefined){
       //点
       for (let i = 0; i < this.lastlabelArry.circle.length; i++) {
         console.log("circle",this.lastlabelArry.circle[i].point)
@@ -681,6 +690,8 @@ export default {
           })
           
       }
+      }
+
       this.fabricObj.renderAll();
       this.fabricObj.hoverCursor="default";
       this.havefabricobj=true;

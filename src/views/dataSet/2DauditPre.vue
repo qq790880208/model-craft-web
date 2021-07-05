@@ -39,7 +39,6 @@
         :imageindex="this.nownum"
         :premarktype="this.marktype"
         :lastlabelArry="this.lastinfoArry[nownum]"
-        @saveimageinfo="saveimageinfo"
       ></imageselect>
     </div>
     </div>
@@ -125,7 +124,6 @@ export default {
         },
       ],
       marktype: [],
-      nopnum: 0, //标记下一张上一张还是返回的数字
       unable: false, //防止连续切换图片
       nownum: 0,
       isalllabeled: false,
@@ -260,8 +258,6 @@ export default {
       this.isimageview=!this.isimageview;
     },
     returnimageview(){
-        this.nopnum=0;
-        this.$refs.imageselectref.saveinfo()
         this.nownum=0;
         this.isimageview=!this.isimageview;
     },
@@ -306,19 +302,12 @@ export default {
         if(this.isAudited == 0) {
             this.$message("请进行审核操作")
         }else{
-            if(this.unable) {
-                //console.log("unable!!!!!!!!!!!!!!!!!!!!")
-                return
-            }
             if(this.isimageview) {
                 console.log("处于预览界面");
                 return
             }
             if (this.nownum < this.imageArry.length - 1) {
-                this.nopnum=1;
-                this.unable=true
-                this.$refs.imageselectref.saveinfo()
-                //this.nownum++;
+                this.nownum++;
             }
             console.log("nextimage", this.nownum);
         }
@@ -330,17 +319,13 @@ export default {
         if(this.isAudited == 0) {
             this.$message("请进行审核操作")
         }else{
-            if(this.unable) return
             if(this.isimageview) {
                 console.log("处于预览界面");
                 return
             }
       
             if (this.nownum > 0) {
-                this.nopnum=2;
-                this.unable=true
-                this.$refs.imageselectref.saveinfo()
-        
+                this.nownum--;
             }
             console.log("previousimage", this.nownum);
         }
@@ -377,9 +362,9 @@ export default {
             _this.imagelargeArry=[]
             console.log("get图片结果", response);
             for (let i = 0; i < response.data.items.length; i++) {
-                console.log("testtttttttttt",response.data.items[i].label_data);
+                console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data).rectangle);
                 if(response.data.items[i].label_data!==undefined) {
-                    let tempa = JSON.parse(response.data.items[i].label_data);
+                    let tempa = JSON.parse(response.data.items[i].label_data).rectangle;
                     let len = eval(tempa).length;
                     //console.log("len", len);
                     let arr = [];
@@ -418,7 +403,7 @@ export default {
         let _this = this;
         this.marktype=[]
         const params = {
-            datasetuuid: store.getters.uuid
+            dataset_uuid: store.getters.uuid
         }
         getTagApi(params).then(response =>{
             for (let i = 0; i < response.data.items.length; i++) {
@@ -436,31 +421,6 @@ export default {
             })
         })
     },
-    //保存图片标注信息
-    saveimageinfo: function (markinfo, imageeindex) {
-      this.infoArry[imageeindex] = markinfo;
-      console.log("save success", markinfo, imageeindex);
-      console.log("thisinfoArry", this.infoArry);
-      this.savelabel(this.nownum);
-    },
-    savelabel(i) {
-        let _this=this
-        this.nowseconds = 0
-        console.log("save",JSON.stringify(this.infoArry[i]))
-        let isab
-        if(this.infoArry[i].rectangle.length>0) isab=1
-        else isab=2
-        _this.getAuditDataList()
-        _this.getTags()
-        console.log('wwwwwwwwwwwwwww');
-        if(_this.nopnum==1) {
-            _this.nownum++;   
-        }
-        if(_this.nopnum==2) {
-            _this.nownum--;   
-        }
-        _this.unable=false;  
-    }
   },
 
   mounted: function () {

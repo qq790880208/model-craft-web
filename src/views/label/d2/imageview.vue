@@ -275,6 +275,8 @@ export default {
           if(response.data.items[i].label_data!==undefined) {
           console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data).rectangle);
           let tempa = JSON.parse(response.data.items[i].label_data).rectangle;
+          // console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data));
+          // let tempa = JSON.parse(response.data.items[i].label_data);
           let len = eval(tempa).length;
           //console.log("len", len);
           let arr = [];
