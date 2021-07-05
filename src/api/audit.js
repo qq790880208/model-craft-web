@@ -44,3 +44,39 @@ export function batchReSetApi(params) {
     baseURL: 'http://10.19.1.77:8085'
   })
 }
+
+export function passApi(params) {
+  return request({
+    url: '/userAudit/isAudit',
+    method: 'put',
+    params: params,
+    baseURL: 'http://10.19.1.77:8085'
+  })
+}
+
+export function reSetApi(params) {
+  return request({
+    url: '/userAudit/isReSet',
+    method: 'put',
+    params: params,
+    baseURL: 'http://10.19.1.77:8085'
+  })
+}
+
+export function rejectApi(params) {
+  return request({
+    url: '/userAudit/isReject',
+    method: 'put',
+    params: params,
+    baseURL: 'http://10.19.1.77:8085'
+  })
+}
+
+export function getIsAuditApi(params) {
+  return request({
+    url: '/userAudit/getAudit',
+    method: 'get',
+    params: params,
+    baseURL: 'http://10.19.1.77:8085'
+  })
+}

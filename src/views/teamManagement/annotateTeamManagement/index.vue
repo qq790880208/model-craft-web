@@ -234,11 +234,7 @@ export default {
       teamsList: [],
       rolesList: [],
       userTotal: 0,
-<<<<<<< HEAD
       statusOptions: [ '标注员', '团队管理员'],
-=======
-      statusOptions: ['Label', '团队管理员'],
->>>>>>> dev
       idLabel: '',
       dialogStatus: '',
       dialogStatusUser: '',
