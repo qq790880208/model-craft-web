@@ -43,6 +43,7 @@ import request from "@/utils/request";
 import miniimage from "@/components/miniimage.vue"
 import store from "@/store"
 import {outTimeReAssign, getNewLabels} from '@/api/data'
+import { getAuditDatasByUserId} from '@/api/audit'
 //import axios from 'node_modules/axios';
 // import labelinfo from '@/components/labelinfo.vue'
 //页面键盘监听
@@ -326,12 +327,12 @@ export default {
       }
       //////////////////////////////////////
       else{
-      return request({
-        url:
-          "http://10.19.1.77:8085/userlabel/getLabel?dataset_uuid="+store.getters.uuid+"&user_id="+store.getters.userid,
-        method: "get",
-        //params: query
-      }).then(function (response) {
+      const params = {
+            dataSetUuid: store.getters.uuid,
+            userId: store.getters.userid
+        }
+        console.log(params)
+        getAuditDatasByUserId(params).then(function (response) {
          _this.imageArry=[]
          _this.infoArry=[]
          _this.lastinfoArry=[]

@@ -36,7 +36,7 @@ export function getDataByManager(params) {
   })
 }
 
-export function createDataSet(params) {
+export function createDataSetApi(params) {
   return request({
     url: '/data/create',
     method: 'post',
