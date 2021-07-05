@@ -2,9 +2,9 @@ import request from '@/utils/request'
 
 export function getTagApi(params) {
   return request({
-    url: '/tag/get',
+    url: '/dataset/tag',
     method: 'get',
     params: params,
-    baseURL: 'http://10.19.1.77:8085'
+    baseURL: 'http://10.19.1.181:8082'
   })
 }

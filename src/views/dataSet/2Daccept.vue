@@ -377,9 +377,9 @@ export default {
             _this.imagelargeArry=[]
             console.log("get图片结果", response);
             for (let i = 0; i < response.data.items.length; i++) {
-                console.log("testtttttttttt",response.data.items[i].label_data);
+                console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data).rectangle);
                 if(response.data.items[i].label_data!==undefined) {
-                    let tempa = JSON.parse(response.data.items[i].label_data);
+                    let tempa = JSON.parse(response.data.items[i].label_data).rectangle;
                     let len = eval(tempa).length;
                     //console.log("len", len);
                     let arr = [];
@@ -392,7 +392,7 @@ export default {
                         arr[i].info = tempa[i].info;
                     }
                     _this.lastinfoArry.push(arr);
-                    console.log("lastinfoArry", response.data.items[i].is_label);
+                    console.log("lastinfoArry",  _this.lastinfoArry,response.data.items[i].is_label);
                 }
                 let a={};
                 a["url"]=response.data.items[i].file_path

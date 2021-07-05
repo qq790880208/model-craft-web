@@ -39,8 +39,6 @@
       :imageindex="this.nownum"
       :premarktype="this.marktype"
       :lastlabelArry="this.lastinfoArry[nownum]"
-      @closebutton="closebutton"
-      @saveimageinfo="saveimageinfo"
     ></drawpolygon>
     <!-- <canvas id="canvas" width='800' height='800'></canvas> -->
   </div>
@@ -147,7 +145,7 @@ export default {
     console.log("mounted!!!!", this.infoArry.length, this.infoArry);
     console.log("mounted!!!!uuid",store.getters.uuid,"mounted!!!!store.getters.userid",store.getters.userid)
     this.getAuditDataList()
-    this.requiretag();
+    this.getTags();
     window.nextimage = this.nextimage;
     window.previousimage = this.previousimage;
     window.skipimage = this.skipimage;
@@ -288,12 +286,10 @@ export default {
     entermark(index){
       console.log("faaaaaaaaaaaatherenter!")
       this.nownum=index;
-      this.isnowlabel();
+      //this.isnowlabel();
       this.isimageview=!this.isimageview;
     },
     returnimageview(){
-        this.nopnum=0;
-        this.$refs.drawpolygonref.saveinfo()
         this.nownum=0;
         this.isimageview=!this.isimageview;
     },
@@ -306,19 +302,12 @@ export default {
         if(this.isAudited == 0) {
             this.$message("请进行审核操作")
         }else{
-            if(this.unable) {
-                //console.log("unable!!!!!!!!!!!!!!!!!!!!")
-                return
-            }
             if(this.isimageview) {
                 console.log("处于预览界面");
                 return
             }
             if (this.nownum < this.imageArry.length - 1) {
-                this.nopnum=1;
-                this.unable=true
-                this.$refs.imageselectref.saveinfo()
-                //this.nownum++;
+                this.nownum++;
             }
             console.log("nextimage", this.nownum);
         }
@@ -330,17 +319,12 @@ export default {
         if(this.isAudited == 0) {
             this.$message("请进行审核操作")
         }else{
-            if(this.unable) return
             if(this.isimageview) {
                 console.log("处于预览界面");
                 return
             }
-      
             if (this.nownum > 0) {
-                this.nopnum=2;
-                this.unable=true
-                this.$refs.imageselectref.saveinfo()
-        
+              this.nownum--;       
             }
             console.log("previousimage", this.nownum);
         }
@@ -361,10 +345,6 @@ export default {
       }
       console.log("skipimage", this.nownum);
       this.nowseconds = 0;
-    },
-    closebutton() {
-      console.log("fatherdisbtnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
-      this.isdisablebutton=!this.isdisablebutton
     },
     //post修改正在标注标识
     isnowlabel:function(){
@@ -427,7 +407,7 @@ export default {
         let _this = this;
         this.marktype=[]
         const params = {
-            datasetuuid: store.getters.uuid
+            dataset_uuid: store.getters.uuid
         }
         getTagApi(params).then(response =>{
             for (let i = 0; i < response.data.items.length; i++) {
@@ -445,32 +425,6 @@ export default {
             })
         })
     },
-    //保存图片标注信息
-    saveimageinfo: function (markinfo, imageeindex) {
-      this.infoArry[imageeindex] = markinfo;
-      console.log("save success", markinfo, imageeindex);
-      console.log("thisinfoArry", this.infoArry);
-      this.savelabel(this.nownum)
-    },
-    //put请求
-    savelabel(i) {
-        let _this=this
-        this.nowseconds = 0
-        console.log("save",JSON.stringify(this.infoArry[i]))
-        let isab
-        if(this.infoArry[i].polygon.length>0||this.infoArry[i].line.length>0||this.infoArry[i].circle.length>0) isab=1
-        else isab=2
-        _this.getAuditDataList()
-        _this.getTags()
-        console.log('wwwwwwwwwwwwwww');
-        if(_this.nopnum==1) {
-            _this.nownum++;   
-        }
-        if(_this.nopnum==2) {
-            _this.nownum--;   
-        }
-        _this.unable=false;  
-    }
   },
   destroyed(){
     document.onkeydown = undefined;

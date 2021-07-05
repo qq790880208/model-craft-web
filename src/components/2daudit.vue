@@ -18,23 +18,11 @@
         }"
       >
         <el-radio-group v-model="radio" style="display: inline-block">
-          <!-- <el-radio-button label="mark" class="el-icon-edit"
-            >标注</el-radio-button
-          > -->
           <el-radio-button label="drag" class="el-icon-rank"
             >拖动</el-radio-button
           >
-          <!-- <el-radio-button label="mark" icon="el-icon-edit"></el-radio-button>
-        <el-radio-button label="drag" icon="el-icon-rank"></el-radio-button> -->
         </el-radio-group>
-        <!-- <el-button @click="gai()" >{{buttontext}}</el-button> -->
-        <!-- <el-button @click="gai" v-show="!isTrue2">正在添加标注</el-button> -->
         <el-button-group style="display: inline-block">
-          <!-- <el-button @click="fangda" icon="el-icon-zoom-in">放大</el-button>
-        <el-button @click="suoxiao" icon="el-icon-zoom-out">缩小</el-button>
-        <el-button @click="huanyuan" icon="el-icon-refresh">还原图片大小</el-button>
-        <el-button @click="saveinfo">保存 </el-button>
-        <el-button @click="updatelastdata">查看上次标注数据</el-button> -->
           <el-button
             @click="fangda"
             icon="el-icon-zoom-in"
@@ -120,91 +108,6 @@
                 border: 'none',
               }"
             >
-              <!-- <div class="r_b" @mousedown="mouseMove11" v-if="b_i == index"></div> -->
-              <!-- <div class="ltc" @mousedown.stop="move(false,1, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
-          <div class="rtc" @mousedown.stop="move(false,2, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
-          <div class="lbc" @mousedown.stop="move(false,3, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
-          <div class="rbc" @mousedown.stop="move(false,4, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
-          <div class="tc" @mousedown.stop="move(false,5, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
-          <div class="lc" @mousedown.stop="move(false,6, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
-          <div class="rc" @mousedown.stop="move(false,7, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
-          <div class="bc" @mousedown.stop="move(false,8, $event)" v-if="b_i == index"> {{ index + 1 }} </div> -->
-              <!-- <div
-                class="ltc"
-                :style="{
-                  width:item.width>30?item.height>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
-                  height:item.height>30?item.width>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
-                }"
-                @mousedown.stop="move(false, 1, $event)"
-                v-if="b_i == index"
-              ></div>
-              <div
-                class="rtc"
-                :style="{
-                  width:item.width>30?item.height>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
-                  height:item.height>30?item.width>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
-                }"
-                @mousedown.stop="move(false, 2, $event)"
-                v-if="b_i == index"
-              ></div>
-              <div
-                class="lbc"
-                :style="{
-                  width:item.width>30?item.height>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
-                  height:item.height>30?item.width>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
-                }"
-                @mousedown.stop="move(false, 3, $event)"
-                v-if="b_i == index"
-              ></div>
-              <div
-                class="rbc"
-                :style="{
-                  width:item.width>30?item.height>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
-                  height:item.height>30?item.width>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
-                }"
-                @mousedown.stop="move(false, 4, $event)"
-                v-if="b_i == index"
-              ></div>
-              <div
-                class="tc"
-                :style="{
-                  width:item.width>30?item.height>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
-                  height:item.height>30?item.width>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
-                  left:item.width>30?(item.width-6)/2+'px':(item.width-4)/2+'px',
-                }"
-                @mousedown.stop="move(false, 5, $event)"
-                v-if="b_i == index"
-              ></div>
-              <div
-                class="lc"
-                :style="{
-                  width:item.width>30?item.height>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
-                  height:item.height>30?item.width>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
-                  top:item.height>30?(item.height-6)/2+'px':(item.height-4)/2+'px',
-                }"
-                @mousedown.stop="move(false, 6, $event)"
-                v-if="b_i == index"
-              ></div>
-              <div
-                class="rc"
-                :style="{
-                  width:item.width>30?item.height>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
-                  height:item.height>30?item.width>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
-                  top:item.height>30?(item.height-6)/2+'px':(item.height-4)/2+'px',
-                }"
-                @mousedown.stop="move(false, 7, $event)"
-                v-if="b_i == index"
-              ></div>
-              <div
-                class="bc"
-                :style="{
-                  width:item.width>30?item.height>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
-                  height:item.height>30?item.width>30?6+'px':Math.min(item.height,item.width)/5+'px':Math.min(item.height,item.width)/5+'px',
-                  left:item.width>30?(item.width-6)/2+'px':(item.width-4)/2+'px',
-                }"
-                @mousedown.stop="move(false, 8, $event)"
-                v-if="b_i == index"
-              ></div> -->
             </div>
             <div
               :style="{
@@ -262,8 +165,6 @@
             :inputname="labelArry[index].info"
             :typelabel="markinfoArry"
             :nowindex="index+1"
-            @deletelabel="deletelabel(index)"
-            @changeinfo="changeinfo($event, index)"
             @mousedown.native="handelClick(index)"
             :style="{
               //textAlign:'center',
@@ -280,7 +181,7 @@
   </div>
 </template>
 <script>
-import labelinfo from "@/components/labelinfo.vue";
+import labelinfo from "@/components/labelinfoacc.vue";
 export default {
   //input: 1
   props: {
@@ -477,44 +378,6 @@ export default {
       console.log("vcxxcvxvxcv", this.boxArry);
       console.log("fsdfdsfsd", this.labelArry);
     },
-    // settrue() {
-    //   this.isTrue2 = true;
-    //   console.log("setture");
-    // },
-    // setfalse() {
-    //   this.isTrue2 = false;
-    //   console.log("setfalse");
-    // },
-    // testsave(){
-    //   console.log("testtttttttttttttttttttttttsssssssssssssssssssssssssssssss")
-    // },
-    saveinfo() {
-      //保存时传递的信息
-      console.log("start!!!", this.boxArry);
-      //变为深拷贝
-      let tempArry={}
-      tempArry.rectangle=JSON.parse(JSON.stringify(this.labelArry))
-     // this.tempArry.push(JSON.parse(JSON.stringify(this.labelArry)));
-      //this.tempArry[0]=this.boxArry
-      //this.tempArry.push(this.fatherimagesrc);
-      //this.tempArry.push(this.imageindex);
-      console.log("11111",tempArry,);
-      this.$emit("saveimageinfo", tempArry, this.imageindex);
-      console.log("11111",tempArry,);
-      console.log("22222zzzzz", tempArry);
-      this.tempArry = [];
-      console.log("22222", tempArry);
-      //  this.$emit('saveimageinfo',this.boxArry,this.fatherimagesrc,this.imageindex)
-      //  console.log(this.boxArry,this.fatherimagesrc,this.imageindex)
-    },
-    deletelabel(i) {
-      //删除对应标注
-      this.boxArry.splice(i, 1);
-      this.labelArry.splice(i, 1);
-      this.b_i=-1;
-      console.log(this.boxArry);
-      console.log(this.labelArry);
-    },
     changeinfo(input, i) {
       //保存标注信息
       //console.log("father"+input,i)
@@ -522,33 +385,25 @@ export default {
       this.findcolor(this.labelArry[i].info);
       this.boxArry[i].color = this.markcolor;
     },
-    gai() {
-      this.isTrue2 = !this.isTrue2;
-      console.log("isTrue2", this.isTrue2);
-      if (this.isTrue2) this.buttontext = "正在标注(切换拖动图片)";
-      else this.buttontext = "正在拖动图片(切换标注)";
-    },
     getOffect(e) {
       console.log(e);
       document.onmouseup = null;
-      // this.left=e.offsetX
-      //     this.top=e.offsetY
     },
     moveMouse(e) {
       //标注或者拖动图片的函数
       //console.log("moveMouse!!!!!!!!!!!!!!");
       let odiv = e.target; //获取目标元素
-      console.log("dsadasdasdsadsadasdasdsadsad", this.radio);
+      //console.log("dsadasdasdsadsadasdasdsadsad", this.radio);
       odiv.style.left = this.imageleft + "px";
       odiv.style.top = this.imagetop + "px";
       //console.log(odiv);
       this.b_i = -1;
-      console.log(
-        "this.imageleft",
-        this.imageleft,
-        "this.imagetop",
-        this.imagetop
-      );
+      // console.log(
+      //   "this.imageleft",
+      //   this.imageleft,
+      //   "this.imagetop",
+      //   this.imagetop
+      // );
       //拖动图片的相对位置
       let left2 = this.imageleft;
       let top2 = this.imagetop;
@@ -585,347 +440,10 @@ export default {
           document.onmousemove = null;
           document.onmouseup = null;
         };
-      } else {
-        // 添加div
-        document.onmouseup = (e) => {
-          //防止点击松开之后的拖动
-          //console.log("nomove mouseup!!!!!!!!!!!!!!");
-
-          document.onmousemove = null;
-          document.onmouseup = null;
-        };
-        console.log(e);
-        document.onmousemove = (e) => {
-          //鼠标按下并移动的事件
-          //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
-
-          //  let left = disX - odiv.getBoundingClientRect().x;
-          //  let top = disY - odiv.getBoundingClientRect().y;
-          let left = (disX - odiv.getBoundingClientRect().x) / this.num;
-          let top = (disY - odiv.getBoundingClientRect().y) / this.num;
-          console.log("testttttttttt",odiv.getBoundingClientRect().x);
-          //console.log("this.imageleft",this.imageleft,"this.imagetop",this.imagetop);
-          console.log(e.target.offsetLeft);
-          let Dnumberx=e.clientX - disX;
-          let Dnumbery=e.clientY - disY;
-          this.width = Math.abs(Dnumberx) / this.num;
-          this.height = Math.abs(Dnumbery) / this.num;
-          this.biaozhuWidth = this.width;
-          this.biaozhuHeight = this.height;
-          if(Dnumberx>=0) this.biaozhuLeft = left;
-          else this.biaozhuLeft = left+Dnumberx / this.num;
-          if(Dnumbery>=0) this.biaozhuTop = top;
-          else this.biaozhuTop = top+Dnumbery / this.num;
-          document.onmouseup = (e) => {
-            let left = (disX - odiv.getBoundingClientRect().x) / this.num;
-            let top = (disY - odiv.getBoundingClientRect().y) / this.num;
-            this.width = Math.abs(Dnumberx) / this.num;
-            this.height = Math.abs(Dnumbery) / this.num;
-
-            console.log(e.target.getBoundingClientRect(), disX, disY);
-
-            if (this.width > 5 && this.height > 5) {
-              this.boxArry.push({
-                width: this.width,
-                height: this.height,
-                left: Dnumberx>=0?left:left+Dnumberx/ this.num,
-                top: Dnumbery>=0?top:top+Dnumbery/ this.num,
-                color:this.defaultcolor,
-              });
-              this.labelArry.push({
-                x1: Dnumberx>=0?left / this.scalewidth:(left+Dnumberx/ this.num) / this.scalewidth,
-                y1: Dnumbery>=0?top / this.scaleheight:(top+Dnumbery/ this.num) / this.scaleheight,
-                x2: Dnumberx>=0?(left + this.width) / this.scalewidth:left / this.scalewidth,
-                y2: Dnumbery>=0?(top + this.height) / this.scaleheight:top / this.scaleheight,
-                info: this.defaultlabel,
-              });
-              //完成标注
-              console.log("box", this.boxArry);
-              console.log("label", this.labelArry);
-              //  console.log(this.left)
-              //  console.log(this.top)
-              //  console.log(this.width)
-              //  console.log("111"+this.boxArry)
-              this.$emit("markarray", this.labelArry);
-            }
-            this.biaozhuWidth = 0;
-            this.biaozhuHeight = 0;
-            this.biaozhuLeft = 0;
-            this.biaozhuTop = 0;
-            document.onmousemove = null;
-            document.onmouseup = null;
-          };
-        };
       }
     },
     move(istrue, mtype, e) {
-      //移动标注框，缩放标注框的函数
-      let odiv = e.target; //获取目标元素
-      // let canvasodiv = e.target.offsetParent.offsetParent.offsetLeft
-      // console.log("PPOL",e.target.offsetParent.offsetParent)
-      // console.log("POL",e.target.offsetParent)
-      // console.log("e.clientX",e.clientX)
-      //console.log("left",canvasodiv.offsetLeft,"top",canvasodiv.offsetTop)
-      //console.log("movemovemove");
-      //算出鼠标相对元素的位置
-      let disX = e.clientX - odiv.offsetLeft * this.num;
-      let disY = e.clientY - odiv.offsetTop * this.num;
-      let oleft = this.boxArry[this.b_i].left;
-      let otop = this.boxArry[this.b_i].top;
-      let owidth = this.boxArry[this.b_i].width;
-      let oheight = this.boxArry[this.b_i].height;
-      document.onmousemove = (e) => {
-        //鼠标按下并移动的事件
-        //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
-        let left = (e.clientX - disX) / this.num;
-        let top = (e.clientY - disY) / this.num;
-        // console.log(
-        //   "owidth",
-        //   owidth,
-        //   "oleft",
-        //   oleft,
-        //   "left",
-        //   left,
-        //   "oheight",
-        //   oheight,
-        //   "otop",
-        //   otop,
-        //   "top",
-        //   top
-        // );
-        // console.log(
-        //   "width",
-        //   this.boxArry[this.b_i].width,
-        //   "height",
-        //   this.boxArry[this.b_i].height
-        // );
-        // //绑定元素位置到positionX和positionY上面
-        //  this.positionX = top * this.num;
-        //  this.positionY = left * this.num;
-        //  console.log(this.positionX,this.positionY)
-        //  this.positionX = top / this.num;
-        //  this.positionY = left / this.num;
-
-        //移动当前元素
-        if (istrue === true) {
-          //  odiv.style.left = left
-          //  odiv.style.top = top
-          //  odiv.style.left = left + "px" / this.num;
-          //  odiv.style.top = top + "px" / this.num;
-          //  odiv.style.left = left + "px / this.num";
-          //  odiv.style.top = top + "px / this.num";
-          odiv.style.left = left + "px";
-          odiv.style.top = top + "px";
-          this.boxArry[this.b_i].left = left;
-          this.boxArry[this.b_i].top = top;
-          let width =
-            this.scalewidth *
-            (this.labelArry[this.b_i].x2 - this.labelArry[this.b_i].x1);
-          let height =
-            this.scaleheight *
-            (this.labelArry[this.b_i].y2 - this.labelArry[this.b_i].y1);
-          this.labelArry[this.b_i].x1 = left / this.scalewidth;
-          this.labelArry[this.b_i].y1 = top / this.scaleheight;
-          this.labelArry[this.b_i].x2 = (left + width) / this.scalewidth;
-          this.labelArry[this.b_i].y2 = (top + height) / this.scaleheight;
-        }
-        //缩放当前元素
-        if (istrue === false) {
-          if (mtype === 1) {
-            //左上角的点
-            //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
-            //console.log("left",left,"top",top)
-            if (left < owidth) this.boxArry[this.b_i].left = oleft + left;
-            else this.boxArry[this.b_i].left = oleft + owidth - 1;
-
-            if (top < oheight) this.boxArry[this.b_i].top = otop + top;
-            else this.boxArry[this.b_i].top = otop + oheight - 1;
-
-            if (left < owidth) this.boxArry[this.b_i].width = owidth - left;
-            else this.boxArry[this.b_i].width = 1;
-
-            if (top < oheight) this.boxArry[this.b_i].height = oheight - top;
-            else this.boxArry[this.b_i].height = 1;
-
-            this.labelArry[this.b_i].x1 =
-              this.boxArry[this.b_i].left / this.scalewidth;
-            this.labelArry[this.b_i].y1 =
-              this.boxArry[this.b_i].top / this.scaleheight;
-          }
-          if (mtype === 2) {
-            //右上角的点
-            //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
-            //console.log("left",left,"top",top)
-            if (top < oheight) this.boxArry[this.b_i].top = otop + top;
-            else this.boxArry[this.b_i].top = otop + oheight - 1;
-            if (left > 0) this.boxArry[this.b_i].width = left + 7;
-            else this.boxArry[this.b_i].width = 1;
-            if (top < oheight) this.boxArry[this.b_i].height = oheight - top;
-            else this.boxArry[this.b_i].height = 1;
-            // this.labelArry[this.b_i].x1 =
-            //   this.boxArry[this.b_i].left / this.scalewidth;
-            this.labelArry[this.b_i].y1 =
-              this.boxArry[this.b_i].top / this.scaleheight;
-            if (left > 0)
-              this.labelArry[this.b_i].x2 =
-                (this.scalewidth * this.labelArry[this.b_i].x1 + left + 7) /
-                this.scalewidth;
-            else
-              this.labelArry[this.b_i].x2 =
-                (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
-                this.scalewidth;
-            // if (top < oheight)
-            //   this.labelArry[this.b_i].y2 =
-            //     (this.scaleheight * this.labelArry[this.b_i].y1 + top + 7) /
-            //     this.scaleheight;
-            // else
-            //   this.labelArry[this.b_i].y2 =
-            //     (this.scaleheight * this.labelArry[this.b_i].y1 + 1) /
-            //     this.scaleheight;
-          }
-          if (mtype === 3) {
-            //左下角的点
-            //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
-            //console.log("left",left,"top",top)
-            if (left < owidth) this.boxArry[this.b_i].left = oleft + left;
-            else this.boxArry[this.b_i].left = oleft + owidth - 1;
-            if (left < owidth) this.boxArry[this.b_i].width = owidth - left;
-            else this.boxArry[this.b_i].width = 1;
-            if (top > 0) this.boxArry[this.b_i].height = top + 7;
-            else this.boxArry[this.b_i].height = 1;
-            this.labelArry[this.b_i].x1 =
-              this.boxArry[this.b_i].left / this.scalewidth;
-            // this.labelArry[this.b_i].y1 =
-            //   this.boxArry[this.b_i].top / this.scaleheight;
-            // if (left < owidth)
-            //   this.labelArry[this.b_i].x2 =
-            //     (this.scalewidth * this.labelArry[this.b_i].x1 + left + 7) /
-            //     this.scalewidth;
-            // else
-            //   this.labelArry[this.b_i].x2 =
-            //     (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
-            //     this.scalewidth;
-            if (top > 0)
-              this.labelArry[this.b_i].y2 =
-                (this.scaleheight * this.labelArry[this.b_i].y1 + top + 7) /
-                this.scaleheight;
-            else
-              this.labelArry[this.b_i].y2 =
-                (this.scaleheight * this.labelArry[this.b_i].y1 + 1) /
-                this.scaleheight;
-          }
-          if (mtype === 4) {
-            //右下角的点
-            //console.log("left",left,"top",top)
-            if (left > 0) this.boxArry[this.b_i].width = left + 7;
-            else this.boxArry[this.b_i].width = 1;
-            if (top > 0) this.boxArry[this.b_i].height = top + 7;
-            else this.boxArry[this.b_i].height = 1;
-            if (left > 0)
-              this.labelArry[this.b_i].x2 =
-                (this.scalewidth * this.labelArry[this.b_i].x1 + left + 7) /
-                this.scalewidth;
-            else
-              this.labelArry[this.b_i].x2 =
-                (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
-                this.scalewidth;
-            if (top > 0)
-              this.labelArry[this.b_i].y2 =
-                (this.scaleheight * this.labelArry[this.b_i].y1 + top + 7) /
-                this.scaleheight;
-            else
-              this.labelArry[this.b_i].y2 =
-                (this.scaleheight * this.labelArry[this.b_i].y1 + 1) /
-                this.scaleheight;
-          }
-          if (mtype === 5) {
-            //上边的点
-            //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
-            //console.log("left",left,"top",top)
-            if (top < oheight) this.boxArry[this.b_i].top = otop + top;
-            else this.boxArry[this.b_i].top = otop + oheight - 1;
-            if (top < oheight) this.boxArry[this.b_i].height = oheight - top;
-            else this.boxArry[this.b_i].height = 1;
-            this.labelArry[this.b_i].y1 =
-              this.boxArry[this.b_i].top / this.scaleheight;
-          }
-          if (mtype === 6) {
-            //左边的点
-            //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
-            if (left < owidth) this.boxArry[this.b_i].left = oleft + left;
-            else this.boxArry[this.b_i].left = oleft + owidth - 1;
-            if (left < owidth) this.boxArry[this.b_i].width = owidth - left;
-            else this.boxArry[this.b_i].width = 1;
-            this.labelArry[this.b_i].x1 =
-              this.boxArry[this.b_i].left / this.scalewidth;
-          }
-          if (mtype === 7) {
-            //右边的点
-            //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
-            //console.log("left",left,"top",top)
-            if (left > 0) this.boxArry[this.b_i].width = left + 7;
-            else this.boxArry[this.b_i].width = 1;
-            if (left > 0)
-              this.labelArry[this.b_i].x2 =
-                (this.scalewidth * this.labelArry[this.b_i].x1 + left + 7) /
-                this.scalewidth;
-            else
-              this.labelArry[this.b_i].x2 =
-                (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
-                this.scalewidth;
-          }
-          if (mtype === 8) {
-            //下边点
-            //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
-            //console.log("left",left,"top",top)
-            if (top > 0) this.boxArry[this.b_i].height = top + 7;
-            else this.boxArry[this.b_i].height = 1;
-            if (top > 0)
-              this.labelArry[this.b_i].y2 =
-                (this.scaleheight * this.labelArry[this.b_i].y1 + top + 7) /
-                this.scaleheight;
-            else
-              this.labelArry[this.b_i].y2 =
-                (this.scaleheight * this.labelArry[this.b_i].y1 + 1) /
-                this.scaleheight;
-          }
-          //console.log("thisbox","x1",this.labelArry[this.b_i].x1,"y1",this.labelArry[this.b_i].y1,"x2",this.labelArry[this.b_i].x2,"y2",this.labelArry[this.b_i].y2)
-        }
-      };
-      document.onmouseup = (e) => {
-        document.onmousemove = null;
-        if (istrue === true) document.onmouseup = null;
-      };
-      console.log("box", this.boxArry);
-      console.log("label", this.labelArry);
     },
-
-    // alter(e) {
-    //   let odiv = e.target; //获取目标元素
-    //   console.log("movemovemove");
-    //   //算出鼠标相对元素的位置
-    //   let disX = e.clientX - odiv.offsetLeft;
-    //   let disY = e.clientY - odiv.offsetTop;
-    //   document.onmousemove = (e) => {
-    //     //鼠标按下并移动的事件
-    //     //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
-    //     let left = e.clientX - disX;
-    //     let top = e.clientY - disY;
-
-    //     //绑定元素位置到positionX和positionY上面
-    //     this.positionX = top;
-    //     this.positionY = left;
-
-    //     //移动当前元素
-    //     odiv.style.left = left + "px";
-    //     odiv.style.top = top + "px";
-    //   };
-    //   document.onmouseup = (e) => {
-    //     document.onmousemove = null;
-    //     document.onmouseup = null;
-    //   };
-    //   console.log(this.boxArry);
-    // },
     fangda() {
       //放大图片
       if (this.num < 10) this.num += 0.1;
@@ -945,60 +463,13 @@ export default {
       canvesdiv.style.top = 0 + "px";
       this.imageleft = 0;
       this.imagetop = 0;
-      // console.log(document.getElementById("canvesdiv"))
-      // let canvesdiv=document.getElementById("canvesdiv")
-      // document.getElementById("canvesdiv").style.left=0+"px"
-      // document.getElementById("canvesdiv").style.top=0+"px"
-    },
-    tianjia() {
-      this.boxArry.push({
-        width: 100,
-        height: 100,
-        left: 20,
-        top: 20,
-      });
     },
     handelClick(i) {
       //存储点击对象的index
       this.b_i = i;
       console.log("hahaha" + i);
     },
-    dragstart(event, data) {
-      // console.log('drag')
-      // event.dataTransfer.setData('item', data)
-    },
-    dragend(event) {
-      // event.dataTransfer.clearData()
-    },
   },
-  //  directives: {
-  //    drag: function (el) {
-  //      let dragBox = el; //获取当前元素
-  //           console.log("movemouse")
-  //      dragBox.onmousedown = (e) => {
-  //        //算出鼠标相对元素的位置
-
-  //        let disX = e.clientX - dragBox.offsetLeft;
-  //        let disY = e.clientY - dragBox.offsetTop;
-  //        console.log(disX, disY);
-  //        document.onmousemove = (e) => {
-  //          //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
-  //          let left = e.clientX - disX;
-  //          let top = e.clientY - disY;
-  //          //移动当前元素
-  //          dragBox.style.left = left + "px";
-  //          dragBox.style.top = top + "px";
-  //          console.log(left, top, "111111111");
-  //        };
-  //        document.onmouseup = (e) => {
-  //          //鼠标弹起来的时候不再移动
-  //          document.onmousemove = null;
-  //          //预防鼠标弹起来后还会循环（即预防鼠标放上去的时候还会移动）
-  //          document.onmouseup = null;
-  //        };
-  //      };
-  //    },
-  //  },
 };
 </script>
 

@@ -899,33 +899,6 @@ export default {
       console.log("box", this.boxArry);
       console.log("label", this.labelArry);
     },
-
-    // alter(e) {
-    //   let odiv = e.target; //获取目标元素
-    //   console.log("movemovemove");
-    //   //算出鼠标相对元素的位置
-    //   let disX = e.clientX - odiv.offsetLeft;
-    //   let disY = e.clientY - odiv.offsetTop;
-    //   document.onmousemove = (e) => {
-    //     //鼠标按下并移动的事件
-    //     //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
-    //     let left = e.clientX - disX;
-    //     let top = e.clientY - disY;
-
-    //     //绑定元素位置到positionX和positionY上面
-    //     this.positionX = top;
-    //     this.positionY = left;
-
-    //     //移动当前元素
-    //     odiv.style.left = left + "px";
-    //     odiv.style.top = top + "px";
-    //   };
-    //   document.onmouseup = (e) => {
-    //     document.onmousemove = null;
-    //     document.onmouseup = null;
-    //   };
-    //   console.log(this.boxArry);
-    // },
     fangda() {
       //放大图片
       if (this.num < 10) this.num += 0.1;
@@ -963,42 +936,7 @@ export default {
       this.b_i = i;
       console.log("hahaha" + i);
     },
-    dragstart(event, data) {
-      // console.log('drag')
-      // event.dataTransfer.setData('item', data)
-    },
-    dragend(event) {
-      // event.dataTransfer.clearData()
-    },
   },
-  //  directives: {
-  //    drag: function (el) {
-  //      let dragBox = el; //获取当前元素
-  //           console.log("movemouse")
-  //      dragBox.onmousedown = (e) => {
-  //        //算出鼠标相对元素的位置
-
-  //        let disX = e.clientX - dragBox.offsetLeft;
-  //        let disY = e.clientY - dragBox.offsetTop;
-  //        console.log(disX, disY);
-  //        document.onmousemove = (e) => {
-  //          //用鼠标的位置减去鼠标相对元素的位置，得到元素的位置
-  //          let left = e.clientX - disX;
-  //          let top = e.clientY - disY;
-  //          //移动当前元素
-  //          dragBox.style.left = left + "px";
-  //          dragBox.style.top = top + "px";
-  //          console.log(left, top, "111111111");
-  //        };
-  //        document.onmouseup = (e) => {
-  //          //鼠标弹起来的时候不再移动
-  //          document.onmousemove = null;
-  //          //预防鼠标弹起来后还会循环（即预防鼠标放上去的时候还会移动）
-  //          document.onmouseup = null;
-  //        };
-  //      };
-  //    },
-  //  },
 };
 </script>
 

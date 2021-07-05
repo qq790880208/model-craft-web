@@ -129,7 +129,7 @@
               @mouseover.native="infotip(index)"
               @mouseout.native="removetip(index)"
               @mousedown.native="deletemarked(index)"
-              >删除{{ index + 1 }}
+              >{{ index + 1 }}、{{items.type=="polygon"?"多边形":items.type=="line"?"线":"点"}}
             </el-button>
           </div>
         </div>
