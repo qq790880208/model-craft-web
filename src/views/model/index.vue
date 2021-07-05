@@ -35,13 +35,13 @@
               <el-table-column
                 label="状态" width="100"> 
               </el-table-column>
-              <el-table-column
+              <!-- <el-table-column
                 label="部署类型"  width="100">
                 <template slot-scope="scope0"> 
                 <span v-if="scope0.row.deploy_type == 0">在线部署</span>
                 <span v-if="scope0.row.deploy_type == 1">边缘部署</span>
                 </template>
-              </el-table-column>
+              </el-table-column> -->
               <el-table-column
                 show-overflow-tooltip
                 label="模型大小"  width="100">
@@ -59,9 +59,10 @@
               </el-table-column>
 
               <!-- 子表格操作列 -->
-              <el-table-column label="操作" align="center" width="150">
+              <el-table-column label="操作" align="center" width="300">
                 <template slot-scope="scope0">
-                  <el-button size="mini" type="primary">部署</el-button>
+                  <el-button size="mini" type="primary">在线预测</el-button>
+                  <el-button size="mini" type="gray">下载模型文件</el-button>
                   <el-button size="mini" type="danger" @click="handleSubDelete(scope0, scope.$index)">删除</el-button>
                 </template>
               </el-table-column>
@@ -88,12 +89,12 @@
           <span>{{ scope.row.latest_ver }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="部署类型" width="110" align="center">
+      <!-- <el-table-column label="部署类型" width="110" align="center">
         <template slot-scope="scope">
           <span v-if="scope.row.deploy_type == 0">在线部署</span>
           <span v-if="scope.row.deploy_type == 1">边缘部署</span>
-        </template>
-      </el-table-column>
+        </template> 
+      </el-table-column>-->
       <el-table-column label="版本数量" width="110" align="center">
         <template slot-scope="scope">
           {{ scope.row.ver_count }}
