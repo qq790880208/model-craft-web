@@ -213,7 +213,7 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="数据集输入位置" prop="input">
-          <el-input style="width: 90%" v-model="form.input"></el-input><el-button @click="showOssInputDialog()" icon="el-icon-folder-add"></el-button>
+          <el-input style="width: 90%" v-model="form.input" :placeholder="form.input"></el-input><el-button @click="showOssInputDialog()" icon="el-icon-folder-add"></el-button>
         </el-form-item>
         <el-form-item   label="数据集输出位置" prop="output">
           <el-input style="width: 90%" v-model="form.output"></el-input><el-button  @click="showOssOutputDialog()" icon="el-icon-folder-add"></el-button>
@@ -337,6 +337,7 @@ import store from '@/store'
 import { getAllTeam, getSelectTeam } from '@/api/team'
 import { getAuditData } from '@/api/audit'
 import { getAcceptData, setAcceptDataApi } from '@/api/accept'
+import { v4 as uuidv4 } from 'uuid';
 export default {
   namespaced: true,
   filters: {
@@ -391,6 +392,8 @@ export default {
       cb(new Error("请输入标签"))
     }
     return {
+      my_uuid: '',
+      defaultPath:'',
       value: 20,
       activeName: 'allData',
       message: '',
@@ -521,13 +524,15 @@ export default {
     // 创建数据集
     createDataSet: function() {
       this.dialogVisible = true
+      this.my_uuid=uuidv4().replace(/-/g,'')
+      this.defaultPath="/data/dataset/"+this.my_uuid+"/input",
       this.form = {
         name: '',
         descr: '',
         dataType: '0',
         labelType: '',
-        input: '',
-        output: '',
+        input: "/data/dataset/"+this.my_uuid+"/input",
+        output: "/data/dataset/"+this.my_uuid+"/output",
         label: []
       }
     },
@@ -539,6 +544,7 @@ export default {
         console.log(this.inputBucket)
         if (valid) {
           const params = {
+            uuid: this.my_uuid,
             userid: store.getters.userid,
             labelType: this.form.labelType,
             name: this.form.name,

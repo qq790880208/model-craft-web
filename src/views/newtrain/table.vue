@@ -31,7 +31,7 @@
 
     <!-- 表格 -->
     <el-table :data="tableData" :header-cell-style="{background:'#eef1f6',color:'#606266'}">
-      <el-table-column type="index" width="100" label="序号"></el-table-column>
+      <el-table-column type="index" width="50" label="序号"></el-table-column>
       <el-table-column label="名称" width="120">
         <template slot-scope="scope">
           <span style="color:#5284DB">{{ scope.row.name }}</span>
@@ -84,13 +84,13 @@
             @click="handleStop(scope.$index, scope.row)">终止</el-button>
           <el-button
             size="mini"
-            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
-          <el-button
-            size="mini"
             @click="handleShow()">可视化</el-button>
           <el-button
             size="mini"
             @click="handleShowlog(scope.$index, scope.row)">日志</el-button>
+            <el-button
+            size="mini" type="danger"
+            @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
