@@ -363,11 +363,7 @@ export default {
       else {
       return request({
         url: 
-<<<<<<< HEAD
          "http://10.19.1.77:8085/userlabel/getLabel?dataset_uuid="+store.getters.uuid+"&user_id="+store.getters.userid,
-=======
-        "http://10.19.1.181:8082/label?dataset_uuid="+store.getters.uuid+"&user_id="+store.getters.userid,
->>>>>>> dev
         method: "get",
         //params: query
       }).then(function (response) {

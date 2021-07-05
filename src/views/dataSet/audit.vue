@@ -9,7 +9,7 @@
                 </el-button>
             </div>
             <div class="buttonlist">
-                <el-button type="primary" plain size="mini" @click="toStartLabel">开始审核</el-button>
+                <el-button type="primary" plain size="mini" @click="toStartAudit">开始审核</el-button>
                 <el-button type="primary" plain size="mini" @click="batchSave">批量通过</el-button>
                 <el-button type="primary" plain size="mini" @click="batchReject">批量不通过</el-button>
                 <el-button type="primary" plain size="mini" @click="batchReSet">批量重置</el-button>
@@ -78,6 +78,10 @@ export default {
         },
         toDataList() {
             this.$router.push('/data')
+            // this.$router.push({path: '/dataSet/2DauditPre'})
+        },
+        toStartAudit() {
+            this.$router.push({path: '/dataSet/2DauditPre'})
         },
         batchSave() {
             console.log(this.selectList.join(","))
