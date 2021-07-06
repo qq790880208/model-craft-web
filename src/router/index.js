@@ -93,6 +93,20 @@ export const constantRoutes = [
       name: '3Daudit',
       meta: { title: '3Daudit', resources: '3Daudit' },
       hidden: true
+    },
+    {
+      path: '/dataSet/2Daccept',
+      component: () => import('@/views/dataSet/2Daccept'),
+      name: '2Daccept',
+      meta: { title: '2Daccept', resources: '2Daccept' },
+      hidden: true
+    },
+    {
+      path: '/dataSet/polygonaccept',
+      component: () => import('@/views/dataSet/polygonaccept'),
+      name: 'polygonaccept',
+      meta: { title: 'polygonaccept', resources: 'polygonaccept' },
+      hidden: true
     }
   ]
   }

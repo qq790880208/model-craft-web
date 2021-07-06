@@ -101,6 +101,7 @@ import {
   editUser,
   addUser
 } from '@/api/userManage'
+import { getRolesListApi } from '@/api/role'
 import md5 from 'js-md5'
 import { title } from '@/settings'
 import store from '@/store'
@@ -356,10 +357,17 @@ export default {
           })
         })
         .catch(() => {})
+    },
+    getRoles() {
+      getRolesListApi().then(res =>{
+        this.statusOptions = res.data.items
+      })
     }
   },
+  
   mounted() {
     this.getUsers()
+    this.getRoles()
     this.authority = store.getters.authority
     console.log('jjjjjjjjjjjjjjjjj')
     console.log(this.authority)

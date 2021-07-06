@@ -17,7 +17,8 @@
               <el-row class="buttonList">
                 <el-button plain type="mini" icon="el-icon-plus" @click="uploadobjectmsg">上传文件</el-button>
                 <el-button plain type="mini" icon="el-icon-delete" @click="delData()">删除数据</el-button>
-                <el-button plain type="mini" icon="el-icon-cloudy" style="right" @click="startLabel" :style="{ display: visible}">开始标注</el-button>
+                <!-- <el-button plain type="mini" icon="el-icon-cloudy" style="right" @click="startLabel" :style="{ display: visible}">开始标注</el-button> -->
+                <el-button plain type="mini" icon="el-icon-cloudy" style="right" @click="startLabel" >开始标注</el-button>
                 <el-button plain type="mini" icon="el-icon-refresh" @click="fresh()">同步数据源</el-button>
                 <el-button plain type="mini" icon="el-icon-refresh" @click="assign()">分配</el-button>
               </el-row>
@@ -703,7 +704,7 @@ export default {
     this.getData()
     console.log("qweqweqwe")
     console.log(store.getters.dataSet.role_type)
-    if(store.getters.dataSet.role_type !== 2) {
+    if(store.getters.dataSet.role_type !== "创建者") {
       this.visible = 'none'
     }
   }
