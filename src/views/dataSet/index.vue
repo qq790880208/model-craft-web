@@ -45,7 +45,7 @@
             <template slot-scope="scope">
               <!-- <el-button size="small" @click="handleEdit(scope.$index, scope.row)">编辑</el-button> -->
               <el-button type="success" plain size="mini" @click="toStartLabel(scope.row, scope.row.label_type)">开始标注</el-button>
-              <el-button type="primary" plain size="mini" @click="showTeamDialog(scope.$index, scope.row)">添加标注团队</el-button>
+              <el-button type="primary" plain size="mini" @click="showTeamDialog(scope.$index, scope.row)">添加团队任务</el-button>
               <el-button type="danger" plain size="mini" @click="handleDel(scope.$index, scope.row)">删除</el-button>
             </template>
           </el-table-column>
@@ -170,11 +170,12 @@
             </template>
           </el-table-column>
           <el-table-column prop="rate" align="center" label="验收比例" min-width="150" sortable>
-             <div class="block">
-              <el-slider v-model="rate"></el-slider>
-             </div>
+            <template slot-scope="scope">
+              <div class="block" >
+                <el-slider v-model="scope.row.rate" :step="10" show-stops></el-slider> 
+              </div>
+            </template>
           </el-table-column>
-          
         </el-table>
         <el-col :span="24" class="toolbar">
           <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size"  :page-sizes="[1,5,10,20]"  :total="total3" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
@@ -394,7 +395,7 @@ export default {
     return {
       my_uuid: '',
       defaultPath:'',
-      value: 20,
+      ratevalue: 20,
       activeName: 'allData',
       message: '',
       filter: {
@@ -813,17 +814,17 @@ export default {
       // this.$router.push({path: '/dataSet/3Daudit'})
       const params = {
         dataSetUuid: val.uuid,
-        rate: 50,
+        rate: val.rate,
         userId: store.getters.userid
       }
       console.log(params)
       // setAcceptDataApi(params)
       this.setAuditDatas(params)
       if(val.label_type === 0) {
-        this.$router.push({path: '/dataSet/2DauditPre'})
+        this.$router.push({path: '/dataSet/2Daccept'})
       }
       if(val.label_type === 1) {
-        this.$router.push({path: '/dataSet/polygonaudit'})
+        this.$router.push({path: '/dataSet/polygonaccept'})
       }
       if(val.label_type === 2) {
         this.$router.push({path: '/dataSet/3Daudit'})
@@ -849,7 +850,7 @@ export default {
       console.log(store.getters.uuid)
       console.log(store.getters.type)
       console.log(store.getters.dataSet)
-      if (val.role_type !== 0) {
+      if (val.role_type !== "标注员") {
         this.$router.push({path:'/dataSet/message', query: {dataName: val.name, key: this.activeName}})
       } else {
         console.log('898989')

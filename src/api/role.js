@@ -25,3 +25,11 @@ export function addRoleMenu(params) {
     baseURL: 'http://10.19.1.77:8088'
   })
 }
+
+export function getRolesListApi() {
+  return request({
+    url: '/role/rolesList',
+    method: 'get',
+    baseURL: 'http://10.19.1.77:8088'
+  })
+}

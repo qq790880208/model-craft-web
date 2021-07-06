@@ -41,6 +41,7 @@
     <div>
       <H1>权限管理</H1>
     </div>
+    <!-- <el-button>hhh</el-button> -->
     <div class="table-container">
       <el-table v-loading="listLoading" :data="list" size="mini" element-loading-text="Loading" fit border highlight-current-row>
           <el-table-column label="ID" prop="id" align="center"></el-table-column>
@@ -173,6 +174,9 @@ export default {
 </script>
 <style lang="scss" scoped>
 .app-container {
-  padding: 5px 20px 20px 15px;
+  padding: 15px 50px 30px 15px;
+}
+.table-container{
+  padding: 15px 0px 0px 0px;
 }
 </style>

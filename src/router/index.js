@@ -78,21 +78,35 @@ export const constantRoutes = [
       component: () => import('@/views/dataSet/2DauditPre'),
       name: '2DauditPre',
       meta: { title: '2DauditPre', resources: '2DauditPre' },
-      // hidden: true
+      hidden: true
     },
     {
       path: '/dataSet/polygonaudit',
       component: () => import('@/views/dataSet/polygonaudit'),
       name: 'polygonaudit',
       meta: { title: 'polygonaudit', resources: 'polygonaudit' },
-      // hidden: true
+      hidden: true
     },
     {
       path: '/dataSet/3Daudit',
       component: () => import('@/views/dataSet/3Daudit'),
       name: '3Daudit',
       meta: { title: '3Daudit', resources: '3Daudit' },
-      // hidden: true
+      hidden: true
+    },
+    {
+      path: '/dataSet/2Daccept',
+      component: () => import('@/views/dataSet/2Daccept'),
+      name: '2Daccept',
+      meta: { title: '2Daccept', resources: '2Daccept' },
+      hidden: true
+    },
+    {
+      path: '/dataSet/polygonaccept',
+      component: () => import('@/views/dataSet/polygonaccept'),
+      name: 'polygonaccept',
+      meta: { title: 'polygonaccept', resources: 'polygonaccept' },
+      hidden: true
     }
   ]
   }

@@ -10,7 +10,7 @@
       <div class="buttonlist">
         <el-button type="primary" plain size="mini" @click="toStartLabel">开始标注</el-button>
         <el-button type="primary" plain size="mini" @click="toDataManage">数据管理</el-button>
-        <el-button type="primary" plain size="mini" @click="showTeamDialog">添加标注团队</el-button>
+        <el-button type="primary" plain size="mini" @click="showTeamDialog">添加团队任务</el-button>
         <el-button size="mini" @click="change">修改</el-button>
       </div>
     </div>

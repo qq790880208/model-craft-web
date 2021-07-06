@@ -47,7 +47,7 @@
    destroyed(){
     console.log("miniimageddddddddddddddddddddddddddddddddddddddddddddddddddddd")
    },
-    computed: {
+   computed: {
     imagesrc: function () {
       return this.fatherimagesrc;
     },
@@ -58,12 +58,12 @@
         else return '#ffffff'
     },
     ismarkedtext: function(){
-      if(this.ismarked===1) return '已通过'
-      else if(this.ismarked ===2) return '已驳回'
-      else if(this.ismarked ===3) return '已重置'
+      if(this.ismarked===2) return '已通过'
+      else if(this.ismarked ===3) return '已驳回'
+      else if(this.ismarked ===4) return '已重置'
       else return '未审核' 
     }
-    },
+   },
   methods:{
       kanurl(){
           console.log(this.imagesrc)

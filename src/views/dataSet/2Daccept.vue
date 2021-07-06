@@ -4,8 +4,8 @@
       <div>
         <el-button type="primary" plain size="mini" @click="returndataset" >返回数据集</el-button>
         <el-button type="primary" plain size="mini" @click="batchSave">批量通过</el-button>
-        <el-button type="primary" plain size="mini" @click="batchReject">批量不通过</el-button>
-        <el-button type="primary" plain size="mini" @click="batchReSet">批量重置</el-button>
+        <el-button type="primary" plain size="mini" @click="batchUnAccept">批量不通过</el-button>
+        <!-- <el-button type="primary" plain size="mini" @click="batchReSet">批量重置</el-button> -->
       </div>
       <div v-for="(item, index) in imagelargeArry" :key="index" style="
         display:inline-block;
@@ -32,8 +32,8 @@
       <el-button @click="previousimage">上一张(P)</el-button>
       <el-button @click="skipimage">跳过当前图片(Q)</el-button>
       <el-button @click="pass">通过</el-button>
-      <el-button @click="reject">驳回</el-button>
-      <el-button @click="reset">重置</el-button>
+      <el-button @click="unAccept">不通过</el-button>
+      <!-- <el-button @click="reset">重置</el-button> -->
       <imageselect style="margin-top:20px;" ref='imageselectref' 
         :fatherimagesrc="this.imageArry[nownum]"
         :imageindex="this.nownum"
@@ -51,10 +51,10 @@ import { getLabel } from '@/api/data'  // zeng
 import imageselect from "@/components/2daudit.vue";
 import request from "@/utils/request";
 // import miniimage from "@/components/miniimage.vue"
-import miniimage from "@/components/auditdatashow.vue"
+import miniimage from "@/components/acceptdatashow.vue"
 import store from "@/store"
 import {outTimeReAssign, getNewLabels} from '@/api/data'
-import { getAuditDatasByUserId, getIsAuditApi, batchSaveApi, batchRejectApi, batchReSetApi, passApi, reSetApi, rejectApi } from '@/api/audit'
+import { getAcceptDataApi, batchAcceptApi, acceptApi, unAcceptApi, batchUnAcceptApi } from '@/api/accept'
 import { getTagApi } from '@/api/tag'
 
 //import axios from 'node_modules/axios';
@@ -156,53 +156,53 @@ export default {
         const params = {
             labelUuid: this.uuidArry[this.nownum]
         }
-        passApi(params).then(res => {
+        acceptApi(params).then(res => {
             this.$message({
-                message: '审核通过',
+                message: '验收通过',
                 type: 'success'
             })
         }).catch(function(error) {
             this.$message({
-                message: '审核失败',
+                message: '验收失败',
                 type: 'error'
             })
         })
     },
-    reject() {
+    unAccept() {
         this.isAudited = true;
         const params = {
             labelUuid: this.uuidArry[this.nownum]
         }
-        rejectApi(params).then(res => {
+        unAcceptApi(params).then(res => {
             this.$message({
-                message: '驳回成功',
+                message: '验收不通过成功',
                 type: 'success'
             })
         }).catch(function(error) {
             this.$message({
-                message: '驳回失败',
+                message: '验收不通过失败',
                 type: 'error'
             })
         })
     },
-    reset() {
-        this.isAudited = true;
-        const params = {
-            labelUuid: this.uuidArry[this.nownum]
-        }
-        reSetApi(params).then(res => {
-            this.$message({
-                message: '重置成功',
-                type: 'success'
-            })
-            this.getAuditDataList()
-        }).catch(function(error) {
-            this.$message({
-                message: '重置失败',
-                type: 'error'
-            })
-        })
-    },
+    // reset() {
+    //     this.isAudited = true;
+    //     const params = {
+    //         labelUuid: this.uuidArry[this.nownum]
+    //     }
+    //     reSetApi(params).then(res => {
+    //         this.$message({
+    //             message: '重置成功',
+    //             type: 'success'
+    //         })
+    //         this.getAcceptDataList()
+    //     }).catch(function(error) {
+    //         this.$message({
+    //             message: '重置失败',
+    //             type: 'error'
+    //         })
+    //     })
+    // },
     addToList(uuid) {
         console.log(uuid)
         if(this.checkedList.indexOf(uuid)==-1){
@@ -216,43 +216,43 @@ export default {
         const params = {
             labelUuids: this.checkedList.join(",")
         }
-        batchSaveApi(params).then(res => {
+        batchAcceptApi(params).then(res => {
             this.$message({
                 message: res.message,
                 type: 'success'
             })
-            this.getAuditDataList()
+            this.getAcceptDataList()
             this.checkedList = []
         })
     },
-    batchReject() {
+    batchUnAccept() {
         console.log(this.checkedList.join(","))
         const params = {
             labelUuids: this.checkedList.join(",")
         }            
-        batchRejectApi(params).then(res => {
+        batchUnAcceptApi(params).then(res => {
             this.$message({
                 message: res.message,
                 type: 'success'
             })
-            this.getAuditDataList()
+            this.getAcceptDataList()
             this.checkedList = []
         })
     },
-    batchReSet() {
-        console.log(this.checkedList.join(","))
-        const params = {
-            labelUuids: this.checkedList.join(",")
-        }
-        batchReSetApi(params).then(res => {
-            this.$message({
-                message: res.message,
-                type: 'success'
-            })
-            this.getAuditDataList()
-            this.checkedList = []
-        })
-    },
+    // batchReSet() {
+    //     console.log(this.checkedList.join(","))
+    //     const params = {
+    //         labelUuids: this.checkedList.join(",")
+    //     }
+    //     batchReSetApi(params).then(res => {
+    //         this.$message({
+    //             message: res.message,
+    //             type: 'success'
+    //         })
+    //         this.getAcceptDataList()
+    //         this.checkedList = []
+    //     })
+    // },
     entermark(index){
       console.log("faaaaaaaaaaaatherenter!")
       this.nownum=index;
@@ -261,8 +261,8 @@ export default {
     },
     returnimageview(){
         this.nopnum=0;
-        this.$refs.imageselectref.saveinfo()
-        this.nownum=0;
+        // this.$refs.imageselectref.saveinfo()
+        // this.nownum=0;
         this.isimageview=!this.isimageview;
     },
     markarray: function (childinfoArry) {
@@ -346,21 +346,8 @@ export default {
         }
         
     },
-    //post修改正在标注标识
-    isnowlabel:function(){
-      let _this = this;
-      return request({
-        url:
-          "http://10.19.1.77:8085/label/setLabeling?uuid="+this.uuidArry[this.nownum],
-        method: "post",
-        //timeout:_this.lastinfoArry.length*5000,
-        //params: query
-      }).then(function (response) {
-        console.log(response);
-      })
-    },
     //get 请求图片
-    getAuditDataList() {
+    getAcceptDataList() {
         let _this = this
         this.isalllabeled = true
         this.imageArry = []
@@ -369,7 +356,7 @@ export default {
             userId: store.getters.userid
         }
         console.log(params)
-        getAuditDatasByUserId(params).then(response => {
+        getAcceptDataApi(params).then(response => {
             _this.imageArry=[]
             _this.infoArry=[]
             _this.lastinfoArry=[]
@@ -396,7 +383,7 @@ export default {
                 }
                 let a={};
                 a["url"]=response.data.items[i].file_path
-                a["islabel"]=response.data.items[i].is_audit
+                a["islabel"]=response.data.items[i].is_accept
                 a["uuid"] = response.data.items[i].uuid
                 //a["index"]=i
                 _this.imagelargeArry.push(a);
@@ -408,7 +395,7 @@ export default {
         }).catch(function(error){
             console.log("error",error)
             _this.$message({
-                message:"请求图片集合失败",
+                message:"图片数据为0，重新设置验收比例",
                 type: 'error'
             })
         })
@@ -418,7 +405,7 @@ export default {
         let _this = this;
         this.marktype=[]
         const params = {
-            datasetuuid: store.getters.uuid
+            dataset_uuid: store.getters.uuid
         }
         getTagApi(params).then(response =>{
             for (let i = 0; i < response.data.items.length; i++) {
@@ -450,9 +437,8 @@ export default {
         let isab
         if(this.infoArry[i].rectangle.length>0) isab=1
         else isab=2
-        _this.getAuditDataList()
+        _this.getAcceptDataList()
         _this.getTags()
-        console.log('wwwwwwwwwwwwwww');
         if(_this.nopnum==1) {
             _this.nownum++;   
         }
@@ -467,7 +453,7 @@ export default {
     //console.log(this.infoArry[0])
     console.log("mounted!!!!", this.infoArry.length, this.infoArry);
     console.log("mounted!!!!uuid",store.getters.uuid,"mounted!!!!store.getters.userid",store.getters.userid)
-    this.getAuditDataList()
+    this.getAcceptDataList()
     this.infoArry = new Array(this.imageArry.length);
     this.getTags()
     window.nextimage = this.nextimage;

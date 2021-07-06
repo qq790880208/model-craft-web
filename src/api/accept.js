@@ -17,3 +17,48 @@ export function setAcceptDataApi(params) {
     baseURL: 'http://10.19.1.77:8085'
   })
 }
+
+export function getAcceptDataApi(params) {
+  return request({
+    url: '/userAccept/getAcceptData',
+    method: 'get',
+    params: params,
+    baseURL: 'http://10.19.1.77:8085'
+  })
+}
+
+export function batchAcceptApi(params) {
+  return request({
+    url: '/userAccept/batchAccept',
+    method: 'put',
+    params: params,
+    baseURL: 'http://10.19.1.77:8085'
+  })
+}
+
+export function batchUnAcceptApi(params) {
+  return request({
+    url: '/userAccept/batchUnAccept',
+    method: 'put',
+    params: params,
+    baseURL: 'http://10.19.1.77:8085'
+  })
+}
+
+export function acceptApi(params) {
+  return request({
+    url: '/userAccept/isAccept',
+    method: 'put',
+    params: params,
+    baseURL: 'http://10.19.1.77:8085'
+  })
+}
+
+export function unAcceptApi(params) {
+  return request({
+    url: '/userAccept/unAccept',
+    method: 'put',
+    params: params,
+    baseURL: 'http://10.19.1.77:8085'
+  })
+}
