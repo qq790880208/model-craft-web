@@ -43,7 +43,7 @@
       // :canvaswidth="this.imagesize[nownum].width"
       // :canvasheight="this.imagesize[nownum].height"
 import { mapGetters } from "vuex";
-import { getLabel, getAssignData } from '@/api/data'  // zeng
+import { getLabel, getAssignData, getLabelDataApi} from '@/api/data'  // zeng
 import drawpolygon from "@/components/testdrawpolygon.vue";
 import request from "@/utils/request";
 import miniimage from "@/components/miniimage.vue"
@@ -361,12 +361,12 @@ export default {
       }
       ///////////////////////////////////////
       else {
-      return request({
-        url: 
-         "http://10.19.1.77:8085/userlabel/getLabel?dataset_uuid="+store.getters.uuid+"&user_id="+store.getters.userid,
-        method: "get",
-        //params: query
-      }).then(function (response) {
+      const params = {
+            dataset_uuid: store.getters.uuid,
+            user_id: store.getters.userid
+        }
+        console.log(params)
+        getLabelDataApi(params).then(function (response) {
         _this.imageArry=[]
         _this.infoArry=[]
         _this.lastinfoArry=[]
