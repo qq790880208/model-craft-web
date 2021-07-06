@@ -43,7 +43,7 @@
       // :canvaswidth="this.imagesize[nownum].width"
       // :canvasheight="this.imagesize[nownum].height"
 import { mapGetters } from "vuex";
-import { getLabel } from '@/api/data'  // zeng
+import { getLabel, getAssignData } from '@/api/data'  // zeng
 import drawpolygon from "@/components/testdrawpolygon.vue";
 import request from "@/utils/request";
 import miniimage from "@/components/miniimage.vue"
@@ -294,7 +294,7 @@ export default {
       console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
       let _this = this;
       this.isalllabeled = true;
-      if(store.getters.dataSet.role_type === 2) {
+      if(store.getters.dataSet.role_type === "创建者") {
         const params = {
           datasetuuid: store.getters.uuid
         }

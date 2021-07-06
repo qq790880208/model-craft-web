@@ -63,6 +63,15 @@ export function getLabel(params) {
   })
 }
 
+export function getLabelDataApi(params) {
+  return request({
+    url: '/userlabel/getLabel',
+    method: 'get',
+    params: params,
+    baseURL: 'http://10.19.1.77:8085'
+  })
+}
+
 export function deleteData(params) {
   return request({
     url: '/userlabel/deleteData',

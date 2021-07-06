@@ -37,12 +37,12 @@
 
 <script>
 import { mapGetters } from "vuex";
-import { getLabel } from '@/api/data'  // zeng
+import { getLabel, getLabelDataApi } from '@/api/data'  // zeng
 import imageselect from "@/components/2dmark.vue";
 import request from "@/utils/request";
 import miniimage from "@/components/miniimage.vue"
 import store from "@/store"
-import {outTimeReAssign, getNewLabels} from '@/api/data'
+import {outTimeReAssign, getNewLabels, getAssignData} from '@/api/data'
 import { getAuditDatasByUserId} from '@/api/audit'
 //import axios from 'node_modules/axios';
 // import labelinfo from '@/components/labelinfo.vue'
@@ -261,7 +261,7 @@ export default {
       let _this = this;
       this.isalllabeled = true;
       console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
-      if(store.getters.dataSet.role_type === 2) {
+      if(store.getters.dataSet.role_type === "创建者") {
         const params = {
           datasetuuid: store.getters.uuid
         }
@@ -328,11 +328,11 @@ export default {
       //////////////////////////////////////
       else{
       const params = {
-            dataSetUuid: store.getters.uuid,
-            userId: store.getters.userid
+            dataset_uuid: store.getters.uuid,
+            user_id: store.getters.userid
         }
         console.log(params)
-        getAuditDatasByUserId(params).then(function (response) {
+        getLabelDataApi(params).then(function (response) {
          _this.imageArry=[]
          _this.infoArry=[]
          _this.lastinfoArry=[]
