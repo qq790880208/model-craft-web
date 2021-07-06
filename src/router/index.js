@@ -232,6 +232,24 @@ export const asyncRoutes = [
     ]
   },
   {
+    path: '/predicts',
+    component: Layout,
+    name: 'predict',
+    meta: {
+      title: '在线预测',
+      resources: 'models',
+      icon: 'people'
+    },
+    children: [
+      {
+        path: '/predict',
+        component: () => import('@/views/predict/table'),
+        name: 'model admin',
+        meta: { title: '在线预测', resources: 'model', icon: 'people' }
+      }
+    ]
+  },
+  {
     path: '/system_management',
     component: Layout,
     redirect: '/system_management/rectangle',

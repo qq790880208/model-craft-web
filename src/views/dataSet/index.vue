@@ -189,7 +189,8 @@
     <el-dialog
       title="创建数据集"
       :visible.sync="dialogVisible"
-      :before-close="handleCloseDialog">
+      :before-close="handleCloseDialog"
+      >
       <el-form :model='form' ref="form" label-width="120px" label-position="left" :rules="addFormRules">
         <el-form-item label="名称" prop="name">
           <el-input v-model="form.name" autocomplete="off"></el-input>
@@ -214,10 +215,10 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item label="数据集输入位置" prop="input">
-          <el-input style="width: 90%" v-model="form.input" :placeholder="form.input"></el-input><el-button @click="showOssInputDialog()" icon="el-icon-folder-add"></el-button>
+          <el-input style="width: 90%" v-model="form.input" :placeholder="form.input"></el-input><el-button @click="showOssInputDialog(form)" icon="el-icon-folder-add"></el-button>
         </el-form-item>
         <el-form-item   label="数据集输出位置" prop="output">
-          <el-input style="width: 90%" v-model="form.output"></el-input><el-button  @click="showOssOutputDialog()" icon="el-icon-folder-add"></el-button>
+          <el-input style="width: 90%" v-model="form.output" :placeholder="form.output"></el-input><el-button  @click="showOssOutputDialog(form)" icon="el-icon-folder-add"></el-button>
         </el-form-item>
         <el-form-item label="添加标签集" prop="tagss">
           <el-tag 
@@ -332,7 +333,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { getLabel, getDataByName, createDataSet, deleteDataSet, assignLabel, getAssignData, addTags } from '@/api/data'
+import { getLabel, getDataByName, createDataSetApi, deleteDataSet, assignLabel, getAssignData, addTags } from '@/api/data'
 import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder } from '@/api/oss'
 import store from '@/store'
 import { getAllTeam, getSelectTeam } from '@/api/team'
@@ -395,6 +396,7 @@ export default {
     return {
       my_uuid: '',
       defaultPath:'',
+      isClickFlag:false,//标记是否需要创建默认路径的flag
       ratevalue: 20,
       activeName: 'allData',
       message: '',
@@ -505,14 +507,30 @@ export default {
       this.inputValue = '';
     },
 
+    //  修改默认flag
+    changeFlag(){
+      console("flag1",this.isClickFlag)
+      this.isClickFlag = true
+      console("flag2",this.isClickFlag)
+    },
     //  数据集文件输入位置
-    showOssInputDialog() {
+    showOssInputDialog(form) {
       this.getbucket()
+      if(this.isClickFlag){
+        form.input='';
+        form.output='';  
+      }
+      this.isClickFlag=false;
       this.ossInputVisible= true;
     },
     //  数据集文件输出位置
-    showOssOutputDialog() {
+    showOssOutputDialog(form) {
       this.getbucket()
+      if(this.isClickFlag){
+        form.input='';
+        form.output='';  
+      }
+      this.isClickFlag=false;
       this.ossOutputVisible= true;
     },
     
@@ -525,16 +543,18 @@ export default {
     // 创建数据集
     createDataSet: function() {
       this.dialogVisible = true
+      this.isClickFlag = true
       this.my_uuid=uuidv4().replace(/-/g,'')
-      this.defaultPath="/data/dataset/"+this.my_uuid+"/input",
       this.form = {
         name: '',
         descr: '',
         dataType: '0',
         labelType: '',
-        input: "/data/dataset/"+this.my_uuid+"/input",
-        output: "/data/dataset/"+this.my_uuid+"/output",
+        input: "/data/dataset/"+this.my_uuid+"/input/",
+        output: "/data/dataset/"+this.my_uuid+"/output/",
         label: []
+      }
+      if(this.isClickFlag){
       }
     },
 
@@ -544,7 +564,9 @@ export default {
         console.log('mnbmbnbm')
         console.log(this.inputBucket)
         if (valid) {
-          const params = {
+          if(this.isClickFlag) {
+            console.log("isclcik=trrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrue")
+            let params = {
             uuid: this.my_uuid,
             userid: store.getters.userid,
             labelType: this.form.labelType,
@@ -552,10 +574,32 @@ export default {
             descr: this.form.descr,
             input: this.form.input,  // 格式：/data/dataset/0022f6831fbe40b0bd4aae781f202517/input
             output: this.form.output,
-            bucket: this.inputBucket
+            bucket: 'modelcraft'
+            }
+            console.log(this.form.label.toString())  //labels
+          createDataSetApi(params).then(res => {
+            let para1={}
+          para1.bucketName='modelcraft'
+          para1.objectName="/data/dataset/"+this.my_uuid+"/input/"
+          let para2={}
+          para2.bucketName='modelcraft'
+          para2.objectName="/data/dataset/"+this.my_uuid+"/output/"
+          console.log(para1,para2)
+          //后端新建一个文件夹
+          createFolder(para1).then(response=>{
+          if(20000 == response.code){
+            console.log("haha1success")
+          }else{
+            console.log("haha1error")
           }
-          console.log(this.form.label.toString())  //labels
-          createDataSet(params).then(res => {
+          })
+          createFolder(para2).then(response=>{
+          if(20000 == response.code){
+            console.log("haha2success")
+            }else{
+            console.log("haha2error")
+            }
+          })
             this.$message({
               message: '添加成功',
               type: 'success'
@@ -574,6 +618,60 @@ export default {
           })
           console.log(this.form)
           this.dialogVisible = false
+          }
+          else {
+            console.log("isclcik=falsssssssssssssssssssssssssssssssssssssssssssssseeee")
+            const params = {
+            uuid: this.my_uuid,
+            userid: store.getters.userid,
+            labelType: this.form.labelType,
+            name: this.form.name,
+            descr: this.form.descr,
+            input: this.form.input,  // 格式：/data/dataset/0022f6831fbe40b0bd4aae781f202517/input
+            output: this.form.output,
+            bucket: this.inputBucket
+          }
+          console.log(this.form.label.toString())  //labels
+          createDataSetApi(params).then(res => {
+            this.$message({
+              message: '添加成功',
+              type: 'success'
+            })
+            this.getDataSet()
+            const para = {
+              tags: this.form.label.toString(),
+              datasetname: this.form.name
+            }
+            addTags(para).then(res => {
+              this.$message({
+                message: '添加成功',
+                type: 'success'
+              })
+            })
+          })
+          console.log(this.form)
+          this.dialogVisible = false
+          }
+          // console.log(this.form.label.toString())  //labels
+          // createDataSet(params).then(res => {
+          //   this.$message({
+          //     message: '添加成功',
+          //     type: 'success'
+          //   })
+          //   this.getDataSet()
+          //   const para = {
+          //     tags: this.form.label.toString(),
+          //     datasetname: this.form.name
+          //   }
+          //   addTags(para).then(res => {
+          //     this.$message({
+          //       message: '添加成功',
+          //       type: 'success'
+          //     })
+          //   })
+          // })
+          // console.log(this.form)
+          // this.dialogVisible = false
         } else {
           console.log(this.form.label)
           this.$message.error('请正确填写表单')
