@@ -379,7 +379,7 @@ export default {
       }
       console.log(params)
       getTeamPerm(params).then(res => {
-        this.idLabel = res.data.items.label_role
+        this.idLabel = res.data.items
       })
       console.log(this.idLabel)
       this.getUsers()
