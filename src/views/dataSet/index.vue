@@ -18,7 +18,7 @@
               <span class="link-type" @click="toDataSet(scope.row)">{{ scope.row.name }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="type" align="center" label="标注类型" min-width="120" sortable>
+          <el-table-column prop="label_type" align="center" label="标注类型" min-width="120" sortable>
             <template slot-scope="scope">
               {{ scope.row.label_type | formatType }}
             </template>
@@ -737,7 +737,7 @@ export default {
 
     // 显示标注团队对话框
     showTeamDialog(index, row) {
-      this.getTeams()
+      this.getTeams(row.uuid)
       this.teamForm.teamValue = ''
       // 得到标注团队
       const params = {
@@ -780,8 +780,11 @@ export default {
     },
 
     // 得到所有的标注团队
-    getTeams() {
-      getAllTeam().then(res => {
+    getTeams(uuid) {
+      const params = {
+        dataSetUuid: uuid
+      }
+      getAllTeam(params).then(res => {
         var team = res.data.items
         this.teams = team
         console.log(this.teams)
@@ -992,6 +995,7 @@ export default {
     toStartLabel: function(val, type) {
       console.log('wodedededed')
       console.log(val)
+      console.log(val.labelType)
       store.dispatch('data/changeUuid', val.uuid)
       store.dispatch('data/changeType', val.label_type)
       store.dispatch('data/changeDataSet',val)

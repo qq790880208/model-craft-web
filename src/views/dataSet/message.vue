@@ -402,7 +402,7 @@ export default {
     },
 
     showTeamDialog: function() {
-      this.getTeams()
+      this.getTeams(store.getters.uuid)
       this.teamForm.teamValue = ''
       // 得到标注团队
       const params = {
@@ -449,8 +449,11 @@ export default {
     },
 
     // 得到所有的标注团队
-    getTeams() {
-      getAllTeam().then(res => {
+    getTeams(uuid) {
+      const params = {
+        dataSetUuid: uuid
+      }
+      getAllTeam(params).then(res => {
         var team = res.data.items
         this.teams = team
         console.log(this.teams)

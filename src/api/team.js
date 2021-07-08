@@ -36,10 +36,11 @@ export function editTeams(params) {
   })
 }
 
-export function getAllTeam() {
+export function getAllTeam(params) {
   return request({
     url: '/team/getAll',
     method: 'get',
+    params: params,
     baseURL: 'http://10.19.1.77:8085'
   })
 }

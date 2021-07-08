@@ -242,6 +242,13 @@ export default {
       const params = {
         dataset_id:store.getters.uuid
       }
+      // return request({
+      //   url:
+      //     "http://10.19.1.181:8082/dataset/save?dataset_id="+store.getters.uuid,
+      //   method: "post",
+      //   //timeout:_this.lastinfoArry.length*5000,
+      //   //params: query
+      // })
       generateInfo(params)
       .then(function (response) {
         console.log(response);
