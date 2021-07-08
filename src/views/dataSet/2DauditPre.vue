@@ -299,7 +299,7 @@ export default {
     //下一张图片
     async nextimage() {
         await this.setAudited()
-        if(this.isAudited == 0) {
+        if(this.isAudited == 1) {
             this.$message("请进行审核操作")
         }else{
             if(this.isimageview) {
@@ -315,7 +315,7 @@ export default {
     //上一张图片
     async previousimage() {
         await this.setAudited()
-        if(this.isAudited == 0) {
+        if(this.isAudited == 1) {
             this.$message("请进行审核操作")
         }else{
             if(this.isimageview) {
@@ -330,19 +330,7 @@ export default {
         }
         
     },
-    //post修改正在标注标识
-    isnowlabel:function(){
-      let _this = this;
-      return request({
-        url:
-          "http://10.19.1.77:8085/label/setLabeling?uuid="+this.uuidArry[this.nownum],
-        method: "post",
-        //timeout:_this.lastinfoArry.length*5000,
-        //params: query
-      }).then(function (response) {
-        console.log(response);
-      })
-    },
+
     //get 请求图片
     getAuditDataList() {
         let _this = this

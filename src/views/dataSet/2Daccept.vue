@@ -55,6 +55,7 @@ import miniimage from "@/components/acceptdatashow.vue"
 import store from "@/store"
 import {outTimeReAssign, getNewLabels} from '@/api/data'
 import { getAcceptDataApi, batchAcceptApi, acceptApi, unAcceptApi, batchUnAcceptApi } from '@/api/accept'
+import { getAuditDatasByUserId, getIsAuditApi, batchSaveApi, batchRejectApi, batchReSetApi, passApi, reSetApi, rejectApi } from '@/api/audit'
 import { getTagApi } from '@/api/tag'
 
 //import axios from 'node_modules/axios';
@@ -125,7 +126,7 @@ export default {
         },
       ],
       marktype: [],
-      nopnum: 0, //标记下一张上一张还是返回的数字
+
       unable: false, //防止连续切换图片
       nownum: 0,
       isalllabeled: false,
@@ -301,50 +302,28 @@ export default {
       this.nowseconds = 0;
     },
     //下一张图片
-    nextimage() {
-        this.setAudited()
-        if(this.isAudited == 0) {
-            this.$message("请进行审核操作")
-        }else{
-            if(this.unable) {
-                //console.log("unable!!!!!!!!!!!!!!!!!!!!")
-                return
-            }
-            if(this.isimageview) {
-                console.log("处于预览界面");
-                return
-            }
-            if (this.nownum < this.imageArry.length - 1) {
-                this.nopnum=1;
-                this.unable=true
-                this.$refs.imageselectref.saveinfo()
-                //this.nownum++;
-            }
-            console.log("nextimage", this.nownum);
-        }
-      
+    nextimage() {     
+      if(this.isimageview) {
+        console.log("处于预览界面");
+        return
+      }
+      if (this.nownum < this.imageArry.length - 1) {
+        this.nownum++;
+      }
+      console.log("nextimage", this.nownum);
+ 
     },
     //上一张图片
-    previousimage() {
-        this.setAudited()
-        if(this.isAudited == 0) {
-            this.$message("请进行审核操作")
-        }else{
-            if(this.unable) return
-            if(this.isimageview) {
-                console.log("处于预览界面");
-                return
-            }
-      
-            if (this.nownum > 0) {
-                this.nopnum=2;
-                this.unable=true
-                this.$refs.imageselectref.saveinfo()
-        
-            }
-            console.log("previousimage", this.nownum);
-        }
-        
+    previousimage() {  
+      if(this.isimageview) {
+        console.log("处于预览界面");
+        return
+      }
+
+      if (this.nownum > 0) {
+        this.nownum--;
+      }
+      console.log("previousimage", this.nownum);
     },
     //get 请求图片
     getAcceptDataList() {
@@ -423,30 +402,6 @@ export default {
             })
         })
     },
-    //保存图片标注信息
-    saveimageinfo: function (markinfo, imageeindex) {
-      this.infoArry[imageeindex] = markinfo;
-      console.log("save success", markinfo, imageeindex);
-      console.log("thisinfoArry", this.infoArry);
-      this.savelabel(this.nownum);
-    },
-    savelabel(i) {
-        let _this=this
-        this.nowseconds = 0
-        console.log("save",JSON.stringify(this.infoArry[i]))
-        let isab
-        if(this.infoArry[i].rectangle.length>0) isab=1
-        else isab=2
-        _this.getAcceptDataList()
-        _this.getTags()
-        if(_this.nopnum==1) {
-            _this.nownum++;   
-        }
-        if(_this.nopnum==2) {
-            _this.nownum--;   
-        }
-        _this.unable=false;  
-    }
   },
 
   mounted: function () {
