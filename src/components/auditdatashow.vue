@@ -52,10 +52,10 @@
       return this.fatherimagesrc;
     },
     markcolor(){
-        if(this.ismarked===1) return '#000000'
+        if(this.ismarked===1) return '#ffffff'
         else if(this.ismarked ===2) return '#ff0000'
         else if(this.ismarked ===3) return '#ffff00'
-        else return '#ffffff'
+        else return '#000000'
     },
     ismarkedtext: function(){
       if(this.ismarked===2) return '已通过'

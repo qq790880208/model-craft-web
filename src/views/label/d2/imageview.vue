@@ -3,7 +3,7 @@
     <div class="dashboard-container" v-if="isimageview">
       <div>
       <el-button @click="returndataset" >返回数据集</el-button>
-      <el-button @click="automark()" :loading="isloading">{{automarkbtntext}}</el-button>
+      <el-button @click="automark1()" :loading="isloading">{{automarkbtntext}}</el-button>
       <el-button @click="generateXML">生成xml文件</el-button>
       <el-button @click="newlabel" v-if="isalllabeled">申请新任务</el-button>
       </div>
@@ -44,6 +44,8 @@ import miniimage from "@/components/miniimage.vue"
 import store from "@/store"
 import {outTimeReAssign, getNewLabels, getAssignData} from '@/api/data'
 import { getAuditDatasByUserId} from '@/api/audit'
+import {isnowlabel,savelabel,automark,generateInfo} from '@/api/mark'
+import {getTagApi} from '@/api/tag'
 //import axios from 'node_modules/axios';
 // import labelinfo from '@/components/labelinfo.vue'
 //页面键盘监听
@@ -134,7 +136,7 @@ export default {
     entermark(index){
       console.log("faaaaaaaaaaaatherenter!")
       this.nownum=index;
-      this.isnowlabel();
+      this.isnowlabel1();
       this.isimageview=!this.isimageview;
     },
     returnimageview(){
@@ -206,28 +208,42 @@ export default {
       console.log("previousimage", this.nownum);
     },
     //post修改正在标注标识
-    isnowlabel:function(){
-      let _this = this;
-      return request({
-        url:
-          "http://10.19.1.77:8085/label/setLabeling?uuid="+this.uuidArry[this.nownum],
-        method: "post",
-        //timeout:_this.lastinfoArry.length*5000,
-        //params: query
-      }).then(function (response) {
-        console.log(response);
+    // isnowlabel:function(){
+    //   let _this = this;
+    //   return request({
+    //     url:
+    //       "http://10.19.1.77:8085/label/setLabeling?uuid="+this.uuidArry[this.nownum],
+    //     method: "post",
+    //     //timeout:_this.lastinfoArry.length*5000,
+    //     //params: query
+    //   }).then(function (response) {
+    //     console.log(response);
+    //   })
+    // },
+    isnowlabel1(){
+      const params = {
+          uuid: this.uuidArry[this.nownum]
+      }
+      console.log(params)
+      isnowlabel(params).then(response => {
+        console.log("isnowlabel",response);
       })
     },
     //post生成xml
     generateXML:function () {
       let _this = this;
-      return request({
-        url:
-          "http://10.19.1.181:8082/dataset/save?dataset_id="+store.getters.uuid,
-        method: "post",
-        //timeout:_this.lastinfoArry.length*5000,
-        //params: query
-      }).then(function (response) {
+      const params = {
+        dataset_id:store.getters.uuid
+      }
+      // return request({
+      //   url:
+      //     "http://10.19.1.181:8082/dataset/save?dataset_id="+store.getters.uuid,
+      //   method: "post",
+      //   //timeout:_this.lastinfoArry.length*5000,
+      //   //params: query
+      // })
+      generateInfo(params)
+      .then(function (response) {
         console.log(response);
         _this.$message({
           message:"xml生成成功",
@@ -240,13 +256,6 @@ export default {
           message:"xml生成失败",
           type: 'error'
           })
-          // for (let i = 0; i < testmarktype.length; i++) {
-          //   let a={};
-          // a["url"]=response.data.items[i].file_path
-          // a["islabel"]=response.data.items[i].is_label
-          // //a["index"]=i
-          // _this.imagelargeArry.push(a);
-          // }
       });
     },
     //保存图片标注信息
@@ -254,7 +263,7 @@ export default {
       this.infoArry[imageeindex] = markinfo;
       console.log("save success", markinfo, imageeindex);
       console.log("thisinfoArry", this.infoArry);
-      this.savelabel(this.nownum);
+      this.savelabel1(this.nownum);
     },
     //get请求图片数据
     requireimage: function () {
@@ -392,16 +401,14 @@ export default {
       }
     },
     //get请求数据集的标签集
-    requiretag: function () {
+    requiretag() {
       let _this = this;
       this.marktype=[]
-      return request({
-        url:
-          "http://10.19.1.181:8082/dataset/tag?dataset_uuid="+store.getters.uuid,
-        method: "get",
-        //params: query
-      }).then(function (response) {
-        //console.log("taggggggggggggggggggggggggggggggggggggg",response)
+      const params = {
+        dataset_uuid:store.getters.uuid
+      }
+      return getTagApi(params).then(function (response) {
+        console.log("taggggggggggggggggggggggggggggggggggggg",response)
         for (let i = 0; i < response.data.items.length; i++) {
           let a={};
           a["name"]=response.data.items[i].name
@@ -418,7 +425,7 @@ export default {
       });
     },
     //put更新数据
-    savelabel(i) {
+    savelabel1(i) {
       let _this=this
       this.nowseconds = 0;
       //_this.$message('开始保存');
@@ -426,18 +433,13 @@ export default {
       let isab
       if(this.infoArry[i].rectangle.length>0) isab=1
       else isab=2
-      return request({
-        url: "http://10.19.1.181:8082/label",
-        method: "put",
-        data: {
+      let data={
           label_data: JSON.stringify(this.infoArry[i]),
-          //"last_update_by": "liaoziheng",
-          //file_type: "rectangle",
           is_label: isab,
           uuid: this.uuidArry[i],
           dataset_id: store.getters.uuid
-        },
-      }).then(function (response) {
+      }
+      savelabel(data).then(function (response) {
         console.log(response);
         console.log("isab",isab);
         _this.$message({
@@ -447,14 +449,15 @@ export default {
           });
         console.log("save success!!!!!!!!!!!!!!")
         _this.requireimage();
-        _this.requiretag().then(function(){
+        _this.requiretag().then(function () {
+          console.log("thenthenthenthen")
           if(_this.nopnum==1) {
             _this.nownum++;
-            _this.isnowlabel();
+            _this.isnowlabel1();
           }
           if(_this.nopnum==2) {
             _this.nownum--;
-            _this.isnowlabel();
+            _this.isnowlabel1();
           }
           
           _this.unable=false;
@@ -472,19 +475,24 @@ export default {
     },
 
     //post半自动标注
-    automark(){
+    automark1(){
       let _this = this;
       _this.$message('开始2D拉框自动标注');
       _this.automarkbtntext="标注中";
       _this.isloading=true;
       console.log("图片长度预留时间",_this.lastinfoArry.length*5000)
-      return request({
-        url:
-          "http://10.19.1.181:8082/dataset/auto?dataset_id="+store.getters.uuid,
-        method: "post",
-        timeout:_this.lastinfoArry.length*5000,
-        //params: query
-      }).then(function (response) {
+      // return request({
+      //   url:
+      //     "http://10.19.1.181:8082/dataset/auto?dataset_id="+store.getters.uuid,
+      //   method: "post",
+      //   timeout:_this.lastinfoArry.length*5000,
+      //   //params: query
+      // })
+      const params = {
+        dataset_id:store.getters.uuid
+      }
+      automark(params,_this.lastinfoArry.length)
+      .then(function (response) {
         console.log(response);
         _this.$message({
           message:"2D拉框自动标注成功",
