@@ -135,7 +135,7 @@
     </el-dialog>
     <!-- 创建任务对话框 -->
     <el-dialog title="任务信息" :visible.sync="dialogFormVisible" :show-close="true" >
-      <el-form :model="taskForm" :rules="rules" ref="taskForm" label-width="100px" class="demo-taskForm" v-if="dialogFormVisible">
+      <el-form :model="taskForm" :rules="rules" ref="taskForm" label-width="100px" class="demo-taskForm" v-if="dialogFormVisible" >
         <el-form-item label="任务名称" prop="name">
           <el-input v-model="taskForm.name"></el-input>
         </el-form-item>
@@ -153,8 +153,8 @@
             </div>
           </el-select>
         </el-form-item>
-        <el-form-item label="数据来源" prop="data">
-          <el-select v-model="taskForm.data" placeholder="请选择">
+        <el-form-item label="数据集选择" prop="data">
+          <el-select v-model="taskForm.data" placeholder="请选择" @change="pathChange(taskForm.data)">
             <div style="height:150px;" class="scrollbar">
               <el-scrollbar style="height:100%;;">
                 <el-option v-for="(item, index) in initialPara.inputData.name" :key="index"
@@ -164,7 +164,21 @@
             </div>
           </el-select>
         </el-form-item>
-        <el-form-item label="输出位置" prop="outpath">
+        <el-form-item label="数据集图片位置" prop="data">
+                <el-input v-model="imageOssPath" :disabled="true">
+                </el-input>
+        </el-form-item>
+        <el-form-item label="数据集标注结果位置" prop="data">
+                <el-input v-model="textOssPath" :disabled="true">
+                </el-input>
+        </el-form-item>
+        <el-form-item label="模型生成位置" prop="data">
+                <el-input v-model="modelOssPath" :disabled="true">
+                </el-input>
+        </el-form-item>
+
+
+        <!-- <el-form-item label="输出位置" prop="outpath">
           <el-select v-model="taskForm.outpath" placeholder="请选择">
             <div style="height:150px;" class="scrollbar">
               <el-scrollbar style="height:100%;"> 
@@ -174,7 +188,7 @@
               </el-scrollbar>
             </div>
           </el-select>
-        </el-form-item>
+        </el-form-item> -->
         <el-form-item label="参数选择" >
           <el-form>
             <div style="height:150px; " class="scrollbar">
@@ -224,6 +238,10 @@ export default {
     components: {visual, visualf, visualt},
     data() {
       return {
+        //2021/07/08新增数据
+        imageOssPath:"none",
+        textOssPath:"none",
+        modelOssPath:"none",
         //主页面部分数据
         statusoptions:['未开始', '初始化','运行中', '结束成功', '结束失败'],
         selectedstatus:'5',//顶部选择的状态
@@ -342,6 +360,12 @@ export default {
     },
 
     methods: {
+      pathChange(data){
+        console.log("data",data)
+        this.imageOssPath = "data/dataset/"+data+"/input/source/"
+        this.textOssPath =  "data/dataset/"+data+"/input/annotation/"
+        this.modelOssPath = "data/dataset/"+data+"/output/ckpt/"
+      },
       cachange(testdata){
         this.currentAlgorithm=testdata;
         if(testdata==0) this.isdisplaytl=true;
@@ -408,6 +432,8 @@ export default {
         this.taskForm.outpath = ''
         this.taskForm.description = ''
         this.taskForm.paras = []
+        console.log(" store.getters", store.getters)
+        console.log(" taskForm",this.taskForm)
         const params = {
           'page': 1,
           'pagesize': 100,
@@ -415,7 +441,7 @@ export default {
           'name':''
       }
         getDataByName(params).then(res =>{//从后台读取数据来源的目录
-          //console.log(res)
+          console.log("getdatabyname",res)
           this.initialPara.inputData.name = []
           this.initialPara.inputData.uuid = []
           for(let i = 0;i < res.data.total;i++){
@@ -598,8 +624,11 @@ export default {
         this.taskPara.descr = this.taskForm.description
         this.taskPara.name = this.taskForm.name
         this.taskPara.user_id = JSON.stringify(this.taskForm.user_id)
-        this.taskPara.uuid = this.taskForm.uuid
-        this.taskPara.path = this.taskForm.outpath
+
+        this.taskPara.uuid = this.taskForm.uuid  /////
+        this.taskPara.source_oss_path = this.imageOssPath
+        this.taskPara.annotation_oss_path = this.textOssPath
+        this.taskPara.model_oss_path = this.modelOssPath
         this.isdisplaytl=false
         //console.log(this.isdisplaytl);
         //console.log(this.taskPara)
@@ -648,7 +677,7 @@ export default {
       setTimer() {//定时器
         if(this.timer == null) {
           this.timer = setInterval( () => {
-              console.log('开始定时...每过一秒执行一次')
+              //console.log('开始定时...每过一秒执行一次')
               //this.fetchData()
               
               if (this.Mockprocess != 100){
@@ -660,7 +689,7 @@ export default {
       setTimerLog() {//读取日志的定时器
         if(this.timerLog == null) {
           this.timerLog = setInterval( () => {
-              console.log('开始定时...每过一秒执行一次')
+              //console.log('开始定时...每过一秒执行一次')
               showLog().then(res =>{
                 console.log(res)
                 this.logText = res.data.content
