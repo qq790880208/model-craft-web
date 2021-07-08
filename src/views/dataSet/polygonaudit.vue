@@ -339,19 +339,7 @@ export default {
       console.log("skipimage", this.nownum);
       this.nowseconds = 0;
     },
-    //post修改正在标注标识
-    isnowlabel:function(){
-      let _this = this;
-      return request({
-        url:
-          "http://10.19.1.77:8085/label/setLabeling?uuid="+this.uuidArry[this.nownum],
-        method: "post",
-        //timeout:_this.lastinfoArry.length*5000,
-        //params: query
-      }).then(function (response) {
-        console.log(response);
-      })
-    },
+   
     //get 请求图片
     getAuditDataList() {
         let _this = this
@@ -424,7 +412,7 @@ export default {
     document.onkeydown = undefined;
     clearInterval(this.starttimer);
     this.starttimer=null;
-    this.nowseconds=1;
+    this.nowseconds=0;
   },
   computed: {
     ...mapGetters(["name"]),

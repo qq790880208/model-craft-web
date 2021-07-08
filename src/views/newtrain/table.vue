@@ -87,7 +87,7 @@
             @click="handleShow()">可视化</el-button>
           <el-button
             size="mini"
-            @click="handleShowlog(scope.$index, scope.row)">日志</el-button>
+            @click="handleShowlog(scope.$index, scope)">日志</el-button>
             <el-button
             size="mini" type="danger"
             @click="handleDelete(scope.$index, scope.row)">删除</el-button>
@@ -515,6 +515,7 @@ export default {
         
       },
       handleShow(index, row) {//可视化某行 
+      console.log(this.showPara,index,row)
         this.picVisible = true
         this.showPara.trainjob_id = row.trainjob_id
         let tmp = {
@@ -625,17 +626,19 @@ export default {
         this.taskPara.name = this.taskForm.name
         this.taskPara.user_id = JSON.stringify(this.taskForm.user_id)
 
-        this.taskPara.uuid = this.taskForm.uuid  /////
+        //this.taskPara.uuid = this.taskForm.uuid  /////
         this.taskPara.source_oss_path = this.imageOssPath
         this.taskPara.annotation_oss_path = this.textOssPath
         this.taskPara.model_oss_path = this.modelOssPath
         this.isdisplaytl=false
         //console.log(this.isdisplaytl);
-        //console.log(this.taskPara)
+        console.log("this.taskPara",this.taskPara)
+
         submitTask(this.taskPara).then(res => {
           console.log(res.data)
           this.fetchData()
         })
+
         //==需要重新获取用户列表
         this.dialogFormVisible = false
         this.$refs[taskForm].resetFields()
@@ -687,6 +690,7 @@ export default {
         }
       },
       setTimerLog() {//读取日志的定时器
+      console.log("this.timerLog",this.timerLog)
         if(this.timerLog == null) {
           this.timerLog = setInterval( () => {
               //console.log('开始定时...每过一秒执行一次')
