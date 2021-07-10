@@ -142,17 +142,6 @@
         <el-form-item label="任务描述">
           <el-input type="textarea" v-model="taskForm.description"></el-input>
         </el-form-item>
-        <el-form-item label="算法来源" prop="algorithm">
-          <el-select v-model="taskForm.algorithm" placeholder="请选择" @change="cachange(taskForm.algorithm)">
-            <div style="height:200px;" class="scrollbar">
-              <el-scrollbar style="height:100%;">
-               <el-option v-for="(item, index) in algorithmArray" :key="index"
-                :label="item" :value="index">
-                </el-option>
-              </el-scrollbar>
-            </div>
-          </el-select>
-        </el-form-item>
         <el-form-item label="数据集选择" prop="data">
           <el-select v-model="taskForm.data" placeholder="请选择" @change="pathChange(taskForm.data)">
             <div style="height:150px;" class="scrollbar">
@@ -164,6 +153,20 @@
             </div>
           </el-select>
         </el-form-item>
+        <el-form-item label="训练算法" prop="data">
+                <el-input v-model="algorithmArray[this.useAlgorithm]" :disabled="true" placeholder="none">
+                </el-input>
+                          <!-- <el-select v-model="taskForm.algorithm" placeholder="请选择" @change="cachange(taskForm.algorithm)">
+            <div style="height:200px;" class="scrollbar">
+              <el-scrollbar style="height:100%;">
+               <el-option v-for="(item, index) in algorithmArray" :key="index"
+                :label="item" :value="index">
+                </el-option>
+              </el-scrollbar>
+            </div>
+          </el-select> -->
+        </el-form-item>
+
         <el-form-item label="数据集图片位置" prop="data">
                 <el-input v-model="imageOssPath" :disabled="true">
                 </el-input>
@@ -232,7 +235,7 @@
 import visual from "./visual"
 import visualf from "./visual1"
 import visualt from "./visual2"
-import {startTask, showLog,getDataByName,stopTask, getTableData1,deleteTask,  search, searchStatus, getVisualData, submitTask, getinitialPara} from '@/api/newTrain'
+import {startTask, showLog,getAcceptData,stopTask, getTableData1,deleteTask,  search, searchStatus, getVisualData, submitTask, getinitialPara} from '@/api/newTrain'
 import store from '@/store'
 export default {
     components: {visual, visualf, visualt},
@@ -242,6 +245,7 @@ export default {
         imageOssPath:"none",
         textOssPath:"none",
         modelOssPath:"none",
+        useAlgorithm:-1,
         //主页面部分数据
         statusoptions:['未开始', '初始化','运行中', '结束成功', '结束失败'],
         selectedstatus:'5',//顶部选择的状态
@@ -289,20 +293,25 @@ export default {
             { required: true, message: '请选择输出位置', trigger: 'change' }
           ]
         },
-        algorithmArray:[
+        algorithmArray:[//算法名称
           "Yolov3-TensorFlow",
-          "Yolov3-Pytorch",
           "DeepLab-TensorFlow",
+          "voice",
+          "Yolov3-Pytorch",
         ],
-        paraNameList:[//六个算法的参数名称
+        paraNameList:[//算法的参数名称
             ['epoch','batchsize'],
-            ['epoch','batchsize','imgsize','epoch'],
-            ['epoch','batchsize','imgsize'],
+            ['epoch','batchsize'],
+            [],
+            ['epoch','batchsize'],
+            ['epoch','batchsize']
           ],
-        paraValueList:[//六个算法的参数数值
-            ['2','5'],
-            ['2','5','640','2'],
-            ['2','5','640'],
+        paraValueList:[//算法的参数数值
+            ['100','2'],
+            ['100','2'],
+            [],
+            ['100','2'],
+            ['100','2']
         ],
         transferLearningList:[//transferLearning参数
           "none",
@@ -315,7 +324,8 @@ export default {
         initialPara:{
           inputData:{
             name:[],
-            uuid:[]
+            uuid:[],
+            algorithmType:[]
           },
           outpath:[],
         },//创建任务时从后台传入的数据源和输出路径
@@ -365,8 +375,14 @@ export default {
         this.imageOssPath = "data/dataset/"+data+"/input/source/"
         this.textOssPath =  "data/dataset/"+data+"/input/annotation/"
         this.modelOssPath = "data/dataset/"+data+"/output/ckpt/"
+        this.initialPara.inputData.uuid.forEach((item,index) => {
+          //console.log("item",item,"index",index)
+          if(data==item) this.useAlgorithm = this.initialPara.inputData.algorithmType[index];
+        })
+        this.cachange(this.useAlgorithm)
       },
       cachange(testdata){
+        console.log("testdata",testdata)
         this.currentAlgorithm=testdata;
         if(testdata==0) this.isdisplaytl=true;
         else this.isdisplaytl=false;
@@ -415,7 +431,7 @@ export default {
           "tj_status": this.selectPara.para
         }
         search(tmp).then(res=>{
-          console.log(res.data)
+          console.log("search",res.data)
           this.queryInfo.pagenum = res.data.items.current
           this.queryInfo.pagesize = res.data.items.size
           this.totalData = res.data.items.total
@@ -427,7 +443,7 @@ export default {
         this.taskForm.uuid = this.generateUUID()
         this.taskForm.user_id = store.getters.userid
         this.taskForm.name = 'train-' + this.taskForm.uuid.slice(0,4)
-        this.taskForm.algorithm = ''
+        this.useAlgorithm = ''
         this.taskForm.data = ''
         this.taskForm.outpath = ''
         this.taskForm.description = ''
@@ -435,19 +451,19 @@ export default {
         console.log(" store.getters", store.getters)
         console.log(" taskForm",this.taskForm)
         const params = {
-          'page': 1,
-          'pagesize': 100,
-          'id': store.getters.userid,
-          'name':''
+          id: store.getters.userid,
       }
-        getDataByName(params).then(res =>{//从后台读取数据来源的目录
-          console.log("getdatabyname",res)
+        getAcceptData(params).then(res =>{//从后台读取数据来源的目录
+          console.log("getAcceptData",res)
           this.initialPara.inputData.name = []
           this.initialPara.inputData.uuid = []
-          for(let i = 0;i < res.data.total;i++){
+          this.initialPara.inputData.algorithmType = []
+          for(let i = 0;i < res.data.items.length;i++){
             this.initialPara.inputData.name.push(res.data.items[i].name)
             this.initialPara.inputData.uuid.push(res.data.items[i].uuid)
+            this.initialPara.inputData.algorithmType.push(res.data.items[i].label_type)
           }
+          console.log(this.initialPara)
         })
         getinitialPara().then(res =>{
           this.initialPara.outpath = res.data.outpath
@@ -609,17 +625,17 @@ export default {
           }
         })
         
-        let temlist1 = JSON.parse(JSON.stringify(this.paraNameList[this.taskForm.algorithm]))
-        let temlist2 = JSON.parse(JSON.stringify(this.paraValueList[this.taskForm.algorithm]))
+        let temlist1 = JSON.parse(JSON.stringify(this.paraNameList[this.useAlgorithm]))
+        let temlist2 = JSON.parse(JSON.stringify(this.paraValueList[this.useAlgorithm]))
         if(this.isdisplaytl) {
           temlist1.push("transferLearning")
           temlist2.push(this.transferLearningValue)
         }
-        console.log(this.paraNameList[this.taskForm.algorithm],"das",this.paraValueList[this.taskForm.algorithm])
-        this.taskForm.paras.push(this.paraNameList[this.taskForm.algorithm])
-        this.taskForm.paras.push(this.paraValueList[this.taskForm.algorithm])
+        console.log(this.paraNameList[this.useAlgorithm],"das",this.paraValueList[this.useAlgorithm])
+        this.taskForm.paras.push(this.paraNameList[this.useAlgorithm])
+        this.taskForm.paras.push(this.paraValueList[this.useAlgorithm])
 
-        this.taskPara.algo_id = this.taskForm.algorithm
+        this.taskPara.algo_id = this.useAlgorithm
         this.taskPara.args = JSON.stringify(this.taskForm.paras)
         this.taskPara.dataset_id = this.taskForm.data
         this.taskPara.descr = this.taskForm.description

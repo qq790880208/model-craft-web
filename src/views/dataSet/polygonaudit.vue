@@ -293,12 +293,13 @@ export default {
         const params = {
             labelUuid: this.uuidArry[this.nownum]
         }
+
         await getIsAuditApi(params).then(res => {
             this.isAudited = res.data.items
         })
     },
     entermark(index){
-      console.log("faaaaaaaaaaaatherenter!")
+      console.log("faaaaaaaaaaaatherenter!", this.nownum,this.uuidArry[this.nownum])
       this.nownum=index;
       //this.isnowlabel();
       this.isimageview=!this.isimageview;
@@ -311,8 +312,10 @@ export default {
     },
     //下一张图片
     async nextimage() {
-        await this.setAudited()
-        if(this.isAudited === 1) {
+
+        await this.setAudited();
+        console.log('llllokonojiojo', this.isAudited)
+        if(this.isAudited == 1) {
             this.$message("请进行审核操作")
         }else{
             if(this.isimageview) {
@@ -329,7 +332,9 @@ export default {
     //上一张图片
     async previousimage() {
         await this.setAudited()
-        if(this.isAudited === 1) {
+
+        if(this.isAudited == 1) {
+          
             this.$message("请进行审核操作")
         }else{
             if(this.isimageview) {

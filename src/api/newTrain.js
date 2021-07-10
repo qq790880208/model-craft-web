@@ -108,3 +108,12 @@ export function getDataByName(params) {//创建任务时获取数据集
       baseURL: 'http://10.19.1.77:8085'
     })
   }
+
+  export function getAcceptData(params) {
+      return request({
+          url: '/data/getAcceptData',
+          method: 'get',
+          params: params,
+          baseURL: 'http://10.19.1.77:8085'
+        })
+  }
