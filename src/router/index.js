@@ -244,7 +244,7 @@ export const asyncRoutes = [
       {
         path: '/predict',
         component: () => import('@/views/predict/table'),
-        name: 'model admin',
+        name: 'predict admin',
         meta: { title: '在线预测', resources: 'model', icon: 'people' }
       }
     ]

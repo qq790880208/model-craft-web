@@ -26,3 +26,13 @@ export function delModelById(mid) {
     baseURL: 'http://10.19.1.181:8081'
   })
 }
+
+export function addModel(data) {
+  return request({
+    url: '/model',
+    method: 'post',
+    data: data,
+    baseURL: 'http://10.19.1.181:8081'
+  })
+}
+

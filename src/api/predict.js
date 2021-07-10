@@ -108,6 +108,14 @@ export function getTableData2(params){
     baseURL: 'http://10.19.1.181:8084'
   })
 }
+export function getModels(params){
+  return request({
+    params:params,
+    url:'/model',
+    method:'get',
+    baseURL: 'http://10.19.1.181:8081'
+  })
+}
 
 export function getDataByName(params) {//创建任务时获取数据集
     return request({

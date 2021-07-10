@@ -150,7 +150,7 @@
           <el-select v-model="taskForm.model_path" placeholder="请选择">
             <div style="height:150px;" class="scrollbar">
               <el-scrollbar style="height:100%;;">
-                <el-option v-for="(item, index) in initialPara.modelpath" :key="initialPara.modelpath[index]"
+                <el-option v-for="(item, index) in initialPara.modelNameVer" :key="initialPara.modelpath[index]"
                 :label="item" :value="initialPara.modelpath[index]">
                 </el-option>
               </el-scrollbar>
@@ -182,7 +182,7 @@
 import visual from "./visual"
 import visualf from "./visual1"
 import visualt from "./visual2"
-import {startTask, showLog,getDataByName,stopTask, getTableData1, getTableData2 ,deleteTask,  search, searchStatus, getVisualData, submitTask, getinitialPara} from '@/api/predict'
+import {startTask, showLog,getDataByName,stopTask, getTableData1 ,deleteTask,  search, searchStatus, getVisualData, submitTask, getinitialPara, getModels} from '@/api/predict'
 import store from '@/store'
 export default {
     components: {visual, visualf, visualt},
@@ -267,6 +267,7 @@ export default {
           },
           outpath:[],
           modelpath: [],
+          modelNameVer: []
         },//创建任务时从后台传入的数据源和输出路径
         currentAlgorithm:0,//创建任务时目前选中的代码
         isdisplaytl:false,
@@ -384,14 +385,15 @@ export default {
           'curr': 1,
           'size': 100,
           'user_id': store.getters.userid,
-          'tj_status': 2
         }
-        getTableData2(params1).then(res =>{
-          //console.log(res.data.items)
+        getModels(params1).then(res =>{
+          console.log(res.data.items)
           this.initialPara.modelpath = []
+          this.initialPara.modelNameVer = []
           for(let i = 0;i < res.data.items.total;i++){
 
             this.initialPara.modelpath.push(res.data.items.records[i].model_oss_path)
+            this.initialPara.modelNameVer.push(res.data.items.records[i].name + " v" + res.data.items.records[i].version)
           }
           console.log(this.initialPara.modelpath)
         })
