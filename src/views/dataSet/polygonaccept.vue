@@ -5,6 +5,10 @@
         <el-button type="primary" plain size="mini" @click="returndataset" >返回数据集</el-button>
         <el-button type="primary" plain size="mini" @click="batchSave">批量通过</el-button>
         <el-button type="primary" plain size="mini" @click="batchUnAccept">批量不通过</el-button>
+        <span class="checkAll">
+          <input type="checkbox" @change="checkedAll()" :checked="checkedList.length === imagelargeArry.length"  />
+          <span>全选</span>
+        </span>
         <!-- <el-button type="primary" plain size="mini" @click="batchReSet">批量重置</el-button> -->
       </div>
       <div v-for="(item, index) in imagelargeArry" :key="index" style="
@@ -81,6 +85,7 @@ export default {
   data() {
     return {
       isAudited: 0,
+      isCheckedAll: false,
       checkedList: [],
       //存储图片url数组，用于获取远程图片信息
       imageArry: [],
@@ -174,7 +179,8 @@ export default {
         
         console.log(this.imagelargeArry)
         const params = {
-            labelUuid: this.uuidArry[this.nownum]
+            labelUuid: this.uuidArry[this.nownum],
+            dataset_id: store.getters.uuid
         }
         acceptApi(params).then(res => {
             this.$message({
@@ -191,7 +197,8 @@ export default {
     unAccept() {
         
         const params = {
-            labelUuid: this.uuidArry[this.nownum]
+            labelUuid: this.uuidArry[this.nownum],
+            dataset_id: store.getters.uuid
         }
         unAcceptApi(params).then(res => {
             this.$message({
@@ -231,10 +238,23 @@ export default {
             this.checkedList.splice(this.checkedList.indexOf(uuid), 1); 
         }
     },
+    checkedAll () {
+      this.isCheckedAll = !this.isCheckedAll
+      if (this.isCheckedAll) {
+        // 全选时
+        this.checkedList = []
+        this.imagelargeArry.forEach(function (item) {
+          this.checkedList.push(item.uuid)
+        }, this)
+      } else {
+        this.checkedList = []
+      }
+    },
     batchSave() {
         console.log(this.checkedList.join(","))
         const params = {
-            labelUuids: this.checkedList.join(",")
+            labelUuids: this.checkedList.join(","),
+            dataset_id: store.getters.uuid
         }
         batchAcceptApi(params).then(res => {
             this.$message({
@@ -248,7 +268,8 @@ export default {
     batchUnAccept() {
         console.log(this.checkedList.join(","))
         const params = {
-            labelUuids: this.checkedList.join(",")
+            labelUuids: this.checkedList.join(","),
+            dataset_id: store.getters.uuid
         }            
         batchUnAcceptApi(params).then(res => {
             this.$message({
@@ -288,8 +309,11 @@ export default {
       this.isimageview=!this.isimageview;
     },
     returnimageview(){
-        this.nownum=0;
-        this.isimageview=!this.isimageview;
+      this.getAcceptDataList()
+    
+      this.getTags()
+      this.nownum=0;
+      this.isimageview=!this.isimageview;
     },
     
     //下一张图片

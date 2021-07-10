@@ -6,6 +6,10 @@
         <el-button type="primary" plain size="mini" @click="batchSave">批量通过</el-button>
         <el-button type="primary" plain size="mini" @click="batchReject">批量不通过</el-button>
         <el-button type="primary" plain size="mini" @click="batchReSet">批量重置</el-button>
+        <span class="checkAll">
+          <input type="checkbox" @change="checkedAll()" :checked="checkedList.length === imagelargeArry.length"  />
+          <span>全选</span>
+        </span>
       </div>
       <div v-for="(item, index) in imagelargeArry" :key="index" style="
         display:inline-block;
@@ -83,6 +87,7 @@ export default {
   data() {
     return {
       isAudited: 1,
+      isCheckedAll: false,
       checkedList: [],
       //存储图片url数组，用于获取远程图片信息
       imageArry: [],
@@ -230,6 +235,18 @@ export default {
             this.checkedList.splice(this.checkedList.indexOf(uuid), 1); 
         }
     },
+    checkedAll () {
+      this.isCheckedAll = !this.isCheckedAll
+      if (this.isCheckedAll) {
+        // 全选时
+        this.checkedList = []
+        this.imagelargeArry.forEach(function (item) {
+          this.checkedList.push(item.uuid)
+        }, this)
+      } else {
+        this.checkedList = []
+      }
+    },
     batchSave() {
         console.log(this.checkedList.join(","))
         const params = {
@@ -288,8 +305,10 @@ export default {
       this.isimageview=!this.isimageview;
     },
     returnimageview(){
-        this.nownum=0;
-        this.isimageview=!this.isimageview;
+      this.getAuditDataList()
+      this.getTags()
+      this.nownum=0;
+      this.isimageview=!this.isimageview;
     },
     //下一张图片
     async nextimage() {
@@ -434,5 +453,8 @@ export default {
     font-size: 30px;
     line-height: 46px;
   }
+}
+.checkAll{
+  padding: 0px 5px 0px 15px;
 }
 </style>

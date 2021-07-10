@@ -426,6 +426,7 @@ export default {
         .then(() => {
           const para = { id: row.id }
           para.teamid = this.selectTeam.id
+          para.name = row.name
           console.log(para)
           delUser(para).then(res => {
             this.$message({
