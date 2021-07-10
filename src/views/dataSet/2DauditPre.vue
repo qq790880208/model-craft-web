@@ -152,18 +152,18 @@ export default {
         this.isAudited = true;
         console.log(this.imagelargeArry)
         const params = {
-            labelUuid: this.uuidArry[this.nownum]
+          labelUuid: this.uuidArry[this.nownum]
         }
         passApi(params).then(res => {
-            this.$message({
-                message: '审核通过',
-                type: 'success'
-            })
+          this.$message({
+              message: '审核通过',
+              type: 'success'
+          })
         }).catch(function(error) {
-            this.$message({
-                message: '审核失败',
-                type: 'error'
-            })
+          this.$message({
+              message: '审核失败',
+              type: 'error'
+          })
         })
     },
     reject() {
@@ -276,11 +276,11 @@ export default {
         this.requireimage()
       })
     },
-    setAudited() {
+    async setAudited() {
         const params = {
             labelUuid: this.uuidArry[this.nownum]
         }
-        getIsAuditApi(params).then(res => {
+        await getIsAuditApi(params).then(res => {
             this.isAudited = res.data.items
         })
     },
@@ -297,9 +297,9 @@ export default {
       this.nowseconds = 0;
     },
     //下一张图片
-    nextimage() {
-        this.setAudited()
-        if(this.isAudited == 0) {
+    async nextimage() {
+        await this.setAudited()
+        if(this.isAudited == 1) {
             this.$message("请进行审核操作")
         }else{
             if(this.isimageview) {
@@ -311,12 +311,11 @@ export default {
             }
             console.log("nextimage", this.nownum);
         }
-      
     },
     //上一张图片
-    previousimage() {
-        this.setAudited()
-        if(this.isAudited == 0) {
+    async previousimage() {
+        await this.setAudited()
+        if(this.isAudited == 1) {
             this.$message("请进行审核操作")
         }else{
             if(this.isimageview) {
@@ -331,19 +330,7 @@ export default {
         }
         
     },
-    //post修改正在标注标识
-    isnowlabel:function(){
-      let _this = this;
-      return request({
-        url:
-          "http://10.19.1.77:8085/label/setLabeling?uuid="+this.uuidArry[this.nownum],
-        method: "post",
-        //timeout:_this.lastinfoArry.length*5000,
-        //params: query
-      }).then(function (response) {
-        console.log(response);
-      })
-    },
+
     //get 请求图片
     getAuditDataList() {
         let _this = this

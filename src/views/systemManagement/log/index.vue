@@ -203,8 +203,8 @@ export default {
       }
       console.log(para)
       getListByPage(para).then(res => {
-        this.total = res.data.total
-        this.logList = res.data.items
+        this.total = res.data.items.total
+        this.logList = res.data.items.records
       })
     },
     // 全选单选多选

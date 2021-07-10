@@ -1,40 +1,40 @@
 import request from '@/utils/request'
 export function startTask(query){
   return request({
-    url:'/predict/start',
+    url:'/8084/train/start',
     method:'post',
-    params: query,
+    params: query
     //baseURL: 'http://localhost:9528/dev-api'
-    baseURL: 'http://10.19.1.181:8084'
+    // baseURL: 'http://10.19.1.181:8084'
   })
 }
 
 export function stopTask(query) {
   return request({
-    url: '/predict/stop',
+    url: '/8084/train/stop',
     method: 'post',
-    params: query,
+    params: query
     //baseURL: 'http://localhost:9528/dev-api'
-    baseURL: 'http://10.19.1.181:8084'
+    // baseURL: 'http://10.19.1.181:8084'
   })
 }
 
 export function deleteTask(query) {
   return request({
-    url: '/predict',
+    url: '/8084/train',
     method: 'delete',
-    params: query,
+    params: query
     //baseURL: 'http://localhost:9528/dev-api'
-    baseURL: 'http://10.19.1.181:8084'
+    // baseURL: 'http://10.19.1.181:8084'
   })
 }
 
 export function showLog() {
   return request({
-    url:'/predict/log',
-    method:'post',
+    url:'/8084/train/log',
+    method:'post'
     //baseURL: 'http://localhost:9528/dev-api'
-    baseURL: 'http://10.19.1.181:8084'
+    // baseURL: 'http://10.19.1.181:8084'
   })
 }
 
@@ -49,18 +49,18 @@ export function showLog() {
 export function search(query){//输入框查询
   return request({
     params:query,
-    url:'/train/search',
-    method:'get',
-    baseURL: 'http://10.19.1.181:8084'
+    url:'/8084/train/search',
+    method:'get'
+    // baseURL: 'http://10.19.1.181:8084'
   })
 }
 
 export function searchStatus(data){//下拉框查询
   return request({
-    url:'/newtrain/searchStatus',
+    url:'/8084/newtrain/searchStatus',
     method:'get',
-    data
-    // baseURL: 'http://localhost:9528/dev-api'
+    data,
+    baseURL: 'http://localhost:9528/dev-api'
   })
 }
 
@@ -69,59 +69,42 @@ export function getVisualData(query){
     url:'/8084/newtrain/getVisualData',
     method:'get',
     params: query,
-    // baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://localhost:9528/dev-api'
   })
 }
 
 export function submitTask(query){
   return request({
-    url:'/predict',
+    url:'/8084/train',
     method:'post',
-    data: query,
-    baseURL: 'http://10.19.1.181:8084'
+    data: query
+    // baseURL: 'http://10.19.1.181:8084'
   })
 }
 
 export function getinitialPara(query){
   return request({
-    url:'/newtrain/getinitialPara',
+    url:'/8084/newtrain/getinitialPara',
     method:'get',
     params: query,
-    // baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://localhost:9528/dev-api'
   })
 }
 
 export function getTableData1(query){
   return request({
     params:query,
-    url:'/predict',
-    method:'get',
-    baseURL: 'http://10.19.1.181:8084'
-  })
-}
-
-export function getTableData2(params){
-  return request({
-    params:params,
-    url:'/train/search',
-    method:'get',
-    baseURL: 'http://10.19.1.181:8084'
-  })
-}
-export function getModels(params){
-  return request({
-    params:params,
-    url:'/model',
-    method:'get',
-    baseURL: 'http://10.19.1.181:8081'
+    url:'/8084/train',
+    method:'get'
+    // baseURL: 'http://10.19.1.181:8084'
   })
 }
 
 export function getDataByName(params) {//创建任务时获取数据集
     return request({
-      url: '/data/getdataSet',
+      url: '/8085/data/getdataSet',
       method: 'get',
-      params: params,
-      baseURL: 'http://10.19.1.77:8085'
+      params: params
+  //     baseURL: 'http://10.19.1.77:8085'
     })
   }

@@ -312,18 +312,16 @@ export default {
       return ' ' + year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
     },
     formatType(num) {
-      if (num == 0) {
+      if (num == 0 || num == 3) {
         return '拉框标注';
       }
-      if (num == 1) {
+      if (num == 1 || num == 4) {
         return '多边形标注';
       }
       if (num == 2) {
         return '语音标注';
       }
-      if (num == 3) {
-        return '3D标注';
-      }
+      
     }
   },
   data() {
@@ -383,18 +381,18 @@ export default {
 
     toStartLabel: function() {
       const ttype = this.dataSet.label_type
-      if(ttype == 0) {
+      if(ttype == 0 || ttype == 3) {
         this.$router.push('/label/d2imageview')
       }
-      if(ttype == 1) {
+      if(ttype == 1 || ttype == 4) {
         this.$router.push({path:'/label/polygonimageview'})
       }
       if(ttype == 2) {
-        this.$router.push({path:'/label/d3'})
-      }
-      if(ttype == 3) {
         this.$router.push({path:'/label/voice'})
       }
+      // if(ttype == 3) {
+      //   this.$router.push({path:'/label/voice'})
+      // }
     },
 
     toDataManage: function() {
@@ -402,7 +400,7 @@ export default {
     },
 
     showTeamDialog: function() {
-      this.getTeams()
+      this.getTeams(store.getters.uuid)
       this.teamForm.teamValue = ''
       // 得到标注团队
       const params = {
@@ -449,8 +447,11 @@ export default {
     },
 
     // 得到所有的标注团队
-    getTeams() {
-      getAllTeam().then(res => {
+    getTeams(uuid) {
+      const params = {
+        dataSetUuid: uuid
+      }
+      getAllTeam(params).then(res => {
         var team = res.data.items
         this.teams = team
         console.log(this.teams)

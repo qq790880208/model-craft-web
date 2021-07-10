@@ -82,7 +82,7 @@ export default {
   name: "Dashboard",
   data() {
     return {
-      isAudited: 0,
+      isAudited: 1,
       checkedList: [],
       //存储图片url数组，用于获取远程图片信息
       imageArry: [],
@@ -172,8 +172,7 @@ export default {
       // this.$router.go(-1)
       this.$router.push('/data')
     },
-    pass() {
-        this.isAudited = true;
+    pass() {  
         console.log(this.imagelargeArry)
         const params = {
             labelUuid: this.uuidArry[this.nownum]
@@ -191,7 +190,6 @@ export default {
         })
     },
     reject() {
-        this.isAudited = true;
         const params = {
             labelUuid: this.uuidArry[this.nownum]
         }
@@ -207,8 +205,7 @@ export default {
             })
         })
     },
-    reset() {
-        this.isAudited = true;
+    reset() { 
         const params = {
             labelUuid: this.uuidArry[this.nownum]
         }
@@ -279,7 +276,7 @@ export default {
         const params = {
             labelUuid: this.uuidArry[this.nownum]
         }
-        console.log('jjjjjjjjjjjjjjjjjjjjjfffffffffffffff', params)
+
         await getIsAuditApi(params).then(res => {
             this.isAudited = res.data.items
         })
@@ -294,11 +291,9 @@ export default {
         this.nownum=0;
         this.isimageview=!this.isimageview;
     },
-    newlabel(){
-      console.log("申请新图片")
-    },
     //下一张图片
     async nextimage() {
+
         await this.setAudited();
         console.log('llllokonojiojo', this.isAudited)
         if(this.isAudited == 1) {
@@ -318,7 +313,9 @@ export default {
     //上一张图片
     async previousimage() {
         await this.setAudited()
+
         if(this.isAudited == 1) {
+          
             this.$message("请进行审核操作")
         }else{
             if(this.isimageview) {
@@ -330,7 +327,6 @@ export default {
             }
             console.log("previousimage", this.nownum);
         }
-        
     },
     //跳过图片
     skipimage() {
@@ -348,19 +344,7 @@ export default {
       console.log("skipimage", this.nownum);
       this.nowseconds = 0;
     },
-    //post修改正在标注标识
-    isnowlabel:function(){
-      let _this = this;
-      return request({
-        url:
-          "http://10.19.1.77:8085/label/setLabeling?uuid="+this.uuidArry[this.nownum],
-        method: "post",
-        //timeout:_this.lastinfoArry.length*5000,
-        //params: query
-      }).then(function (response) {
-        console.log(response);
-      })
-    },
+   
     //get 请求图片
     getAuditDataList() {
         let _this = this
@@ -399,10 +383,11 @@ export default {
         }).catch(function(error){
             console.log("error",error)
             _this.$message({
-                message:"请求图片失败",
+                message:"图片数量不足",
                 type: 'error'
             })
         })
+        // this.setAudited()
     },
     // get请求数据集的标签集
     getTags() {

@@ -18,7 +18,7 @@
               <span class="link-type" @click="toDataSet(scope.row)">{{ scope.row.name }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="type" align="center" label="标注类型" min-width="120" sortable>
+          <el-table-column prop="label_type" align="center" label="标注类型" min-width="120" sortable>
             <template slot-scope="scope">
               {{ scope.row.label_type | formatType }}
             </template>
@@ -214,11 +214,17 @@
             <el-radio-button v-for="index in labels[form.dataType]" :label="index" :key="index" border>{{labelName[index]}}</el-radio-button>
           </el-radio-group>
         </el-form-item>
-        <el-form-item label="数据集输入位置" prop="input">
-          <el-input style="width: 90%" v-model="form.input" :placeholder="form.input"></el-input><el-button @click="showOssInputDialog(form)" icon="el-icon-folder-add"></el-button>
+        <el-form-item label="数据集图片输入位置" prop="input">
+          <el-input style="width: 90%" v-model="form.input" :placeholder="form.input" :disabled="true"></el-input>
+            <!-- <el-button @click="showOssInputDialog(form)" icon="el-icon-folder-add"></el-button> -->
         </el-form-item>
-        <el-form-item   label="数据集输出位置" prop="output">
-          <el-input style="width: 90%" v-model="form.output" :placeholder="form.output"></el-input><el-button  @click="showOssOutputDialog(form)" icon="el-icon-folder-add"></el-button>
+          <el-form-item label="数据集图片输入位置" prop="input">
+          <el-input style="width: 90%" v-model="form.annotation" :placeholder="form.annotation" :disabled="true"></el-input>
+          <!-- <el-button @click="showOssAnnotationDialog(form)" icon="el-icon-folder-add"></el-button> -->
+        </el-form-item>
+        <el-form-item   label="数据集模型输出位置" prop="output">
+          <el-input style="width: 90%" v-model="form.output" :placeholder="form.output" :disabled="true"></el-input>
+          <!-- <el-button  @click="showOssOutputDialog(form)" icon="el-icon-folder-add"></el-button> -->
         </el-form-item>
         <el-form-item label="添加标签集" prop="tagss">
           <el-tag 
@@ -369,18 +375,16 @@ export default {
       return ' ' + year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
     },
     formatType(num) {
-      if (num == 0) {
+      if (num == 0 || num == 3) {
         return '拉框标注';
       }
-      if (num == 1) {
+      if (num == 1 || num == 4) {
         return '多边形标注';
       }
       if (num == 2) {
         return '语音标注';
       }
-      if (num == 3) {
-        return '3D标注';
-      }
+      
     }
   },
   data() {
@@ -460,12 +464,12 @@ export default {
         tagss: [
           { validator: validateTags, trigger: 'blur'}]
       },
-      // 0 2D拉框，1 像素级（多边形），2 3D拉框, 3 语音
+      // 0 tf2D拉框，1 tf像素级（多边形），2 语音, 3 py2D拉框, 4py像素级（多边形）
       labels: [
-        [0,1,2],
-        [3]
+        [0,1,3,4],
+        [2]
       ],
-      labelName: ['2D拉框', '像素级', '3D拉框', '语音']
+      labelName: ['tensorflow-2D拉框', 'tensorflow-像素级', '语音', 'pytorch-2D拉框', 'pytorch-像素级']
     }
   },
   computed: {
@@ -513,21 +517,34 @@ export default {
       this.isClickFlag = true
       console("flag2",this.isClickFlag)
     },
-    //  数据集文件输入位置
+    //  数据集图片位置
     showOssInputDialog(form) {
       this.getbucket()
       if(this.isClickFlag){
         form.input='';
+        form.annotation='';
         form.output='';  
       }
       this.isClickFlag=false;
       this.ossInputVisible= true;
     },
-    //  数据集文件输出位置
+    //数据集标注文件位置
+    showOssAnnotationDialog(form) {
+      this.getbucket()
+      if(this.isClickFlag){
+        form.input='';
+        form.annotation='';
+        form.output='';  
+      }
+      this.isClickFlag=false;
+      this.ossInputVisible= true;
+    },
+    //  数据集模型输出位置
     showOssOutputDialog(form) {
       this.getbucket()
       if(this.isClickFlag){
         form.input='';
+        form.annotation='';
         form.output='';  
       }
       this.isClickFlag=false;
@@ -550,8 +567,9 @@ export default {
         descr: '',
         dataType: '0',
         labelType: '',
-        input: "/data/dataset/"+this.my_uuid+"/input/",
-        output: "/data/dataset/"+this.my_uuid+"/output/",
+        input: "data/dataset/"+this.my_uuid+"/input/source/",
+        annotation : "data/dataset/"+this.my_uuid+"/input/annotation/",
+        output: "data/dataset/"+this.my_uuid+"/output/ckpt/",
         label: []
       }
       if(this.isClickFlag){
@@ -573,6 +591,7 @@ export default {
             name: this.form.name,
             descr: this.form.descr,
             input: this.form.input,  // 格式：/data/dataset/0022f6831fbe40b0bd4aae781f202517/input
+            annotation : this.form.annotation,
             output: this.form.output,
             bucket: 'modelcraft'
             }
@@ -580,11 +599,14 @@ export default {
           createDataSetApi(params).then(res => {
             let para1={}
           para1.bucketName='modelcraft'
-          para1.objectName="/data/dataset/"+this.my_uuid+"/input/"
+          para1.objectName="data/dataset/"+this.my_uuid+"/input/source/"
           let para2={}
           para2.bucketName='modelcraft'
-          para2.objectName="/data/dataset/"+this.my_uuid+"/output/"
-          console.log(para1,para2)
+          para2.objectName="data/dataset/"+this.my_uuid+"/input/annotation/"
+          let para3={}
+          para3.bucketName='modelcraft'
+          para3.objectName="data/dataset/"+this.my_uuid+"/output/ckpt/"
+          console.log(para1,para2,para3)
           //后端新建一个文件夹
           createFolder(para1).then(response=>{
           if(20000 == response.code){
@@ -598,6 +620,13 @@ export default {
             console.log("haha2success")
             }else{
             console.log("haha2error")
+            }
+          })
+          createFolder(para3).then(response=>{
+          if(20000 == response.code){
+            console.log("haha3success")
+            }else{
+            console.log("haha3error")
             }
           })
             this.$message({
@@ -628,6 +657,7 @@ export default {
             name: this.form.name,
             descr: this.form.descr,
             input: this.form.input,  // 格式：/data/dataset/0022f6831fbe40b0bd4aae781f202517/input
+            annotation: this.form.annotation,
             output: this.form.output,
             bucket: this.inputBucket
           }
@@ -705,7 +735,7 @@ export default {
 
     // 显示标注团队对话框
     showTeamDialog(index, row) {
-      this.getTeams()
+      this.getTeams(row.uuid)
       this.teamForm.teamValue = ''
       // 得到标注团队
       const params = {
@@ -748,8 +778,11 @@ export default {
     },
 
     // 得到所有的标注团队
-    getTeams() {
-      getAllTeam().then(res => {
+    getTeams(uuid) {
+      const params = {
+        dataSetUuid: uuid
+      }
+      getAllTeam(params).then(res => {
         var team = res.data.items
         this.teams = team
         console.log(this.teams)
@@ -918,18 +951,18 @@ export default {
       console.log(params)
       // setAcceptDataApi(params)
       this.setAuditDatas(params)
-      if(val.label_type === 0) {
+      if(val.label_type === 0 || val.label_type === 3) {
         this.$router.push({path: '/dataSet/2Daccept'})
       }
-      if(val.label_type === 1) {
+      if(val.label_type === 1 || val.label_type === 4) {
         this.$router.push({path: '/dataSet/polygonaccept'})
       }
       if(val.label_type === 2) {
-        this.$router.push({path: '/dataSet/3Daudit'})
+        this.$router.push({path: '/label/voice'})
       }
-      if(val.label_type === 3) {
-        this.$router.push({path:'/label/voice'})
-      }
+      // if(val.label_type === 3) {
+      //   this.$router.push({path:'/label/voice'})
+      // }
     },
     setAuditDatas(params) {
       setAcceptDataApi(params).then(res =>{
@@ -960,23 +993,24 @@ export default {
     toStartLabel: function(val, type) {
       console.log('wodedededed')
       console.log(val)
+      console.log(val.labelType)
       store.dispatch('data/changeUuid', val.uuid)
       store.dispatch('data/changeType', val.label_type)
       store.dispatch('data/changeDataSet',val)
-      if(type === 0) {
+      if(type === 0 || type === 3) {
         this.$router.push('/label/d2imageview')
         // this.$router.push({path: '/dataSet/2DauditPre'})
       }
-      if(type === 1) {
+      if(type === 1 || type === 4) {
         this.$router.push({path:'/label/polygonimageview'})
         // this.$router.push({path: '/dataSet/2DauditPre'})
       }
       if(type === 2) {
-        this.$router.push({path:'/label/d3'})
-      }
-      if(type === 3) {
         this.$router.push({path:'/label/voice'})
       }
+      // if(type === 3) {
+      //   this.$router.push({path:'/label/voice'})
+      // }
     },
     
      //获取bucket列表
