@@ -310,7 +310,7 @@ export default {
         },
 
         fai(){//失败提醒
-            this.$message.error('发生错误');
+            //this.$message.error('发生错误');
         },
         
         //获取bucketlist

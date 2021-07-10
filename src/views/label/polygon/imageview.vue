@@ -270,18 +270,23 @@ export default {
       const params = {
         dataset_id:store.getters.uuid
       }
+       _this.$message({
+          message:"开始生产json标注文件",
+          duration:300,
+          type: 'success'
+          });
       generateInfo(params)
       .then(function (response) {
         console.log(response);
         _this.$message({
-          message:"xml生成成功",
+          message:"json标注文件生成成功",
           duration:300,
           type: 'success'
           });
       }).catch(function(error){
         console.log("error",error)
           _this.$message({
-          message:"xml生成失败",
+          message:"json标注文件生成失败",
           type: 'error'
           })
           // for (let i = 0; i < testmarktype.length; i++) {
