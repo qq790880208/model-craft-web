@@ -94,12 +94,12 @@
                     <tr>
                       <td>
                         <span>
-                          
+                          数据集状态
                         </span>
                       </td>
                       <td>
                         <span>
-                          
+                          {{dataSet.accept | formatStatus}}
                         </span>
                       </td>
                     </tr>
@@ -322,6 +322,14 @@ export default {
         return '语音标注';
       }
       
+    },
+    formatStatus(num) {
+      if(num == 0) {
+        return "未完成验收";
+      }
+      if(num == 1) {
+        return "完成验收";
+      }
     }
   },
   data() {

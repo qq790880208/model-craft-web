@@ -206,7 +206,7 @@
         <el-form-item label="标注场景" prop="dataType">
           <el-radio-group v-model="form.dataType" autocomplete="off">
             <el-radio-button label="0" border><i class="el-icon-picture-outline"/>图片</el-radio-button> 
-            <el-radio-button label="1" border><i class="el-icon-microphone"/>音频</el-radio-button>
+            <!-- <el-radio-button label="1" border><i class="el-icon-microphone"/>音频</el-radio-button> -->
           </el-radio-group>
         </el-form-item>
         <el-form-item label="标注类型" prop="labelType">
@@ -466,10 +466,10 @@ export default {
       },
       // 0 tf2D拉框，1 tf像素级（多边形），2 语音, 3 py2D拉框, 4py像素级（多边形）
       labels: [
-        [0,1,3,4],
-        [2]
+        [0,1,3],
+        // [2]
       ],
-      labelName: ['tensorflow-2D拉框', 'tensorflow-像素级', '语音', 'pytorch-2D拉框', 'pytorch-像素级']
+      labelName: ['tensorflow-2D拉框', 'tensorflow-像素级', '语音', 'pytorch-2D拉框']
     }
   },
   computed: {
