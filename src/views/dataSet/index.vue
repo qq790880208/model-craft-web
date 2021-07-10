@@ -375,18 +375,16 @@ export default {
       return ' ' + year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
     },
     formatType(num) {
-      if (num == 0) {
+      if (num == 0 || num == 3) {
         return '拉框标注';
       }
-      if (num == 1) {
+      if (num == 1 || num == 4) {
         return '多边形标注';
       }
       if (num == 2) {
         return '语音标注';
       }
-      if (num == 3) {
-        return '3D标注';
-      }
+      
     }
   },
   data() {
@@ -466,12 +464,12 @@ export default {
         tagss: [
           { validator: validateTags, trigger: 'blur'}]
       },
-      // 0 2D拉框，1 像素级（多边形），2 3D拉框, 3 语音
+      // 0 tf2D拉框，1 tf像素级（多边形），2 语音, 3 py2D拉框, 4py像素级（多边形）
       labels: [
-        [0,1,2],
-        [3]
+        [0,1,3,4],
+        [2]
       ],
-      labelName: ['2D拉框', '像素级', '3D拉框', '语音']
+      labelName: ['tensorflow-2D拉框', 'tensorflow-像素级', '语音', 'pytorch-2D拉框', 'pytorch-像素级']
     }
   },
   computed: {
@@ -953,18 +951,18 @@ export default {
       console.log(params)
       // setAcceptDataApi(params)
       this.setAuditDatas(params)
-      if(val.label_type === 0) {
+      if(val.label_type === 0 || val.label_type === 3) {
         this.$router.push({path: '/dataSet/2Daccept'})
       }
-      if(val.label_type === 1) {
+      if(val.label_type === 1 || val.label_type === 4) {
         this.$router.push({path: '/dataSet/polygonaccept'})
       }
       if(val.label_type === 2) {
-        this.$router.push({path: '/dataSet/3Daudit'})
+        this.$router.push({path: '/label/voice'})
       }
-      if(val.label_type === 3) {
-        this.$router.push({path:'/label/voice'})
-      }
+      // if(val.label_type === 3) {
+      //   this.$router.push({path:'/label/voice'})
+      // }
     },
     setAuditDatas(params) {
       setAcceptDataApi(params).then(res =>{
@@ -999,20 +997,20 @@ export default {
       store.dispatch('data/changeUuid', val.uuid)
       store.dispatch('data/changeType', val.label_type)
       store.dispatch('data/changeDataSet',val)
-      if(type === 0) {
+      if(type === 0 || type === 3) {
         this.$router.push('/label/d2imageview')
         // this.$router.push({path: '/dataSet/2DauditPre'})
       }
-      if(type === 1) {
+      if(type === 1 || type === 4) {
         this.$router.push({path:'/label/polygonimageview'})
         // this.$router.push({path: '/dataSet/2DauditPre'})
       }
       if(type === 2) {
-        this.$router.push({path:'/label/d3'})
-      }
-      if(type === 3) {
         this.$router.push({path:'/label/voice'})
       }
+      // if(type === 3) {
+      //   this.$router.push({path:'/label/voice'})
+      // }
     },
     
      //获取bucket列表
