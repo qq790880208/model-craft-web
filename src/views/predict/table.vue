@@ -12,10 +12,10 @@
            @change="searchStatusTask">
            <el-option label="全部状态" value="5"></el-option>
            <el-option label="未开始" value="0"></el-option>
-           <el-option label="初始化" value="1"></el-option>
-           <el-option label="运行中" value="2"></el-option>
-           <el-option label="结束成功" value="3"></el-option>
-           <el-option label="结束失败" value="4"></el-option>
+           <!-- <el-option label="初始化" value="1"></el-option> -->
+           <el-option label="运行中" value="1"></el-option>
+           <el-option label="结束成功" value="2"></el-option>
+           <el-option label="结束失败" value="3"></el-option>
         </el-select>
       </el-col>
       <el-col :span="3">
@@ -76,8 +76,13 @@
       <el-table-column label="操作" width="400"> 
         <template slot-scope="scope">
             <el-button
+            v-if="scope.row.status!=2"
             size="mini"
             @click="handleStart(scope.$index, scope.row)">开始</el-button>
+            <!-- <el-button
+            v-if="scope.row.status==2"
+            size="mini"
+            @click="handleJump(scope.$index, scope.row)">跳转</el-button> -->
           <el-button
             size="mini"
             @click="handleStop(scope.$index, scope.row)">终止</el-button>
@@ -184,7 +189,8 @@ export default {
     data() {
       return {
         //主页面部分数据
-        statusoptions:['未开始', '初始化','运行中', '结束成功', '结束失败'],
+        statusoptions:['未开始','运行中', '已完成', '运行失败'],
+
         selectedstatus:'5',//顶部选择的状态
         tableData:[],
         //currentAlgorithm = taskForm.algorithm">
@@ -303,6 +309,9 @@ export default {
     },
 
     methods: {
+      handleJump(){
+        
+      },
       cachange(testdata){
         this.currentAlgorithm=testdata;
         if(testdata==0) this.isdisplaytl=true;

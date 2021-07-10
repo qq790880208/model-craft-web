@@ -3,7 +3,7 @@
     <div class="dashboard-container" v-if="isimageview">
       <div>
       <el-button @click="returndataset" >返回数据集</el-button>
-      <el-button @click="automark1()" :loading="isloading">{{automarkbtntext}}</el-button>
+      <!-- <el-button @click="automark1()" :loading="isloading">{{automarkbtntext}}</el-button> -->
       <el-button @click="generateXML">生成标注文件</el-button>
       <el-button @click="newlabel" v-if="isalllabeled">申请新任务</el-button>
       </div>
@@ -332,6 +332,8 @@ export default {
           console.log("tempa",tempa)
           _this.lastinfoArry.push(tempa)
           console.log("lastinfoArry", _this.lastinfoArry[i]);
+        } else {
+          _this.lastinfoArry.push({})
         }
           let a={};
           a["url"]=response.data.items[i].file_path
@@ -407,6 +409,8 @@ export default {
           // }
           _this.lastinfoArry.push(tempa)
           console.log("lastinfoArry", response.data.items[i].is_label);
+        } else {
+          _this.lastinfoArry.push({})
         }
           let a={};
           a["url"]=response.data.items[i].file_path

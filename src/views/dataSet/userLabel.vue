@@ -686,18 +686,18 @@ export default {
     },
     startLabel: function() {
       const type = store.getters.type
-      if(type == 0) {
+      if(type == 0 || type == 3) {
         this.$router.push('/label/d2imageview')
       }
-      if(type == 1) {
+      if(type == 1 || type == 4) {
         this.$router.push({path:'/label/polygonimageview'})
       }
       if(type == 2) {
-        this.$router.push({path:'/label/d3'})
-      }
-      if(type == 3) {
         this.$router.push({path:'/label/voice'})
       }
+      // if(type == 3) {
+      //   this.$router.push({path:'/label/voice'})
+      // }
     }
   },
   mounted() {

@@ -3,7 +3,7 @@
     <div class="dashboard-container" v-if="isimageview">
       <div>
       <el-button @click="returndataset" >返回数据集</el-button>
-      <el-button @click="automark1()" :loading="isloading">{{automarkbtntext}}</el-button>
+      <!-- <el-button @click="automark1()" :loading="isloading">{{automarkbtntext}}</el-button> -->
       <el-button @click="generateXML">生成标注文件</el-button>
       <el-button @click="newlabel" v-if="isalllabeled">申请新任务</el-button>
       </div>
@@ -134,7 +134,7 @@ export default {
       this.$router.go(-1)
     },
     entermark(index){
-      console.log("faaaaaaaaaaaatherenter!")
+      console.log("faaaaaaaaaaaatherenter!",this.lastinfoArry,this.nownum,this.lastinfoArry[this.nownum])
       this.nownum=index;
       this.isnowlabel1();
       this.isimageview=!this.isimageview;
@@ -289,11 +289,12 @@ export default {
          _this.imagelargeArry=[]
         console.log("get图片结果", response);
         for (let i = 0; i < response.data.items.length; i++) {
+          if(response.data.items[i].label_data==undefined){
+            _this.lastinfoArry.push([]);
+          }
           if(response.data.items[i].label_data!==undefined) {
           console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data).rectangle);
           let tempa = JSON.parse(response.data.items[i].label_data).rectangle;
-          // console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data));
-          // let tempa = JSON.parse(response.data.items[i].label_data);
           let len = eval(tempa).length;
           //console.log("len", len);
           let arr = [];
@@ -356,6 +357,9 @@ export default {
          _this.imagelargeArry=[]
         console.log("get图片结果", response);
         for (let i = 0; i < response.data.items.length; i++) {
+          if(response.data.items[i].label_data==undefined){
+            _this.lastinfoArry.push([]);
+          }
           if(response.data.items[i].label_data!==undefined) {
           console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data).rectangle);
           let tempa = JSON.parse(response.data.items[i].label_data).rectangle;
