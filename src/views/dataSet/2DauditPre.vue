@@ -252,7 +252,7 @@ export default {
         })
     },
     entermark(index){
-      console.log("faaaaaaaaaaaatherenter!")
+      console.log("faaaaaaaaaaaatherenter!", this.nownum)
       this.nownum=index;
     //   this.isnowlabel();
       this.isimageview=!this.isimageview;

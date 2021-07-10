@@ -275,16 +275,17 @@ export default {
             this.checkedList = []
         })
     },
-    setAudited() {
+    async setAudited() {
         const params = {
             labelUuid: this.uuidArry[this.nownum]
         }
-        getIsAuditApi(params).then(res => {
+        console.log('jjjjjjjjjjjjjjjjjjjjjfffffffffffffff', params)
+        await getIsAuditApi(params).then(res => {
             this.isAudited = res.data.items
         })
     },
     entermark(index){
-      console.log("faaaaaaaaaaaatherenter!")
+      console.log("faaaaaaaaaaaatherenter!", this.nownum,this.uuidArry[this.nownum])
       this.nownum=index;
       //this.isnowlabel();
       this.isimageview=!this.isimageview;
@@ -297,9 +298,10 @@ export default {
       console.log("申请新图片")
     },
     //下一张图片
-    nextimage() {
-        this.setAudited()
-        if(this.isAudited == 0) {
+    async nextimage() {
+        await this.setAudited();
+        console.log('llllokonojiojo', this.isAudited)
+        if(this.isAudited == 1) {
             this.$message("请进行审核操作")
         }else{
             if(this.isimageview) {
@@ -314,9 +316,9 @@ export default {
       
     },
     //上一张图片
-    previousimage() {
-        this.setAudited()
-        if(this.isAudited == 0) {
+    async previousimage() {
+        await this.setAudited()
+        if(this.isAudited == 1) {
             this.$message("请进行审核操作")
         }else{
             if(this.isimageview) {

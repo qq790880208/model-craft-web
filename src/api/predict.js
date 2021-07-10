@@ -1,7 +1,7 @@
 import request from '@/utils/request'
 export function startTask(query){
   return request({
-    url:'/train/start',
+    url:'/predict/start',
     method:'post',
     params: query,
     //baseURL: 'http://localhost:9528/dev-api'
@@ -11,7 +11,7 @@ export function startTask(query){
 
 export function stopTask(query) {
   return request({
-    url: '/train/stop',
+    url: '/predict/stop',
     method: 'post',
     params: query,
     //baseURL: 'http://localhost:9528/dev-api'
@@ -31,7 +31,7 @@ export function deleteTask(query) {
 
 export function showLog() {
   return request({
-    url:'/train/log',
+    url:'/predict/log',
     method:'post',
     //baseURL: 'http://localhost:9528/dev-api'
     baseURL: 'http://10.19.1.181:8084'

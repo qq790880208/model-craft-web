@@ -941,7 +941,7 @@ export default {
     },
     // 展示数据
     toDataSet: function(val) {
-      console.log(val)
+      console.log("vallllllllllllllllllllllllllll",val)
       store.dispatch('data/changeUuid', val.uuid)
       store.dispatch('data/changeType', val.label_type)
       store.dispatch('data/changeDataSet',val)
