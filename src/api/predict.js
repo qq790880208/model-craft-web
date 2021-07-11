@@ -29,10 +29,11 @@ export function deleteTask(query) {
   })
 }
 
-export function showLog() {
+export function showLog(data) {
   return request({
-    url:'/predict/log',
+    url:'/predict/log?trainjob_id=' + data,
     method:'post',
+    params: data,
     //baseURL: 'http://localhost:9528/dev-api'
     baseURL: 'http://10.19.1.181:8084'
   })
@@ -59,7 +60,7 @@ export function searchStatus(data){//下拉框查询
   return request({
     url:'/newtrain/searchStatus',
     method:'get',
-    data
+    data: data
     // baseURL: 'http://localhost:9528/dev-api'
   })
 }
@@ -111,11 +112,19 @@ export function getTableData2(params){
 export function getModels(params){
   return request({
     params:params,
-    url:'/model',
+    url:'/model/nopage',
     method:'get',
     baseURL: 'http://10.19.1.181:8081'
   })
 }
+
+export function getTargetDataSets(model_id) {//创建任务时获取数据集
+    return request({
+      url: '/model/getTargetDatasets?model_id='+model_id,
+      method: 'get',
+      baseURL: 'http://10.19.1.181:8081'
+    })
+  }
 
 export function getDataByName(params) {//创建任务时获取数据集
     return request({

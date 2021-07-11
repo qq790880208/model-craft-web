@@ -484,6 +484,7 @@ export default {
         //   }
         // })
 
+
         const params0 = {
           'name': this.taskForm.name,
           'version': this.taskForm.version,
@@ -491,7 +492,7 @@ export default {
           'user_id': store.getters.userid,
           'tj_id': this.initialPara.trainjob_uuids[this.taskForm.trainjob_index],
           'model_oss_path': this.initialPara.trainjob_path[this.taskForm.trainjob_index],
-          'descr': this.taskForm.description,
+          'descr': this.taskForm.description
         }
         console.log(params0)
         addModel(params0).then(res => {
