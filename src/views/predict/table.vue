@@ -79,16 +79,16 @@
             v-if="scope.row.status!=2"
             size="mini"
             @click="handleStart(scope.$index, scope.row)">开始</el-button>
-            <!-- <el-button
+            <el-button
             v-if="scope.row.status==2"
             size="mini"
-            @click="handleJump(scope.$index, scope.row)">跳转</el-button> -->
-          <el-button
+            @click="handleJump(scope.$index, scope.row)">跳转</el-button>
+          <!-- <el-button
             size="mini"
-            @click="handleStop(scope.$index, scope.row)">终止</el-button>
-          <el-button
+            @click="handleStop(scope.$index, scope.row)">终止</el-button> -->
+          <!-- <el-button
             size="mini"
-            @click="handleShow()">可视化</el-button>
+            @click="handleShow()">可视化</el-button> -->
           <el-button
             size="mini"
             @click="handleShowlog(scope.$index, scope.row)">日志</el-button>
@@ -115,9 +115,9 @@
          <visualt :dData="drawData.first" id="2"></visualt>
          <visualf :Data="drawData.second" id="1"></visualf>
       </div>
-      <div slot="footer" class="dialog-footer">
+      <!-- <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="handleStop()" >终止训练</el-button>
-      </div>
+      </div> -->
     </el-dialog>
     <!-- 日志可视化 -->
     <el-dialog
@@ -147,11 +147,11 @@
           <el-input type="textarea" v-model="taskForm.description"></el-input>
         </el-form-item>
         <el-form-item label="选择模型" prop="model_path">
-          <el-select v-model="taskForm.model_path" placeholder="请选择">
+          <el-select v-model="taskForm.model_path_index" placeholder="请选择" @change="handleChangeModel()">
             <div style="height:150px;" class="scrollbar">
               <el-scrollbar style="height:100%;;">
-                <el-option v-for="(item, index) in initialPara.modelNameVer" :key="initialPara.modelpath[index]"
-                :label="item" :value="initialPara.modelpath[index]">
+                <el-option v-for="(item, index) in initialPara.modelNameVer" :key="index"
+                :label="initialPara.modelNameVer[index]" :value="index">
                 </el-option>
               </el-scrollbar>
             </div>
@@ -182,7 +182,7 @@
 import visual from "./visual"
 import visualf from "./visual1"
 import visualt from "./visual2"
-import {startTask, showLog,getDataByName,stopTask, getTableData1 ,deleteTask,  search, searchStatus, getVisualData, submitTask, getinitialPara, getModels} from '@/api/predict'
+import {startTask, showLog,getDataByName,stopTask, getTableData1 ,deleteTask,  search, searchStatus, getVisualData, submitTask, getinitialPara, getModels, getTargetDataSets} from '@/api/predict'
 import store from '@/store'
 export default {
     components: {visual, visualf, visualt},
@@ -218,6 +218,7 @@ export default {
           algorithm: '',
           data:'',
           model_path:'',
+          model_path_index:'',
           outpath:'',
           description: '',
           paras:[],
@@ -227,7 +228,7 @@ export default {
           name: [
             { required: true, message: '请输入任务名称', trigger: 'blur' },
           ],
-          model_path: [
+          model_path_index: [
             { required: true, message: '请选择模型路径', trigger: 'change' }
           ],
           data: [
@@ -267,7 +268,9 @@ export default {
           },
           outpath:[],
           modelpath: [],
-          modelNameVer: []
+          modelNameVer: [],
+          tjid: [],
+          model_ids: []
         },//创建任务时从后台传入的数据源和输出路径
         currentAlgorithm:0,//创建任务时目前选中的代码
         isdisplaytl:false,
@@ -356,6 +359,20 @@ export default {
           this.tableData = res.data.items.records
         })
       },
+      handleChangeModel() {
+        let model_index = this.initialPara.model_ids[this.taskForm.model_path_index]
+          //获取数据集
+        getTargetDataSets(model_index).then(res =>{//从后台读取数据来源的目录
+          console.log(res)
+          this.initialPara.inputData.name = []
+          this.initialPara.inputData.uuid = []
+          for(let i = 0;i < res.data.items.length;i++){
+            this.initialPara.inputData.name.push(res.data.items[i].name)
+            this.initialPara.inputData.uuid.push(res.data.items[i].uuid)
+          }
+          console.log(res.data.items[0].name)
+        })
+      },
       createbtn:function(){//点击桌面的创建按钮
         this.dialogFormVisible = true
         this.taskForm.uuid = this.generateUUID()
@@ -366,6 +383,8 @@ export default {
         this.taskForm.outpath = ''
         this.taskForm.description = ''
         this.taskForm.paras = []
+
+        //获取数据集
         const params = {
           'page': 1,
           'pagesize': 100,
@@ -390,16 +409,21 @@ export default {
           console.log(res.data.items)
           this.initialPara.modelpath = []
           this.initialPara.modelNameVer = []
-          for(let i = 0;i < res.data.items.total;i++){
-
-            this.initialPara.modelpath.push(res.data.items.records[i].model_oss_path)
-            this.initialPara.modelNameVer.push(res.data.items.records[i].name + " v" + res.data.items.records[i].version)
+          this.initialPara.tjid = []
+          this.initialPara.model_ids = []
+          
+          for(let i = 0;i < res.data.items.length;i++){
+            this.initialPara.modelpath.push(res.data.items[i].model_oss_path)
+            this.initialPara.modelNameVer.push(res.data.items[i].name + " v" + res.data.items[i].version)
+            this.initialPara.tjid.push(res.data.items[i].tj_id)
+            this.initialPara.model_ids.push(res.data.items[i].uuid)
           }
-          console.log(this.initialPara.modelpath)
+          // console.log(this.initialPara.modelpath)
+          // console.log(this.initialPara.modelNameVer)
         })
-        getinitialPara().then(res =>{
-          this.initialPara.outpath = res.data.outpath
-        })
+        // getinitialPara().then(res =>{
+        //   this.initialPara.outpath = res.data.outpath
+        // })
         
       }, 
       handleStart(index, row) {//开始某行训练
@@ -438,30 +462,30 @@ export default {
         
         
       },
-      handleStop() {//终止某行训练
-         this.$confirm('此操作将终止该任务训练, 是否继续?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          stopTask(this.showPara).then(res=>{
-            console.log(res)
-            //==需要重新获取用户列表
-            this.fetchData()
-          })
-          this.$message({
-            type: 'success',
-            message: '终止成功!'
-          });  
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消终止'
-          });          
-        });
+      // handleStop() {//终止某行训练
+      //    this.$confirm('此操作将终止该任务训练, 是否继续?', '提示', {
+      //     confirmButtonText: '确定',
+      //     cancelButtonText: '取消',
+      //     type: 'warning'
+      //   }).then(() => {
+      //     stopTask(this.showPara).then(res=>{
+      //       console.log(res)
+      //       //==需要重新获取用户列表
+      //       this.fetchData()
+      //     })
+      //     this.$message({
+      //       type: 'success',
+      //       message: '终止成功!'
+      //     });  
+      //   }).catch(() => {
+      //     this.$message({
+      //       type: 'info',
+      //       message: '已取消终止'
+      //     });          
+      //   });
         
         
-      },
+      // },
       handleShow(index, row) {//可视化某行 
         this.picVisible = true
         this.showPara.trainjob_id = row.trainjob_id
@@ -478,6 +502,7 @@ export default {
         })
       },
       handleShowlog(index, row){//日志可视化
+        this.commonPara.trainjob_id = row.uuid
         this.logdialogVisible = true
         clearInterval(this.timerLog)
         this.timerLog = null
@@ -569,9 +594,11 @@ export default {
           'dataset_id': this.taskForm.data,
           'user_id': store.getters.userid,
           'ispredicts': 1,
-          'model_oss_path': this.taskForm.model_path,
+          'model_oss_path': this.initialPara.modelpath[this.taskForm.model_path_index],
+          'predict_tjid': this.initialPara.tjid[this.taskForm.model_path_index],
           'descr': this.taskForm.description,
         }
+        console.log(params0)
         submitTask(params0).then(res => {
           console.log(res.data)
           this.fetchData()
@@ -614,23 +641,23 @@ export default {
         }
       },
       
-      setTimer() {//定时器
-        if(this.timer == null) {
-          this.timer = setInterval( () => {
-              console.log('开始定时...每过一秒执行一次')
-              //this.fetchData()
+      // setTimer() {//定时器
+      //   if(this.timer == null) {
+      //     this.timer = setInterval( () => {
+      //         console.log('开始定时...每过一秒执行一次')
+      //         //this.fetchData()
               
-              if (this.Mockprocess != 100){
-                this.Mockprocess = this.Mockprocess + 0.5
-              }
-          }, 1000)
-        }
-      },
+      //         if (this.Mockprocess != 100){
+      //           this.Mockprocess = this.Mockprocess + 0.5
+      //         }
+      //     }, 1000)
+      //   }
+      // },
       setTimerLog() {//读取日志的定时器
         if(this.timerLog == null) {
           this.timerLog = setInterval( () => {
               console.log('开始定时...每过一秒执行一次')
-              showLog().then(res =>{
+              showLog(this.commonPara.trainjob_id).then(res =>{
                 console.log(res)
                 this.logText = res.data.content
                 const textarea = document.getElementById('textarea_id');
@@ -660,7 +687,7 @@ export default {
       this.fetchData()
       clearInterval(this.timer)
       this.timer = null
-      this.setTimer()
+      //this.setTimer()
     }
 }
 
