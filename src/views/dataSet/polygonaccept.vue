@@ -185,11 +185,13 @@ export default {
         acceptApi(params).then(res => {
             this.$message({
                 message: '验收通过',
+                duration:300,
                 type: 'success'
             })
         }).catch(function(error) {
             this.$message({
                 message: '验收失败',
+                duration:300,
                 type: 'error'
             })
         })
@@ -203,11 +205,13 @@ export default {
         unAcceptApi(params).then(res => {
             this.$message({
                 message: '验收不通过成功',
+                duration:300,
                 type: 'success'
             })
         }).catch(function(error) {
             this.$message({
                 message: '验收不通过失败',
+                duration:300,
                 type: 'error'
             })
         })
@@ -373,11 +377,14 @@ export default {
             _this.imagelargeArry=[]
             console.log("get图片结果", response);
             for (let i = 0; i < response.data.items.length; i++) {
-                console.log("testtttttttttt",response.data.items[i].label_data);
-                if(response.data.items[i].label_data!==undefined) {
-                    let tempa = JSON.parse(response.data.items[i].label_data);
-                    _this.lastinfoArry.push(tempa);
-                    console.log("lastinfoArry", response.data.items[i].is_label);
+                if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
+                  _this.lastinfoArry.push({})
+                }
+                else{
+                  console.log("testtttttttttt",response.data.items[i].label_data);
+                  let tempa = JSON.parse(response.data.items[i].label_data);
+                  _this.lastinfoArry.push(tempa);
+                  console.log("lastinfoArry", response.data.items[i].is_label);
                 }
                 let a={};
                 a["url"]=response.data.items[i].file_path
@@ -394,6 +401,7 @@ export default {
             console.log("error",error)
             _this.$message({
                 message:"请求图片失败",
+                duration:1000,
                 type: 'error'
             })
         })
@@ -417,6 +425,7 @@ export default {
             console.log("error",error)
             _this.$message({
                 message:"请求标签集合失败",
+                duration:1000,
                 type: 'error'
             })
         })

@@ -304,12 +304,13 @@ export default {
          _this.lastinfoArry=[]
          _this.uuidArry=[]
          _this.imagelargeArry=[]
-        console.log("get图片结果", response);
+        console.log("get图片结果", response,response.data.items[0].label_data);
         for (let i = 0; i < response.data.items.length; i++) {
-          if(response.data.items[i].label_data==undefined){
+          if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
             _this.lastinfoArry.push([]);
           }
-          if(response.data.items[i].label_data!==undefined) {
+          //if(response.data.items[i].label_data!==undefined) {
+          else{
           console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data).rectangle);
           let tempa = JSON.parse(response.data.items[i].label_data).rectangle;
           let len = eval(tempa).length;
@@ -374,10 +375,11 @@ export default {
          _this.imagelargeArry=[]
         console.log("get图片结果", response);
         for (let i = 0; i < response.data.items.length; i++) {
-          if(response.data.items[i].label_data==undefined){
+          if(response.data.items[i].label_data==undefined||response.data.items[i].label_data=="[]"){
             _this.lastinfoArry.push([]);
           }
-          if(response.data.items[i].label_data!==undefined) {
+          //if(response.data.items[i].label_data!==undefined) {
+          else{
           console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data).rectangle);
           let tempa = JSON.parse(response.data.items[i].label_data).rectangle;
           let len = eval(tempa).length;
