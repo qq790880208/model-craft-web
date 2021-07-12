@@ -13,7 +13,7 @@
         :style="{
           //background: 'rgb(192, 192, 192)',
           //width:this.imagewidth+'px',
-          marginLeft: (this.imagewidth-379) / 2 + 'px',
+          marginLeft: (1000-379) / 2 + 'px',
           display: 'block',
         }"
       >

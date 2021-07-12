@@ -20,10 +20,11 @@
     </div>
   <div class="dashboard-container" v-if="!isimageview" style="margin-left:100px">
     <!-- <div class="dashboard-text">name: {{ name }}</div> -->
-    <el-button :disabled="isdisablebutton" @click="returnimageview">返回图片预览</el-button>
-    <el-button :disabled="isdisablebutton" @click="nextimage">下一张(N)</el-button>
-    <el-button :disabled="isdisablebutton" @click="previousimage" >上一张(P)</el-button>
-    <el-button :disabled="isdisablebutton" @click="skipimage">跳过当前图片(Q)</el-button>
+    <el-button :disabled="isdisablebutton" @click="returnimageview">保存并返回图片预览</el-button>
+    <el-button :disabled="isdisablebutton" @click="skipimagepre">上一张(A)</el-button>
+    <el-button :disabled="isdisablebutton" @click="previousimage">保存并上一张(S)</el-button>
+    <el-button :disabled="isdisablebutton" @click="nextimage">保存并下一张D)</el-button>   
+    <el-button :disabled="isdisablebutton" @click="skipimagenext">下一张(F)</el-button>
     <!-- <el-button @click="requireimage">请求图片</el-button> -->
     <!-- <el-button @click="savelabel(nownum)">保存标注信息</el-button> -->
     <drawpolygon style="margin-top:20px" ref='drawpolygonref'
@@ -56,19 +57,23 @@ function keyDownSearch(e){
   console.log("keydown!!!!!!!!!!!!")
   let theEvent = e.event || window.event;
   let code = theEvent.keyCode ||  theEvent.which || theEvent.charCode
-  if(code == 80){ //上一张
-    console.log("pppppppp!!!!!!!!!!!!!")
+  if(code == 83){ //保存并上一张
+    console.log("ssssssssss!!!!!!!!!!!!!")
     previousimage()
     //return false;     
   }
-  if(code == 78){ //下一张
-    console.log("nnnnnnnn!!!!!!!!!!!!!")
+  if(code == 68){ //保存并下一张
+    console.log("dddddddddd!!!!!!!!!!!!!")
     nextimage()
   //return true;
   }
-  if(code == 81){ //跳过
-    console.log("qqqqqqqq!!!!!!!!!!!!!")
-    skipimage()
+  if(code == 70){ //下一张
+    console.log("ffffffffff!!!!!!!!!!!!!")
+    skipimagenext()
+  }
+    if(code == 65){ //上一张
+    console.log("aaaaaaaaaa!!!!!!!!!!!!!")
+    skipimagepre()
   }
 }
 
@@ -140,7 +145,8 @@ export default {
     this.requiretag();
     window.nextimage = this.nextimage;
     window.previousimage = this.previousimage;
-    window.skipimage = this.skipimage;
+    window.skipimagenext = this.skipimagenext;
+    window.skipimagepre = this.skipimagepre;
     document.onkeydown = keyDownSearch;
         this.starttimer = setInterval(()=>{
       this.nowseconds++;
@@ -178,10 +184,10 @@ export default {
     newlabel(){
       console.log("申请新图片")
     },
-    //下一张图片
+    //保存并下一张图片
     nextimage: function () {
       if(this.unable) {
-        console.log("uuuuuuuuuuuuuuuuunnnnnnnnnnnnnnnnaaaaaaaaaaaaaableeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+        //console.log("uuuuuuuuuuuuuuuuunnnnnnnnnnnnnnnnaaaaaaaaaaaaaableeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
         return
       }
       if(this.isimageview) {
@@ -201,7 +207,7 @@ export default {
       console.log("nextimage",this.nownum);
       console.log("nextimage infoArry",this.infoArry, this.infoArry.length);
     },
-    //上一张图片
+    //保存并上一张图片
     previousimage: function () {
       if(this.unable) return
       if(this.isimageview) {
@@ -220,8 +226,8 @@ export default {
       }
       console.log("previousimage",this.nownum);
     },
-    //跳过图片
-    skipimage: function(){
+    //下一张
+    skipimagenext: function(){
       if(this.isimageview) {
         console.log("处于预览界面");
         return
@@ -232,6 +238,22 @@ export default {
       }
       if (this.nownum < this.imageArry.length - 1) {
         this.nownum++;
+      }
+      console.log("skipimage", this.nownum);
+      this.nowseconds = 0;
+    },
+    //上一张
+    skipimagepre: function(){
+      if(this.isimageview) {
+        console.log("处于预览界面");
+        return
+        }
+      if(this.isdisablebutton) {
+        console.log("您现在正在修改图片")
+        return
+      }
+      if (this.nownum > 0) {
+        this.nownum--;
       }
       console.log("skipimage", this.nownum);
       this.nowseconds = 0;
