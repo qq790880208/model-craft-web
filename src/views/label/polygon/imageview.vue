@@ -329,17 +329,18 @@ export default {
           // }
           // console.log("ima",_this.imagesize)
           if(response.data.items[i].is_label!=1) _this.isalllabeled=false;
-          if(response.data.items[i].label_data!==undefined) {
-          
+          if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
+          _this.lastinfoArry.push({})
+          }
+          //if(response.data.items[i].label_data!==undefined) {
+          else{
           let tempa = JSON.parse(response.data.items[i].label_data)
           // let len = eval(tempa).length;
           // console.log("len", len);
           console.log("tempa",tempa)
           _this.lastinfoArry.push(tempa)
           console.log("lastinfoArry", _this.lastinfoArry[i]);
-        } else {
-          _this.lastinfoArry.push({})
-        }
+        } 
           let a={};
           a["url"]=response.data.items[i].file_path
           a["islabel"]=response.data.items[i].is_label
@@ -398,7 +399,11 @@ export default {
           //   _this.imagesize.push(imagea)
           // }
           // console.log("ima",_this.imagesize)
-          if(response.data.items[i].label_data!==undefined) {
+          if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
+          _this.lastinfoArry.push({})
+          }
+          //if(response.data.items[i].label_data!==undefined) {
+          else{
           let tempa = JSON.parse(response.data.items[i].label_data)
           let len = eval(tempa).length;
           console.log("len", len);
@@ -414,8 +419,6 @@ export default {
           // }
           _this.lastinfoArry.push(tempa)
           console.log("lastinfoArry", response.data.items[i].is_label);
-        } else {
-          _this.lastinfoArry.push({})
         }
           let a={};
           a["url"]=response.data.items[i].file_path

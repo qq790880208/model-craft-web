@@ -168,11 +168,13 @@ export default {
         acceptApi(params).then(res => {
             this.$message({
                 message: '验收通过',
+                duration:300,
                 type: 'success'
             })
         }).catch(function(error) {
             this.$message({
                 message: '验收失败',
+                duration:300,
                 type: 'error'
             })
         })
@@ -186,11 +188,13 @@ export default {
         unAcceptApi(params).then(res => {
             this.$message({
                 message: '验收不通过成功',
+                duration:300,
                 type: 'success'
             })
         }).catch(function(error) {
             this.$message({
                 message: '验收不通过失败',
+                duration:300,
                 type: 'error'
             })
         })
@@ -296,17 +300,6 @@ export default {
       this.infoArry = childinfoArry;
       console.log("222" + this.infoArry);
     },
-    newlabel(){
-      console.log("申请新图片")
-      console.log(store.getters.userid)
-      const params = {
-        id: store.getters.userid,
-        datasetuuid: store.getters.dataSet.uuid
-      }
-      getNewLabels(params).then(res => {
-        this.requireimage()
-      })
-    },
     setAudited() {
         const params = {
             labelUuid: this.uuidArry[this.nownum]
@@ -369,8 +362,12 @@ export default {
             _this.imagelargeArry=[]
             console.log("get图片结果", response);
             for (let i = 0; i < response.data.items.length; i++) {
-                console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data).rectangle);
-                if(response.data.items[i].label_data!==undefined) {
+                if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
+               _this.lastinfoArry.push([]);
+                }
+          //if(response.data.items[i].label_data!==undefined) {
+                else{
+                    console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data).rectangle);
                     let tempa = JSON.parse(response.data.items[i].label_data).rectangle;
                     let len = eval(tempa).length;
                     //console.log("len", len);
@@ -401,6 +398,7 @@ export default {
             console.log("error",error)
             _this.$message({
                 message:"图片数据为0，重新设置验收比例",
+                duration:1000,
                 type: 'error'
             })
         })
@@ -424,6 +422,7 @@ export default {
             console.log("error",error)
             _this.$message({
                 message:"请求标签集合失败",
+                duration:1000,
                 type: 'error'
             })
         })

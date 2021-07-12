@@ -163,11 +163,13 @@ export default {
         passApi(params).then(res => {
           this.$message({
               message: '审核通过',
+              duration:300,
               type: 'success'
           })
         }).catch(function(error) {
           this.$message({
               message: '审核失败',
+              duration:300,
               type: 'error'
           })
         })
@@ -180,11 +182,13 @@ export default {
         rejectApi(params).then(res => {
             this.$message({
                 message: '驳回成功',
+                duration:300,
                 type: 'success'
             })
         }).catch(function(error) {
             this.$message({
                 message: '驳回失败',
+                duration:300,
                 type: 'error'
             })
         })
@@ -197,12 +201,14 @@ export default {
         reSetApi(params).then(res => {
             this.$message({
                 message: '重置成功',
+                duration:300,
                 type: 'success'
             })
             this.getAuditDataList()
         }).catch(function(error) {
             this.$message({
                 message: '重置失败',
+                duration:300,
                 type: 'error'
             })
         })
@@ -370,7 +376,12 @@ export default {
             console.log("get图片结果", response);
             for (let i = 0; i < response.data.items.length; i++) {
                 console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data).rectangle);
-                if(response.data.items[i].label_data!==undefined) {
+                if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
+               _this.lastinfoArry.push([]);
+                }
+                //if(response.data.items[i].label_data!==undefined) {
+                else{
+                    console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data).rectangle);
                     let tempa = JSON.parse(response.data.items[i].label_data).rectangle;
                     let len = eval(tempa).length;
                     //console.log("len", len);
@@ -401,6 +412,7 @@ export default {
             console.log("error",error)
             _this.$message({
                 message:"请求图片集合失败",
+                duration:1000,
                 type: 'error'
             })
         })
@@ -424,6 +436,7 @@ export default {
             console.log("error",error)
             _this.$message({
                 message:"请求标签集合失败",
+                duration:1000,
                 type: 'error'
             })
         })
