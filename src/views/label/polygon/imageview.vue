@@ -25,6 +25,7 @@
     <el-button :disabled="isdisablebutton" @click="previousimage">保存并上一张(S)</el-button>
     <el-button :disabled="isdisablebutton" @click="nextimage">保存并下一张D)</el-button>   
     <el-button :disabled="isdisablebutton" @click="skipimagenext">下一张(F)</el-button>
+    <el-button :disabled="isdisablebutton" @click="nomarkedimage">无可标注类型(G)</el-button>
     <!-- <el-button @click="requireimage">请求图片</el-button> -->
     <!-- <el-button @click="savelabel(nownum)">保存标注信息</el-button> -->
     <drawpolygon style="margin-top:20px" ref='drawpolygonref'
@@ -71,9 +72,13 @@ function keyDownSearch(e){
     console.log("ffffffffff!!!!!!!!!!!!!")
     skipimagenext()
   }
-    if(code == 65){ //上一张
+  if(code == 65){ //上一张
     console.log("aaaaaaaaaa!!!!!!!!!!!!!")
     skipimagepre()
+  }
+  if(code == 71){ //无可标注下一张
+    console.log("gggggggggg!!!!!!!!!!!!!")
+    nomarkedimage()
   }
 }
 
@@ -147,6 +152,7 @@ export default {
     window.previousimage = this.previousimage;
     window.skipimagenext = this.skipimagenext;
     window.skipimagepre = this.skipimagepre;
+    window.nomarkedimage = this.nomarkedimage;
     document.onkeydown = keyDownSearch;
         this.starttimer = setInterval(()=>{
       this.nowseconds++;
@@ -177,7 +183,12 @@ export default {
     },
     returnimageview(){
         this.nopnum=0;
-        this.$refs.drawpolygonref.saveinfo()
+        this.$refs.drawpolygonref.saveinfo(true)
+        this.nownum=0;
+        this.isimageview=!this.isimageview;
+    },
+    returnimageviewNoSave(){
+        this.nopnum=0;
         this.nownum=0;
         this.isimageview=!this.isimageview;
     },
@@ -185,7 +196,7 @@ export default {
       console.log("申请新图片")
     },
     //保存并下一张图片
-    nextimage: function () {
+    nextimage() {
       if(this.unable) {
         //console.log("uuuuuuuuuuuuuuuuunnnnnnnnnnnnnnnnaaaaaaaaaaaaaableeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
         return
@@ -198,17 +209,17 @@ export default {
         console.log("您现在正在修改图片")
         return
       }
-      if (this.nownum < this.imageArry.length - 1) {
+      if (this.nownum < this.imageArry.length) {
         this.nopnum=1;
         this.unable=true
-        this.$refs.drawpolygonref.saveinfo()
+        this.$refs.drawpolygonref.saveinfo(true)
         //this.nownum++;
       }
       console.log("nextimage",this.nownum);
       console.log("nextimage infoArry",this.infoArry, this.infoArry.length);
     },
     //保存并上一张图片
-    previousimage: function () {
+    previousimage() {
       if(this.unable) return
       if(this.isimageview) {
         console.log("处于预览界面");
@@ -218,16 +229,38 @@ export default {
         console.log("您现在正在修改图片")
         return
       }
-      if (this.nownum > 0) {
+      if (this.nownum >= 0) {
         this.nopnum=2;
         this.unable=true
-        this.$refs.drawpolygonref.saveinfo()
+        this.$refs.drawpolygonref.saveinfo(true)
         //this.nownum--;
       }
       console.log("previousimage",this.nownum);
     },
+    //无标注类型
+    nomarkedimage(){
+      if(this.unable) {
+        //console.log("unable!!!!!!!!!!!!!!!!!!!!")
+        return
+      }
+      if(this.isimageview) {
+        console.log("处于预览界面");
+        return
+      }
+      if(this.isdisablebutton) {
+        console.log("您现在正在修改图片")
+        return
+      }
+      if (this.nownum < this.imageArry.length) {
+        this.nopnum=1;
+        this.unable=true
+        this.$refs.drawpolygonref.saveinfo(false)
+        //this.nownum++;
+      }
+      console.log("nextimage", this.nownum);
+    },
     //下一张
-    skipimagenext: function(){
+    skipimagenext(){
       if(this.isimageview) {
         console.log("处于预览界面");
         return
@@ -239,11 +272,14 @@ export default {
       if (this.nownum < this.imageArry.length - 1) {
         this.nownum++;
       }
+      else {
+        this.returnimageviewNoSave();
+      }
       console.log("skipimage", this.nownum);
       this.nowseconds = 0;
     },
     //上一张
-    skipimagepre: function(){
+    skipimagepre(){
       if(this.isimageview) {
         console.log("处于预览界面");
         return
@@ -255,10 +291,13 @@ export default {
       if (this.nownum > 0) {
         this.nownum--;
       }
+      else {
+        this.returnimageviewNoSave();
+      }
       console.log("skipimage", this.nownum);
       this.nowseconds = 0;
     },
-    closebutton: function(){
+    closebutton(){
       console.log("fatherdisbtnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
       this.isdisablebutton=!this.isdisablebutton
     },
@@ -273,11 +312,11 @@ export default {
       })
     },
     //保存图片标注信息
-    saveimageinfo: function (markinfo, imageeindex) {
+    saveimageinfo: function (markinfo, imageeindex,infoFlag) {
       this.infoArry[imageeindex] = markinfo;
       console.log("save success", markinfo, imageeindex);
       console.log("thisinfoArry", this.infoArry);
-      this.savelabel1(this.nownum)
+      this.savelabel1(this.nownum,infoFlag)
     },
     //post生成xml
     generateXML:function () {
@@ -498,13 +537,13 @@ export default {
       });
     },
     //put请求
-    savelabel1(i) {
+    savelabel1(i,infoFlag) {
       let _this=this
       this.nowseconds = 0;
       console.log("put000no",this.infoArry[i])
       console.log("put000",JSON.stringify(this.infoArry[i]))
       let isab
-      if(this.infoArry[i].polygon.length>0||this.infoArry[i].line.length>0||this.infoArry[i].circle.length>0) isab=1
+      if(this.infoArry[i].polygon.length>0||this.infoArry[i].line.length>0||this.infoArry[i].circle.length>0||!infoFlag) isab=1
       else isab=2
       let data = {
           label_data: JSON.stringify(this.infoArry[i]),
@@ -524,12 +563,22 @@ export default {
         _this.requiretag().then(function(){
           console.log("thenthenthenthen")
           if(_this.nopnum==1) {
+            if(_this.nownum < _this.imageArry.length - 1){
             _this.nownum++;
             _this.isnowlabel1();
+            }
+            else {
+              _this.returnimageviewNoSave();
+            }
           }
           if(_this.nopnum==2) {
+            if(_this.nownum > 0){
             _this.nownum--;
             _this.isnowlabel1();
+            }
+            else {
+              _this.returnimageviewNoSave();
+            }
           }
           _this.unable=false;
         });;

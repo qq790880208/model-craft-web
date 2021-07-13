@@ -488,7 +488,7 @@ export default {
     // testsave(){
     //   console.log("testtttttttttttttttttttttttsssssssssssssssssssssssssssssss")
     // },
-    saveinfo() {
+    saveinfo(infoFlag) {
       //保存时传递的信息
       console.log("start!!!", this.boxArry);
       //变为深拷贝
@@ -499,7 +499,7 @@ export default {
       //this.tempArry.push(this.fatherimagesrc);
       //this.tempArry.push(this.imageindex);
       console.log("11111",tempArry,);
-      this.$emit("saveimageinfo", tempArry, this.imageindex);
+      this.$emit("saveimageinfo", tempArry, this.imageindex,infoFlag);
       console.log("11111",tempArry,);
       console.log("22222zzzzz", tempArry);
       this.tempArry = [];

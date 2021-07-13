@@ -934,7 +934,7 @@ export default {
         this.$router.push({path: '/dataSet/3Daudit'})
       }
       if(val.label_type === 3) {
-        this.$router.push({path:'/label/voice'})
+        this.$router.push({path:'/dataSet/2DauditPre'})
       }
     },
 
