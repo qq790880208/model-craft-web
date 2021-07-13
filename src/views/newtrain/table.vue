@@ -37,6 +37,11 @@
           <span style="color:#5284DB">{{ scope.row.name }}</span>
         </template>
       </el-table-column>
+       <el-table-column label="训练数据集" width="160">
+        <template slot-scope="scope">
+          <span>{{ scope.row.dataset_name}}</span>
+        </template>
+      </el-table-column>
       <el-table-column label="算法" width="160">
         <template slot-scope="scope">
           <span>{{ algorithmArray[scope.row.algo_id]}}</span>
@@ -49,9 +54,12 @@
         </template>
       </el-table-column>
       <el-table-column label="运行时长" width="120">
-        <template slot-scope="scope">
-          <span>{{ scope.row.cost_time }}</span>
+        
+        <template slot-scope="scope" >
+          <span  v-if="scope.row.cost_time != 0">{{ scope.row.cost_time }} 秒</span>
+          <span v-if="scope.row.cost_time == 0">-</span>
         </template>
+          
       </el-table-column>
       <el-table-column label="创建时间" width="160">
         <template slot-scope="scope">
@@ -79,15 +87,18 @@
             <el-button
             size="mini"
             @click="handleStart(scope.$index, scope.row)">开始</el-button>
-          <el-button
+          <!-- <el-button
             size="mini"
-            @click="handleStop(scope.$index, scope.row)">终止</el-button>
+            @click="handleStop(scope.$index, scope.row)">终止</el-button> -->
           <el-button
             size="mini"
             @click="handleShow()">可视化</el-button>
           <el-button
-            size="mini"
-            @click="handleShowlog(scope.$index, scope)">日志</el-button>
+            size="mini" v-if="scope.row.status!=0"
+            @click="handleShowlog(scope.$index, scope)" >日志</el-button>
+          <el-button
+            size="mini" v-if="scope.row.status==0"
+            @click="handleShowlog(scope.$index, scope)"  disabled>日志</el-button>
             <el-button
             size="mini" type="danger"
             @click="handleDelete(scope.$index, scope.row)">删除</el-button>
@@ -125,7 +136,7 @@
         id="textarea_id"
         :disabled="true"
         :autosize="{ minRows: 20, maxRows: 20}"
-        placeholder="请输入内容"
+        placeholder="获取中......"
         v-model="logText">
       </el-input>
       <span slot="footer" class="dialog-footer">
@@ -142,12 +153,12 @@
         <el-form-item label="任务描述">
           <el-input type="textarea" v-model="taskForm.description"></el-input>
         </el-form-item>
-        <el-form-item label="数据集选择" prop="data">
-          <el-select v-model="taskForm.data" placeholder="请选择" @change="pathChange(taskForm.data)">
+        <el-form-item label="数据集选择" prop="dataset_index">
+          <el-select v-model="taskForm.dataset_index" placeholder="请选择" @change="pathChange(taskForm.dataset_index)">
             <div style="height:150px;" class="scrollbar">
               <el-scrollbar style="height:100%;;">
                 <el-option v-for="(item, index) in initialPara.inputData.name" :key="index"
-                :label="item" :value="initialPara.inputData.uuid[index]">
+                :label="item" :value="index">
                 </el-option>
               </el-scrollbar>
             </div>
@@ -247,7 +258,7 @@ export default {
         modelOssPath:"none",
         useAlgorithm:-1,
         //主页面部分数据
-        statusoptions:['未开始', '初始化','运行中', '结束成功', '结束失败'],
+        statusoptions:['未开始','运行中', '结束成功', '结束失败'],
         selectedstatus:'5',//顶部选择的状态
         tableData:[],
         //currentAlgorithm = taskForm.algorithm">
@@ -277,7 +288,8 @@ export default {
           outpath:'',
           description: '',
           paras:[],
-          uuid:''
+          uuid:'',
+          dataset_index : ''
         },
         rules: {
           name: [
@@ -344,6 +356,7 @@ export default {
           "args": "string",
           "cost_time": "0",
           "dataset_id": "string",
+          "dataset_name": "string",
           "descr": "string",
           "name": "string",
           "status": "0",
@@ -370,15 +383,18 @@ export default {
     },
 
     methods: {
-      pathChange(data){
+      pathChange(index){
+        let data = this.initialPara.inputData.uuid[this.taskForm.dataset_index];
+        this.taskForm.data = data
         console.log("data",data)
         this.imageOssPath = "data/dataset/"+data+"/input/source/"
         this.textOssPath =  "data/dataset/"+data+"/input/annotation/"
         this.modelOssPath = "data/dataset/"+data+"/output/ckpt/"
-        this.initialPara.inputData.uuid.forEach((item,index) => {
-          //console.log("item",item,"index",index)
-          if(data==item) this.useAlgorithm = this.initialPara.inputData.algorithmType[index];
-        })
+        this.useAlgorithm = this.initialPara.inputData.algorithmType[index]
+        // this.initialPara.inputData.uuid.forEach((item,index) => {
+        //   //console.log("item",item,"index",index)
+        //   if(data==item) this.useAlgorithm = this.initialPara.inputData.algorithmType[data];
+        // })
         this.cachange(this.useAlgorithm)
       },
       cachange(testdata){
@@ -550,7 +566,7 @@ export default {
         this.logdialogVisible = true
         clearInterval(this.timerLog)
         this.timerLog = null
-        this.setTimerLog()
+        this.setTimerLog(row.row.uuid)
       },
       closeShowLog(){
         this.logdialogVisible = false
@@ -637,7 +653,8 @@ export default {
 
         this.taskPara.algo_id = this.useAlgorithm
         this.taskPara.args = JSON.stringify(this.taskForm.paras)
-        this.taskPara.dataset_id = this.taskForm.data
+        this.taskPara.dataset_id = this.initialPara.inputData.uuid[this.taskForm.dataset_index]
+        this.taskPara.dataset_name = this.initialPara.inputData.name[this.taskForm.dataset_index]
         this.taskPara.descr = this.taskForm.description
         this.taskPara.name = this.taskForm.name
         this.taskPara.user_id = JSON.stringify(this.taskForm.user_id)
@@ -705,12 +722,13 @@ export default {
           }, 1000)
         }
       },
-      setTimerLog() {//读取日志的定时器
+      setTimerLog(train_id) {//读取日志的定时器
       console.log("this.timerLog",this.timerLog)
+      this.logText = ''
         if(this.timerLog == null) {
           this.timerLog = setInterval( () => {
               //console.log('开始定时...每过一秒执行一次')
-              showLog().then(res =>{
+              showLog(train_id).then(res =>{
                 console.log(res)
                 this.logText = res.data.content
                 const textarea = document.getElementById('textarea_id');
@@ -740,7 +758,7 @@ export default {
       this.fetchData()
       clearInterval(this.timer)
       this.timer = null
-      this.setTimer()
+      //this.setTimer()
     }
 }
 

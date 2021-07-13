@@ -33,6 +33,7 @@
     <el-input style="width:80px" v-model="rangle" :disabled="true"></el-input>
     <el-button @click="changefatherinfo" type="primary">保存</el-button>
     <el-button @click="changefatherupdown" type="primary">切换前后</el-button>
+    <el-button @click="changeFatherFront" type="primary">切换正面</el-button>
     <el-button @click="deletefatherlabel" type="danger">删除</el-button>
     </el-row>
   </div>
@@ -74,6 +75,9 @@
      },
      changefatherupdown(){
         this.$emit("changeupdown")
+     },
+     changeFatherFront(){
+       this.$emit("changeFront")
      }
    },
    components: {

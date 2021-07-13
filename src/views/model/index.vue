@@ -27,6 +27,11 @@
               :data="sublist[String(scope.$index)]"
               v-loading="sublistLoading"
             >
+            <el-table-column label="来自训练作业" width="120">
+                <template slot-scope="scope0"> 
+                  {{ scope0.row.tj_name }}
+                </template>
+              </el-table-column>
               <el-table-column label="版本" width="100">
                 <template slot-scope="scope0"> 
                   {{ scope0.row.version }}
@@ -418,6 +423,7 @@ export default {
         this.taskForm.description = ''
         this.taskForm.paras = []
         this.taskForm.version = '0.0.1'
+        this.taskForm.trainjob_index = ''
 //         const params = {
 //           'page': 1,
 //           'pagesize': 100,
@@ -491,6 +497,7 @@ export default {
           'uuid': this.taskForm.uuid,
           'user_id': store.getters.userid,
           'tj_id': this.initialPara.trainjob_uuids[this.taskForm.trainjob_index],
+          'tj_name' : this.initialPara.trainjob_names[this.taskForm.trainjob_index],
           'model_oss_path': this.initialPara.trainjob_path[this.taskForm.trainjob_index],
           'descr': this.taskForm.description
         }

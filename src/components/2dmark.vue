@@ -13,7 +13,7 @@
         :style="{
           //background: 'rgb(192, 192, 192)',
           //width:this.imagewidth+'px',
-          marginLeft: (this.imagewidth-379) / 2 + 'px',
+          marginLeft: (this.divWidth-379) / 2 + 'px',
           display: 'block',
         }"
       >
@@ -72,8 +72,8 @@
           :style="{
             //width: this.imagewidth + 'px',
             //height: this.imageheight + 'px',
-            width: 1000 + 'px',
-            height: 750 + 'px',
+            width: this.divWidth + 'px',
+            height: this.divHeight + 'px',
             //float: 'left',
             display: 'inline-block',
             marginLeft: 0 + 'px',
@@ -295,13 +295,15 @@ export default {
       default: () => [],
     },
   },
-  // destroyed(){
-  //   console.log("2dmarkddddddddddddddddddddddddddddddddddddddddddddddddddddd")
-  // },
+  destroyed(){
+    window.removeEventListener('resize', this.GetWindowInfo)
+  },
   mounted: function () {
     this.imagechange();
     this.defaultlabel=this.premarktype[0].name;
     this.defaultcolor=this.premarktype[0].color;
+    window.addEventListener('resize', this.GetWindowInfo); //注册监听器
+    this.GetWindowInfo() //页面创建时先调用一次
     //this.updatelastdata();
   },
   components: {
@@ -323,8 +325,10 @@ export default {
     return {
       radio: "mark",
       num: 1,
-      defaultlabel:null,
-      defaultcolor:null,
+      defaultlabel: null,
+      defaultcolor: null,
+      divWidth: 1000,
+      divHeight: 750,
       imagewidth: 800, //图片宽度像素数
       imageheight: 800, //图片高度像素数
       scalewidth: null, //图片宽度缩放倍数
@@ -363,6 +367,19 @@ export default {
     // commitVuex() {
     //   this.$store.commit("changeTreeData", { a: 1, b: 2 });
     // },
+    GetWindowInfo(){
+        // 获取浏览器高宽
+        if(window.innerWidth>1650) {
+          this.divWidth=1000;
+          this.divHeight=750;
+        } else if(window.innerWidth>800){
+          this.divWidth=1000-(1650-window.innerWidth);
+          this.divHeight=750-(1650-window.innerWidth)*0.75
+        } else {
+          this.divWidth=500;
+          this.divHeight=375;
+        }
+    },
     findcolor(abcdefg) {
       this.premarktype.forEach((item) => {
         console.log("infind", abcdefg);
@@ -402,24 +419,24 @@ export default {
       //   this.scalewidth = 1;
       //   this.scaleheight = 1;
       // }
-      if (image.width < 800 && image.height < 600) {
-        while(this.imagewidth < 800 && this.imageheight < 600) {
+      if (image.width < this.divWidth*0.8 && image.height < this.divWidth*0.8) {
+        while(this.imagewidth < this.divWidth*0.8 && this.imageheight < this.divWidth*0.8) {
           this.imagewidth *=1.1;
           this.imageheight *=1.1;
           this.scalewidth *=1.1;
           this.scaleheight *=1.1;
         }
       }
-      if(image.width > 1000 || image.height > 750){
-          while(this.imagewidth > 1000 || this.imageheight > 750) {
+      if(image.width > this.divWidth || image.height > this.divHeight){
+          while(this.imagewidth > this.divWidth || this.imageheight > this.divHeight) {
           this.imagewidth /=1.1;
           this.imageheight /=1.1;
           this.scalewidth /=1.1;
           this.scaleheight /=1.1;
         }
       }
-      this.mleft=(1000-this.imagewidth)/2
-      this.mtop=(750-this.imageheight)/2
+      this.mleft=(this.divWidth-this.imagewidth)/2
+      this.mtop=(this.divHeight-this.imageheight)/2
       console.log("thisssssssssssssssss.imagewidth",this.imagewidth);
       console.log(this.imageheight);
       console.log(this.scalewidth);
@@ -488,7 +505,7 @@ export default {
     // testsave(){
     //   console.log("testtttttttttttttttttttttttsssssssssssssssssssssssssssssss")
     // },
-    saveinfo() {
+    saveinfo(infoFlag) {
       //保存时传递的信息
       console.log("start!!!", this.boxArry);
       //变为深拷贝
@@ -499,7 +516,7 @@ export default {
       //this.tempArry.push(this.fatherimagesrc);
       //this.tempArry.push(this.imageindex);
       console.log("11111",tempArry,);
-      this.$emit("saveimageinfo", tempArry, this.imageindex);
+      this.$emit("saveimageinfo", tempArry, this.imageindex,infoFlag);
       console.log("11111",tempArry,);
       console.log("22222zzzzz", tempArry);
       this.tempArry = [];
