@@ -375,16 +375,18 @@ export default {
       return ' ' + year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
     },
     formatType(num) {
-      if (num == 0 || num == 3) {
-        return '拉框标注';
+      if (num == 0 ) {
+        return 'tensorflow-2D拉框标注';
       }
       if (num == 1 || num == 4) {
-        return '多边形标注';
+        return 'tensorflow-多边形标注';
       }
       if (num == 2) {
         return '语音标注';
       }
-      
+      if ( num == 3) {
+        return 'pytorch-2D拉框';
+      }
     }
   },
   data() {
@@ -780,7 +782,8 @@ export default {
     // 得到所有的标注团队
     getTeams(uuid) {
       const params = {
-        dataSetUuid: uuid
+        dataSetUuid: uuid,
+        name: store.getters.name
       }
       getAllTeam(params).then(res => {
         var team = res.data.items
@@ -791,8 +794,8 @@ export default {
 
     // 切换tab  我的数据集/标注数据集
     handleClick(tab, event) {
-      console.log(tab.name)
-      this.activeName = tab.name
+      // console.log(tab.name)
+      // this.activeName = tab.name
       if(this.activeName == 'manager'){
         this.getAssignDataSet()
       }
@@ -931,7 +934,7 @@ export default {
         this.$router.push({path: '/dataSet/3Daudit'})
       }
       if(val.label_type === 3) {
-        this.$router.push({path:'/label/voice'})
+        this.$router.push({path:'/dataSet/2DauditPre'})
       }
     },
 

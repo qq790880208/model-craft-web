@@ -403,14 +403,21 @@ export default {
     handleDelete: function() {
       this.$confirm('确认删除该记录吗?', '提示', {
         type: 'warning'
-      })
-        .then(() => {
-          const para = { id: this.selectTeamId }
+      }).then(() => {
+          const para = {
+            id: this.selectTeamId,
+            name: store.getters.name
+          }
           console.log(para)
           delTeams(para).then(res => {
             this.$message({
-              message: '删除成功',
+              message: res.message,
               type: 'success'
+            }).catch(res => {
+              this.$message({
+                message: res.message,
+                type: 'success'
+              })
             })
             this.getTeamsList()
           })

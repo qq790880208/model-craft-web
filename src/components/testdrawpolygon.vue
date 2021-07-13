@@ -552,7 +552,7 @@ export default {
       this.markcolor = item.color;
       this.markinfo = item.name;
     },
-    saveinfo() {
+    saveinfo(infoFlag) {
       //保存标注信息时传递的信息
       //console.log("start!!!", this.realpolygoninfoArray);
       let tempArry = {}
@@ -567,7 +567,7 @@ export default {
       // this.tempArry.push(this.fatherimagesrc);
       // this.tempArry.push(this.imageindex);
       console.log("11111", tempArry);
-      this.$emit("saveimageinfo", tempArry, this.imageindex);
+      this.$emit("saveimageinfo", tempArry, this.imageindex,infoFlag);
       tempArry = [];
       console.log("22222", tempArry);
       //  this.$emit('saveimageinfo',this.boxArry,this.fatherimagesrc,this.imageindex)

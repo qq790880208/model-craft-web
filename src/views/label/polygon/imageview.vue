@@ -20,10 +20,12 @@
     </div>
   <div class="dashboard-container" v-if="!isimageview" style="margin-left:100px">
     <!-- <div class="dashboard-text">name: {{ name }}</div> -->
-    <el-button :disabled="isdisablebutton" @click="returnimageview">返回图片预览</el-button>
-    <el-button :disabled="isdisablebutton" @click="nextimage">下一张(N)</el-button>
-    <el-button :disabled="isdisablebutton" @click="previousimage" >上一张(P)</el-button>
-    <el-button :disabled="isdisablebutton" @click="skipimage">跳过当前图片(Q)</el-button>
+    <el-button :disabled="isdisablebutton" @click="returnimageview">保存并返回图片预览</el-button>
+    <el-button :disabled="isdisablebutton" @click="skipimagepre">上一张(A)</el-button>
+    <el-button :disabled="isdisablebutton" @click="previousimage">保存并上一张(S)</el-button>
+    <el-button :disabled="isdisablebutton" @click="nextimage">保存并下一张D)</el-button>   
+    <el-button :disabled="isdisablebutton" @click="skipimagenext">下一张(F)</el-button>
+    <el-button :disabled="isdisablebutton" @click="nomarkedimage">无可标注类型(G)</el-button>
     <!-- <el-button @click="requireimage">请求图片</el-button> -->
     <!-- <el-button @click="savelabel(nownum)">保存标注信息</el-button> -->
     <drawpolygon style="margin-top:20px" ref='drawpolygonref'
@@ -56,19 +58,27 @@ function keyDownSearch(e){
   console.log("keydown!!!!!!!!!!!!")
   let theEvent = e.event || window.event;
   let code = theEvent.keyCode ||  theEvent.which || theEvent.charCode
-  if(code == 80){ //上一张
-    console.log("pppppppp!!!!!!!!!!!!!")
+  if(code == 83){ //保存并上一张
+    console.log("ssssssssss!!!!!!!!!!!!!")
     previousimage()
     //return false;     
   }
-  if(code == 78){ //下一张
-    console.log("nnnnnnnn!!!!!!!!!!!!!")
+  if(code == 68){ //保存并下一张
+    console.log("dddddddddd!!!!!!!!!!!!!")
     nextimage()
   //return true;
   }
-  if(code == 81){ //跳过
-    console.log("qqqqqqqq!!!!!!!!!!!!!")
-    skipimage()
+  if(code == 70){ //下一张
+    console.log("ffffffffff!!!!!!!!!!!!!")
+    skipimagenext()
+  }
+  if(code == 65){ //上一张
+    console.log("aaaaaaaaaa!!!!!!!!!!!!!")
+    skipimagepre()
+  }
+  if(code == 71){ //无可标注下一张
+    console.log("gggggggggg!!!!!!!!!!!!!")
+    nomarkedimage()
   }
 }
 
@@ -140,7 +150,9 @@ export default {
     this.requiretag();
     window.nextimage = this.nextimage;
     window.previousimage = this.previousimage;
-    window.skipimage = this.skipimage;
+    window.skipimagenext = this.skipimagenext;
+    window.skipimagepre = this.skipimagepre;
+    window.nomarkedimage = this.nomarkedimage;
     document.onkeydown = keyDownSearch;
         this.starttimer = setInterval(()=>{
       this.nowseconds++;
@@ -171,17 +183,22 @@ export default {
     },
     returnimageview(){
         this.nopnum=0;
-        this.$refs.drawpolygonref.saveinfo()
+        this.$refs.drawpolygonref.saveinfo(true)
+        this.nownum=0;
+        this.isimageview=!this.isimageview;
+    },
+    returnimageviewNoSave(){
+        this.nopnum=0;
         this.nownum=0;
         this.isimageview=!this.isimageview;
     },
     newlabel(){
       console.log("申请新图片")
     },
-    //下一张图片
-    nextimage: function () {
+    //保存并下一张图片
+    nextimage() {
       if(this.unable) {
-        console.log("uuuuuuuuuuuuuuuuunnnnnnnnnnnnnnnnaaaaaaaaaaaaaableeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
+        //console.log("uuuuuuuuuuuuuuuuunnnnnnnnnnnnnnnnaaaaaaaaaaaaaableeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee")
         return
       }
       if(this.isimageview) {
@@ -192,17 +209,17 @@ export default {
         console.log("您现在正在修改图片")
         return
       }
-      if (this.nownum < this.imageArry.length - 1) {
+      if (this.nownum < this.imageArry.length) {
         this.nopnum=1;
         this.unable=true
-        this.$refs.drawpolygonref.saveinfo()
+        this.$refs.drawpolygonref.saveinfo(true)
         //this.nownum++;
       }
       console.log("nextimage",this.nownum);
       console.log("nextimage infoArry",this.infoArry, this.infoArry.length);
     },
-    //上一张图片
-    previousimage: function () {
+    //保存并上一张图片
+    previousimage() {
       if(this.unable) return
       if(this.isimageview) {
         console.log("处于预览界面");
@@ -212,16 +229,38 @@ export default {
         console.log("您现在正在修改图片")
         return
       }
-      if (this.nownum > 0) {
+      if (this.nownum >= 0) {
         this.nopnum=2;
         this.unable=true
-        this.$refs.drawpolygonref.saveinfo()
+        this.$refs.drawpolygonref.saveinfo(true)
         //this.nownum--;
       }
       console.log("previousimage",this.nownum);
     },
-    //跳过图片
-    skipimage: function(){
+    //无标注类型
+    nomarkedimage(){
+      if(this.unable) {
+        //console.log("unable!!!!!!!!!!!!!!!!!!!!")
+        return
+      }
+      if(this.isimageview) {
+        console.log("处于预览界面");
+        return
+      }
+      if(this.isdisablebutton) {
+        console.log("您现在正在修改图片")
+        return
+      }
+      if (this.nownum < this.imageArry.length) {
+        this.nopnum=1;
+        this.unable=true
+        this.$refs.drawpolygonref.saveinfo(false)
+        //this.nownum++;
+      }
+      console.log("nextimage", this.nownum);
+    },
+    //下一张
+    skipimagenext(){
       if(this.isimageview) {
         console.log("处于预览界面");
         return
@@ -233,10 +272,32 @@ export default {
       if (this.nownum < this.imageArry.length - 1) {
         this.nownum++;
       }
+      else {
+        this.returnimageviewNoSave();
+      }
       console.log("skipimage", this.nownum);
       this.nowseconds = 0;
     },
-    closebutton: function(){
+    //上一张
+    skipimagepre(){
+      if(this.isimageview) {
+        console.log("处于预览界面");
+        return
+        }
+      if(this.isdisablebutton) {
+        console.log("您现在正在修改图片")
+        return
+      }
+      if (this.nownum > 0) {
+        this.nownum--;
+      }
+      else {
+        this.returnimageviewNoSave();
+      }
+      console.log("skipimage", this.nownum);
+      this.nowseconds = 0;
+    },
+    closebutton(){
       console.log("fatherdisbtnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
       this.isdisablebutton=!this.isdisablebutton
     },
@@ -251,11 +312,11 @@ export default {
       })
     },
     //保存图片标注信息
-    saveimageinfo: function (markinfo, imageeindex) {
+    saveimageinfo: function (markinfo, imageeindex,infoFlag) {
       this.infoArry[imageeindex] = markinfo;
       console.log("save success", markinfo, imageeindex);
       console.log("thisinfoArry", this.infoArry);
-      this.savelabel1(this.nownum)
+      this.savelabel1(this.nownum,infoFlag)
     },
     //post生成xml
     generateXML:function () {
@@ -329,17 +390,18 @@ export default {
           // }
           // console.log("ima",_this.imagesize)
           if(response.data.items[i].is_label!=1) _this.isalllabeled=false;
-          if(response.data.items[i].label_data!==undefined) {
-          
+          if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
+          _this.lastinfoArry.push({})
+          }
+          //if(response.data.items[i].label_data!==undefined) {
+          else{
           let tempa = JSON.parse(response.data.items[i].label_data)
           // let len = eval(tempa).length;
           // console.log("len", len);
           console.log("tempa",tempa)
           _this.lastinfoArry.push(tempa)
           console.log("lastinfoArry", _this.lastinfoArry[i]);
-        } else {
-          _this.lastinfoArry.push({})
-        }
+        } 
           let a={};
           a["url"]=response.data.items[i].file_path
           a["islabel"]=response.data.items[i].is_label
@@ -398,7 +460,11 @@ export default {
           //   _this.imagesize.push(imagea)
           // }
           // console.log("ima",_this.imagesize)
-          if(response.data.items[i].label_data!==undefined) {
+          if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
+          _this.lastinfoArry.push({})
+          }
+          //if(response.data.items[i].label_data!==undefined) {
+          else{
           let tempa = JSON.parse(response.data.items[i].label_data)
           let len = eval(tempa).length;
           console.log("len", len);
@@ -414,8 +480,6 @@ export default {
           // }
           _this.lastinfoArry.push(tempa)
           console.log("lastinfoArry", response.data.items[i].is_label);
-        } else {
-          _this.lastinfoArry.push({})
         }
           let a={};
           a["url"]=response.data.items[i].file_path
@@ -473,13 +537,13 @@ export default {
       });
     },
     //put请求
-    savelabel1(i) {
+    savelabel1(i,infoFlag) {
       let _this=this
       this.nowseconds = 0;
       console.log("put000no",this.infoArry[i])
       console.log("put000",JSON.stringify(this.infoArry[i]))
       let isab
-      if(this.infoArry[i].polygon.length>0||this.infoArry[i].line.length>0||this.infoArry[i].circle.length>0) isab=1
+      if(this.infoArry[i].polygon.length>0||this.infoArry[i].line.length>0||this.infoArry[i].circle.length>0||!infoFlag) isab=1
       else isab=2
       let data = {
           label_data: JSON.stringify(this.infoArry[i]),
@@ -499,12 +563,22 @@ export default {
         _this.requiretag().then(function(){
           console.log("thenthenthenthen")
           if(_this.nopnum==1) {
+            if(_this.nownum < _this.imageArry.length - 1){
             _this.nownum++;
             _this.isnowlabel1();
+            }
+            else {
+              _this.returnimageviewNoSave();
+            }
           }
           if(_this.nopnum==2) {
+            if(_this.nownum > 0){
             _this.nownum--;
             _this.isnowlabel1();
+            }
+            else {
+              _this.returnimageviewNoSave();
+            }
           }
           _this.unable=false;
         });;

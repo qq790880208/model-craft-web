@@ -19,10 +19,12 @@
       </div>
     </div>
     <div class="dashboard-container" v-if="!isimageview" style="margin-left:100px">
-      <el-button @click="returnimageview">返回图片预览</el-button>
-      <el-button @click="nextimage">下一张(N)</el-button>
-      <el-button @click="previousimage">上一张(P)</el-button>
-      <el-button @click="skipimage">跳过当前图片(Q)</el-button>
+      <el-button @click="returnimageview">保存并返回图片预览</el-button>
+      <el-button @click="skipimagepre">上一张(A)</el-button>
+      <el-button @click="previousimage">保存并上一张(S)</el-button>
+      <el-button @click="nextimage">保存并下一张D)</el-button>   
+      <el-button @click="skipimagenext">下一张(F)</el-button>
+      <el-button @click="nomarkedimage">无可标注类型(G)</el-button>
       <imageselect style="margin-top:20px;" ref='imageselectref' 
         :fatherimagesrc="this.imageArry[nownum]"
         :imageindex="this.nownum"
@@ -54,19 +56,27 @@ function keyDownSearch(e){
   console.log("keydown!!!!!!!!!!!!")
   let theEvent = e.event || window.event;
   let code = theEvent.keyCode ||  theEvent.which || theEvent.charCode
-  if(code == 80){ //上一张
-    console.log("pppppppp!!!!!!!!!!!!!")
+  if(code == 83){ //保存并上一张
+    console.log("ssssssssss!!!!!!!!!!!!!")
     previousimage()
     //return false;     
   }
-  if(code == 78){ //下一张
-    console.log("nnnnnnnn!!!!!!!!!!!!!")
+  if(code == 68){ //保存并下一张
+    console.log("dddddddddd!!!!!!!!!!!!!")
     nextimage()
   //return true;
   }
-  if(code == 81){ //跳过
-    console.log("qqqqqqqq!!!!!!!!!!!!!")
-    skipimage()
+  if(code == 70){ //下一张
+    console.log("ffffffffff!!!!!!!!!!!!!")
+    skipimagenext()
+  }
+  if(code == 65){ //上一张
+    console.log("aaaaaaaaaa!!!!!!!!!!!!!")
+    skipimagepre()
+  }
+  if(code == 71){ //无可标注下一张
+    console.log("gggggggggg!!!!!!!!!!!!!")
+    nomarkedimage()
   }
 }
 
@@ -141,14 +151,19 @@ export default {
     },
     returnimageview(){
         this.nopnum=0;
-        this.$refs.imageselectref.saveinfo()
+        this.$refs.imageselectref.saveinfo(true)
         this.nownum=0;
         this.isimageview=!this.isimageview;
     },
-    markarray: function (childinfoArry) {
-      this.infoArry = childinfoArry;
-      console.log("222" + this.infoArry);
+    returnimageviewNoSave(){
+        this.nopnum=0;
+        this.nownum=0;
+        this.isimageview=!this.isimageview;
     },
+    // markarray: function (childinfoArry) {
+    //   this.infoArry = childinfoArry;
+    //   console.log("222" + this.infoArry);
+    // },
     newlabel(){
       console.log("申请新图片")
       console.log(store.getters.userid)
@@ -160,8 +175,8 @@ export default {
         this.requireimage()
       })
     },
-    //跳过图片
-    skipimage: function(){
+    //下一张
+    skipimagenext(){
       if(this.isimageview) {
         console.log("处于预览界面");
         return
@@ -169,11 +184,29 @@ export default {
       if (this.nownum < this.imageArry.length - 1) {
         this.nownum++;
       }
+      else {
+        this.returnimageviewNoSave();
+      }
       console.log("skipimage", this.nownum);
       this.nowseconds = 0;
     },
-    //下一张图片
-    nextimage: function () {
+    //上一张
+    skipimagepre(){
+      if(this.isimageview) {
+        console.log("处于预览界面");
+        return
+        }
+      if (this.nownum > 0) {
+        this.nownum--;
+      }
+      else {
+        this.returnimageviewNoSave();
+      }
+      console.log("skipimage", this.nownum);
+      this.nowseconds = 0;
+    },
+    //保存并下一张图片
+    nextimage() {
       if(this.unable) {
         //console.log("unable!!!!!!!!!!!!!!!!!!!!")
         return
@@ -182,30 +215,48 @@ export default {
         console.log("处于预览界面");
         return
         }
-      if (this.nownum < this.imageArry.length - 1) {
+      if (this.nownum < this.imageArry.length) {
         this.nopnum=1;
         this.unable=true
-        this.$refs.imageselectref.saveinfo()
+        this.$refs.imageselectref.saveinfo(true)
         //this.nownum++;
       }
       console.log("nextimage", this.nownum);
       //console.log("nextimage infoArry", this.infoArry, this.infoArry.length);
     },
-    //上一张图片
-    previousimage: function () {
+    //保存并上一张图片
+    previousimage() {
         if(this.unable) return
         if(this.isimageview) {
         console.log("处于预览界面");
         return
         }
       //if() return
-      if (this.nownum > 0) {
+      if (this.nownum >= 0) {
         this.nopnum=2;
         this.unable=true
-        this.$refs.imageselectref.saveinfo()
+        this.$refs.imageselectref.saveinfo(true)
         //this.nownum--;
       }
       console.log("previousimage", this.nownum);
+    },
+    //无标注类型
+    nomarkedimage(){
+      if(this.unable) {
+        //console.log("unable!!!!!!!!!!!!!!!!!!!!")
+        return
+      }
+      if(this.isimageview) {
+        console.log("处于预览界面");
+        return
+        }
+      if (this.nownum < this.imageArry.length) {
+        this.nopnum=1;
+        this.unable=true
+        this.$refs.imageselectref.saveinfo(false)
+        //this.nownum++;
+      }
+      console.log("nextimage", this.nownum);
     },
     //post修改正在标注标识
     // isnowlabel:function(){
@@ -239,6 +290,11 @@ export default {
       // })
     generateXML:function () {
       let _this = this;
+      _this.$message({
+          message:"开始生产xml标注文件",
+          duration:300,
+          type: 'success'
+      });
       const params = {
         dataset_id:store.getters.uuid
       }
@@ -266,11 +322,11 @@ export default {
       });
     },
     //保存图片标注信息
-    saveimageinfo: function (markinfo, imageeindex) {
+    saveimageinfo: function (markinfo, imageeindex,infoFlag) {
       this.infoArry[imageeindex] = markinfo;
       console.log("save success", markinfo, imageeindex);
       console.log("thisinfoArry", this.infoArry);
-      this.savelabel1(this.nownum);
+      this.savelabel1(this.nownum,infoFlag);
     },
     //get请求图片数据
     requireimage: function () {
@@ -287,12 +343,13 @@ export default {
          _this.lastinfoArry=[]
          _this.uuidArry=[]
          _this.imagelargeArry=[]
-        console.log("get图片结果", response);
+        console.log("get图片结果", response,response.data.items[0].label_data);
         for (let i = 0; i < response.data.items.length; i++) {
-          if(response.data.items[i].label_data==undefined){
+          if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
             _this.lastinfoArry.push([]);
           }
-          if(response.data.items[i].label_data!==undefined) {
+          //if(response.data.items[i].label_data!==undefined) {
+          else{
           console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data).rectangle);
           let tempa = JSON.parse(response.data.items[i].label_data).rectangle;
           let len = eval(tempa).length;
@@ -357,10 +414,11 @@ export default {
          _this.imagelargeArry=[]
         console.log("get图片结果", response);
         for (let i = 0; i < response.data.items.length; i++) {
-          if(response.data.items[i].label_data==undefined){
+          if(response.data.items[i].label_data==undefined||response.data.items[i].label_data=="[]"){
             _this.lastinfoArry.push([]);
           }
-          if(response.data.items[i].label_data!==undefined) {
+          //if(response.data.items[i].label_data!==undefined) {
+          else{
           console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data).rectangle);
           let tempa = JSON.parse(response.data.items[i].label_data).rectangle;
           let len = eval(tempa).length;
@@ -436,13 +494,13 @@ export default {
       });
     },
     //put更新数据
-    savelabel1(i) {
+    savelabel1(i,infoFlag) {
       let _this=this
       this.nowseconds = 0;
       //_this.$message('开始保存');
       console.log("save",JSON.stringify(this.infoArry[i]));
       let isab
-      if(this.infoArry[i].rectangle.length>0) isab=1
+      if(this.infoArry[i].rectangle.length>0||!infoFlag) isab=1
       else isab=2
       let data={
           label_data: JSON.stringify(this.infoArry[i]),
@@ -463,12 +521,22 @@ export default {
         _this.requiretag().then(function () {
           console.log("thenthenthenthen")
           if(_this.nopnum==1) {
+            if(_this.nownum < _this.imageArry.length - 1){
             _this.nownum++;
             _this.isnowlabel1();
+            }
+            else {
+              _this.returnimageviewNoSave();
+            }
           }
           if(_this.nopnum==2) {
+            if(_this.nownum > 0){
             _this.nownum--;
             _this.isnowlabel1();
+            }
+            else {
+              _this.returnimageviewNoSave();
+            }
           }
           
           _this.unable=false;
@@ -536,7 +604,9 @@ export default {
     this.requiretag();
     window.nextimage = this.nextimage;
     window.previousimage = this.previousimage;
-    window.skipimage = this.skipimage;
+    window.skipimagenext = this.skipimagenext;
+    window.skipimagepre = this.skipimagepre;
+    window.nomarkedimage = this.nomarkedimage;
     document.onkeydown = keyDownSearch;
     this.starttimer = setInterval(()=>{
       this.nowseconds++;

@@ -6,7 +6,7 @@
     <el-button @click="suoxiao">缩小</el-button>
     <el-button @click="huanyuan">还原图片大小</el-button>
     <el-button @click="saveinfo">保存 </el-button>
-    <el-button @click="updatelastdata">查看上次标注数据</el-button>
+    <!-- <el-button @click="updatelastdata">查看上次标注数据</el-button> -->
 
     <div class="content" id:contentfather>
       <div
@@ -21,6 +21,7 @@
         @click="getOffect"
       >
         <div>
+          
           <div :class=" //上面的平行四边形
               'biaozhu' + index == 'biaozhu' + b_i
                 ? 'biaozhu b_border'
@@ -38,8 +39,8 @@
               top: (item.isdown)?(item.top)+ 'px':(item.top - item.long)+ 'px',
               transform:'skew('+item.transform+'deg)',
               //transform:'rotateX(90)',
-              background: 'rgba(200,100,100,0.5)',
-              border: 'none',
+              background: item.front[1]==1?frontColor:item.front[1]==2?backColor:sideColor,
+              border: '1px solid rgba(128, 128, 128, 0.5)' ,
             }"
           ></div>
           <div :class=" //下面的平行四边形
@@ -58,8 +59,8 @@
               //-0.5*item.height*Math.tan(transformx* Math.PI / 180)
               top: (item.isdown)?(item.top+item.height)+ 'px':(item.top+item.height- item.long)+ 'px',
               transform:'skew('+item.transform+'deg)',
-              background: 'rgba(200,100,100,0.5)',
-              border: 'none',
+              background: item.front[4]==1?frontColor:item.front[4]==2?backColor:sideColor,
+              border: '1px solid rgba(128, 128, 128, 0.5)' ,
             }"
           ></div>
           <div :class=" //左边的平行四边形
@@ -83,8 +84,8 @@
               //top: (item.top-0.5*width/Math.tan(120* Math.PI / 180))+ 'px',
               //transform:'skew(0,120deg)',
               transform:'skew(0,'+(90-item.transform)+'deg)',
-              background: 'rgba(100,200,100,0.5)',
-              border: 'none',
+              background: item.front[5]==1?frontColor:item.front[5]==2?backColor:sideColor,
+              border: '1px solid rgba(128, 128, 128, 0.5)' ,
             }"
           ></div>
           <div :class=" //右边的平行四边形
@@ -108,8 +109,8 @@
               //top: (item.top-0.5*width/Math.tan(120* Math.PI / 180))+ 'px',
               //transform:'skew(0,120deg)',
               transform:'skew(0,'+(90-item.transform)+'deg)',
-              background: 'rgba(100,200,100,0.5)',
-              border: 'none',
+              background: item.front[2]==1?frontColor:item.front[2]==2?backColor:sideColor,
+              border: '1px solid rgba(128, 128, 128, 0.5)' ,
             }"
           ></div>
           <div :class=" //背面的正方形
@@ -127,8 +128,8 @@
               (item.transform>0)?item.left + Math.abs(item.long*Math.tan(item.transform* Math.PI / 180))+ 'px':item.left - Math.abs(item.long*Math.tan(item.transform* Math.PI / 180))+ 'px'
               :(item.transform>0)?item.left - Math.abs(item.long*Math.tan(item.transform* Math.PI / 180))+ 'px':item.left + Math.abs(item.long*Math.tan(item.transform* Math.PI / 180))+ 'px',
               top:(item.isdown)? item.top + item.long + 'px':item.top - item.long + 'px',
-              background: 'rgba(43,100,206,0.5)',
-              border: 'none',
+              background: item.front[3]==1?frontColor:item.front[3]==2?backColor:sideColor,
+              border: '1px solid rgba(128, 128, 128, 0.5)' ,
             }"
           >
           <div class="ltc" @mousedown.stop="move(false,true,true, null, $event)" v-if="b_i == index"> {{ index + 1 }} </div>
@@ -153,8 +154,8 @@
               position: 'absolute',
               left: item.left + 'px',
               top: item.top + 'px',
-              background: 'rgba(43,100,206,0.9)',
-              border: 'none',
+              background: item.front[0]==1?frontColor:item.front[0]==2?backColor:sideColor,
+              border: '1px solid rgba(128, 128, 128, 0.5)' ,
               //transform:'rotateX(90)',
             }"
           >
@@ -215,6 +216,7 @@
           @deletelabel="deletelabel(index)"
           @changeinfo="changeinfo(arguments,index)"
           @changeupdown="changeupdown(index)"
+          @changeFront="changeFront(index)"
           style="text-align: center"
         ></labelinfo>
       </div>
@@ -275,6 +277,12 @@ export default {
       scaleheight: null, //图片高度缩放倍数
       transformx:-30,
       boxArry: [],
+      // frontColor: 'rgba(43,100,206,0.75)',
+      // backColor: 'rgba(128,128,128,1)',
+      // sideColor: 'rgba(100,200,100,0.5)',
+      frontColor: 'rgba(43,100,206,0.9)',
+      backColor: 'rgba(128,64,64,0.5)',
+      sideColor: 'rgba(200,200,100,0.1)',
       // topgraphArry:[],
       // leftgraphArry:[],
       // rightgraphArry:[],
@@ -310,6 +318,16 @@ export default {
   methods: {
     changeupdown(index){
       this.boxArry[index].isdown=!this.boxArry[index].isdown
+    },
+    changeFront(index){
+      console.log(this.boxArry[index].front)
+      let first = this.boxArry[index].front[0]
+      for(let i = 0;i<this.boxArry[index].front.length-1;i++){
+        this.boxArry[index].front[i]=this.boxArry[index].front[i+1]
+      }
+      this.boxArry[index].front[5]=first
+      this.boxArry[index].width ++
+      this.boxArry[index].width --
     },
     getVuex() {
       console.log(this.$store.state.treeData);
@@ -487,6 +505,7 @@ export default {
                 isdown:false,
                 left: left,
                 top: top,
+                front: [1,0,0,2,0,0],
               });
               this.labelArry.push({
                 x1: left / this.scalewidth,
@@ -624,9 +643,16 @@ export default {
             //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
             //console.log("left",left,"top",top)
             if (left < owidth) this.boxArry[this.b_i].left = oleft + left;
+            else this.boxArry[this.b_i].left = oleft + owidth - 1;
+
             if (top < oheight) this.boxArry[this.b_i].top = otop + top;
-            this.boxArry[this.b_i].width = owidth - left;
-            this.boxArry[this.b_i].height = oheight - top;
+            else this.boxArry[this.b_i].top = otop + oheight - 1;
+
+            if (left < owidth) this.boxArry[this.b_i].width = owidth - left;
+            else this.boxArry[this.b_i].width = 1;
+
+            if (top < oheight) this.boxArry[this.b_i].height = oheight - top;
+            else this.boxArry[this.b_i].height = 1;
             this.labelArry[this.b_i].x1 =
               this.boxArry[this.b_i].left / this.scalewidth;
             this.labelArry[this.b_i].y1 =
@@ -634,57 +660,83 @@ export default {
           }
           if (mtype === 2) {
             //右上角的点
-            //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
-            //console.log("left",left,"top",top)
             if (top < oheight) this.boxArry[this.b_i].top = otop + top;
-            this.boxArry[this.b_i].width = left + 7;
-            this.boxArry[this.b_i].height = oheight - top;
-            this.labelArry[this.b_i].x1 =
-              this.boxArry[this.b_i].left / this.scalewidth;
+            else this.boxArry[this.b_i].top = otop + oheight - 1;
+            if (left > 0) this.boxArry[this.b_i].width = left + 7;
+            else this.boxArry[this.b_i].width = 1;
+            if (top < oheight) this.boxArry[this.b_i].height = oheight - top;
+            else this.boxArry[this.b_i].height = 1;
+            // this.labelArry[this.b_i].x1 =
+            //   this.boxArry[this.b_i].left / this.scalewidth;
             this.labelArry[this.b_i].y1 =
               this.boxArry[this.b_i].top / this.scaleheight;
-            this.labelArry[this.b_i].x2 =
-              (this.scalewidth * this.labelArry[this.b_i].x1 + left + 9) /
-              this.scalewidth;
-            this.labelArry[this.b_i].y2 =
-              (this.scaleheight * this.labelArry[this.b_i].y1 + top + 9) /
-              this.scaleheight;
+            if (left > 0)
+              this.labelArry[this.b_i].x2 =
+                (this.scalewidth * this.labelArry[this.b_i].x1 + left + 7) /
+                this.scalewidth;
+            else
+              this.labelArry[this.b_i].x2 =
+                (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
+                this.scalewidth;
           }
           if (mtype === 3) {
             //左下角的点
-            //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
-            //console.log("left",left,"top",top)
             if (left < owidth) this.boxArry[this.b_i].left = oleft + left;
-            this.boxArry[this.b_i].width = owidth - left;
-            this.boxArry[this.b_i].height = top + 7;
+            else this.boxArry[this.b_i].left = oleft + owidth - 1;
+            if (left < owidth) this.boxArry[this.b_i].width = owidth - left;
+            else this.boxArry[this.b_i].width = 1;
+            if (top > 0) this.boxArry[this.b_i].height = top + 7;
+            else this.boxArry[this.b_i].height = 1;
             this.labelArry[this.b_i].x1 =
               this.boxArry[this.b_i].left / this.scalewidth;
-            this.labelArry[this.b_i].y1 =
-              this.boxArry[this.b_i].top / this.scaleheight;
-            this.labelArry[this.b_i].x2 =
-              (this.scalewidth * this.labelArry[this.b_i].x1 + left + 9) /
-              this.scalewidth;
-            this.labelArry[this.b_i].y2 =
-              (this.scaleheight * this.labelArry[this.b_i].y1 + top + 9) /
-              this.scaleheight;
+            // this.labelArry[this.b_i].y1 =
+            //   this.boxArry[this.b_i].top / this.scaleheight;
+            // if (left < owidth)
+            //   this.labelArry[this.b_i].x2 =
+            //     (this.scalewidth * this.labelArry[this.b_i].x1 + left + 7) /
+            //     this.scalewidth;
+            // else
+            //   this.labelArry[this.b_i].x2 =
+            //     (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
+            //     this.scalewidth;
+            if (top > 0)
+              this.labelArry[this.b_i].y2 =
+                (this.scaleheight * this.labelArry[this.b_i].y1 + top + 7) /
+                this.scaleheight;
+            else
+              this.labelArry[this.b_i].y2 =
+                (this.scaleheight * this.labelArry[this.b_i].y1 + 1) /
+                this.scaleheight;
           }
           if (mtype === 4) {
-            //console.log("left",left,"top",top)
-            this.boxArry[this.b_i].width = left + 7;
-            this.boxArry[this.b_i].height = top + 7;
-            this.labelArry[this.b_i].x2 =
-              (this.scalewidth * this.labelArry[this.b_i].x1 + left + 9) /
-              this.scalewidth;
-            this.labelArry[this.b_i].y2 =
-              (this.scaleheight * this.labelArry[this.b_i].y1 + top + 9) /
-              this.scaleheight;
+             //console.log("left",left,"top",top)
+            if (left > 0) this.boxArry[this.b_i].width = left + 7;
+            else this.boxArry[this.b_i].width = 1;
+            if (top > 0) this.boxArry[this.b_i].height = top + 7;
+            else this.boxArry[this.b_i].height = 1;
+            if (left > 0)
+              this.labelArry[this.b_i].x2 =
+                (this.scalewidth * this.labelArry[this.b_i].x1 + left + 7) /
+                this.scalewidth;
+            else
+              this.labelArry[this.b_i].x2 =
+                (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
+                this.scalewidth;
+            if (top > 0)
+              this.labelArry[this.b_i].y2 =
+                (this.scaleheight * this.labelArry[this.b_i].y1 + top + 7) /
+                this.scaleheight;
+            else
+              this.labelArry[this.b_i].y2 =
+                (this.scaleheight * this.labelArry[this.b_i].y1 + 1) /
+                this.scaleheight;
           }
           if (mtype === 5) {
             //上边的点
-            //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
-            //console.log("left",left,"top",top)
             if (top < oheight) this.boxArry[this.b_i].top = otop + top;
-            this.boxArry[this.b_i].height = oheight - top;
+            else this.boxArry[this.b_i].top = otop + oheight - 1;
+            if (top < oheight) this.boxArry[this.b_i].height = oheight - top;
+            else this.boxArry[this.b_i].height = 1;
             this.labelArry[this.b_i].y1 =
               this.boxArry[this.b_i].top / this.scaleheight;
           }
@@ -693,27 +745,41 @@ export default {
             //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
             //console.log("left",left,"top",top)
             if (left < owidth) this.boxArry[this.b_i].left = oleft + left;
-            this.boxArry[this.b_i].width = owidth - left;
+            else this.boxArry[this.b_i].left = oleft + owidth - 1;
+            if (left < owidth) this.boxArry[this.b_i].width = owidth - left;
+            else this.boxArry[this.b_i].width = 1;
             this.labelArry[this.b_i].x1 =
-              this.boxArry[this.b_i].left / this.scalewidth;
+            this.boxArry[this.b_i].left / this.scalewidth;
           }
           if (mtype === 7) {
             //右边的点
             //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
             //console.log("left",left,"top",top)
-            this.boxArry[this.b_i].width = left + 7;
-            this.labelArry[this.b_i].x2 =
-              (this.scalewidth * this.labelArry[this.b_i].x1 + left + 9) /
-              this.scalewidth;
+            if (left > 0) this.boxArry[this.b_i].width = left + 7;
+            else this.boxArry[this.b_i].width = 1;
+            if (left > 0)
+              this.labelArry[this.b_i].x2 =
+                (this.scalewidth * this.labelArry[this.b_i].x1 + left + 7) /
+                this.scalewidth;
+            else
+              this.labelArry[this.b_i].x2 =
+                (this.scalewidth * this.labelArry[this.b_i].x1 + 1) /
+                this.scalewidth;
           }
           if (mtype === 8) {
             //下边点
             //console.log("this.boxArry[this.b_i].left",this.boxArry[this.b_i].left,"this.boxArry[this.b_i].top",this.boxArry[this.b_i].top )
             //console.log("left",left,"top",top)
-            this.boxArry[this.b_i].height = top + 7;
-            this.labelArry[this.b_i].y2 =
-              (this.scaleheight * this.labelArry[this.b_i].y1 + top + 9) /
-              this.scaleheight;
+            if (top > 0) this.boxArry[this.b_i].height = top + 7;
+            else this.boxArry[this.b_i].height = 1;
+            if (top > 0)
+              this.labelArry[this.b_i].y2 =
+                (this.scaleheight * this.labelArry[this.b_i].y1 + top + 7) /
+                this.scaleheight;
+            else
+              this.labelArry[this.b_i].y2 =
+                (this.scaleheight * this.labelArry[this.b_i].y1 + 1) /
+                this.scaleheight;
           }
         }
       };
@@ -864,7 +930,7 @@ export default {
       z-index: 3000;
     }
     .b_border {
-      border: 1px solid rgba(255, 0, 0, 0.5) !important;
+      border: 2px solid rgba(255, 0, 0, 0.5) !important;
     }
     .biaozhu {
       z-index: 9999999;
