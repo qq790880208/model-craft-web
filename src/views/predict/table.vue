@@ -36,9 +36,14 @@
           <span style="color:#5284DB">{{ scope.row.name }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="来自模型" width="160">
+      <el-table-column label="使用模型" width="160">
         <template slot-scope="scope">
-          <span>{{ algorithmArray[scope.row.algo_id]}}</span>
+          <span>{{ scope.row.predict_model_name}}</span>
+        </template>
+      </el-table-column>
+       <el-table-column label="待预测数据集" width="160">
+        <template slot-scope="scope">
+          <span>{{ scope.row.dataset_name}}</span>
         </template>
       </el-table-column>
       <el-table-column label="状态" width="120">
@@ -49,7 +54,8 @@
       </el-table-column>
       <el-table-column label="运行时长" width="120">
         <template slot-scope="scope">
-          <span>{{ scope.row.cost_time }}</span>
+          <span  v-if="scope.row.cost_time != 0">{{ scope.row.cost_time }} 秒</span>
+          <span v-if="scope.row.cost_time == 0">-</span>
         </template>
       </el-table-column>
       <el-table-column label="创建时间" width="160">
@@ -57,7 +63,7 @@
           <span>{{ formatDate(scope.row.create_time) }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="描述" width="120">
+      <el-table-column label="描述" width="180">
         <template slot-scope="scope">
           <span>{{ scope.row.descr}}</span>
         </template>
@@ -82,7 +88,7 @@
             <el-button
             v-if="scope.row.status==2"
             size="mini"
-            @click="handleJump(scope.$index, scope.row)">跳转</el-button>
+            @click="handleJump(scope.$index, scope.row)">查看预测结果</el-button>
           <!-- <el-button
             size="mini"
             @click="handleStop(scope.$index, scope.row)">终止</el-button> -->
@@ -90,8 +96,11 @@
             size="mini"
             @click="handleShow()">可视化</el-button> -->
           <el-button
-            size="mini"
+            size="mini"  v-if="scope.row.status!=0"
             @click="handleShowlog(scope.$index, scope.row)">日志</el-button>
+          <el-button
+            size="mini"  v-if="scope.row.status==0"
+            @click="handleShowlog(scope.$index, scope.row)" disabled>日志</el-button>
             <el-button
             size="mini" type="danger"
             @click="handleDelete(scope.$index, scope.row)">删除</el-button>
@@ -157,12 +166,12 @@
             </div>
           </el-select>
         </el-form-item>
-        <el-form-item label="待预测数据" prop="data">
-          <el-select v-model="taskForm.data" placeholder="请选择">
+        <el-form-item label="待预测数据" prop="dataset_index">
+          <el-select v-model="taskForm.dataset_index" placeholder="请选择">
             <div style="height:150px;" class="scrollbar">
               <el-scrollbar style="height:100%;;">
                 <el-option v-for="(item, index) in initialPara.inputData.name" :key="index"
-                :label="item" :value="initialPara.inputData.uuid[index]">
+                :label="item" :value="index">
                 </el-option>
               </el-scrollbar>
             </div>
@@ -189,7 +198,7 @@ export default {
     data() {
       return {
         //主页面部分数据
-        statusoptions:['未开始','运行中', '已完成', '运行失败'],
+        statusoptions:['未开始','运行中', '结束成功', '结束失败'],
 
         selectedstatus:'5',//顶部选择的状态
         tableData:[],
@@ -217,6 +226,7 @@ export default {
           name: '',
           algorithm: '',
           data:'',
+          dataset_index: '',
           model_path:'',
           model_path_index:'',
           outpath:'',
@@ -231,7 +241,7 @@ export default {
           model_path_index: [
             { required: true, message: '请选择模型路径', trigger: 'change' }
           ],
-          data: [
+          dataset_index: [
             { required: true, message: '请选择要预测的数据集', trigger: 'change' }
           ],
           outpath: [
@@ -270,7 +280,8 @@ export default {
           modelpath: [],
           modelNameVer: [],
           tjid: [],
-          model_ids: []
+          model_ids: [],
+          tjname: []
         },//创建任务时从后台传入的数据源和输出路径
         currentAlgorithm:0,//创建任务时目前选中的代码
         isdisplaytl:false,
@@ -287,6 +298,7 @@ export default {
           "args": "string",
           "cost_time": "0",
           "dataset_id": "string",
+          "dataset_name": "string",
           "descr": "string",
           "name": "string",
           "status": "0",
@@ -370,7 +382,6 @@ export default {
             this.initialPara.inputData.name.push(res.data.items[i].name)
             this.initialPara.inputData.uuid.push(res.data.items[i].uuid)
           }
-          console.log(res.data.items[0].name)
         })
       },
       createbtn:function(){//点击桌面的创建按钮
@@ -411,12 +422,14 @@ export default {
           this.initialPara.modelNameVer = []
           this.initialPara.tjid = []
           this.initialPara.model_ids = []
+          this.initialPara.tjname = []
           
           for(let i = 0;i < res.data.items.length;i++){
             this.initialPara.modelpath.push(res.data.items[i].model_oss_path)
             this.initialPara.modelNameVer.push(res.data.items[i].name + " v" + res.data.items[i].version)
             this.initialPara.tjid.push(res.data.items[i].tj_id)
             this.initialPara.model_ids.push(res.data.items[i].uuid)
+            this.initialPara.tjname.push(res.data.items[i].name)
           }
           // console.log(this.initialPara.modelpath)
           // console.log(this.initialPara.modelNameVer)
@@ -591,11 +604,13 @@ export default {
 
         const params0 = {
           'uuid': this.taskForm.uuid,
-          'dataset_id': this.taskForm.data,
+          'dataset_id': this.initialPara.inputData.uuid[this.taskForm.dataset_index],
+          'dataset_name': this.initialPara.inputData.name[this.taskForm.dataset_index],
           'user_id': store.getters.userid,
           'ispredicts': 1,
           'model_oss_path': this.initialPara.modelpath[this.taskForm.model_path_index],
           'predict_tjid': this.initialPara.tjid[this.taskForm.model_path_index],
+          'predict_model_name': this.initialPara.tjname[this.taskForm.model_path_index],
           'descr': this.taskForm.description,
         }
         console.log(params0)
