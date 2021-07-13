@@ -6,7 +6,7 @@
           //background: 'rgb(192, 192, 192)',
           //width:this.imagewidth+'px',
           //marginLeft: (this.fabricObj.width-458) / 2 + 'px',
-          marginLeft: 200 + 'px',
+          marginLeft: (this.divWidth-650) / 2 + 'px',
           display: 'block',
         }"
       >
@@ -231,6 +231,10 @@ export default {
   },
   data() {
     return {
+      divWidth:1000,
+      divHeight:750,
+      mountedFlag:true,
+
       radio: "polygonmark",
       buttonindex: -1,
       input: null,
@@ -313,7 +317,13 @@ export default {
       return this.fatherimagesrc;
     },
   },
+  destroyed(){
+    window.removeEventListener('resize', this.GetWindowInfo)
+  },
   mounted() {
+    window.addEventListener('resize', this.GetWindowInfo); //注册监听器
+    this.GetWindowInfo() //页面创建时先调用一次
+    this.mountedFlag=false;
     this.$nextTick(() => {
       //延时加载放置报错
       setTimeout(() => {
@@ -376,6 +386,23 @@ export default {
     // this.buttonindex = i;
     // console.log("hahaha" + this.buttonindex);
     // },
+    GetWindowInfo(){
+        // 获取浏览器高宽
+        if(window.innerWidth>1650) {
+          this.divWidth=1000;
+          this.divHeight=750;
+        } else if(window.innerWidth>800){
+          this.divWidth=1000-(1650-window.innerWidth);
+          this.divHeight=750-(1650-window.innerWidth)*0.75
+        } else {
+          this.divWidth=500;
+          this.divHeight=375;
+        }
+        if(!this.mountedFlag){
+          this.fabricObj.setWidth(this.divWidth);
+          this.fabricObj.setHeight(this.divHeight);
+        }
+    },
     Edit() {
       if (!this.isimagechange) {
         console.log("caonima",this.fabricObj._objects)
@@ -522,14 +549,14 @@ export default {
     ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
     fangda() {
       //放大图片
-      let zoomPoint = new fabric.Point(500,375);
+      let zoomPoint = new fabric.Point(this.divWidth/2,this.divHeight/2);
       if (this.zoom < 4.99) this.zoom += 0.1;
       this.fabricObj.zoomToPoint(zoomPoint, this.zoom);
       console.log(this.fabricObj.getZoom());
     },
     suoxiao() {
       //缩小图片
-      let zoomPoint = new fabric.Point(500,375);
+      let zoomPoint = new fabric.Point(this.divWidth/2,this.divHeight/2);
       if (this.zoom > 0.2) this.zoom -= 0.1;
       if (this.zoom > 0.1) this.fabricObj.zoomToPoint(zoomPoint, this.zoom);
       console.log(this.fabricObj.getZoom());
@@ -598,11 +625,15 @@ export default {
           //this.testcirclearray.push(a)
           this.makeLineEndPoint(a);
         }
+        this.markinfo = this.lastlabelArry.line[i].info;
+        this.findcolor(this.lastlabelArry.line[i].info);
         this.lineinfoArray.push({
-          point:this.linePoints
+          point:this.linePoints,
+          info: this.markinfo
         })
         this.reallineinfoArray.push({
-          point:this.realLinePoints
+          point:this.realLinePoints,
+          info: this.markinfo
         })
         console.log("linePoints", this.linePoints);
         this.makeLine(this.linePoints);
@@ -611,6 +642,7 @@ export default {
         this.allobjArray.push(this.line);
         this.linePoints=[];
         this.realLinePoints=[];
+        this.markinfo = null;
       }
       }
 
@@ -656,6 +688,8 @@ export default {
       //点
       for (let i = 0; i < this.lastlabelArry.circle.length; i++) {
         console.log("circle",this.lastlabelArry.circle[i].point)
+        this.markinfo = this.lastlabelArry.circle[i].info;
+        this.findcolor(this.lastlabelArry.circle[i].info);
         let a = {};
         let reala = {};
         a["x"] = this.lastlabelArry.circle[i].point.x * this.scalewidth;
@@ -664,7 +698,7 @@ export default {
         reala["y"] = this.lastlabelArry.circle[i].point.y
         let apoint = new fabric.Circle({
           radius: 5,
-          fill: "green",
+          fill: this.markcolor,
           selectable: false,
           hasBorders: false,
           hasControls: false,
@@ -683,12 +717,14 @@ export default {
           this.allobjArray.push(apoint)
           this.fabricObj.add(apoint)
           this.circleinfoArray.push({
-            point:a
+            point:a,
+            info: this.markinfo
           })
           this.realcircleinfoArray.push({
-            point:reala
+            point:reala,
+            info: this.markinfo
           })
-          
+          this.markinfo = null;
       }
       }
 
@@ -729,16 +765,16 @@ export default {
           _this.scalewidth = 1;
           _this.scaleheight = 1;
           // console.log(_this.fabricObj)
-          if (img.width < 450 && img.height < 600) {
-            while (_this.imagewidth < 450 && _this.imageheight < 600) {
+          if (img.width < _this.divWidth*0.8 && img.height < _this.divHeight*0.8) {
+            while (_this.imagewidth < _this.divWidth*0.8 && _this.imageheight < _this.divHeight*0.8) {
               _this.imagewidth *= 1.1;
               _this.imageheight *= 1.1;
               _this.scalewidth *= 1.1;
               _this.scaleheight *= 1.1;
             }
           }
-          if (img.width > 750 || img.height > 1000) {
-            while (_this.imagewidth > 750 || _this.imageheight > 1000) {
+          if (img.width > _this.divWidth || img.height > _this.divHeight) {
+            while (_this.imagewidth > _this.divWidth || _this.imageheight > _this.divHeight) {
               _this.imagewidth /= 1.1;
               _this.imageheight /= 1.1;
               _this.scalewidth /= 1.1;
@@ -749,11 +785,11 @@ export default {
           // _this.fabricObj.setHeight(imageheight);
           // let ppoint = new fabric.Point(0, 0);
           // _this.fabricObj.absolutePan(ppoint);
-          _this.distanceDelta = new fabric.Point((1000-_this.imagewidth)/2, (750-_this.imageheight)/2);
+          _this.distanceDelta = new fabric.Point((_this.divWidth-_this.imagewidth)/2, (_this.divHeight-_this.imageheight)/2);
           //var delta = new fabric.Point(1,100);
           //_this.fabricObj.relativePan(_this.distanceDelta);
-          _this.fabricObj.setWidth(1000);
-          _this.fabricObj.setHeight(750);
+          _this.fabricObj.setWidth(_this.divWidth);
+          _this.fabricObj.setHeight(_this.divHeight);
           // _this.$refs.outdiv.height=750;
           // _this.$refs.outdiv.width=1000;
           // if (img.width < 600 && img.height < 600) {
@@ -797,13 +833,15 @@ export default {
       console.log("eotu23tu042982904823",this.testcirclearray,this.testcirclearray.length)
       if (!this.buttonmouseoveflag) {
         let poly = this.fabricObj.getObjects()[index];
-        console.log("tesjiodshovdhsbsngs",poly,poly.type,poly.numid)
+        console.log("tesjiodshovdhsbsngs",poly,poly.type)
         if(poly.type=="polygon"){
           let index2 = this.polygonArray.indexOf(poly)
           console.log("index2",index2)
           console.log(this.polygoninfoArray[index2]);
           console.log(this.realpolygoninfoArray[index2]);
-          poly.fill = "rgba(0,0,0,1)";
+          poly.set({
+            fill:"black"
+          });
         }
         if(poly.type=="line"){
           console.log("islinein")
@@ -844,15 +882,22 @@ export default {
         }
         if(poly.type=="line"){
           console.log("islineout")
+          let index2 = this.lineArray.indexOf(poly)
+          this.findcolor(this.lineinfoArray[index2].info);
           poly.set({
-            stroke:"red"
+            stroke:this.markcolor
           });
+          //poly.stroke = this.markcolor;
+          this.markcolor = tempcolor;
         }
         if(poly.type=="point"){
           console.log("ispointout")
+          let index2 = this.circleArray.indexOf(poly)
+          this.findcolor(this.circleinfoArray[index2].info);
           poly.set({
-            fill:"green"
+            fill:this.markcolor
           });
+          this.markcolor = tempcolor;
         }
         this.buttonmouseoveflag = false;
         this.fabricObj.renderAll();
@@ -985,10 +1030,11 @@ export default {
           // console.log("eeeeeeeeeeee",e)
           // if(e.)
           if (this.isimagechange) return;
-          if (this.markinfo == null && this.radio == "polygonmark") {
+          if (this.markinfo == null ) {
             this.$message({
               message: "您没有选中任何标签",
               type: "warning",
+              duration:500,
             });
             return;
           }
@@ -1090,8 +1136,8 @@ export default {
                   hasControls: false,
                   //transparentCorners:false ,
                   //strokeUniform :true,
-                  //stroke: this.markcolor,
-                  stroke:"red",
+                  stroke: this.markcolor,
+                  //stroke:"red",
                 })
               );
               //this.llines[0].type="line"
@@ -1118,18 +1164,32 @@ export default {
                   this.realLinePoints.push(reala);
                   this.makeLineEndPoint(a);
                   this.makeLine(this.linePoints);
+                  // this.lineArray.reverse()
                   this.lineArray.push(this.line);
-                  this.allobjArray.push(this.line)
+                  // this.lineArray.reverse()
+                  // this.allobjArray.reverse()
+                  this.allobjArray.splice(this.lineArray.length-1,0,this.line)
+                  // this.allobjArray.reverse()
+                  // this.lineinfoArray.reverse()
                   this.lineinfoArray.push({
-                    point:this.linePoints
+                    point:this.linePoints,
+                    info: this.markinfo,
                   })
+                  // this.lineinfoArray.reverse()
+                  // this.reallineinfoArray.reverse()
                   this.reallineinfoArray.push({
-                    point:this.realLinePoints
+                    point:this.realLinePoints,
+                    info: this.markinfo,
                   })
+                  // this.reallineinfoArray.reverse()
                   this.fabricObj.remove(this.llines[0])
                   this.fabricObj.add(this.line)
                   //console.log("worinima",this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.line)])
-                  this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.line)].sendToBack();
+                  //this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.line)].sendToBack();
+                  console.log("this.fabricObj._objects",this.fabricObj._objects)
+                  for(let i =0;i<this.polygonArray.length+this.circleArray.length;i++){
+                    this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.line)].sendBackwards();
+                  }
                   this.fabricObj.renderAll();
                   this.linePoints=[];
                   this.realLinePoints=[];
@@ -1159,7 +1219,7 @@ export default {
               reala["y"] = e.absolutePointer.y / this.scaleheight;
               let apoint = new fabric.Circle({
                   radius: 5,
-                  fill: "green",
+                  fill: this.markcolor,
                   selectable: false,
                   hasBorders: false,
                   hasControls: false,
@@ -1176,10 +1236,12 @@ export default {
               this.circleArray.push(apoint)
               this.allobjArray.push(apoint)
               this.circleinfoArray.push({
-                point:a
+                point:a,
+                info: this.markinfo
               })
               this.realcircleinfoArray.push({
-                point:reala
+                point:reala,
+                info: this.markinfo
               })
               this.fabricObj.add(apoint)
               this.fabricObj.renderAll();
@@ -1350,8 +1412,8 @@ export default {
                   hasControls: false,
                   //transparentCorners:false ,
                   //strokeUniform :true,
-                  //stroke: this.markcolor,
-                  stroke:"red",
+                  stroke: this.markcolor,
+                  //stroke:"red",
                 })
                 this.line.type="line"
                 //this.line.sendToBack();
