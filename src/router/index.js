@@ -48,7 +48,7 @@ export const constantRoutes = [
     redirect: '/dashboard', /* chong */
     children: [{
       path: 'dashboard',
-      name: 'Dashboard',
+      name: '主页',
       component: () => import('@/views/dashboard/index'),
       meta: { title: '主页', icon: 'dashboard' }
     },
@@ -115,7 +115,8 @@ export const asyncRoutes = [
   {
     path: '/teamManagement',
     component: Layout,
-    redirect: '/teamManagement/rectangle',
+    redirect: '/teamManagement',
+    // redirect: '/',
     name: 'teamManagement',
     meta: {
       title: '团队管理',
@@ -134,7 +135,7 @@ export const asyncRoutes = [
   {
     path: '/label',
     component: Layout,
-    redirect: '/label/rectangle',
+    redirect: '/label',
     name: 'label',
     meta: {
       title: '数据集标注',
@@ -173,7 +174,7 @@ export const asyncRoutes = [
     path: '/dataSet',
     component: Layout,
     name: 'dataSet',
-    redirect: '/dataSet/rectangle',
+    redirect: '/dataSet',
     meta: {
       title: '数据管理',
       resources: 'dataSet',
@@ -198,7 +199,7 @@ export const asyncRoutes = [
     path: '/newtrain',
     component: Layout,
     name: 'newtrain',
-    redirect: '/newtrain/table',
+    redirect: '/newtrain',
     meta: {
       title: '训练管理',
       resources: 'newtrain',
@@ -217,6 +218,7 @@ export const asyncRoutes = [
     path: '/models',
     component: Layout,
     name: 'model',
+    redirect: '/models',
     meta: {
       title: '模型管理',
       resources: 'models',
@@ -235,6 +237,7 @@ export const asyncRoutes = [
     path: '/predicts',
     component: Layout,
     name: 'predict',
+    redirect: '/predicts',
     meta: {
       title: '在线预测',
       resources: 'models',
@@ -252,7 +255,7 @@ export const asyncRoutes = [
   {
     path: '/system_management',
     component: Layout,
-    redirect: '/system_management/rectangle',
+    redirect: '/system_management',
     name: 'system_management',
     meta: {
       title: '系统设置',
