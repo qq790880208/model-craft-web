@@ -357,6 +357,8 @@ export default {
       },
       searchStatusTask(){//下拉框排序查询
         this.selectPara.para = this.selectedstatus
+        if (this.selectedstatus == 5) this.fetchData()
+        else {
         let tmp = {
           "user_id": store.getters.userid,
           "curr": this.queryInfo.pagenum,
@@ -370,6 +372,7 @@ export default {
           this.totalData = res.data.items.total
           this.tableData = res.data.items.records
         })
+        }
       },
       handleChangeModel() {
         let model_index = this.initialPara.model_ids[this.taskForm.model_path_index]
