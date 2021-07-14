@@ -13,10 +13,10 @@
            @change="searchStatusTask">
            <el-option label="全部状态" value="5"></el-option>
            <el-option label="未开始" value="0"></el-option>
-           <el-option label="初始化" value="1"></el-option>
-           <el-option label="运行中" value="2"></el-option>
-           <el-option label="结束成功" value="3"></el-option>
-           <el-option label="结束失败" value="4"></el-option>
+           <!-- <el-option label="初始化" value="1"></el-option> -->
+           <el-option label="运行中" value="1"></el-option>
+           <el-option label="结束成功" value="2"></el-option>
+           <el-option label="结束失败" value="3"></el-option>
         </el-select>
       </el-col>
       <el-col :span="3">
@@ -440,6 +440,8 @@ export default {
       },
       searchStatusTask(){//下拉框排序查询
         this.selectPara.para = this.selectedstatus
+        if (this.selectedstatus == 5) this.fetchData()
+        else {
         let tmp = {
           "user_id": store.getters.userid,
           "curr": this.queryInfo.pagenum,
@@ -453,6 +455,7 @@ export default {
           this.totalData = res.data.items.total
           this.tableData = res.data.items.records
         })
+        }
       },
       createbtn:function(){//点击桌面的创建按钮
         this.dialogFormVisible = true

@@ -50,7 +50,7 @@ export function showLog(data) {
 export function search(query){//输入框查询
   return request({
     params:query,
-    url:'/train/search',
+    url:'/predict/search',
     method:'get',
     baseURL: 'http://10.19.1.181:8084'
   })
@@ -58,10 +58,10 @@ export function search(query){//输入框查询
 
 export function searchStatus(data){//下拉框查询
   return request({
-    url:'/newtrain/searchStatus',
+    url:'/predict/search',
     method:'get',
-    data: data
-    // baseURL: 'http://localhost:9528/dev-api'
+    data: data,
+    baseURL: 'http://10.19.1.181:8084'
   })
 }
 
