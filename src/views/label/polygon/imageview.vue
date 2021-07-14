@@ -96,6 +96,8 @@ export default {
       uuidArry: [],
       //存储图片url,是否已标注等信息的数组，用于获取远程图片信息
       imagelargeArry:[],
+      //标注状态的数组
+      imageislabelArry:[],
     //   //预读取每张图片的分辨率，以适应画布
     //   imagesize:[],
       //后台读取的标注类别
@@ -136,6 +138,7 @@ export default {
       isimageview: true,
       automarkbtntext:"开始自动标注",
       isloading:false,
+      isDestroy:false,
     };
   },
   components: {
@@ -154,7 +157,7 @@ export default {
     window.skipimagepre = this.skipimagepre;
     window.nomarkedimage = this.nomarkedimage;
     document.onkeydown = keyDownSearch;
-        this.starttimer = setInterval(()=>{
+      this.starttimer = setInterval(()=>{
       this.nowseconds++;
       //console.log(this.nowseconds,"my定时器！！！！")
       if(this.nowseconds>=60000){
@@ -183,7 +186,7 @@ export default {
     },
     returnimageview(){
         this.nopnum=0;
-        this.$refs.drawpolygonref.saveinfo(true)
+        this.$refs.drawpolygonref.saveinfo(true,false)
         this.nownum=0;
         this.isimageview=!this.isimageview;
     },
@@ -212,7 +215,7 @@ export default {
       if (this.nownum < this.imageArry.length) {
         this.nopnum=1;
         this.unable=true
-        this.$refs.drawpolygonref.saveinfo(true)
+        this.$refs.drawpolygonref.saveinfo(true,false)
         //this.nownum++;
       }
       console.log("nextimage",this.nownum);
@@ -232,7 +235,7 @@ export default {
       if (this.nownum >= 0) {
         this.nopnum=2;
         this.unable=true
-        this.$refs.drawpolygonref.saveinfo(true)
+        this.$refs.drawpolygonref.saveinfo(true,false)
         //this.nownum--;
       }
       console.log("previousimage",this.nownum);
@@ -254,7 +257,7 @@ export default {
       if (this.nownum < this.imageArry.length) {
         this.nopnum=1;
         this.unable=true
-        this.$refs.drawpolygonref.saveinfo(false)
+        this.$refs.drawpolygonref.saveinfo(false,false)
         //this.nownum++;
       }
       console.log("nextimage", this.nownum);
@@ -270,9 +273,11 @@ export default {
         return
       }
       if (this.nownum < this.imageArry.length - 1) {
+        this.$refs.drawpolygonref.saveinfo(true,true)
         this.nownum++;
       }
       else {
+        this.$refs.drawpolygonref.saveinfo(true,true)
         this.returnimageviewNoSave();
       }
       console.log("skipimage", this.nownum);
@@ -289,9 +294,11 @@ export default {
         return
       }
       if (this.nownum > 0) {
+        this.$refs.drawpolygonref.saveinfo(true,true)
         this.nownum--;
       }
       else {
+        this.$refs.drawpolygonref.saveinfo(true,true)
         this.returnimageviewNoSave();
       }
       console.log("skipimage", this.nownum);
@@ -312,11 +319,11 @@ export default {
       })
     },
     //保存图片标注信息
-    saveimageinfo: function (markinfo, imageeindex,infoFlag) {
+    saveimageinfo: function (markinfo, imageeindex,infoFlag,changeFlag) {
       this.infoArry[imageeindex] = markinfo;
       console.log("save success", markinfo, imageeindex);
       console.log("thisinfoArry", this.infoArry);
-      this.savelabel1(this.nownum,infoFlag)
+      this.savelabel1(this.nownum,infoFlag,changeFlag)
     },
     //post生成xml
     generateXML:function () {
@@ -360,7 +367,7 @@ export default {
       });
     },
     //get请求图片数据
-    requireimage: function () {
+    requireimage() {
       console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
       let _this = this;
       this.isalllabeled = true;
@@ -374,6 +381,7 @@ export default {
         _this.lastinfoArry=[]
         _this.uuidArry=[]
         _this.imagelargeArry=[]
+        _this.imageislabelArry=[]
         console.log("get response.data.items",response.data.items);
         for (let i = 0; i < response.data.items.length; i++) {
           console.log("get items",[i],response.data.items[i]);
@@ -420,7 +428,9 @@ export default {
           _this.uuidArry.push(response.data.items[i].uuid);
         //   console.log("_this.uuidArry", _this.uuidArry);
           _this.imageArry.push(response.data.items[i].file_path);
+          _this.imageislabelArry.push(response.data.items[i].is_label)
         }
+        console.log("imageislabelArry",_this.imageislabelArry)
         console.log("_this.imageArry",_this.imageArry);
         console.log("_this.lastinfoArry",_this.lastinfoArry);
         //console.log("transforjson",JSON.stringify(_this.infoArry[0][0]))
@@ -445,6 +455,7 @@ export default {
         _this.lastinfoArry=[]
         _this.uuidArry=[]
         _this.imagelargeArry=[]
+        _this.imageislabelArry=[]
         console.log("get response.data.items",response.data.items);
         for (let i = 0; i < response.data.items.length; i++) {
           console.log(response.data.items[i]);
@@ -499,7 +510,9 @@ export default {
           _this.uuidArry.push(response.data.items[i].uuid);
         //   console.log("_this.uuidArry", _this.uuidArry);
           _this.imageArry.push(response.data.items[i].file_path);
+          _this.imageislabelArry.push(response.data.items[i].is_label)
         }
+        console.log("imageislabelArry",_this.imageislabelArry)
         console.log("_this.imageArry",_this.imageArry);
         console.log("_this.lastinfoArry",_this.lastinfoArry);
         //console.log("transforjson",JSON.stringify(_this.infoArry[0][0]))
@@ -537,10 +550,23 @@ export default {
       });
     },
     //put请求
-    savelabel1(i,infoFlag) {
+    savelabel1(i,infoFlag,changeFlag) {
       let _this=this
       this.nowseconds = 0;
-      console.log("put000no",this.infoArry[i])
+      if(changeFlag){
+        console.log("onlyislabel")
+          let data={
+          is_label: this.imageislabelArry[i],
+          uuid: this.uuidArry[i],
+          dataset_id: store.getters.uuid
+      }
+      savelabel(data).then(function (response) {
+        console.log("change!!!!!!!!!!!!!!!!!!!!!!!",response)
+        if(!_this.isDestroy) _this.isnowlabel1();
+      })
+      }
+      else{
+      console.log("put000no",i,this.infoArry[i])
       console.log("put000",JSON.stringify(this.infoArry[i]))
       let isab
       if(this.infoArry[i].polygon.length>0||this.infoArry[i].line.length>0||this.infoArry[i].circle.length>0||!infoFlag) isab=1
@@ -591,6 +617,7 @@ export default {
         _this.requireimage();
         _this.requiretag();
       });
+      }
     },
         //post半自动标注
     automark1(){
@@ -631,6 +658,10 @@ export default {
     clearInterval(this.starttimer);
     this.starttimer=null;
     this.nowseconds=0;
+    if(this.nownum>-1) {
+      this.isDestroy=true
+      this.savelabel1(this.nownum,true,true)
+    }
   },
   computed: {
     ...mapGetters(["name"]),

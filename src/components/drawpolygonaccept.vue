@@ -96,13 +96,13 @@
           >
             <el-button
               :style="{
-                width: 120 + 'px',
+                width: 200 + 'px',
                 marginBottom: 10 + 'px',
               }"
               type="success"
               @mouseover.native="infotip(index)"
               @mouseout.native="removetip(index)"
-              >{{ index + 1 }}、{{items.type=="polygon"?"多边形":items.type=="line"?"线":"点"}}
+              >{{ index + 1 }}、{{items.type=="polygon"?"多边形":items.type=="line"?"线":"点"}} {{items.info}}
             </el-button>
           </div>
         </div>
@@ -440,6 +440,8 @@ export default {
           this.realcircleinfoArray[this.circleArray.indexOf(apoint)].point.y=(apoint.top+5)/this.scaleheight
           })
           apoint.type="point"
+          apoint.color=this.markcolor
+          apoint.info=this.markinfo
           this.circleArray.push(apoint)
           this.allobjArray.push(apoint)
           this.fabricObj.add(apoint)
@@ -672,6 +674,8 @@ export default {
         top: top,
       });
       this.roof.type="polygon";
+      this.roof.color=this.markcolor;
+      this.roof.info=this.markinfo
       //this.roof.bringToFront();
       console.log("create!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.roof);
       // this.roof.on({
@@ -695,6 +699,8 @@ export default {
                   //stroke:"red",
                 })
                 this.line.type="line"
+                this.line.color=this.markcolor
+                this.line.info=this.markinfo
                 //this.line.sendToBack();
                 console.log("this.line",this.line)
     },
