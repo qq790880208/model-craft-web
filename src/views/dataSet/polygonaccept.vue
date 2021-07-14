@@ -52,7 +52,7 @@
 <script>
 
 import { mapGetters } from "vuex";
-import drawpolygon from "@/components/drawpolygonaudit.vue";
+import drawpolygon from "@/components/drawpolygonaccept.vue";
 import miniimage from "@/components/acceptdatashow.vue"
 import store from "@/store"
 import { getAuditDatasByUserId, getIsAuditApi, batchSaveApi, batchRejectApi, batchReSetApi, passApi, reSetApi, rejectApi } from '@/api/audit'

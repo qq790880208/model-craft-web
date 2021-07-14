@@ -8,7 +8,7 @@
     clearable
     ></el-input> -->
     <p style="width:40px;display:inline-block">{{nowindex}}、</p>
-    <el-input style="width:150px" v-model="inputname" :disabled="true"></el-input>
+    <el-input :style="{width:this.divWidth*0.15+'px'}"  v-model="inputname" :disabled="true"></el-input>
     <el-select v-model="value" @change="changefatherinfo" filterable placeholder=" " style="width:40px" ref="selectref">
       <el-option
       v-for="item in typelabel"
@@ -19,7 +19,7 @@
     </el-select>
 
     <!-- <el-button @click="changefatherinfo" type="primary">保存</el-button> -->
-    <el-button @click="deletefatherlabel" type="danger" style="width:100px;margin-left:10px" >删除</el-button>
+    <el-button @click="deletefatherlabel" type="danger" :style="{width:this.divWidth*0.1+'px', marginLeft:10+'px'}" >删除</el-button>
     </el-row>
   </div>
 </template>
@@ -30,7 +30,9 @@
    data () {
      return {
        input: "",
-       value: ''
+       value: '',
+       divWidth:1000,
+       divHeight:750
      }
    },
    props: {
@@ -42,6 +44,19 @@
      },
    },
    methods: {
+      GetWindowInfo(){
+        // 获取浏览器高宽
+        if(window.innerWidth>1650) {
+          this.divWidth=1000;
+          this.divHeight=750;
+        } else if(window.innerWidth>800){
+          this.divWidth=1000*(window.innerWidth/1650);
+          this.divHeight=750*(window.innerWidth/1650)
+        } else {
+          this.divWidth=500;
+          this.divHeight=375;
+        }
+      },
      //通知父方法删除对应的div和标注框
      deletefatherlabel(){
        //console.log(this.input)
@@ -61,7 +76,15 @@
    },
    components: {
 
-   }
+   },
+  destroyed(){
+    window.removeEventListener('resize', this.GetWindowInfo)
+  },
+  mounted: function () {
+    window.addEventListener('resize', this.GetWindowInfo); //注册监听器
+    this.GetWindowInfo() //页面创建时先调用一次
+    //this.updatelastdata();
+  },
  }
 </script>
 
