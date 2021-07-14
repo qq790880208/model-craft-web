@@ -122,14 +122,15 @@
           >
             <el-button
               :style="{
-                width: 120 + 'px',
+                width: 200 + 'px',
                 marginBottom: 10 + 'px',
+                background:items.color
               }"
               type="danger"
               @mouseover.native="infotip(index)"
               @mouseout.native="removetip(index)"
               @mousedown.native="deletemarked(index)"
-              >{{ index + 1 }}、{{items.type=="polygon"?"多边形":items.type=="line"?"线":"点"}}
+              >{{ index + 1 }}、{{items.type=="polygon"?"多边形":items.type=="line"?"线":"点"}} {{items.info}}
             </el-button>
           </div>
         </div>
@@ -579,7 +580,7 @@ export default {
       this.markcolor = item.color;
       this.markinfo = item.name;
     },
-    saveinfo(infoFlag) {
+    saveinfo(infoFlag,changeFlag) {
       //保存标注信息时传递的信息
       //console.log("start!!!", this.realpolygoninfoArray);
       let tempArry = {}
@@ -594,7 +595,7 @@ export default {
       // this.tempArry.push(this.fatherimagesrc);
       // this.tempArry.push(this.imageindex);
       console.log("11111", tempArry);
-      this.$emit("saveimageinfo", tempArry, this.imageindex,infoFlag);
+      this.$emit("saveimageinfo", tempArry, this.imageindex,infoFlag,changeFlag);
       tempArry = [];
       console.log("22222", tempArry);
       //  this.$emit('saveimageinfo',this.boxArry,this.fatherimagesrc,this.imageindex)
@@ -604,12 +605,11 @@ export default {
       //查看上次标注保存的信息
       console.log("image select lastlabelArry", this.lastlabelArry);
       if(this.lastlabelArry==undefined) return
-
       // this.clearinfo();
       // this.clearobj();
       console.log("img11111111111111111", this.scalewidth, this.scaleheight);
       //if(this.lastlabelArry.line!=undefined) console.log("gahga")
-      if(this.lastlabelArry.line!=null&&this.lastlabelArry.line!=undefined){
+      if(this.lastlabelArry.line!=null&&this.lastlabelArry.line!=undefined&&this.lastlabelArry.line!=null){
       //线
       for (let i = 0; i < this.lastlabelArry.line.length; i++) {
         for (let j = 0; j < this.lastlabelArry.line[i].point.length; j++) {
@@ -645,7 +645,6 @@ export default {
         this.markinfo = null;
       }
       }
-
       if(this.lastlabelArry.polygon!=null&&this.lastlabelArry.polygon!=undefined){
       //多边形
       for (let i = 0; i < this.lastlabelArry.polygon.length; i++) {
@@ -713,6 +712,8 @@ export default {
           this.realcircleinfoArray[this.circleArray.indexOf(apoint)].point.y=(apoint.top+5)/this.scaleheight
           })
           apoint.type="point"
+          apoint.color=this.markcolor
+          apoint.info=this.markinfo
           this.circleArray.push(apoint)
           this.allobjArray.push(apoint)
           this.fabricObj.add(apoint)
@@ -727,7 +728,6 @@ export default {
           this.markinfo = null;
       }
       }
-
       this.fabricObj.renderAll();
       this.fabricObj.hoverCursor="default";
       this.havefabricobj=true;
@@ -887,7 +887,6 @@ export default {
           poly.set({
             stroke:this.markcolor
           });
-          //poly.stroke = this.markcolor;
           this.markcolor = tempcolor;
         }
         if(poly.type=="point"){
@@ -1233,6 +1232,8 @@ export default {
               this.realcircleinfoArray[this.circleArray.indexOf(apoint)].y=(apoint.top+5)/this.scaleheight
               })
               apoint.type="point"
+              apoint.color=this.markcolor
+              apoint.info=this.markinfo
               this.circleArray.push(apoint)
               this.allobjArray.push(apoint)
               this.circleinfoArray.push({
@@ -1393,6 +1394,8 @@ export default {
         top: top,
       });
       this.roof.type="polygon";
+      this.roof.color=this.markcolor;
+      this.roof.info=this.markinfo
       //this.roof.bringToFront();
       console.log("create!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!", this.roof);
       // this.roof.on({
@@ -1416,6 +1419,8 @@ export default {
                   //stroke:"red",
                 })
                 this.line.type="line"
+                this.line.color=this.markcolor
+                this.line.info=this.markinfo
                 //this.line.sendToBack();
                 console.log("this.line",this.line)
     },
