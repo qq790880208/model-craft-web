@@ -914,6 +914,7 @@ export default {
       let  multDataLen = multData.length;
       for(let i = 0; i < multDataLen ;i++){
         const para={}
+        para.datasetId = store.getters.dataSet.uuid
         para.bucketName=store.getters.dataSet.bucket
         para.folderName=store.getters.dataSet.input_path
         para.bucketNameOrg=this.MultipleCopyBucketName
