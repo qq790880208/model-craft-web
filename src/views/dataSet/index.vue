@@ -34,6 +34,14 @@
               </div>
             </template>
           </el-table-column>
+          <el-table-column prop="accept" align="center" label="状态" min-width="100" sortable>
+            <template slot-scope="scope">
+              <el-tag
+                :type="scope.row.accept == 1 ? 'success' : 'danger'"
+                hit
+                >{{ scope.row.accept == 1 ? '已验收' : '未验收' }}</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column prop="descr" align="center" label="描述" min-width="120" sortable>
           </el-table-column>
           <el-table-column prop="create_time" align="center" label="创建时间" min-width="150" sortable>
