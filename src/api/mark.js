@@ -32,9 +32,18 @@ export function automark(params,imagelength){
 
 export function generateInfo(params){
   return request({
-    url:'/dataset/save',
+    url:'/data/save',
     method: "post",
     params: params,
     baseURL: 'http://10.19.1.181:8082'
+  })
+}
+
+export function setUnAccept(params){
+  return request({
+    url:'/data/setUnAccept',
+    method: "put",
+    params: params,
+    baseURL: 'http://10.19.1.77:8085'
   })
 }

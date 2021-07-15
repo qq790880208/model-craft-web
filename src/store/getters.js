@@ -16,6 +16,7 @@ const getters = {
   uuid: state => state.data.uuid,
   type: state => state.data.type,
   dirPath: state => state.data.dirPath,
+  predictcontrol: state => state.data.predictcontrol,
   dataSet: state => state.data.dataSet
 }
 export default getters

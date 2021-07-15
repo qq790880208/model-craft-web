@@ -46,7 +46,7 @@ import miniimage from "@/components/miniimage.vue"
 import store from "@/store"
 import {outTimeReAssign, getNewLabels, getAssignData} from '@/api/data'
 import { getAuditDatasByUserId} from '@/api/audit'
-import {isnowlabel,savelabel,automark,generateInfo} from '@/api/mark'
+import {isnowlabel,savelabel,automark,generateInfo,setUnAccept} from '@/api/mark'
 import {getTagApi} from '@/api/tag'
 //import axios from 'node_modules/axios';
 // import labelinfo from '@/components/labelinfo.vue'
@@ -342,7 +342,7 @@ export default {
       let _this = this;
       this.isalllabeled = true;
       console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
-      if(store.getters.dataSet.role_type === "创建者") {
+      if(store.getters.dataSet.role_type === "创建者"||store.getters.predictcontrol === '1') {
         const params = {
           datasetuuid: store.getters.uuid
         }
@@ -350,7 +350,7 @@ export default {
          _this.imageArry=[]
          _this.infoArry=[]
          _this.lastinfoArry=[]
-         _this.uuidArry=[]
+         _this.uuidArry=[] 
          _this.imagelargeArry=[]
          _this.imageislabelArry=[]
         console.log("get图片结果", response,response.data.items[0].label_data);
@@ -527,6 +527,12 @@ export default {
       })
       }
       else{
+      let data1 = {
+        dataSetId: store.getters.uuid
+      }
+      setUnAccept(data1).then(response=>{
+        console.log("setUnAcceptsetUnAcceptsetUnAccept",response);
+      })
       console.log("save",JSON.stringify(this.infoArry[i]));
       let isab
       if(this.infoArry[i].rectangle.length>0||!infoFlag) isab=1
