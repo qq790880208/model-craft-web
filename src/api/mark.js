@@ -32,7 +32,7 @@ export function automark(params,imagelength){
 
 export function generateInfo(params){
   return request({
-    url:'/data/save',
+    url:'/dataset/save',
     method: "post",
     params: params,
     baseURL: 'http://10.19.1.181:8082'
