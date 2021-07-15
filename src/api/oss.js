@@ -119,3 +119,12 @@ export function fileCopy(params) {
         baseURL: 'http://10.19.1.77:8089'
     })
 }
+
+export function fileCopyNew(params) {
+    return request({
+        url: '/minio-service/fileCopyNew',
+        method: 'get',
+        params: params,
+        baseURL: 'http://10.19.1.77:8089'
+    })
+}

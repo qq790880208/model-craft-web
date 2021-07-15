@@ -725,7 +725,7 @@ export default {
             para.objectName=this.objectcurrentRow+this.delfolder
             this.removeobj(para)
             this.remFolderVisible=false
-            this.fresh()
+            // this.fresh()
         },
         choofolder(){
             this.$message.error('该目录下不存在文件夹');

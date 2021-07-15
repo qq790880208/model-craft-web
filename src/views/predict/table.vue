@@ -134,7 +134,8 @@
     </el-dialog>
     <!-- 日志可视化 -->
     <el-dialog
-      title="训练日志"
+      title="预测日志"
+      @close="closeShowLog"
       :visible.sync="logdialogVisible"
       :show-close="false">
       <el-input
@@ -329,8 +330,28 @@ export default {
     },
 
     methods: {
-      handleJump(){
-        
+      handleJump(index,row){
+        console.log("index,row",index,row.dataset_label_type)
+        console.log("mounted!!!!uuid",store.getters.uuid,"mounted!!!!store.getters.userid",store.getters.userid)
+
+        store.dispatch('data/changeUuid', row.dataset_id)  // 数据集的uuid  userid
+        store.dispatch('data/changepredictcontrol', '1')
+        //store.dispatch('data/changeDataSet',val)
+
+        if(row.dataset_label_type === '0' || row.dataset_label_type === '3') {
+        console.log("03")
+        this.$router.push('/label/d2imageview')
+        // this.$router.push({path: '/dataSet/2DauditPre'})
+        }
+        if(row.dataset_label_type === '1' || row.dataset_label_type === '4') {
+          console.log("14")
+        this.$router.push({path:'/label/polygonimageview'})
+        // this.$router.push({path: '/dataSet/2DauditPre'})
+        }
+        if(row.dataset_label_type === '2') {
+        this.$router.push({path:'/label/voice'})
+        }
+        //this.$router.push({path: '/dataSet/3Daudit'})
       },
       cachange(testdata){
         this.currentAlgorithm=testdata;
@@ -566,7 +587,7 @@ export default {
           "size": this.queryInfo.pagesize 
         }
         getTableData1(tmp).then(res => { 
-          //console.log(res)
+          console.log(res)
           this.queryInfo.pagenum = res.data.items.current
           this.queryInfo.pagesize = res.data.items.size
           this.totalData = res.data.items.total
@@ -666,18 +687,18 @@ export default {
         }
       },
       
-      // setTimer() {//定时器
-      //   if(this.timer == null) {
-      //     this.timer = setInterval( () => {
-      //         console.log('开始定时...每过一秒执行一次')
-      //         //this.fetchData()
+      setTimer() {//定时器
+        if(this.timer == null) {
+          this.timer = setInterval( () => {
+              console.log('开始定时...每过一秒执行一次,刷新页面')
+              this.fetchData()
               
-      //         if (this.Mockprocess != 100){
-      //           this.Mockprocess = this.Mockprocess + 0.5
-      //         }
-      //     }, 1000)
-      //   }
-      // },
+              // if (this.Mockprocess != 100){
+              //   this.Mockprocess = this.Mockprocess + 0.5
+              // }
+          }, 1000)
+        }
+      },
       setTimerLog() {//读取日志的定时器
         if(this.timerLog == null) {
           this.timerLog = setInterval( () => {
@@ -710,9 +731,13 @@ export default {
     
     mounted() {
       this.fetchData()
+      // clearInterval(this.timer)
+      // this.timer = null
+      this.setTimer()
+    },
+    destroyed() {
       clearInterval(this.timer)
       this.timer = null
-      //this.setTimer()
     }
 }
 

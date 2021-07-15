@@ -46,7 +46,7 @@ import miniimage from "@/components/miniimage.vue"
 import store from "@/store"
 import {outTimeReAssign, getNewLabels, getAssignData} from '@/api/data'
 import { getAuditDatasByUserId} from '@/api/audit'
-import {isnowlabel,savelabel,automark,generateInfo} from '@/api/mark'
+import {isnowlabel,savelabel,automark,generateInfo,setUnAccept} from '@/api/mark'
 import {getTagApi} from '@/api/tag'
 //import axios from 'node_modules/axios';
 // import labelinfo from '@/components/labelinfo.vue'
@@ -94,6 +94,8 @@ export default {
       uuidArry: [],
       //存储图片url,是否已标注等信息的数组，用于获取远程图片信息
       imagelargeArry:[],
+      //标注状态的数组
+      imageislabelArry:[],
       //后台读取的标注类别
       testmarktype: [
         {
@@ -131,6 +133,7 @@ export default {
       isimageview: true,
       automarkbtntext:"开始自动标注",
       isloading:false,
+      isDestroy:false,
     };
   },
 
@@ -151,7 +154,7 @@ export default {
     },
     returnimageview(){
         this.nopnum=0;
-        this.$refs.imageselectref.saveinfo(true)
+        this.$refs.imageselectref.saveinfo(true,false)
         this.nownum=0;
         this.isimageview=!this.isimageview;
     },
@@ -182,11 +185,14 @@ export default {
         return
         }
       if (this.nownum < this.imageArry.length - 1) {
+        this.$refs.imageselectref.saveinfo(true,true)
         this.nownum++;
       }
       else {
+        this.$refs.imageselectref.saveinfo(true,true)
         this.returnimageviewNoSave();
       }
+      
       console.log("skipimage", this.nownum);
       this.nowseconds = 0;
     },
@@ -197,11 +203,14 @@ export default {
         return
         }
       if (this.nownum > 0) {
+        this.$refs.imageselectref.saveinfo(true,true)
         this.nownum--;
       }
       else {
+        this.$refs.imageselectref.saveinfo(true,true)
         this.returnimageviewNoSave();
       }
+
       console.log("skipimage", this.nownum);
       this.nowseconds = 0;
     },
@@ -218,7 +227,7 @@ export default {
       if (this.nownum < this.imageArry.length) {
         this.nopnum=1;
         this.unable=true
-        this.$refs.imageselectref.saveinfo(true)
+        this.$refs.imageselectref.saveinfo(true,false)
         //this.nownum++;
       }
       console.log("nextimage", this.nownum);
@@ -235,7 +244,7 @@ export default {
       if (this.nownum >= 0) {
         this.nopnum=2;
         this.unable=true
-        this.$refs.imageselectref.saveinfo(true)
+        this.$refs.imageselectref.saveinfo(true,false)
         //this.nownum--;
       }
       console.log("previousimage", this.nownum);
@@ -253,7 +262,7 @@ export default {
       if (this.nownum < this.imageArry.length) {
         this.nopnum=1;
         this.unable=true
-        this.$refs.imageselectref.saveinfo(false)
+        this.$refs.imageselectref.saveinfo(false,false)
         //this.nownum++;
       }
       console.log("nextimage", this.nownum);
@@ -322,18 +331,18 @@ export default {
       });
     },
     //保存图片标注信息
-    saveimageinfo: function (markinfo, imageeindex,infoFlag) {
+    saveimageinfo: function (markinfo, imageeindex,infoFlag,changeFlag) {
       this.infoArry[imageeindex] = markinfo;
       console.log("save success", markinfo, imageeindex);
       console.log("thisinfoArry", this.infoArry);
-      this.savelabel1(this.nownum,infoFlag);
+      this.savelabel1(this.nownum,infoFlag,changeFlag);
     },
     //get请求图片数据
-    requireimage: function () {
+    requireimage() {
       let _this = this;
       this.isalllabeled = true;
       console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
-      if(store.getters.dataSet.role_type === "创建者") {
+      if(store.getters.dataSet.role_type === "创建者"||store.getters.predictcontrol === '1') {
         const params = {
           datasetuuid: store.getters.uuid
         }
@@ -341,8 +350,9 @@ export default {
          _this.imageArry=[]
          _this.infoArry=[]
          _this.lastinfoArry=[]
-         _this.uuidArry=[]
+         _this.uuidArry=[] 
          _this.imagelargeArry=[]
+         _this.imageislabelArry=[]
         console.log("get图片结果", response,response.data.items[0].label_data);
         for (let i = 0; i < response.data.items.length; i++) {
           if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
@@ -381,7 +391,9 @@ export default {
           _this.uuidArry.push(response.data.items[i].uuid);
           //console.log("3213331232", _this.uuidArry);
           _this.imageArry.push(response.data.items[i].file_path);
+          _this.imageislabelArry.push(response.data.items[i].is_label)
         }
+        console.log("imageislabelArry",_this.imageislabelArry)
         //console.log("imageArry", _this.imageArry);
         //console.log("transforjson",JSON.stringify(_this.infoArry[0][0]))
       }).catch(function(error){
@@ -412,8 +424,10 @@ export default {
          _this.lastinfoArry=[]
          _this.uuidArry=[]
          _this.imagelargeArry=[]
+         _this.imageislabelArry=[]
         console.log("get图片结果", response);
         for (let i = 0; i < response.data.items.length; i++) {
+          let info = response.data.items[i].is_label
           if(response.data.items[i].label_data==undefined||response.data.items[i].label_data=="[]"){
             _this.lastinfoArry.push([]);
           }
@@ -449,8 +463,9 @@ export default {
           _this.uuidArry.push(response.data.items[i].uuid);
           //console.log("3213331232", _this.uuidArry);
           _this.imageArry.push(response.data.items[i].file_path);
+          _this.imageislabelArry.push(response.data.items[i].is_label)
         }
-
+        console.log("imageislabelArry",_this.imageislabelArry)
         //console.log("imageArry", _this.imageArry);
         //console.log("transforjson",JSON.stringify(_this.infoArry[0][0]))
       }).catch(function(error){
@@ -468,6 +483,7 @@ export default {
           // }
       });
       }
+      
     },
     //get请求数据集的标签集
     requiretag() {
@@ -494,10 +510,29 @@ export default {
       });
     },
     //put更新数据
-    savelabel1(i,infoFlag) {
+    savelabel1(i,infoFlag,changeFlag) {
       let _this=this
       this.nowseconds = 0;
       //_this.$message('开始保存');
+      if(changeFlag){
+        console.log("onlyislabel")
+          let data={
+          is_label: this.imageislabelArry[i],
+          uuid: this.uuidArry[i],
+          dataset_id: store.getters.uuid
+      }
+      savelabel(data).then(function (response) {
+        console.log("change!!!!!!!!!!!!!!!!!!!!!!!",response)
+        if(!_this.isDestroy) _this.isnowlabel1();
+      })
+      }
+      else{
+      let data1 = {
+        dataSetId: store.getters.uuid
+      }
+      setUnAccept(data1).then(response=>{
+        console.log("setUnAcceptsetUnAcceptsetUnAccept",response);
+      })
       console.log("save",JSON.stringify(this.infoArry[i]));
       let isab
       if(this.infoArry[i].rectangle.length>0||!infoFlag) isab=1
@@ -551,6 +586,7 @@ export default {
         _this.requireimage();
         _this.requiretag();
       });
+      }
     },
 
     //post半自动标注
@@ -630,6 +666,10 @@ export default {
     clearInterval(this.starttimer);
     this.starttimer=null;
     this.nowseconds=0;
+    if(this.nownum>-1) {
+      this.isDestroy=true
+      this.savelabel1(this.nownum,true,true)
+    }
   },
   computed: {
     ...mapGetters(["name"]),
