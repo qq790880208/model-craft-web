@@ -51,7 +51,7 @@ import request from "@/utils/request";
 import miniimage from "@/components/miniimage.vue"
 import store from "@/store"
 import {outTimeReAssign} from '@/api/data'
-import {isnowlabel,savelabel,automark,generateInfo} from '@/api/mark'
+import {isnowlabel,savelabel,automark,generateInfo,setUnAccept} from '@/api/mark'
 import {getTagApi} from '@/api/tag'
 //页面键盘监听
 function keyDownSearch(e){
@@ -371,7 +371,7 @@ export default {
       console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
       let _this = this;
       this.isalllabeled = true;
-      if(store.getters.dataSet.role_type === "创建者") {
+      if(store.getters.dataSet.role_type === "创建者" || store.getters.predictcontrol === '1') {
         const params = {
           datasetuuid: store.getters.uuid
         }
@@ -568,6 +568,12 @@ export default {
       else{
       console.log("put000no",i,this.infoArry[i])
       console.log("put000",JSON.stringify(this.infoArry[i]))
+      let data1 = {
+        dataSetId: store.getters.uuid
+      }
+      setUnAccept(data1).then(response=>{
+        console.log("setUnAcceptsetUnAcceptsetUnAccept",response);
+      })
       let isab
       if(this.infoArry[i].polygon.length>0||this.infoArry[i].line.length>0||this.infoArry[i].circle.length>0||!infoFlag) isab=1
       else isab=2
