@@ -130,7 +130,8 @@
     </el-dialog>
     <!-- 日志可视化 -->
     <el-dialog
-      title="训练日志"
+      title="预测日志"
+      @close="closeShowLog"
       :visible.sync="logdialogVisible"
       :show-close="false">
       <el-input
@@ -659,18 +660,18 @@ export default {
         }
       },
       
-      // setTimer() {//定时器
-      //   if(this.timer == null) {
-      //     this.timer = setInterval( () => {
-      //         console.log('开始定时...每过一秒执行一次')
-      //         //this.fetchData()
+      setTimer() {//定时器
+        if(this.timer == null) {
+          this.timer = setInterval( () => {
+              console.log('开始定时...每过一秒执行一次,刷新页面')
+              this.fetchData()
               
-      //         if (this.Mockprocess != 100){
-      //           this.Mockprocess = this.Mockprocess + 0.5
-      //         }
-      //     }, 1000)
-      //   }
-      // },
+              // if (this.Mockprocess != 100){
+              //   this.Mockprocess = this.Mockprocess + 0.5
+              // }
+          }, 1000)
+        }
+      },
       setTimerLog() {//读取日志的定时器
         if(this.timerLog == null) {
           this.timerLog = setInterval( () => {
@@ -703,9 +704,13 @@ export default {
     
     mounted() {
       this.fetchData()
+      // clearInterval(this.timer)
+      // this.timer = null
+      this.setTimer()
+    },
+    destroyed() {
       clearInterval(this.timer)
       this.timer = null
-      //this.setTimer()
     }
 }
 

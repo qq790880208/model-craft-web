@@ -129,6 +129,7 @@
     <!-- 日志可视化 -->
     <el-dialog
       title="训练日志"
+      @close="closeShowLog"
       :visible.sync="logdialogVisible"
       :show-close="false">
       <el-input
@@ -607,7 +608,7 @@ export default {
           "size": this.queryInfo.pagesize 
         }
         getTableData1(tmp).then(res => { 
-          //console.log(res)
+          console.log("fetchData",res)
           this.queryInfo.pagenum = res.data.items.current
           this.queryInfo.pagesize = res.data.items.size
           this.totalData = res.data.items.total
@@ -716,12 +717,11 @@ export default {
       setTimer() {//定时器
         if(this.timer == null) {
           this.timer = setInterval( () => {
-              //console.log('开始定时...每过一秒执行一次')
-              //this.fetchData()
-              
-              if (this.Mockprocess != 100){
-                this.Mockprocess = this.Mockprocess + 0.5
-              }
+              console.log('开始定时...每过一秒执行一次,刷新页面')
+              this.fetchData()
+              // if (this.Mockprocess != 100){
+              //   this.Mockprocess = this.Mockprocess + 0.5
+              // }
           }, 1000)
         }
       },
@@ -737,6 +737,7 @@ export default {
                 const textarea = document.getElementById('textarea_id');
                 textarea.scrollTop = textarea.scrollHeight;
               })
+              //this.fetchData();
           }, 1000)
         }
       },
@@ -759,9 +760,13 @@ export default {
     
     mounted() {
       this.fetchData()
+      // clearInterval(this.timer)
+      // this.timer = null
+      this.setTimer()
+    },
+    destroyed() {
       clearInterval(this.timer)
       this.timer = null
-      //this.setTimer()
     }
 }
 
