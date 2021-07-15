@@ -45,12 +45,21 @@ export function createDataSetApi(params) {
   })
 }
 
+// export function deleteDataSet(params) {
+//   return request({
+//     url: '/data/delete',
+//     method: 'delete',
+//     params: params,
+//     baseURL: 'http://10.19.1.77:8085'
+//   })
+// }
+
 export function deleteDataSet(params) {
   return request({
-    url: '/data/delete',
+    url: '/dataset/delete',
     method: 'delete',
     params: params,
-    baseURL: 'http://10.19.1.77:8085'
+    baseURL: 'http://10.19.1.77:8089'
   })
 }
 

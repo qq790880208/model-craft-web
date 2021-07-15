@@ -61,7 +61,7 @@
     </el-col>
 
     <!--编辑界面-->
-    <el-dialog :title="textMap[dialogStatus]" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
+    <el-dialog title="新增用户" :visible.sync="dialogFormVisible" :close-on-click-modal="false">
       <el-form :model="editForm" label-width="80px" :rules="addFormRules" ref="editForm">
         <el-form-item label="姓名" prop="name">
           <el-input v-model="editForm.name" auto-complete="off"></el-input>
@@ -86,8 +86,40 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click.native="dialogFormVisible=false">取消</el-button>
-        <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">添加</el-button>
-        <el-button v-else type="primary" @click="updateData">修改</el-button>
+        <el-button type="primary" @click="createData">添加</el-button>
+        <!-- <el-button v-if="dialogStatus=='create'" type="primary" @click="createData">添加</el-button> -->
+        <!-- <el-button v-else type="primary" @click="updateData">修改</el-button> -->
+        <!-- <el-button type="primary" @click="updateData">修改</el-button> -->
+      </div>
+    </el-dialog>
+
+    <el-dialog title='编辑用户' :visible.sync="dialogFormEditVisible" :close-on-click-modal="false">
+      <el-form :model="editForm" label-width="80px" :rules="editFormRules" ref="editForm">
+        <el-form-item label="姓名" prop="name">
+          <el-input v-model="editForm.name" auto-complete="off"></el-input>
+        </el-form-item>
+        <el-form-item label="身份">
+          <el-select v-model="editForm.role" class="filter-item" placeholder="Please select">
+            <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="邮箱" prop="email">
+          <el-input v-model="editForm.email" placeholder="输入邮箱"></el-input>
+        </el-form-item>
+        <el-form-item label="手机" prop="mobile">
+          <el-input v-model="editForm.mobile" placeholder="输入手机号"></el-input>
+        </el-form-item>
+        <el-form-item label="密码" prop="password">
+          <el-input v-model="editForm.password" placeholder="输入6位密码"></el-input>
+        </el-form-item>
+        <el-form-item label="描述">
+          <el-input type="textarea" v-model="editForm.descr"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click.native="dialogFormVisible=false">取消</el-button>
+        <!-- <el-button type="primary" @click="createData">添加</el-button> -->
+        <el-button type="primary" @click="updateData">修改</el-button>
       </div>
     </el-dialog>
   </div>
@@ -110,6 +142,13 @@ export default {
   data() {
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
+        callback(new Error('The password can not be less than 6 digits'))
+      } else {
+        callback()
+      }
+    }
+    const validateEditPassword = (rule, value, callback) => {
+      if (value.length < 6 && value.length > 1) {
         callback(new Error('The password can not be less than 6 digits'))
       } else {
         callback()
@@ -140,7 +179,12 @@ export default {
         update: '编辑用户',
         create: '新增用户'
       },
+      ruleMap: {
+        update: this.editFormRules,
+        create: this.addFormRules
+      },
       dialogFormVisible: false,
+      dialogFormEditVisible: false,
       filters: {
         name: '',
         email: '',
@@ -152,15 +196,22 @@ export default {
       page: 1,
       page_size: 20,
       sels: [], // 列表选中列
-      // editFormRules: {
-      //   name: [
-      //     { required: true, message: '尽量不要修改姓名', trigger: 'blur' }
-      //   ],
-      //   password: [
-      //     { required: true, message: '密码不能为空', trigger: 'blur' },
-      //     { min: 6, max: 20, message: '长度在 6 到 20 个字符', validator: validatePassword, trigger: 'blur' }
-      //   ]
-      // },
+      editFormRules: {
+        name: [
+          { required: true, message: '尽量不要修改姓名', trigger: 'blur' }
+        ],
+        email: [
+          { required: true, message: '邮箱不能为空', trigger: 'blur' },
+          { validator: checkEmail, trigger: 'blur' }
+        ],
+        mobile: [
+           { required: true, message: '请输入手机号码', trigger: 'blur' },
+           { validator: checkMobile, trigger: 'blur'}
+        ],
+        password: [
+          { min: 6, max: 20, message: '长度在 6 到 20 个字符', validator: validateEditPassword, trigger: 'blur' }
+        ]
+      },
       // 编辑界面数据
       editForm: {
         id: '0',
@@ -261,7 +312,7 @@ export default {
     },
     handleEdit: function(index, row) {
       this.dialogStatus = 'update'
-      this.dialogFormVisible = true
+      this.dialogFormEditVisible = true
       this.editForm = Object.assign({}, row)
       this.editForm.password = ''
     },
@@ -270,7 +321,7 @@ export default {
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.editForm = {
-        id: '0',
+        id: '',
         name: '',
         role: '',
         descr: ''
@@ -282,22 +333,29 @@ export default {
         if (valid) {
           this.$confirm('确认提交吗?', '提示', {})
             .then(() => {
+              var temppassword = '0'
               const temp = Object.assign({}, this.editForm)
+              if(temp.password.length >= 1) {
+                temppassword = md5(temp.password)
+              }
+              
               // md5 加密
-              var temppassword = md5(temp.password)
               const para = {
                 id: temp.id,
                 role: temp.role,
                 name: temp.name,
                 password: temppassword,
-                descr: temp.descr }
+                descr: temp.descr,
+                mobile: temp.mobile,
+                email: temp.email
+              }
               console.log(para)
               editUser(para).then(res => {
                 this.$message({
                   message: '提交成功',
                   type: 'success'
                 })
-                this.dialogFormVisible = false
+                this.dialogFormEditVisible = false
                 this.getUsers()
               })
             })
