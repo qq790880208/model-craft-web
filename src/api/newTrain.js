@@ -57,10 +57,10 @@ export function search(query){//输入框查询
 
 export function searchStatus(data){//下拉框查询
   return request({
-    url:'/newtrain/searchStatus',
+    url:'/train/search',
     method:'get',
     data,
-    baseURL: 'http://localhost:9528/dev-api'
+    baseURL: 'http://10.19.1.181:8084'
   })
 }
 
