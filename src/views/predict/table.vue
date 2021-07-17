@@ -2,7 +2,7 @@
   <div class='training-jobs'>
     <!-- 头部 -->
     <el-row >
-      <el-col :span="6">
+      <el-col :span="5">
         <el-button  @click="createbtn" size="medium" >  
           创建预测任务
         </el-button>
@@ -20,11 +20,14 @@
       </el-col>
       <el-col :span="3">
         <el-input v-model="queryInfo.query" placeholder="请输入名称查询" style="width:75dx"
-        :clearable="true" @change="fetchData">
+        :clearable="true" @change="resetSearch">
         </el-input>
       </el-col>
       <el-col :span="1" style="margin-left:5px">
         <el-button @click="searchTask">搜索</el-button>
+      </el-col>
+      <el-col :span="1" style="margin-left:5px">
+        <el-button @click="resetSearch">重置</el-button>
       </el-col>
     </el-row>
 
@@ -275,7 +278,8 @@ export default {
         initialPara:{
           inputData:{
             name:[],
-            uuid:[]
+            uuid:[],
+            algorithmType:[]
           },
           outpath:[],
           modelpath: [],
@@ -300,6 +304,7 @@ export default {
           "cost_time": "0",
           "dataset_id": "string",
           "dataset_name": "string",
+          "dataset_label_type": "number",
           "descr": "string",
           "name": "string",
           "status": "0",
@@ -321,7 +326,8 @@ export default {
         timer: null,//定时器
         timerLog:null,//日志定时器
         totalData:0,//主界面显示数据库任务总数
-        Mockprocess:0 //模拟进度条
+        Mockprocess:0, //模拟进度条
+        isSearchingFlag:false//是否处于搜索状态的标记
       }
     },
 
@@ -334,17 +340,17 @@ export default {
         store.dispatch('data/changepredictcontrol', '1')
         //store.dispatch('data/changeDataSet',val)
 
-        if(row.dataset_label_type === '0' || row.dataset_label_type === '3') {
+        if(row.dataset_label_type === 0 || row.dataset_label_type === 3) {
         console.log("03")
         this.$router.push('/label/d2imageview')
         // this.$router.push({path: '/dataSet/2DauditPre'})
         }
-        if(row.dataset_label_type === '1' || row.dataset_label_type === '4') {
+        if(row.dataset_label_type === 1 || row.dataset_label_type === 4) {
           console.log("14")
         this.$router.push({path:'/label/polygonimageview'})
         // this.$router.push({path: '/dataSet/2DauditPre'})
         }
-        if(row.dataset_label_type === '2') {
+        if(row.dataset_label_type === 2) {
         this.$router.push({path:'/label/voice'})
         }
         //this.$router.push({path: '/dataSet/3Daudit'})
@@ -358,8 +364,17 @@ export default {
         this.isdisplaytl=false;
         this.$refs['taskForm'].resetFields()
       },
+      resetSearch(){
+        this.fetchData()
+        this.isSearchingFlag=false;
+      },
       //主页面部分
       searchTask(){//输入框查询
+      if(this.queryInfo.query=="") {
+        this.isSearchingFlag=false;
+        return
+      }
+      this.isSearchingFlag=true;
       let tmp = {
           "user_id": store.getters.userid,
           "curr": this.queryInfo.pagenum,
@@ -378,8 +393,9 @@ export default {
       },
       searchStatusTask(){//下拉框排序查询
         this.selectPara.para = this.selectedstatus
-        if (this.selectedstatus == 5) this.fetchData()
+        if (this.selectedstatus == 5) this.resetSearch()
         else {
+        this.isSearchingFlag=true;
         let tmp = {
           "user_id": store.getters.userid,
           "curr": this.queryInfo.pagenum,
@@ -402,9 +418,11 @@ export default {
           console.log(res)
           this.initialPara.inputData.name = []
           this.initialPara.inputData.uuid = []
+          this.initialPara.inputData.algorithmType = []
           for(let i = 0;i < res.data.items.length;i++){
             this.initialPara.inputData.name.push(res.data.items[i].name)
             this.initialPara.inputData.uuid.push(res.data.items[i].uuid)
+            this.initialPara.inputData.algorithmType.push(res.data.items[i].label_type)
           }
         })
       },
@@ -427,13 +445,16 @@ export default {
           'name':''
         }
         getDataByName(params).then(res =>{//从后台读取数据来源的目录
-          //console.log(res)
+          console.log("getDataByName",res)
           this.initialPara.inputData.name = []
           this.initialPara.inputData.uuid = []
+          this.initialPara.inputData.algorithmType = []
           for(let i = 0;i < res.data.total;i++){
             this.initialPara.inputData.name.push(res.data.items[i].name)
             this.initialPara.inputData.uuid.push(res.data.items[i].uuid)
+            this.initialPara.inputData.algorithmType.push(res.data.items[i].label_type)
           }
+          console.log("initialPara",this.initialPara)
         })
         const params1 = {
           'curr': 1,
@@ -625,11 +646,12 @@ export default {
         // this.isdisplaytl=false
         //console.log(this.isdisplaytl);
         //console.log(this.taskPara)
-
+        console.log("this.taskForm.dataset_index",this.taskForm.dataset_index)
         const params0 = {
           'uuid': this.taskForm.uuid,
           'dataset_id': this.initialPara.inputData.uuid[this.taskForm.dataset_index],
           'dataset_name': this.initialPara.inputData.name[this.taskForm.dataset_index],
+          'dataset_label_type' : this.initialPara.inputData.algorithmType[this.taskForm.dataset_index],
           'user_id': store.getters.userid,
           'ispredicts': 1,
           'model_oss_path': this.initialPara.modelpath[this.taskForm.model_path_index],
@@ -637,7 +659,7 @@ export default {
           'predict_model_name': this.initialPara.tjname[this.taskForm.model_path_index],
           'descr': this.taskForm.description,
         }
-        console.log(params0)
+        console.log('params0',params0)
         submitTask(params0).then(res => {
           console.log(res.data)
           this.fetchData()
@@ -684,7 +706,7 @@ export default {
         if(this.timer == null) {
           this.timer = setInterval( () => {
               console.log('开始定时...每过一秒执行一次,刷新页面')
-              this.fetchData()
+              if(!this.isSearchingFlag)  this.fetchData()
               
               // if (this.Mockprocess != 100){
               //   this.Mockprocess = this.Mockprocess + 0.5

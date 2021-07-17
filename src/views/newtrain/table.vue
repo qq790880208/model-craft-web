@@ -3,7 +3,7 @@
   <div class='training-jobs'>
     <!-- 头部 -->
     <el-row >
-      <el-col :span="6">
+      <el-col :span="5">
         <el-button  @click="createbtn" size="medium" >  
           创建训练任务
         </el-button>
@@ -21,11 +21,14 @@
       </el-col>
       <el-col :span="3">
         <el-input v-model="queryInfo.query" placeholder="请输入名称查询" style="width:75dx"
-        :clearable="true" @change="fetchData">
+        :clearable="true" @change="resetSearch">
         </el-input>
       </el-col>
       <el-col :span="1" style="margin-left:5px">
         <el-button @click="searchTask">搜索</el-button>
+      </el-col>
+      <el-col :span="1" style="margin-left:5px">
+        <el-button @click="resetSearch">重置</el-button>
       </el-col>
     </el-row>
 
@@ -358,6 +361,7 @@ export default {
           "cost_time": "0",
           "dataset_id": "string",
           "dataset_name": "string",
+          "dataset_label_type": "number",
           "descr": "string",
           "name": "string",
           "status": "0",
@@ -379,7 +383,8 @@ export default {
         timer: null,//定时器
         timerLog:null,//日志定时器
         totalData:0,//主界面显示数据库任务总数
-        Mockprocess:0 //模拟进度条
+        Mockprocess:0, //模拟进度条
+        isSearchingFlag:false//是否处于搜索状态的标记
       }
     },
 
@@ -408,8 +413,17 @@ export default {
         this.isdisplaytl=false;
         this.$refs['taskForm'].resetFields()
       },
+      resetSearch(){
+        this.fetchData()
+        this.isSearchingFlag=false;
+      },
       //主页面部分
       searchTask(){//输入框查询
+      if(this.queryInfo.query=="") {
+        this.isSearchingFlag=false;
+        return
+      }
+      this.isSearchingFlag=true;
       let tmp = {
           "user_id": store.getters.userid,
           "curr": this.queryInfo.pagenum,
@@ -441,8 +455,9 @@ export default {
       },
       searchStatusTask(){//下拉框排序查询
         this.selectPara.para = this.selectedstatus
-        if (this.selectedstatus == 5) this.fetchData()
+        if (this.selectedstatus == 5) this.resetSearch()
         else {
+        this.isSearchingFlag=true;
         let tmp = {
           "user_id": store.getters.userid,
           "curr": this.queryInfo.pagenum,
@@ -463,6 +478,7 @@ export default {
         this.taskForm.uuid = this.generateUUID()
         this.taskForm.user_id = store.getters.userid
         this.taskForm.name = 'train-' + this.taskForm.uuid.slice(0,4)
+        //this.taskForm.label_type=''
         this.useAlgorithm = ''
         this.taskForm.data = ''
         this.taskForm.outpath = ''
@@ -473,8 +489,10 @@ export default {
         const params = {
           id: store.getters.userid,
       }
+      console.log("preprepreprepreprepreprepre")
         getAcceptData(params).then(res =>{//从后台读取数据来源的目录
           console.log("getAcceptData",res)
+          //console.log("type",typeof(res.data.items[0].label_type))
           this.initialPara.inputData.name = []
           this.initialPara.inputData.uuid = []
           this.initialPara.inputData.algorithmType = []
@@ -659,6 +677,7 @@ export default {
         this.taskPara.args = JSON.stringify(this.taskForm.paras)
         this.taskPara.dataset_id = this.initialPara.inputData.uuid[this.taskForm.dataset_index]
         this.taskPara.dataset_name = this.initialPara.inputData.name[this.taskForm.dataset_index]
+        this.taskPara.dataset_label_type = this.initialPara.inputData.algorithmType[this.taskForm.dataset_index]
         this.taskPara.descr = this.taskForm.description
         this.taskPara.name = this.taskForm.name
         this.taskPara.user_id = JSON.stringify(this.taskForm.user_id)
@@ -718,7 +737,7 @@ export default {
         if(this.timer == null) {
           this.timer = setInterval( () => {
               console.log('开始定时...每过一秒执行一次,刷新页面')
-              this.fetchData()
+              if(!this.isSearchingFlag)  this.fetchData()
               // if (this.Mockprocess != 100){
               //   this.Mockprocess = this.Mockprocess + 0.5
               // }
@@ -779,7 +798,7 @@ export default {
   }
   .training-jobs{
     margin-left:30px;
-    
+    //display: inline;
   }
   .el-table{
     font-size: 12px;
