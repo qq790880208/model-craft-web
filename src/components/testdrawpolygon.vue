@@ -1029,7 +1029,7 @@ export default {
           // console.log("eeeeeeeeeeee",e)
           // if(e.)
           if (this.isimagechange) return;
-          if (this.markinfo == null ) {
+          if (this.markinfo == null && this.radio!="drag") {
             this.$message({
               message: "您没有选中任何标签",
               type: "warning",
