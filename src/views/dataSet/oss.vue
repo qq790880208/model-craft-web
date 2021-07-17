@@ -801,13 +801,21 @@ export default {
             fileURL(para).then(response=>{
                 if(20000 == response.code){
                     console.log(response.data);
-                    this.$alert(response.data, '文件外链', {
-                        confirmButtonText: '确定',
-                    });
+                    this.download(response.data)
+                    // this.$alert(response.data, '文件外链', {
+                    //     confirmButtonText: '确定',
+                    // });
                 }else{
                     this.fai()
                 }
             })
+        },
+
+        download(href) {
+            let eleLink = document.createElement('a')
+            eleLink.href = href
+            eleLink.click()
+            eleLink.remove()
         },
 
         //拷贝的点击事件
