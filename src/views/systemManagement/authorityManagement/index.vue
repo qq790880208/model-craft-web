@@ -142,6 +142,9 @@ export default {
         }
       })
     },
+    fresh(){//刷新
+      location. reload()
+    },
     setRolePermission() {
       this.$confirm('确认提交吗？', '提示', {})
         .then(() => {
@@ -166,6 +169,7 @@ export default {
             this.getList()
             this.dialogFormVisible = false
             this.defaultCheckedKeysMenu = []
+            this.fresh()
           })
         })
     }

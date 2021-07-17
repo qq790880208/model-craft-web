@@ -419,6 +419,7 @@ export default {
                 type: 'success'
               })
             })
+            
             this.getTeamsList()
           })
         })
@@ -437,7 +438,7 @@ export default {
           console.log(para)
           delUser(para).then(res => {
             this.$message({
-              message: '删除成功',
+              message: res.message,
               type: 'success'
             })
             this.getUsers()
@@ -490,7 +491,7 @@ export default {
               console.log(para)
               editUser(para).then(res => {
                 this.$message({
-                  message: '提交成功',
+                  message: res.message,
                   type: 'success'
                 })
                 this.dialogFormVisibleUser = false
