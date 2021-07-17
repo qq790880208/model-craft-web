@@ -329,6 +329,7 @@ export default {
         //console.log(listIndex)
         this.sublist[listIndex].splice(scope0.$index, 1)
         this.$message('已删除')
+        this.fetchData()
       })
      }).catch(() => {
      })
@@ -340,6 +341,7 @@ export default {
      }).then(() => {
        delModelById(scope.row.uuid).then(response => {
         this.$message('已删除')
+        this.fetchData()
       })
       //this.$message('已删除' + scope.$index + '')
       //console.log(listIndex)
