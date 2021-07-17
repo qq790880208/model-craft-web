@@ -11,6 +11,7 @@
         <el-button type="primary" plain size="mini" @click="toStartLabel">开始标注</el-button>
         <el-button type="primary" plain size="mini" @click="toDataManage">数据管理</el-button>
         <el-button type="primary" plain size="mini" @click="showTeamDialog">添加团队任务</el-button>
+        <el-button type="primary" plain size="mini" @click="delTeamTask">取消团队任务</el-button>
         <el-button size="mini" @click="change">修改</el-button>
       </div>
     </div>
@@ -277,7 +278,7 @@ import { mapGetters } from 'vuex'
 import  BarChart  from './BarChart'
 import { getTags, updateTags } from '@/api/data'
 import { getAllTeam, getSelectTeam } from '@/api/team'
-import { getLabel, getDataByName, createDataSet, deleteDataSet, assignLabel, getAssignData, addTags } from '@/api/data'
+import { getLabel, getDataByName, createDataSet, deleteDataSet, assignLabel, getAssignData, addTags, delTeamTaskApi } from '@/api/data'
 import store from '@/store'
 
 export default {
@@ -451,6 +452,18 @@ export default {
         this.$message({
           message: '不能给数据集创建者分配数据',
           type: 'error'
+        })
+      })
+    },
+
+    delTeamTask() {
+      const params = {
+        dataSetid: store.getters.uuid 
+      }
+      delTeamTaskApi(params).then(res => {
+        this.$message({
+          message: '成功',
+          type: 'success'
         })
       })
     },
