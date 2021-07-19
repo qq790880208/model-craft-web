@@ -138,6 +138,18 @@ import md5 from 'js-md5'
 import { title } from '@/settings'
 import store from '@/store'
 
+
+function keyDownSearch(e){
+  console.log("keydown!!!!!!!!!!!!")
+  let theEvent = e.event || window.event;
+  let code = theEvent.keyCode ||  theEvent.which || theEvent.charCode
+  if(code == 13){ //保存并上一张
+    console.log("enter!!!!!!!!!!!!!")
+    getUsers()
+    //return false;     
+  }
+}
+
 export default {
   data() {
     const validatePassword = (rule, value, callback) => {
@@ -424,6 +436,8 @@ export default {
   },
   
   mounted() {
+    window.getUsers = this.getUsers;
+    document.onkeydown = keyDownSearch;
     this.getUsers()
     this.getRoles()
     this.authority = store.getters.authority
@@ -431,6 +445,9 @@ export default {
     console.log(this.authority)
     console.log(this.authority.indexOf("user:add"))
     console.log(this.authority.indexOf('user:add'))
+  },
+  destroyed(){
+    document.onkeydown = undefined;
   }
 }
 </script>

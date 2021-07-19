@@ -17,6 +17,8 @@
               <el-row class="buttonList">
                 <el-button plain type="mini" icon="el-icon-plus" @click="uploadobjectmsg">上传文件</el-button>
                 <el-button plain type="mini" icon="el-icon-upload" @click="allCopy">拷贝文件</el-button>
+                <el-button plain type="mini" icon="el-icon-download" @click="downPicture">下载图片</el-button>
+                <el-button plain type="mini" icon="el-icon-download" @click="downAnnotation">下载标注文件</el-button>
                 <el-button plain type="mini" icon="el-icon-delete" @click="delData()">删除数据</el-button>
                 <!-- <el-button plain type="mini" icon="el-icon-cloudy" style="right" @click="startLabel" :style="{ display: visible}">开始标注</el-button> -->
                 <el-button plain type="mini" icon="el-icon-cloudy" style="right" @click="startLabel" >开始标注</el-button>
@@ -208,7 +210,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getLabel, refresh, assignByNewTeamUser, assignLabelDataChange, deleteData, addNewLabels, assignNewData, getNewFile } from '@/api/data'
-import{ listBucket,uploadNew, listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder,fileRename,fileURL,fileCopy, fileCopyNew } from '@/api/oss'
+import{ listBucket,uploadNew, listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder,fileRename,fileURL,fileCopy, fileCopyNew, downloadZipByPrefixApi } from '@/api/oss'
 import store from '@/store'
 import myimage from '@/components/myimage.vue'
 
@@ -303,6 +305,30 @@ export default {
     },
     fromChildList(vara) {
       this.selectList = vara;
+    },
+    downPicture() {
+      console.log(process.env)
+      const params = {
+        bucketName: store.getters.dataSet.bucket,
+        objectPrefix: store.getters.dataSet.input_path.substring(0, store.getters.dataSet.input_path.length-1)
+      }
+      let a = document.createElement('a')
+      console.log(process)
+      a.href =process.env.VUE_APP_BASE_API2+"/minio-service/downloadZipByPrefix/?bucketName=" + encodeURI(params.bucketName) +
+      "&objectPrefix=" + encodeURI(params.objectPrefix);
+      a.click();
+    },
+    downAnnotation() {
+      const params = {
+        bucketName: store.getters.dataSet.bucket,
+        objectPrefix: store.getters.dataSet.annotation_path.substring(0, store.getters.dataSet.annotation_path.length-1)
+      }
+      console.log(params)
+      console.log(process.env)
+      let a = document.createElement('a')
+      a.href =process.env.VUE_APP_BASE_API2+"/minio-service/downloadZipByPrefix/?bucketName=" + encodeURI(params.bucketName) +
+      "&objectPrefix=" + encodeURI(params.objectPrefix);
+      a.click();
     },
     delData() {
       let uuidss = this.selectList.join(",");
@@ -406,7 +432,7 @@ export default {
                 }else{this.$message.error('网络延迟,请同步数据源');}
             })
         }else{
-            for(let i=0;i<multFileListLen;i++){
+          for(let i=0;i<multFileListLen;i++){
             let formData = new FormData();
             formData.append("bucketName", this.uploadBucketName);
             console.log(this.uploadBucketName);
@@ -441,7 +467,8 @@ export default {
                 this.$message.error('网络延迟,请同步数据源');
               }
             })
-        }
+          }
+          this.getData()
         }
     },
 
@@ -672,6 +699,7 @@ export default {
     },
 
     fresh() {
+      console.log('fresh=================');
       const params = {
         dataSetUuid: store.getters.uuid,
         path: store.getters.dataSet.input_path,
@@ -916,6 +944,7 @@ export default {
     returnMultipleCopy(){
       let  multData = this.multipleSelection;
       let  multDataLen = multData.length;
+      let promiseArr = [];
       for(let i = 0; i < multDataLen ;i++){
         const para={}
         para.datasetId = store.getters.dataSet.uuid
@@ -927,22 +956,23 @@ export default {
         para.objectNameOrg=multData[i].name.substring(this.MultipleCopyObjectRow.length)
         console.log(para);
         this.multipleCopySignal++
-        fileCopyNew(para).then(response=>{
-          if(20000 == response.code){
-          }else{
-          }
-        })
+        promiseArr.push(fileCopyNew(para))
       }
+      Promise.all(promiseArr).then(res => {
+        this.fresh()
+      })
       console.log(multDataLen);
       console.log(this.multipleCopySignal);
+      
       if(this.multipleCopySignal==multDataLen){
         // this.suc()
-        this.fresh()
+        // this.fresh()
         this.multipleCopySignal=0
         this.multipleCopyVisible=false
       }else{
         // this.fai()
-        this.fresh()}
+        // this.fresh()
+        }
     },
 
     //批量拷贝取消
@@ -996,6 +1026,8 @@ export default {
           this.objectcopyData=[]
           this.copyName=''
         }
+      }).catch(response=>{
+        console.log("response",response)
       })
       this.copyVisible=false
     },

@@ -93,9 +93,9 @@
           <!-- <el-button
             size="mini"
             @click="handleStop(scope.$index, scope.row)">终止</el-button> -->
-          <el-button
+          <!-- <el-button
             size="mini"
-            @click="handleShow()">可视化</el-button>
+            @click="handleShow()">可视化</el-button> -->
           <el-button
             size="mini" v-if="scope.row.status!=0"
             @click="handleShowlog(scope.$index, scope)" >日志</el-button>
@@ -252,6 +252,18 @@ import visualf from "./visual1"
 import visualt from "./visual2"
 import {startTask, showLog,getAcceptData,stopTask, getTableData1,deleteTask,  search, searchStatus, getVisualData, submitTask, getinitialPara} from '@/api/newTrain'
 import store from '@/store'
+
+function keyDownSearch(e){
+  console.log("keydown!!!!!!!!!!!!")
+  let theEvent = e.event || window.event;
+  let code = theEvent.keyCode ||  theEvent.which || theEvent.charCode
+  if(code == 13){ //保存并上一张
+    console.log("enter!!!!!!!!!!!!!")
+    searchTask()
+    //return false;     
+  }
+}
+
 export default {
     components: {visual, visualf, visualt},
     data() {
@@ -419,6 +431,7 @@ export default {
       },
       //主页面部分
       searchTask(){//输入框查询
+      //console.log("312321321321321")
       if(this.queryInfo.query=="") {
         this.isSearchingFlag=false;
         return
@@ -535,12 +548,13 @@ export default {
               });  
             }
           })
-        }).catch(() => { 
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });       
-        });
+        })
+        // .catch(() => { 
+        //   this.$message({
+        //     type: 'info',
+        //     message: '已取消删除'
+        //   });       
+        // });
         
         
       },
@@ -559,12 +573,13 @@ export default {
             type: 'success',
             message: '终止成功!'
           });  
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消终止'
-          });          
-        });
+        })
+        // .catch(() => {
+        //   this.$message({
+        //     type: 'info',
+        //     message: '已取消终止'
+        //   });          
+        // });
         
         
       },
@@ -778,12 +793,15 @@ export default {
     },
     
     mounted() {
+      window.searchTask = this.searchTask;
+      document.onkeydown = keyDownSearch;
       this.fetchData()
       // clearInterval(this.timer)
       // this.timer = null
       this.setTimer()
     },
     destroyed() {
+      document.onkeydown = undefined;
       clearInterval(this.timer)
       this.timer = null
     }
