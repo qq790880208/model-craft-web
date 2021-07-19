@@ -685,12 +685,16 @@ export default {
     },
 
     assign() {
-      const params = {
-        datasetuuid: store.getters.uuid,
-        userid: store.getters.userid
-      }
-      assignByNewTeamUser(params).then(res => {
-      })
+      // const params = {
+      //   datasetuuid: store.getters.uuid,
+      //   userid: store.getters.userid
+      // }
+      // assignByNewTeamUser(params).then(res => {
+      //   this.$message({
+      //     message: '分配成功',
+      //     type: 'success'
+      //   })
+      // })
       const param = {
         datasetuuid: store.getters.uuid,
       }
