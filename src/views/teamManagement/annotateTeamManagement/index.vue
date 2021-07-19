@@ -330,8 +330,8 @@ export default {
         })
     },
 
-    // 得到团队列表
-    getTeamsList: function() {
+    // 得到团队列表 
+    getTeamsList() {
       const para = {
         name: store.getters.name,
         id: store.getters.userid
@@ -352,7 +352,7 @@ export default {
     },
 
     // 得到team的用户
-    getUsers: function() {
+    getUsers() {
       const para = {}
       para.id = this.selectTeam.id
       para.name = this.selectTeam.name
@@ -367,7 +367,7 @@ export default {
     },
 
     /* 显示团队的信息 */
-    openDetails: function(row) {
+    openDetails(row) {
       this.selectTeamId = row.id
       this.flag = true
       this.idLabel = ''
@@ -384,7 +384,7 @@ export default {
       console.log(this.idLabel)
       this.getUsers()
     },
-    handleAdd: function() {
+    handleAdd() {
       this.dialogStatus = 'create'
       this.dialogFormVisible = true
       this.editForm = {
@@ -392,7 +392,7 @@ export default {
         descr: ''
       }
     },
-    handleEdit: function(index, row) {
+    handleEdit(index, row) {
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.editForm = Object.assign({}, row)
@@ -400,7 +400,7 @@ export default {
     },
 
     // 删除团队
-    handleDelete: function() {
+    handleDelete() {
       this.$confirm('确认删除该记录吗?', '提示', {
         type: 'warning'
       }).then(() => {
@@ -413,17 +413,15 @@ export default {
             this.$message({
               message: res.message,
               type: 'success'
-            }).catch(res => {
+            })
+            this.getTeamsList()
+          }).catch(res => {
               this.$message({
                 message: res.message,
                 type: 'success'
               })
             })
-            
-            this.getTeamsList()
-          })
         })
-        .catch(() => {})
     },
 
     // 删除团队用户
@@ -586,7 +584,9 @@ export default {
         })
         .catch(() => {})
     }
-  }
+  },
+
+  
 }
 </script>
 

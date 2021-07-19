@@ -128,3 +128,12 @@ export function fileCopyNew(params) {
         baseURL: 'http://10.19.1.77:8089'
     })
 }
+
+export function downloadZipByPrefixApi(params) {
+    return request({
+        url: '/minio-service/downloadZipByPrefix',
+        method: 'get',
+        params: params,
+        baseURL: 'http://10.19.1.77:8089'
+    })
+}
