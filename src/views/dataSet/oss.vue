@@ -797,7 +797,7 @@ export default {
             const para={}
             para.bucketName=this.bucket
             para.objectName=this.rightName
-            console.log("para",para);
+            console.log(para);
             fileURL(para).then(response=>{
                 if(20000 == response.code){
                     console.log(response.data);
