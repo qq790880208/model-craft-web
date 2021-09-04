@@ -16,7 +16,7 @@
           <el-radio-button label="linemark">线标注</el-radio-button>
           <el-radio-button label="polygonmark">多边形标注</el-radio-button>
           <el-radio-button label="rectanglemark">矩形标注</el-radio-button>
-          <el-radio-button label="ellipsemark">椭圆标注</el-radio-button>
+          <!-- <el-radio-button label="ellipsemark">椭圆标注</el-radio-button> -->
           <el-radio-button label="drag">拖动</el-radio-button>
           <el-radio-button label="modify">修改</el-radio-button>
         </el-radio-group>
@@ -132,7 +132,7 @@
               @mouseover.native="infotip(index)"
               @mouseout.native="removetip(index)"
               @mousedown.native="deletemarked(index)"
-              >{{ index + 1 }}、{{items.type=="polygon"?"多边形":items.type=="line"?"线":"点"}} {{items.info}}
+              >{{ index + 1 }}、{{items.type=="polygon"?"多边形":items.type=="line"?"线":items.type=="point"?"点":"矩形"}} {{items.info}}
             </el-button>
           </div>
         </div>
@@ -381,6 +381,9 @@ export default {
         this.circleArray.forEach((item) => {
           this.fabricObj.remove(item);
         });
+        this.rectangleArray.forEach((item) => {
+          this.fabricObj.remove(item);
+        });
         this.clearinfo();
         this.clearobj();
         this.markinfo = null;
@@ -423,6 +426,7 @@ export default {
     Edit() {
       if (!this.isimagechange) {
         console.log("caonima",this.fabricObj._objects)
+        console.log("caonimarectangleArray",this.rectangleArray)
         this.fabricObj.hoverCursor="move";
         this.isimagechange = true;
         this.clearobj();
@@ -469,7 +473,16 @@ export default {
           console.log("6547654756u56uj56u",poly,i);
           poly.selectable=true;
         }
+        for(let i = 0;i<this.rectangleArray.length;i++){
+          let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.rectangleArray[i])];
+          console.log("789787897897897564564564564654564564654",poly,i);
+          poly.selectable = true;
+          poly.hasControls = true;
+          //poly.hasRotatingPoint = false;
+        }
+        console.log("this.rectangleArray",this.rectangleArray)
       } else {
+        console.log("this.rectangleArray",this.rectangleArray)
         this.isimagechange = false;
         this.fabricObj.hoverCursor="default";
         this.clearobj();
@@ -477,6 +490,21 @@ export default {
         this.imagechangebtntext = "修改图形";
         console.log("realpolygoninfoArray", this.realpolygoninfoArray);
         this.realpolygoninfoArray = [];
+        for(let i = 0;i < this.circleArray.length;i++){
+          let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.circleArray[i])];
+          console.log("\(^o^)/~6\(^o^)/~6\(^o^)/~6",poly,i);
+          this.fabricObj.discardActiveObject(poly);
+          poly.edit = false;
+          poly.selectable=false;
+        }
+        for(let i = 0;i<this.rectangleArray.length;i++){
+          let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.rectangleArray[i])];
+          console.log("uyfioaufasufopaisfasfuoaspoufaspioufiasufioasfuasufiasfisadosuaidhnzjkczxbcvn",poly,i);
+          this.fabricObj.discardActiveObject(poly);
+          poly.selectable = false;
+          poly.hasControls = false;
+          //poly.hasRotatingPoint = false;
+        }
         for (let i = 0; i < this.polygonArray.length; i++) {
           console.log("polygoninfoArray", this.polygoninfoArray[i]);
           console.log("realpolygoninfoArray", this.realpolygoninfoArray[i]);
@@ -531,13 +559,17 @@ export default {
         this.temlines.forEach((item) => this.fabricObj.remove(item));
         this.temcircles.forEach((item) => this.fabricObj.remove(item));
         this.llines.forEach((item) => this.fabricObj.remove(item));
+        this.temRectangle.forEach((item) => this.fabricObj.remove(item));
         this.roofPoints = [];
         this.realPoints = [];
         this.linePoints = [];
         this.realLinePoints = [];
+        this.rectanglePoints = [];
+        this.realRectanglePoints = [];
         this.temlines = [];
         this.temcircles = [];
         this.llines = [];
+        this.temRectangle =[];
         this.temlineCounter = 0;
         this.temcircleCounter = 0;
         console.log("count",this.testcirclearray.length,"objarr",this.testcirclearray)
@@ -557,6 +589,9 @@ export default {
       this.circleArray = [];
       this.circleinfoArray = [];
       this.realcircleinfoArray = [];
+      this.rectangleArray = [];
+      this.rectangleinfoArray = [];
+      this.realrectangleinfoArray = [];
       this.testcirclearray=[];
     },
     emitfather() {
@@ -604,6 +639,7 @@ export default {
       tempArry.polygon=JSON.parse(JSON.stringify(this.realpolygoninfoArray))
       tempArry.line=JSON.parse(JSON.stringify(this.reallineinfoArray))
       tempArry.circle=JSON.parse(JSON.stringify(this.realcircleinfoArray))
+      tempArry.rectangle=JSON.parse(JSON.stringify(this.realrectangleinfoArray))//可能在一些奇怪的情况下会和2D拉框标注有奇怪的冲突，因为名称都是regctangle，但是里面存的数据格式不同，解析方法也不同
       //tempArry.push(JSON.parse(JSON.stringify(this.realpolygoninfoArray})));
       // tempArry.put(JSON.parse(JSON.stringify({"polygon":this.realpolygoninfoArray})));
       // tempArry.push(JSON.parse(JSON.stringify({"line":this.reallineinfoArray})));
@@ -699,6 +735,40 @@ export default {
       }
       }
 
+      if(this.lastlabelArry.rectangle!=null&&this.lastlabelArry.rectangle!=undefined){
+      //矩形
+      for (let i = 0; i < this.lastlabelArry.rectangle.length; i++) {
+        console.log("rectangle1",this.lastlabelArry.rectangle[i])
+        for (let j = 0; j < this.lastlabelArry.rectangle[i].point.length; j++) {
+          console.log("rectangle2",this.lastlabelArry.rectangle[i].point[j])
+          let a = {};
+          let reala = {};
+          a["x"] = this.lastlabelArry.rectangle[i].point[j].x * this.scalewidth;
+          a["y"] = this.lastlabelArry.rectangle[i].point[j].y * this.scaleheight;
+          reala["x"] = this.lastlabelArry.rectangle[i].point[j].x
+          reala["y"] = this.lastlabelArry.rectangle[i].point[j].y
+          this.rectanglePoints.push(a);
+          this.realRectanglePoints.push(reala);
+        }
+        this.markinfo = this.lastlabelArry.rectangle[i].info;
+        this.findcolor(this.lastlabelArry.rectangle[i].info);
+        this.makeRectangle();
+        this.rectangleArray.push(this.rectangle);
+        this.allobjArray.push(this.rectangle);
+        this.rectangleinfoArray.push({
+          point:this.rectanglePoints,
+          info: this.markinfo,
+        })
+        this.realrectangleinfoArray.push({
+          point:this.realRectanglePoints,
+          info: this.markinfo,
+        })
+        this.fabricObj.add(this.rectangle)
+        this.rectanglePoints=[];
+        this.realRectanglePoints=[];
+        this.rectangle=null;
+      }
+      }
       if(this.lastlabelArry.circle!=null&&this.lastlabelArry.circle!=undefined){
       //点
       for (let i = 0; i < this.lastlabelArry.circle.length; i++) {
@@ -877,6 +947,15 @@ export default {
             fill:"black"
           });
         }
+        if(poly.type=="rectangle"){
+          console.log("isrectanglein")
+          let index2 = this.rectangleArray.indexOf(poly)
+          console.log(this.rectangleinfoArray[index2],index2);
+          console.log(this.realrectangleinfoArray[index2]);
+          poly.set({
+            fill:"black"
+          });
+        }
         this.buttonmouseoveflag = true;
         this.fabricObj.renderAll();
       }
@@ -909,6 +988,15 @@ export default {
           console.log("ispointout")
           let index2 = this.circleArray.indexOf(poly)
           this.findcolor(this.circleinfoArray[index2].info);
+          poly.set({
+            fill:this.markcolor
+          });
+          this.markcolor = tempcolor;
+        }
+        if(poly.type=="rectangle"){
+          console.log("isrectangleout")
+          let index2 = this.rectangleArray.indexOf(poly)
+          this.findcolor(this.rectangleinfoArray[index2].info);
           poly.set({
             fill:this.markcolor
           });
@@ -948,6 +1036,14 @@ export default {
         this.allobjArray.splice(index,1);
         this.circleinfoArray.splice(index2, 1);
         this.realcircleinfoArray.splice(index2, 1);
+      }
+      if(poly.type=="rectangle"){
+        let index2 = this.rectangleArray.indexOf(poly)
+        this.fabricObj.remove(this.rectangleArray[index2]);
+        this.rectangleArray.splice(index2, 1);
+        this.allobjArray.splice(index,1);
+        this.rectangleinfoArray.splice(index2, 1);
+        this.realrectangleinfoArray.splice(index2, 1);
       }
     },
     start() {
@@ -1212,7 +1308,7 @@ export default {
                   //console.log("worinima",this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.line)])
                   //this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.line)].sendToBack();
                   console.log("this.fabricObj._objects",this.fabricObj._objects)
-                  for(let i =0;i<this.polygonArray.length+this.circleArray.length;i++){
+                  for(let i =0;i<this.polygonArray.length+this.circleArray.length+this.rectangleArray.length;i++){
                     this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.line)].sendBackwards();
                   }
                   this.fabricObj.renderAll();
@@ -1283,6 +1379,10 @@ export default {
             }
           if (this.radio == "rectanglemark"&&this.rectanglePoints.length==0) {
             console.log("6666");
+            if(!this.islabeling) {
+              this.emitfather()
+              this.islabeling=true;
+            }
             let a = {};
             let reala = {};
             a["x"] = e.absolutePointer.x;
@@ -1309,9 +1409,10 @@ export default {
                   //scaleX: 3,
                   //scaleY: 3,
                   hasControls: false,
-                  strokeWidth: 3,
+                  //hasRotatingPoint:false,
+                  //strokeWidth: 3,
                   selectable: false,
-                  stroke: this.markcolor,
+                  //stroke: this.markcolor,
                 })
               );
               this.temRectangle[0].oldleft = a.x;
@@ -1383,7 +1484,7 @@ export default {
               this.fabricObj.relativePan(delta);
             }
           }
-          if (
+          if (//多边形（线）
             this.temlines[0] !== null &&
             this.temlines[0] !== undefined &&
             this.radio == "polygonmark"
@@ -1399,7 +1500,7 @@ export default {
             });
             this.fabricObj.renderAll();
           }
-          if (
+          if (//线
             this.llines[0] !== null &&
             this.llines[0] !== undefined &&
             this.radio == "linemark"
@@ -1412,7 +1513,7 @@ export default {
             })
             this.fabricObj.renderAll();
           }
-          if (
+          if (//矩形
             this.temRectangle[0] !== null &&
             this.temRectangle[0] !== undefined &&
             this.radio == "rectanglemark"
@@ -1654,7 +1755,7 @@ export default {
         this.realRectanglePoints[0].y=this.realRectanglePoints[1].y;
         this.realRectanglePoints[1].y=tem;
       }
-      this.rectangle = new fabric.Rect({
+      let temrectangleA = new fabric.Rect({
                   left: this.rectanglePoints[0].x,
 	                top: this.rectanglePoints[0].y,
 	                fill: this.markcolor,
@@ -1668,15 +1769,51 @@ export default {
                   //scaleX: 3,
                   //scaleY: 3,
                   hasControls: false,
-                  strokeWidth: 3,
+                  //hasRotatingPoint:false,
+                  //strokeWidth: 3,
                   selectable: false,
-                  stroke: this.markcolor,
+                  //stroke: this.markcolor,
       })
-        this.rectangle.type="rectangle"
-        this.rectangle.color=this.markcolor
-        this.rectangle.info=this.markinfo
-        //this.line.sendToBack();
-        console.log("this.rectangle",this.rectangle)
+      //this.rectangle.oldsx=this.rectangle.scaleX;
+      //this.rectangle.oldsy=this.rectangle.scaleY;
+      let _this=this;
+      temrectangleA.on("scaled",function(){//缩放大小
+        //console.log("this",this,this.left)
+        this.set({
+          width:this.width*this.scaleX,
+          height:this.height*this.scaleY,
+          scaleX:1,
+          scaleY:1
+        })
+        console.log("suofangsuofang",this,_this.rectangleinfoArray[_this.rectangleArray.indexOf(this)],_this.realrectangleinfoArray[_this.rectangleArray.indexOf(this)]);
+        _this.rectangleinfoArray[_this.rectangleArray.indexOf(this)].point[0].x=this.left
+        _this.rectangleinfoArray[_this.rectangleArray.indexOf(this)].point[0].y=this.top
+        _this.rectangleinfoArray[_this.rectangleArray.indexOf(this)].point[1].x=this.left+this.width
+        _this.rectangleinfoArray[_this.rectangleArray.indexOf(this)].point[1].y=this.top+this.height
+        _this.realrectangleinfoArray[_this.rectangleArray.indexOf(this)].point[0].x=this.left/_this.scalewidth
+        _this.realrectangleinfoArray[_this.rectangleArray.indexOf(this)].point[0].y=this.top/_this.scaleheight
+        _this.realrectangleinfoArray[_this.rectangleArray.indexOf(this)].point[1].x=(this.left+this.width)/_this.scalewidth
+        _this.realrectangleinfoArray[_this.rectangleArray.indexOf(this)].point[1].y=(this.top+this.height)/_this.scaleheight
+      })
+      temrectangleA.on("moved",function(){//移动
+        //console.log("54353454365663634643643643",this,this.left)
+        console.log("yidong",this,_this.rectangleinfoArray[_this.rectangleArray.indexOf(this)],_this.realrectangleinfoArray[_this.rectangleArray.indexOf(this)]);
+        _this.rectangleinfoArray[_this.rectangleArray.indexOf(this)].point[0].x=this.left
+        _this.rectangleinfoArray[_this.rectangleArray.indexOf(this)].point[0].y=this.top
+        _this.rectangleinfoArray[_this.rectangleArray.indexOf(this)].point[1].x=this.left+this.width
+        _this.rectangleinfoArray[_this.rectangleArray.indexOf(this)].point[1].y=this.top+this.height
+        _this.realrectangleinfoArray[_this.rectangleArray.indexOf(this)].point[0].x=this.left/_this.scalewidth
+        _this.realrectangleinfoArray[_this.rectangleArray.indexOf(this)].point[0].y=this.top/_this.scaleheight
+        _this.realrectangleinfoArray[_this.rectangleArray.indexOf(this)].point[1].x=(this.left+this.width)/_this.scalewidth
+        _this.realrectangleinfoArray[_this.rectangleArray.indexOf(this)].point[1].y=(this.top+this.height)/_this.scaleheight
+      })
+      temrectangleA.setControlsVisibility({mtr: false})
+      temrectangleA.type="rectangle"
+      temrectangleA.color=this.markcolor
+      temrectangleA.info=this.markinfo
+      this.rectangle = temrectangleA;
+      //this.line.sendToBack();
+      console.log("this.rectangle",this.rectangle)
     },
     // findindex(poly,type){
     //   if(type=="polygon"){
