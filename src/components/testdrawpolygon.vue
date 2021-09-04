@@ -16,7 +16,7 @@
           <el-radio-button label="linemark">线标注</el-radio-button>
           <el-radio-button label="polygonmark">多边形标注</el-radio-button>
           <el-radio-button label="rectanglemark">矩形标注</el-radio-button>
-          <el-radio-button label="ellipsemark">椭圆标注</el-radio-button>
+          <!-- <el-radio-button label="ellipsemark">椭圆标注</el-radio-button> -->
           <el-radio-button label="drag">拖动</el-radio-button>
           <el-radio-button label="modify">修改</el-radio-button>
         </el-radio-group>
