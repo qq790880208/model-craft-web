@@ -93,15 +93,15 @@
           <!-- <el-button
             size="mini"
             @click="handleStop(scope.$index, scope.row)">终止</el-button> -->
-          <el-button
+          <!-- <el-button
             size="mini"
-            @click="handleShow()">可视化</el-button>
+            @click="handleShow()">可视化</el-button> -->
           <el-button
             size="mini" v-if="scope.row.status!=0"
             @click="handleShowlog(scope.$index, scope)" >日志</el-button>
-          <el-button
+          <!-- <el-button
             size="mini" v-if="scope.row.status==0"
-            @click="handleShowlog(scope.$index, scope)"  disabled>日志</el-button>
+            @click="handleShowlog(scope.$index, scope)"  disabled>日志</el-button> -->
             <el-button
             size="mini" type="danger"
             @click="handleDelete(scope.$index, scope.row)">删除</el-button>

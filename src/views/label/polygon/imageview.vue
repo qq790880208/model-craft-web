@@ -575,7 +575,7 @@ export default {
         console.log("setUnAcceptsetUnAcceptsetUnAccept",response);
       })
       let isab
-      if(this.infoArry[i].polygon.length>0||this.infoArry[i].line.length>0||this.infoArry[i].circle.length>0||!infoFlag) isab=1
+      if(this.infoArry[i].polygon.length>0||this.infoArry[i].line.length>0||this.infoArry[i].circle.length>0||this.infoArry[i].rectangle.length>0||!infoFlag) isab=1
       else isab=2
       let data = {
           label_data: JSON.stringify(this.infoArry[i]),
