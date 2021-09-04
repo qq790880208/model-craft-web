@@ -16,7 +16,7 @@
           <el-radio-button label="linemark">线标注</el-radio-button>
           <el-radio-button label="polygonmark">多边形标注</el-radio-button>
           <el-radio-button label="rectanglemark">矩形标注</el-radio-button>
-          <!-- <el-radio-button label="ellipsemark">椭圆标注</el-radio-button> -->
+          <el-radio-button label="ellipsemark">椭圆标注</el-radio-button>
           <el-radio-button label="drag">拖动</el-radio-button>
           <el-radio-button label="modify">修改</el-radio-button>
         </el-radio-group>
@@ -132,7 +132,7 @@
               @mouseover.native="infotip(index)"
               @mouseout.native="removetip(index)"
               @mousedown.native="deletemarked(index)"
-              >{{ index + 1 }}、{{items.type=="polygon"?"多边形":items.type=="line"?"线":items.type=="point"?"点":"矩形"}} {{items.info}}
+              >{{ index + 1 }}、{{items.type=="polygon"?"多边形":items.type=="line"?"线":items.type=="point"?"点":items.type=="rectangle"?"矩形":"椭圆形"}} {{items.info}}
             </el-button>
           </div>
         </div>
@@ -384,6 +384,9 @@ export default {
         this.rectangleArray.forEach((item) => {
           this.fabricObj.remove(item);
         });
+        this.ellipseArray.forEach((item) => {
+          this.fabricObj.remove(item);
+        });
         this.clearinfo();
         this.clearobj();
         this.markinfo = null;
@@ -480,9 +483,16 @@ export default {
           poly.hasControls = true;
           //poly.hasRotatingPoint = false;
         }
-        console.log("this.rectangleArray",this.rectangleArray)
+        for(let i = 0;i<this.ellipseArray.length;i++){
+          let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.ellipseArray[i])];
+          console.log("i0dhid9sdsubgdjsibdjsnklsdjvlknvodshvdiuh",poly,i);
+          poly.selectable = true;
+          poly.hasControls = true;
+          //poly.hasRotatingPoint = false;
+        }
+        console.log("this.ellipseArray",this.ellipseArray)
       } else {
-        console.log("this.rectangleArray",this.rectangleArray)
+        console.log("this.ellipseArray",this.ellipseArray)
         this.isimagechange = false;
         this.fabricObj.hoverCursor="default";
         this.clearobj();
@@ -500,6 +510,14 @@ export default {
         for(let i = 0;i<this.rectangleArray.length;i++){
           let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.rectangleArray[i])];
           console.log("uyfioaufasufopaisfasfuoaspoufaspioufiasufioasfuasufiasfisadosuaidhnzjkczxbcvn",poly,i);
+          this.fabricObj.discardActiveObject(poly);
+          poly.selectable = false;
+          poly.hasControls = false;
+          //poly.hasRotatingPoint = false;
+        }
+        for(let i = 0;i<this.ellipseArray.length;i++){
+          let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.ellipseArray[i])];
+          console.log("umv34ut 483909ymv9u4h finh jkfjksdbfsdn",poly,i);
           this.fabricObj.discardActiveObject(poly);
           poly.selectable = false;
           poly.hasControls = false;
@@ -560,16 +578,20 @@ export default {
         this.temcircles.forEach((item) => this.fabricObj.remove(item));
         this.llines.forEach((item) => this.fabricObj.remove(item));
         this.temRectangle.forEach((item) => this.fabricObj.remove(item));
+        this.temEllipse.forEach((item) => this.fabricObj.remove(item));
         this.roofPoints = [];
         this.realPoints = [];
         this.linePoints = [];
         this.realLinePoints = [];
         this.rectanglePoints = [];
         this.realRectanglePoints = [];
+        this.ellipsePoints =[];
+        this.realEllipsePoints =[];
         this.temlines = [];
         this.temcircles = [];
         this.llines = [];
         this.temRectangle =[];
+        this.temEllipse = [];
         this.temlineCounter = 0;
         this.temcircleCounter = 0;
         console.log("count",this.testcirclearray.length,"objarr",this.testcirclearray)
@@ -592,6 +614,9 @@ export default {
       this.rectangleArray = [];
       this.rectangleinfoArray = [];
       this.realrectangleinfoArray = [];
+      this.ellipseArray = [];
+      this.ellipseinfoArray = [];
+      this.realellipseinfoArray = [];
       this.testcirclearray=[];
     },
     emitfather() {
@@ -640,6 +665,7 @@ export default {
       tempArry.line=JSON.parse(JSON.stringify(this.reallineinfoArray))
       tempArry.circle=JSON.parse(JSON.stringify(this.realcircleinfoArray))
       tempArry.rectangle=JSON.parse(JSON.stringify(this.realrectangleinfoArray))//可能在一些奇怪的情况下会和2D拉框标注有奇怪的冲突，因为名称都是regctangle，但是里面存的数据格式不同，解析方法也不同
+      tempArry.ellipse=JSON.parse(JSON.stringify(this.realellipseinfoArray))
       //tempArry.push(JSON.parse(JSON.stringify(this.realpolygoninfoArray})));
       // tempArry.put(JSON.parse(JSON.stringify({"polygon":this.realpolygoninfoArray})));
       // tempArry.push(JSON.parse(JSON.stringify({"line":this.reallineinfoArray})));
@@ -767,6 +793,40 @@ export default {
         this.rectanglePoints=[];
         this.realRectanglePoints=[];
         this.rectangle=null;
+      }
+      }
+      if(this.lastlabelArry.ellipse!=null&&this.lastlabelArry.ellipse!=undefined){
+      //椭圆形
+      for (let i = 0; i < this.lastlabelArry.ellipse.length; i++) {
+        console.log("ellipse1",this.lastlabelArry.ellipse[i])
+        for (let j = 0; j < this.lastlabelArry.ellipse[i].point.length; j++) {
+          console.log("ellipse2",this.lastlabelArry.ellipse[i].point[j])
+          let a = {};
+          let reala = {};
+          a["x"] = this.lastlabelArry.ellipse[i].point[j].x * this.scalewidth;
+          a["y"] = this.lastlabelArry.ellipse[i].point[j].y * this.scaleheight;
+          reala["x"] = this.lastlabelArry.ellipse[i].point[j].x
+          reala["y"] = this.lastlabelArry.ellipse[i].point[j].y
+          this.ellipsePoints.push(a);
+          this.realEllipsePoints.push(reala);
+        }
+        this.markinfo = this.lastlabelArry.ellipse[i].info;
+        this.findcolor(this.lastlabelArry.ellipse[i].info);
+        this.makeEllipse();
+        this.ellipseArray.push(this.ellipse);
+        this.allobjArray.push(this.ellipse);
+        this.ellipseinfoArray.push({
+          point:this.ellipsePoints,
+          info: this.markinfo,
+        })
+        this.realellipseinfoArray.push({
+          point:this.realEllipsePoints,
+          info: this.markinfo,
+        })
+        this.fabricObj.add(this.ellipse)
+        this.ellipsePoints=[];
+        this.realEllipsePoints=[];
+        this.ellipse=null;
       }
       }
       if(this.lastlabelArry.circle!=null&&this.lastlabelArry.circle!=undefined){
@@ -956,6 +1016,15 @@ export default {
             fill:"black"
           });
         }
+        if(poly.type=="ellipse"){
+          console.log("isellipsein")
+          let index2 = this.ellipseArray.indexOf(poly)
+          console.log(this.ellipseinfoArray[index2],index2);
+          console.log(this.realellipseinfoArray[index2]);
+          poly.set({
+            fill:"black"
+          });
+        }
         this.buttonmouseoveflag = true;
         this.fabricObj.renderAll();
       }
@@ -997,6 +1066,15 @@ export default {
           console.log("isrectangleout")
           let index2 = this.rectangleArray.indexOf(poly)
           this.findcolor(this.rectangleinfoArray[index2].info);
+          poly.set({
+            fill:this.markcolor
+          });
+          this.markcolor = tempcolor;
+        }
+        if(poly.type=="ellipse"){
+          console.log("isellipseout")
+          let index2 = this.ellipseArray.indexOf(poly)
+          this.findcolor(this.ellipseinfoArray[index2].info);
           poly.set({
             fill:this.markcolor
           });
@@ -1044,6 +1122,14 @@ export default {
         this.allobjArray.splice(index,1);
         this.rectangleinfoArray.splice(index2, 1);
         this.realrectangleinfoArray.splice(index2, 1);
+      }
+      if(poly.type=="ellipse"){
+        let index2 = this.ellipseArray.indexOf(poly)
+        this.fabricObj.remove(this.ellipseArray[index2]);
+        this.ellipseArray.splice(index2, 1);
+        this.allobjArray.splice(index,1);
+        this.ellipseinfoArray.splice(index2, 1);
+        this.realellipseinfoArray.splice(index2, 1);
       }
     },
     start() {
@@ -1418,7 +1504,7 @@ export default {
               this.temRectangle[0].oldleft = a.x;
               this.temRectangle[0].oldtop = a.y;
               this.fabricObj.add(this.temRectangle[0]);
-              console.log("llinesddddd",this.llines);
+              //console.log("llinesddddd",this.llines);
             }
             else if(this.radio == "rectanglemark"&&this.rectanglePoints.length==1){
               //防止过长时间重复点一个点时点入栈
@@ -1469,10 +1555,83 @@ export default {
               }
             }
             
-          
-          // } else {
-          //     console.log("click repeat!!!");
-          //   }
+          if (this.radio == "ellipsemark"&&this.ellipsePoints.length==0) {
+            console.log("ellipsemark11111");
+            if(!this.islabeling) {
+              this.emitfather()
+              this.islabeling=true;
+            }
+            let a = {};
+            let reala = {};
+            a["x"] = e.absolutePointer.x;
+            a["y"] = e.absolutePointer.y;
+            reala["x"] = e.absolutePointer.x / this.scalewidth;
+            reala["y"] = e.absolutePointer.y / this.scaleheight;
+            this.ellipsePoints.push(a);
+            this.realEllipsePoints.push(reala);
+            this.temEllipse.push(
+              new fabric.Ellipse({
+              left: a.x,
+	            top: a.y,
+	            fill: this.markcolor,
+              rx:0,
+              ry:0,
+              hasControls: false,
+              selectable: false,
+            })
+            );
+            this.temEllipse[0].oldleft = a.x;
+            this.temEllipse[0].oldtop = a.y;
+            this.fabricObj.add(this.temEllipse[0])
+            this.fabricObj.renderAll();
+          }
+            else if(this.radio == "ellipsemark"&&this.ellipsePoints.length==1){
+              //防止过长时间重复点一个点时点入栈
+              if (
+              ((e.absolutePointer.x !=
+                  this.ellipsePoints[0].x ||
+                  e.absolutePointer.y !=
+                    this.ellipsePoints[0].y))
+              ) {
+                  let a = {};
+                  let reala = {};
+                  a["x"] = e.absolutePointer.x;
+                  a["y"] = e.absolutePointer.y;
+                  reala["x"] = e.absolutePointer.x / this.scalewidth;
+                  reala["y"] = e.absolutePointer.y / this.scaleheight;
+                  this.ellipsePoints.push(a);
+                  this.realEllipsePoints.push(reala);
+                  this.makeEllipse();
+                  this.ellipseArray.push(this.ellipse);
+                  this.allobjArray.push(this.ellipse);
+                  this.ellipseinfoArray.push({
+                    point:this.ellipsePoints,
+                    info: this.markinfo,
+                  })
+                  this.realellipseinfoArray.push({
+                    point:this.realEllipsePoints,
+                    info: this.markinfo,
+                  })
+                  this.fabricObj.remove(this.temEllipse[0])
+                  this.fabricObj.add(this.ellipse)
+                  this.fabricObj.renderAll();
+                  this.ellipsePoints=[];
+                  this.realEllipsePoints=[];
+                  this.ellipse=null;
+                  this.temEllipse=[];
+                  console.log("ellipseArray",this.ellipseArray)
+                  console.log("ellipseinfoArray",this.ellipseinfoArray)
+                  console.log("realellipseinfoArray",this.realellipseinfoArray)
+                  console.log("temEllipse",this.temEllipse[0])
+                  if(this.islabeling) {
+                    this.emitfather()
+                    this.islabeling=false;
+                  }
+              }
+              else{
+                console.log("click repeat!!!");
+              }
+            }
         },
         "mouse:move": (e) => {
           if (this.isimagechange) return;
@@ -1551,6 +1710,49 @@ export default {
                 top:this.y,
                 width:this.temRectangle[0].oldleft-this.x,
                 height:this.temRectangle[0].oldtop-this.y
+            })
+            }
+
+            this.fabricObj.renderAll();
+          }
+          if (//椭圆形
+            this.temEllipse[0] !== null &&
+            this.temEllipse[0] !== undefined &&
+            this.radio == "ellipsemark"
+          ){
+            this.x = e.absolutePointer.x;
+            this.y = e.absolutePointer.y;
+            //console.log(this.x,this.y,this.temRectangle[0].left,this.temRectangle[0].top,this.temRectangle[0].oldleft,this.temRectangle[0].oldtop)
+            if(this.x>this.temEllipse[0].oldleft&&this.y>this.temEllipse[0].oldtop){
+              this.temEllipse[0].set({
+                left:this.temEllipse[0].oldleft,
+                top:this.temEllipse[0].oldtop,
+                rx:(this.x-this.temEllipse[0].left)/2,
+                ry:(this.y-this.temEllipse[0].top)/2
+            })
+            }
+            if(this.x<this.temEllipse[0].oldleft&&this.y>this.temEllipse[0].oldtop) {
+              this.temEllipse[0].set({
+                left:this.x,
+                top:this.temEllipse[0].oldtop,
+                rx:(this.temEllipse[0].oldleft-this.x)/2,
+                ry:(this.y-this.temEllipse[0].top)/2
+            })
+            }
+            if(this.x>this.temEllipse[0].oldleft&&this.y<this.temEllipse[0].oldtop) {
+              this.temEllipse[0].set({
+                left:this.temEllipse[0].oldleft,
+                top:this.y,
+                rx:(this.x-this.temEllipse[0].left)/2,
+                ry:(this.temEllipse[0].oldtop-this.y)/2
+            })
+            }
+            if(this.x<this.temEllipse[0].oldleft&&this.y<this.temEllipse[0].oldtop) {
+              this.temEllipse[0].set({
+                left:this.x,
+                top:this.y,
+                rx:(this.temEllipse[0].oldleft-this.x)/2,
+                ry:(this.temEllipse[0].oldtop-this.y)/2
             })
             }
 
@@ -1814,6 +2016,86 @@ export default {
       this.rectangle = temrectangleA;
       //this.line.sendToBack();
       console.log("this.rectangle",this.rectangle)
+    },
+    makeEllipse(){
+      console.log("ellipsePoints",this.ellipsePoints)
+      if(this.ellipsePoints[0].x>this.ellipsePoints[1].x){
+        let tem = this.ellipsePoints[0].x;
+        this.ellipsePoints[0].x=this.ellipsePoints[1].x;
+        this.ellipsePoints[1].x=tem;
+      }
+      if(this.ellipsePoints[0].y>this.ellipsePoints[1].y){
+        let tem = this.ellipsePoints[0].y;
+        this.ellipsePoints[0].y=this.ellipsePoints[1].y;
+        this.ellipsePoints[1].y=tem;
+      }
+      if(this.ellipsePoints[0].x>this.ellipsePoints[1].x){
+        let tem = this.ellipsePoints[0].x;
+        this.ellipsePoints[0].x=this.ellipsePoints[1].x;
+        this.ellipsePoints[1].x=tem;
+      }
+      if(this.ellipsePoints[0].y>this.ellipsePoints[1].y){
+        let tem = this.ellipsePoints[0].y;
+        this.ellipsePoints[0].y=this.ellipsePoints[1].y;
+        this.ellipsePoints[1].y=tem;
+      }
+      let temellipseA = new fabric.Ellipse({
+                  left: this.ellipsePoints[0].x,
+	                top: this.ellipsePoints[0].y,
+	                fill: this.markcolor,
+	                rx: (this.ellipsePoints[1].x-this.ellipsePoints[0].x)/2,
+	                ry: (this.ellipsePoints[1].y-this.ellipsePoints[0].y)/2,
+                  //strokeWidth: 2,
+                    //stroke: "#880E4F",
+                  //rx: 10,
+                  //ry: 10,
+                  //angle: 45,
+                  //scaleX: 3,
+                  //scaleY: 3,
+                  hasControls: false,
+                  //hasRotatingPoint:false,
+                  //strokeWidth: 3,
+                  selectable: false,
+                  //stroke: this.markcolor,
+      })
+      let _this=this;
+      temellipseA.on("scaled",function(){//缩放大小
+        //console.log("this",this,this.left)
+        this.set({
+          rx:this.rx*this.scaleX,
+          ry:this.ry*this.scaleY,
+          scaleX:1,
+          scaleY:1
+        })
+        console.log("suofangsuofang",this,_this.ellipseinfoArray[_this.ellipseArray.indexOf(this)],_this.ellipseinfoArray[_this.ellipseArray.indexOf(this)]);
+        _this.ellipseinfoArray[_this.ellipseArray.indexOf(this)].point[0].x=this.left
+        _this.ellipseinfoArray[_this.ellipseArray.indexOf(this)].point[0].y=this.top
+        _this.ellipseinfoArray[_this.ellipseArray.indexOf(this)].point[1].x=this.left+this.rx*2
+        _this.ellipseinfoArray[_this.ellipseArray.indexOf(this)].point[1].y=this.top+this.ry*2
+        _this.realellipseinfoArray[_this.ellipseArray.indexOf(this)].point[0].x=this.left/_this.scalewidth
+        _this.realellipseinfoArray[_this.ellipseArray.indexOf(this)].point[0].y=this.top/_this.scaleheight
+        _this.realellipseinfoArray[_this.ellipseArray.indexOf(this)].point[1].x=(this.left+this.rx*2)/_this.scalewidth
+        _this.realellipseinfoArray[_this.ellipseArray.indexOf(this)].point[1].y=(this.top+this.ry*2)/_this.scaleheight
+      })
+      temellipseA.on("moved",function(){//移动
+        //console.log("54353454365663634643643643",this,this.left)
+        console.log("yidong",this,_this.ellipseinfoArray[_this.ellipseArray.indexOf(this)],_this.ellipseinfoArray[_this.ellipseArray.indexOf(this)]);
+        _this.ellipseinfoArray[_this.ellipseArray.indexOf(this)].point[0].x=this.left
+        _this.ellipseinfoArray[_this.ellipseArray.indexOf(this)].point[0].y=this.top
+        _this.ellipseinfoArray[_this.ellipseArray.indexOf(this)].point[1].x=this.left+this.rx*2
+        _this.ellipseinfoArray[_this.ellipseArray.indexOf(this)].point[1].y=this.top+this.ry*2
+        _this.realellipseinfoArray[_this.ellipseArray.indexOf(this)].point[0].x=this.left/_this.scalewidth
+        _this.realellipseinfoArray[_this.ellipseArray.indexOf(this)].point[0].y=this.top/_this.scaleheight
+        _this.realellipseinfoArray[_this.ellipseArray.indexOf(this)].point[1].x=(this.left+this.rx*2)/_this.scalewidth
+        _this.realellipseinfoArray[_this.ellipseArray.indexOf(this)].point[1].y=(this.top+this.ry*2)/_this.scaleheight
+      })
+      temellipseA.setControlsVisibility({mtr: false})
+      temellipseA.type="ellipse"
+      temellipseA.color=this.markcolor
+      temellipseA.info=this.markinfo
+      this.ellipse = temellipseA;
+      //this.line.sendToBack();
+      console.log("this.ellipse",this.ellipse)
     },
     // findindex(poly,type){
     //   if(type=="polygon"){
