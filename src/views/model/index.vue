@@ -274,6 +274,9 @@ export default {
     }
   },
   created() {
+     if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
     this.fetchData()
   },
   methods: {
@@ -517,7 +520,16 @@ export default {
         this.$refs[taskForm].resetFields()
       },
       handleDownload(model_oss_path){
-        window.open("http://124.70.81.35:9000/minio/modelcraft/" + model_oss_path, '_blank')
+        const params = {
+        bucketName: 'modelcraft',
+        objectPrefix: model_oss_path.substring(0, model_oss_path.length-1)
+        }
+        console.log(params)
+        console.log(process.env)
+        let a = document.createElement('a')
+        a.href ="/8089/minio-service/downloadZipByPrefix/?bucketName=" + encodeURI(params.bucketName) +
+          "&objectPrefix=" + encodeURI(params.objectPrefix);
+          a.click();
       }
   }
 }

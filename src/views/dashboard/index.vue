@@ -34,12 +34,35 @@
         </el-form>
       </el-card>
     </el-row>
+    <el-dialog
+      title="首次登录,请修改密码"
+      :visible.sync="centerDialogVisible"
+      width="45%"
+      top="15vh"
+      fullscreen="true"
+      center
+      :before-close="handleCloseChangePassword">
+      <!-- <span>需要注意的是内容是默认不居中的</span> -->
+      <el-card class="box-card1">
+        <el-form ref="forms" :model="forms" :rules="ruless">
+          <el-form-item label="新密码" prop="newPasswords">
+            <el-input v-model="forms.newPasswords" type="password" placeholder="请设置新密码" />
+          </el-form-item>
+          <el-form-item label="确认密码" prop="newPasswords2">
+            <el-input v-model="forms.newPasswords2" type="password" placeholder="请确认新密码" />
+          </el-form-item>
+        </el-form>
+      </el-card>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="onSubmits()">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { updatePassword } from '@/api/userManage'
+import { updatePassword,changePasswordApi } from '@/api/userManage'
 import crypto from 'crypto'
 import md5 from 'js-md5'
 import store from '@/store'
@@ -71,10 +94,21 @@ export default {
         callback()
       }
     }
+    let validateNewPasswords2 = (rule, value, callback) => {
+      if (value !== this.forms.newPasswords) {
+        callback(new Error('与新密码不一致!'))
+      } else {
+        callback()
+      }
+    }
     return {
       label_type: 0,
       show: false,
       form: {},
+      forms: {
+        newPasswords: '',
+        newPasswords2: ''
+      },
       hhh: md5('123456'),
       rules: {
         password: [
@@ -90,8 +124,25 @@ export default {
           { validator: validateNewPassword2, trigger: 'blur' },
           { min: 6, max: 20, message: "长度在 6 到 20 个字符", trigger: "blur" }
         ]
-      }
+      },
+      ruless: {
+        newPasswords: [
+          { required: true, message: '请设置新密码', trigger: 'blur' },
+          { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
+        ],
+        newPasswords2: [
+          { required: true, message: '请确认新密码', trigger: 'blur' },
+          { validator: validateNewPasswords2, trigger: 'blur' },
+          { min: 6, max: 20, message: '长度在 6 到 20 个字符', trigger: 'blur' }
+        ]
+      },
+      centerDialogVisible: ''
     }
+  },
+  created() {
+    // this.getAllUserCount()
+    // this.getActiveUserCount()
+    this.changeDialog()
   },
   methods: {
     format(percentage) {
@@ -108,6 +159,48 @@ export default {
       this.show = true
       store.commit('SET_SET_PASSWORD')
     },
+    handleCloseChangePassword() {
+      alert('请修改密码');
+    },
+    changeDialog() {
+      console.log(store.getters.register)
+      if (store.getters.register == 1) {
+        console.log('klklklklklklk')
+        this.centerDialogVisible = true
+      } else {
+        console.log('zzzzzzzzzzzzzzzzzzzzzzzzzzzz')
+        this.centerDialogVisible = false
+      }
+    },
+    onSubmits() {
+      this.$refs.forms.validate(valid => {
+        if (valid) {
+          console.log(this.forms)
+          let newPasswords = this.forms.newPasswords
+          newPasswords = md5(newPasswords)
+          const params = {
+            new_pwn: newPasswords,
+            id: store.getters.userid
+          }
+          console.log('9+9++9+++9++9')
+          console.log(params)
+          changePasswordApi(params).then(() => {
+            this.centerDialogVisible = false
+            this.forms = {}
+            this.$message.success('密码已修改,请重新登录')
+            this.logout()
+          })
+          // this.logout()
+        } else {
+          this.$message.error('请正确填写表单')
+          return false
+        }
+      })
+    },
+    async logout() {
+      await this.$store.dispatch('user/logout')
+      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
     onSubmit: function() {
       this.$refs.form.validate(valid => {
         if (valid) {
@@ -117,14 +210,14 @@ export default {
           newPassword = md5(newPassword)
           const params = {
             password: password,
-            newPassword: newPassword,
+            new_pwn: newPassword,
             id: store.getters.userid
           }
           console.log(params)
           updatePassword(params).then(() => {
             this.show = false
             this.form = {}
-
+            this.logout()
             this.$message.success('密码已修改')       
           })
         } else {
@@ -154,5 +247,9 @@ export default {
 }
 .relation-item {
   padding: 12px;
+}
+.box-card1 {
+  width: 500px;
+  margin:0 auto;
 }
 </style>

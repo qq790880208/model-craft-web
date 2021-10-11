@@ -78,6 +78,11 @@ function keyDownSearch(e){
     console.log("gggggggggg!!!!!!!!!!!!!")
     nomarkedimage()
   }
+  if(code == 46){ //删除快捷键
+    console.log("ddddddddddelete!!!!!!!!!!!!!")
+    deleteSelect();
+  //return true;
+  }
 }
 
 export default {
@@ -143,6 +148,9 @@ export default {
     // labelinfo
   },
   methods: {
+    deleteSelect(){
+      this.$refs.imageselectref.deletelabel2();
+    },
     returndataset(){
       this.$router.go(-1)
     },
@@ -643,6 +651,7 @@ export default {
     window.skipimagenext = this.skipimagenext;
     window.skipimagepre = this.skipimagepre;
     window.nomarkedimage = this.nomarkedimage;
+    window.deleteSelect = this.deleteSelect;
     document.onkeydown = keyDownSearch;
     this.starttimer = setInterval(()=>{
       this.nowseconds++;

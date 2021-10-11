@@ -336,9 +336,11 @@ export default {
   },
   destroyed(){
     window.removeEventListener('resize', this.GetWindowInfo)
+    window.removeEventListener('mousewheel', this.checkFangdasSuoxiao);
   },
   mounted() {
     window.addEventListener('resize', this.GetWindowInfo); //注册监听器
+    window.addEventListener('mousewheel', this.checkFangdasSuoxiao,true)
     this.GetWindowInfo() //页面创建时先调用一次
     this.mountedFlag=false;
     this.$nextTick(() => {
@@ -409,6 +411,12 @@ export default {
     // this.buttonindex = i;
     // console.log("hahaha" + this.buttonindex);
     // },
+    checkFangdasSuoxiao(e){
+      let direction = e.deltaY>0?'down':'up'
+      console.log("checkFangdasSuoxiao",direction);
+      if(direction=='up') this.fangda()
+      else this.suoxiao()
+    },
     GetWindowInfo(){
         // 获取浏览器高宽
         if(window.innerWidth>1650) {
@@ -1192,25 +1200,19 @@ export default {
       console.log(this.polygonArray);
       console.log(this.polygoninfoArray);
     },
-
-    fabricEvent() {
-      this.fabricObj.on({
-        // "object:selected":e =>{
-        //   console.log("selected")
-        // },
-        "mouse:wheel": (e) => {
-          //删除上一个点
-          //console.log(e)
-          if(this.radio == "polygonmark"){
-          if (this.roofPoints.length > 0) {
-            let x = e.absolutePointer.x;
-            let y = e.absolutePointer.y;
-            if (this.temlineCounter >= 2) {
-              this.temlines[this.temlineCounter - 2].set({
-                x2: x,
-                y2: y,
-              });
-            }
+    undo(){
+        //删除上一个点
+        //console.log(e)
+        if(this.radio == "polygonmark"){
+        if (this.roofPoints.length > 0) {
+          // let x = e.absolutePointer.x;
+          // let y = e.absolutePointer.y;
+          // if (this.temlineCounter >= 2) {
+          //     this.temlines[this.temlineCounter - 2].set({
+          //       x2: x,
+          //       y2: y,
+          //     });
+          //   }
             this.fabricObj.remove(this.temlines[this.temlineCounter - 1]);
             this.fabricObj.remove(this.temcircles[this.temcircleCounter-1]);
             this.roofPoints.pop();
@@ -1221,18 +1223,64 @@ export default {
             this.temcircleCounter--;
             this.fabricObj.renderAll();
           }
-          }
-          if(this.radio == "linemark"){
-            if(this.testcirclearray.length%2==1&&this.testcirclearray.length>0) { //移除未完成线段的单个端点
-            console.log("delete one")
-            this.testcirclearray.pop();
-            this.fabricObj.remove(this.llines[0]);
-            this.llines.pop();
-            this.linePoints.pop();
-            this.realLinePoints.pop();
         }
+        else if(this.radio == "linemark"){
+          if(this.testcirclearray.length%2==1&&this.testcirclearray.length>0) { //移除未完成线段的单个端点
+          console.log("delete one")
+          this.testcirclearray.pop();
+          this.fabricObj.remove(this.llines[0]);
+          this.llines.pop();
+          this.linePoints.pop();
+          this.realLinePoints.pop();
           }
-        },
+        }
+        else if(this.radio == "rectanglemark"&&this.rectanglePoints.length==1){
+          this.clearobj();
+        }
+        else if(this.radio == "ellipsemark"&&this.ellipsePoints.length==1){
+          this.clearobj();
+        }
+    },
+    fabricEvent() {
+      this.fabricObj.on({
+        // "object:selected":e =>{
+        //   console.log("selected")
+        // },
+        //"mouse:wheel": (e) => {
+        //   //删除上一个点
+        //   //console.log(e)
+        //   if(this.radio == "polygonmark"){
+        //   if (this.roofPoints.length > 0) {
+        //     let x = e.absolutePointer.x;
+        //     let y = e.absolutePointer.y;
+        //     if (this.temlineCounter >= 2) {
+        //       this.temlines[this.temlineCounter - 2].set({
+        //         x2: x,
+        //         y2: y,
+        //       });
+        //     }
+        //     this.fabricObj.remove(this.temlines[this.temlineCounter - 1]);
+        //     this.fabricObj.remove(this.temcircles[this.temcircleCounter-1]);
+        //     this.roofPoints.pop();
+        //     this.realPoints.pop();
+        //     this.temlines.pop();
+        //     this.temcircles.pop();
+        //     this.temlineCounter--;
+        //     this.temcircleCounter--;
+        //     this.fabricObj.renderAll();
+        //   }
+        //   }
+        //   if(this.radio == "linemark"){
+        //     if(this.testcirclearray.length%2==1&&this.testcirclearray.length>0) { //移除未完成线段的单个端点
+        //     console.log("delete one")
+        //     this.testcirclearray.pop();
+        //     this.fabricObj.remove(this.llines[0]);
+        //     this.llines.pop();
+        //     this.linePoints.pop();
+        //     this.realLinePoints.pop();
+        // }
+        //   }
+        //},
         "mouse:down": (e) => {
           // console.log("eeeeeeeeeeee",e)
           // if(e.)

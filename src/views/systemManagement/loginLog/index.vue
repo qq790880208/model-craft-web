@@ -68,6 +68,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getListByPage, batchRemoveList } from '@/api/loginlog'
+import store from "@/store"
 export default {
   name: 'Dashboard',
   data() {
@@ -194,6 +195,11 @@ export default {
           })
         })
         .catch(() => {})
+    }
+  },
+    created(){
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
     }
   },
   mounted() {

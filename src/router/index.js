@@ -53,6 +53,13 @@ export const constantRoutes = [
       meta: { title: '主页', icon: 'dashboard' }
     },
     {
+      path: '/profile',
+      component: () => import('@/views/Profile/index'),
+      name: '个人中心',
+      meta: { title: '个人中心', resources: 'profile' },
+      hidden: true
+    },
+    {
       path: '/dataSet/userLabel',
       component: () => import('@/views/dataSet/userLabel'),
       name: 'userLabel',
@@ -192,7 +199,7 @@ export const asyncRoutes = [
         component: () => import('@/views/dataSet/oss'),
         name: 'oss manage',
         meta: { title: '对象存储', resources: 'oss', icon: 'tree' },
-        hidden:true
+        hidden: true
       },
     ]
   },

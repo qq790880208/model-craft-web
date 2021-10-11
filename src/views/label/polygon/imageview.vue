@@ -80,6 +80,11 @@ function keyDownSearch(e){
     console.log("gggggggggg!!!!!!!!!!!!!")
     nomarkedimage()
   }
+    if(code == 27){ //保存并上一张
+    console.log("eeeeeeeeeeeeeeeeeeeeessssssssssccccccccccccccccccc!!!!!!!!!!!!!")
+    undochild()
+    //return false;     
+  }
 }
 
 export default {
@@ -156,6 +161,7 @@ export default {
     window.skipimagenext = this.skipimagenext;
     window.skipimagepre = this.skipimagepre;
     window.nomarkedimage = this.nomarkedimage;
+    window.undochild = this.undochild;
     document.onkeydown = keyDownSearch;
       this.starttimer = setInterval(()=>{
       this.nowseconds++;
@@ -175,6 +181,9 @@ export default {
       },1000);
   },
   methods: {
+    undochild(){
+      this.$refs.drawpolygonref.undo()
+    },
     returndataset(){
       this.$router.go(-1)
     },

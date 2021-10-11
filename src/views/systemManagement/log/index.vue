@@ -57,7 +57,7 @@
       </el-table-column> -->
       <el-table-column prop="user_name" align="center" label="用户名" width="100" sortable>
       </el-table-column>
-      <el-table-column prop="message" align="center" label="操作信息" min-width="160" sortable>
+      <el-table-column prop="message" align="center" label="操作信息" width="240" show-overflow-tooltip sortable>
       </el-table-column>
       <!-- <el-table-column prop="method" align="center" label="方法" min-width="100" sortable>
         <template slot-scope="scope">
@@ -96,6 +96,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getListByPage, batchRemoveList } from '@/api/log'
+import store from "@/store"
 export default {
   name: 'Dashboard',
   data() {
@@ -229,6 +230,11 @@ export default {
           })
         })
         .catch(() => {})
+    }
+  },
+    created(){
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
     }
   },
   mounted() {

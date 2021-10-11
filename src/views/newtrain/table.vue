@@ -99,9 +99,9 @@
           <el-button
             size="mini" v-if="scope.row.status!=0"
             @click="handleShowlog(scope.$index, scope)" >日志</el-button>
-          <!-- <el-button
+          <el-button
             size="mini" v-if="scope.row.status==0"
-            @click="handleShowlog(scope.$index, scope)"  disabled>日志</el-button> -->
+            @click="handleShowlog(scope.$index, scope)"  disabled>日志</el-button>
             <el-button
             size="mini" type="danger"
             @click="handleDelete(scope.$index, scope.row)">删除</el-button>
@@ -252,6 +252,18 @@ import visualf from "./visual1"
 import visualt from "./visual2"
 import {startTask, showLog,getAcceptData,stopTask, getTableData1,deleteTask,  search, searchStatus, getVisualData, submitTask, getinitialPara} from '@/api/newTrain'
 import store from '@/store'
+
+function keyDownSearch(e){
+  console.log("keydown!!!!!!!!!!!!")
+  let theEvent = e.event || window.event;
+  let code = theEvent.keyCode ||  theEvent.which || theEvent.charCode
+  if(code == 13){ //保存并上一张
+    console.log("enter!!!!!!!!!!!!!")
+    searchTask()
+    //return false;     
+  }
+}
+
 export default {
     components: {visual, visualf, visualt},
     data() {
@@ -419,6 +431,7 @@ export default {
       },
       //主页面部分
       searchTask(){//输入框查询
+      //console.log("312321321321321")
       if(this.queryInfo.query=="") {
         this.isSearchingFlag=false;
         return
@@ -503,9 +516,9 @@ export default {
           }
           console.log(this.initialPara)
         })
-        getinitialPara().then(res =>{
-          this.initialPara.outpath = res.data.outpath
-        })
+        // getinitialPara().then(res =>{
+        //   this.initialPara.outpath = res.data.outpath
+        // })
         
       }, 
       handleStart(index, row) {//开始某行训练
@@ -535,12 +548,13 @@ export default {
               });  
             }
           })
-        }).catch(() => { 
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });       
-        });
+        })
+        // .catch(() => { 
+        //   this.$message({
+        //     type: 'info',
+        //     message: '已取消删除'
+        //   });       
+        // });
         
         
       },
@@ -559,12 +573,13 @@ export default {
             type: 'success',
             message: '终止成功!'
           });  
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消终止'
-          });          
-        });
+        })
+        // .catch(() => {
+        //   this.$message({
+        //     type: 'info',
+        //     message: '已取消终止'
+        //   });          
+        // });
         
         
       },
@@ -747,10 +762,13 @@ export default {
       setTimerLog(train_id) {//读取日志的定时器
       console.log("this.timerLog",this.timerLog)
       this.logText = ''
+      let parm = {
+        'trainjob_id' : train_id
+      }
         if(this.timerLog == null) {
           this.timerLog = setInterval( () => {
               //console.log('开始定时...每过一秒执行一次')
-              showLog(train_id).then(res =>{
+              showLog(parm).then(res =>{
                 console.log(res)
                 this.logText = res.data.content
                 const textarea = document.getElementById('textarea_id');
@@ -778,12 +796,20 @@ export default {
     },
     
     mounted() {
+      window.searchTask = this.searchTask;
+      document.onkeydown = keyDownSearch;
       this.fetchData()
       // clearInterval(this.timer)
       // this.timer = null
       this.setTimer()
     },
+    created(){
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
+    },
     destroyed() {
+      document.onkeydown = undefined;
       clearInterval(this.timer)
       this.timer = null
     }
