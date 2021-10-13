@@ -99,7 +99,7 @@ export default {
       lastinfoArry: [],
       //与图片对于的uuid数组，是后台数据库主键
       uuidArry: [],
-      //存储图片url,是否已标注等信息的数组，用于获取远程图片信息
+      //存储图片url,是否已标注等信息的数组，用于获取远程图片信息,小图片组件使用
       imagelargeArry:[],
       //标注状态的数组
       imageislabelArry:[],

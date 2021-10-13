@@ -165,7 +165,7 @@ export const asyncRoutes = [
       },
       {
         path: '/label/voice',
-        component: () => import ('@/views/label/voice/index'),
+        component: () => import ('@/views/label/voice/voiceview'),
         name: 'voice',
         meta: { title: '语音标注',  resources: 'voice' }
       },
