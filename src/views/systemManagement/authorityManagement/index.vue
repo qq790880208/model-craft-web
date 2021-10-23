@@ -8,6 +8,7 @@
       <el-table v-loading="listLoading" :data="list" size="mini" element-loading-text="Loading" fit border highlight-current-row>
         <el-table-column label="ID" prop="id" align="center" />
         <el-table-column label="角色编码" prop="name" align="center" />
+        <el-table-column label="权限等级" prop="authority" align="center"/>
         <el-table-column label="备注" prop="remarks" align="center" />
         <el-table-column label="操作" align="center">
           <template slot-scope="scope">
@@ -51,6 +52,12 @@
               placeholder="角色描述"
             />
           </el-form-item>
+          <el-form-item label="权限等级">
+            <el-input
+              v-model="roleForm.authority"
+              placeholder="权限等级"
+            />
+          </el-form-item>
           <el-form-item label="分配权限">
             <el-tree
               ref="menuTree"
@@ -76,12 +83,14 @@
 
 <script>
 
-import { getRoles, getRoleMenuByRoleId, addRoleMenu, addNewRoleApi, delRoleApi } from '@/api/role'
+import { getRoles, getRoleMenuByRoleId, addRoleMenu, addNewRoleApi, delRoleApi, getRolesListApi } from '@/api/role'
 import { treeMenu } from '@/api/menu'
+import store from '@/store'
 
 const defaultRole = {
   key: '',
   name: '',
+  authority: '',
   remarks: '',
   routes: []
 }
@@ -106,6 +115,9 @@ export default {
     }
   },
   created() {
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
     this.getList()
     this.getMenuTabData()
   },
@@ -141,6 +153,7 @@ export default {
           const params = {
             name: this.roleForm.name,
             remarks: this.roleForm.remarks,
+            authority: this.roleForm.authority,
             menuids: menuids
           }
           console.log('vvvvvvvvvvvvvv')
@@ -216,6 +229,12 @@ export default {
     fresh() { // 刷新
       location.reload()
     },
+
+    async logout() {
+      await this.$store.dispatch('user/logout')
+      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+
     setRolePermission() {
       this.$confirm('确认提交吗？', '提示', {})
         .then(() => {
@@ -245,6 +264,7 @@ export default {
             // this.defaultCheckedKeysMenu = []
             // this.$refs.tree.setCheckedNodes([])
             this.fresh()
+            this.logout()
           })
         })
     }

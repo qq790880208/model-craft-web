@@ -2,7 +2,8 @@
   <div class="app-container">
     <div class="header">
       <div class="title">
-        <span>{{ this.$route.query.dataName }}</span>
+        <!-- <span>{{ this.$route.query.dataName }}</span> -->
+        <spa>{{ dataSet.name }}</spa>
         <el-button class="titlebutton" size="small" style="margin-left:100px; border: 0px" icon="el-icon-arrow-left" @click="toDataSet">
           返回数据集
         </el-button>
@@ -387,6 +388,7 @@ export default {
   },
   data() {
     return {
+      dataSetDetails: '',
       changeDialogVisible: false,
       teamDialogVisible: false,
       oldTeam: '',
@@ -404,9 +406,9 @@ export default {
       formLabelWidth: '120px',
       activeName: 'first',
       barChartData: {
-        tags: ['plane'],
-        nums: [0],
-        nums2: [0]
+        tags: [],
+        nums: [],
+        nums2: []
       },
       pieChartDataTol: [
         { value: 0, name: '总数' },
@@ -420,10 +422,11 @@ export default {
       // dynamicTags: ['标签一', '标签二', '标签三'],
       inputVisible: false,
       inputValue: '',
-      tags: [{
-        value: '西瓜',
-        color: 'rgba(255, 128, 255, 0.75)'
-      }],
+      // tags: [{
+      //   value: '西瓜',
+      //   color: 'rgba(255, 128, 255, 0.75)'
+      // }],
+      tags: [],
       color1: 'rgba(255, 128, 0, 0.75)'
     }
   },
@@ -439,6 +442,13 @@ export default {
     this.getAcceptDataPieDataPass()
   },
   methods: {
+
+    getDataSetDetails() {
+      const params = {
+        dataSetId: store.getters.uuid
+      }
+    },
+
     // dialog 关闭
     handleCloseDialog(done) {
       this.$confirm('确认关闭？')

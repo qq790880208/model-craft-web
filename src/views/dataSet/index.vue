@@ -396,6 +396,11 @@ export default {
   mounted() {
     this.getDataSet()
   },
+  created() {
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
+  },
   methods: {
     // 排序
     sortChange(column) {
@@ -498,7 +503,7 @@ export default {
       this.form = {
         name: '',
         descr: '',
-        dataType: '0',
+        dat改成aType: '0',
         labelType: '',
         input: 'data/dataset/' + this.my_uuid + '/input/source/',
         annotation: 'data/dataset/' + this.my_uuid + '/input/annotation/',
@@ -568,11 +573,11 @@ export default {
                 type: 'success'
               })
               this.getDataSet()
-              const params = {
+              const paramss = {
                 data: this.tags,
                 uuid: this.my_uuid
               }
-              saveTagApi(params).then(res => {
+              saveTagApi(paramss).then(res => {
                 this.$message({
                   message: '添加成功',
                   type: 'success'
@@ -589,6 +594,16 @@ export default {
               //   })
               // })
             })
+            // const paramss = {
+            //   data: this.tags,
+            //   uuid: this.my_uuid
+            // }
+            // saveTagApi(paramss).then(res => {
+            //   this.$message({
+            //     message: '添加成功',
+            //     type: 'success'
+            //   })
+            // })
             console.log(this.form)
             this.dialogVisible = false
           } else {
@@ -799,12 +814,13 @@ export default {
       console.log('vallllllllllllllllllllllllllll', val)
       store.dispatch('data/changeUuid', val.uuid)
       store.dispatch('data/changeType', val.label_type)
-      store.dispatch('data/changeDataSet', val)
+      store.dispatch('user/changeDataSet', val)
       console.log(store.getters.uuid)
       console.log(store.getters.type)
       console.log(store.getters.dataSet)
       if (val.role_type !== '标注员') {
-        this.$router.push({ path: '/dataSet/message', query: { dataName: val.name, key: this.activeName }})
+        // this.$router.push({ path: '/dataSet/message', query: { dataName: val.name, key: this.activeName }})
+        this.$router.push({ path: '/dataSet/message' })
       } else {
         console.log('898989')
         this.toStartLabel(val, val.label_type)
@@ -968,7 +984,6 @@ export default {
       this.selectObject = ''
       this.ossOutputVisible = false
     }
-
   }
 }
 </script>

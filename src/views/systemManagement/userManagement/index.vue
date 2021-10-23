@@ -304,11 +304,15 @@ export default {
       total: 0,
       page: 1,
       page_size: 20,
+      oldRow: '',
       sels: [], // 列表选中列
       editFormRules: {
         name: [
-          { required: true, message: '尽量不要修改姓名', trigger: 'blur' }
+          { required: true, message: '尽量不要修改姓名', trigger: ['blur','change'] }
         ],
+        // identity:[
+        //   { required:true,message:'必须选择身份',trigger:'blur'}
+        // ],
         email: [
           { required: true, message: '邮箱不能为空', trigger: 'blur' },
           { validator: checkEmail, trigger: 'blur' }
@@ -325,7 +329,7 @@ export default {
       editForm: {
         id: '0',
         name: '',
-        role: '',
+        role: 'user',
         email: '',
         mobile: '',
         descr: '',
@@ -334,6 +338,9 @@ export default {
       addFormVisible: false, // 新增界面是否显示
       addFormRules: {
         name: [{ required: true, message: '请输入名字', trigger: 'blur' }],
+        // identity:[
+        //   { required: true, message: "企业类型不能为空", trigger: ["blur",'change'] }
+        // ],
         password: [
           { required: true, message: '新密码不能为空', trigger: 'blur' },
           { min: 6, max: 20, message: '长度不小于 6 个字符', validator: validatePassword, trigger: 'blur' }
@@ -362,6 +369,11 @@ export default {
   },
   destroyed() {
     document.onkeydown = undefined
+  },
+  created() {
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
   },
   methods: {
     handleSizeChange(val) {
@@ -442,7 +454,7 @@ export default {
       this.editForm = {
         id: '',
         name: '',
-        role: '',
+        role: 'user',
         descr: ''
       }
     },
@@ -475,6 +487,12 @@ export default {
                 })
                 this.dialogFormEditVisible = false
                 this.getUsers()
+                if(this.name === store.getters.name && this.oldRow.role == temp.role) {
+                  this.logout()
+                }
+                if (temp.password.length >= 1) {
+                  // this.logout()
+                }
               })
             })
             .catch(e => {
@@ -483,6 +501,10 @@ export default {
             })
         }
       })
+    },
+    async logout() {
+      await this.$store.dispatch('user/logout')
+      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     },
     // 新增
     createData: function() {
@@ -547,7 +569,10 @@ export default {
     //   })
     // },
     getRoles() {
-      getRolesListApi().then(res => {
+      const params = {
+        role: store.getters.role
+      }
+      getRolesListApi(params).then(res => {
         this.statusOptions = res.data.items
       })
     }

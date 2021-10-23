@@ -53,7 +53,7 @@
 
     <!--工具条-->
     <el-col :span="24" class="toolbar">
-      <el-pagination layout="total, sizes ,prev, pager, next, jumper" :page-size="page_size" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange"/>
+      <el-pagination layout="total, sizes ,prev, pager, next, jumper" :page-size="page_size" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
     </el-col>
   </div>
 </template>
@@ -61,6 +61,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getListByPage, batchRemoveList } from '@/api/loginlog'
+import store from '@/store'
 export default {
   name: 'Dashboard',
   filters: {
@@ -142,6 +143,11 @@ export default {
   },
   mounted() {
     this.getList()
+  },
+  created() {
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
   },
   methods: {
     handleSizeChange(val) {

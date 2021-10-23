@@ -88,6 +88,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getListByPage, batchRemoveList } from '@/api/log'
+import store from '@/store'
 export default {
   name: 'Dashboard',
   filters: {
@@ -174,6 +175,11 @@ export default {
   },
   mounted() {
     this.getList()
+  },
+  created() {
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
   },
   methods: {
     handleSizeChange(val) {

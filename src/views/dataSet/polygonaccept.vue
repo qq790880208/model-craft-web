@@ -183,7 +183,8 @@ export default {
       batchUnAcceptDialogShow: false,
       acceptRemarks: '',
       unAcceptDialogShow: false,
-      acceptRemark: ''
+      acceptRemark: '',
+      isloading: false
     }
   },
   computed: {

@@ -97,6 +97,11 @@ export default {
       'userid'
     ])
   },
+  created() {
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
+  },
   methods: {
     format(percentage) {
       return percentage === 100 ? '满' : `${percentage}%`

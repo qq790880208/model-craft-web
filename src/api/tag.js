@@ -14,7 +14,8 @@ export function saveTagApi(data) {
     url: '/tag/saveTags',
     method: 'post',
     data: data,
-    baseURL: 'http://127.0.0.1:8085'
+    // baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -23,6 +24,8 @@ export function updateTagApi(data) {
     url: '/tag/updateTags',
     method: 'put',
     data: data,
-    baseURL: 'http://127.0.0.1:8085'
+    // baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
+

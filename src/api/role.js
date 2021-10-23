@@ -26,11 +26,14 @@ export function addRoleMenu(params) {
   })
 }
 
-export function getRolesListApi() {
+export function getRolesListApi(params) {
   return request({
     url: '/role/rolesList',
     method: 'get',
-    baseURL: 'http://127.0.0.1:8088'
+    params: params,
+    // baseURL: 'http://127.0.0.1:8088'
+    
+    baseURL: 'http://10.19.1.77:8088'
   })
 }
 
@@ -39,7 +42,8 @@ export function addNewRoleApi(params) {
     url: '/role/addNewRole',
     method: 'post',
     params: params,
-    baseURL: 'http://127.0.0.1:8088'
+    // baseURL: 'http://127.0.0.1:8088'
+    baseURL: 'http://10.19.1.77:8088'
   })
 }
 
@@ -48,6 +52,7 @@ export function delRoleApi(params) {
     url: '/role/delRole',
     method: 'DELETE',
     params: params,
-    baseURL: 'http://127.0.0.1:8088'
+    // baseURL: 'http://127.0.0.1:8088'
+    baseURL: 'http://10.19.1.77:8088'
   })
 }

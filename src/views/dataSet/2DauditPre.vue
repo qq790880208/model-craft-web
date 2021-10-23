@@ -185,7 +185,8 @@ export default {
       batchRejectDiaglogShow: false,
       rejectDiaglogShow: false,
       auditRemarks: '',
-      auditRemark: ''
+      auditRemark: '',
+      isloading: false
     }
   },
   destroyed() {

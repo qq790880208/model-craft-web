@@ -8,13 +8,14 @@ const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API2, // url = base url + request url
   // withCredentials: true, // send cookies when cross-domain requests
   timeout: 50000 // request timeout
+  // withCredentials: true,
+  // crossDomain: true
 })
-
+service.defaults.withCredentials = true
 // request interceptor
 service.interceptors.request.use(
   config => {
     // do something before request is sent
-
     if (store.getters.token) {
       // let each request carry token
       // ['X-Token'] is a custom headers key
@@ -53,7 +54,6 @@ service.interceptors.response.use(
         type: 'error',
         duration: 5 * 1000
       })
-
       // 50008: Illegal token; 50012: Other clients logged in; 50014: Token expired;
       if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
         // to re-login
@@ -70,6 +70,12 @@ service.interceptors.response.use(
       if (res == null) return Promise.reject('Error')
       if (res.message == null) return Promise.reject('Error')
       return Promise.reject(new Error(res.message || 'Error'))
+    // } else if (res.code == 50021){
+    //   Message({
+    //     message: '用户已在其他设备登录！',
+    //     type: 'error',
+    //     duration: 5 * 1000
+    //   })
     } else {
       return res
     }
@@ -77,6 +83,25 @@ service.interceptors.response.use(
   error => {
     // console.log(error.response.data)
     // console.log(error)
+    if (error.response.data.status === 50021) {
+      // Message({
+      //   message: "用户已在其他设备登录！",
+      //   type: 'error',
+      //   duration: 5 * 1000
+      // })
+      // console.log('--------------8888888897979797')
+      return Promise.reject('用户已在其他设备登录！')
+    }
+    if (error.response.data.status === 50020) {
+      // Message({
+      //   message: "用户已在其他设备登录！",
+      //   type: 'error',
+      //   duration: 5 * 1000
+      // })
+      // console.log('--------------8888888897979797')
+      return Promise.reject('用户未登录！')
+    }
+    console.log(error.response.data) // for debug
     console.log('err' + error) // for debug
     Message({
       message: error.message,
