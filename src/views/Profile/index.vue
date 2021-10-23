@@ -136,7 +136,7 @@ export default {
           newPassword = md5(newPassword)
           const params = {
             password: password,
-            new_pwn: newPassword,
+            newpassword: newPassword,
             id: store.getters.userid
           }
           console.log(params)

@@ -57,10 +57,7 @@
           type="text"
           tabindex="3"
           auto-complete="on"
-<<<<<<< HEAD
           @keyup.enter.native="handleLogin"
-=======
->>>>>>> dev
         />
         <div class="code" @click="refreshCode">
           <identify :identify-code="identifyCode" />
