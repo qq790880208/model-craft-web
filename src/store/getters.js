@@ -17,6 +17,7 @@ const getters = {
   type: state => state.data.type,
   dirPath: state => state.data.dirPath,
   predictcontrol: state => state.data.predictcontrol,
-  dataSet: state => state.data.dataSet
+  register: state => state.user.register,
+  dataSet: state => state.user.dataSet
 }
 export default getters

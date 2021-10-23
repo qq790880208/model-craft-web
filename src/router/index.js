@@ -53,6 +53,13 @@ export const constantRoutes = [
       meta: { title: '主页', icon: 'dashboard' }
     },
     {
+      path: '/profile',
+      component: () => import('@/views/Profile/index'),
+      name: '个人中心',
+      meta: { title: '个人中心', resources: 'profile' },
+      hidden: true
+    },
+    {
       path: '/dataSet/userLabel',
       component: () => import('@/views/dataSet/userLabel'),
       name: 'userLabel',
@@ -108,7 +115,7 @@ export const constantRoutes = [
       meta: { title: 'polygonaccept', resources: 'polygonaccept' },
       hidden: true
     }
-  ]
+    ]
   }
 ]
 export const asyncRoutes = [
@@ -160,7 +167,7 @@ export const asyncRoutes = [
         path: '/label/voice',
         component: () => import ('@/views/label/voice/index'),
         name: 'voice',
-        meta: { title: '语音标注',  resources: 'voice' }
+        meta: { title: '语音标注', resources: 'voice' }
       },
       {
         path: '/label/d3',
@@ -192,7 +199,7 @@ export const asyncRoutes = [
         component: () => import('@/views/dataSet/oss'),
         name: 'oss manage',
         meta: { title: '对象存储', resources: 'oss', icon: 'tree' }
-      },
+      }
     ]
   },
   {
@@ -210,7 +217,7 @@ export const asyncRoutes = [
         path: '/newtrain/table',
         component: () => import('@/views/newtrain/table'),
         name: 'newTable',
-        meta: { title: '训练管理',  resources: 'newTable', icon: 'skill' }
+        meta: { title: '训练管理', resources: 'newTable', icon: 'skill' }
       }
     ]
   },

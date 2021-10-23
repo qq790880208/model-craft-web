@@ -5,14 +5,11 @@
 <script>
 import echarts from 'echarts'
 require('echarts/theme/macarons') // echarts theme
+import { debounce } from '@/utils'
 
-import resize from './mixins/resize'
-
-const animationDuration = 1000
+const animationDuration = 6000
 
 export default {
-  name: 'BarChart',
-  mixins: [resize],
   props: {
     className: {
       type: String,
@@ -25,10 +22,6 @@ export default {
     height: {
       type: String,
       default: '300px'
-    },
-    chartData: {
-      type: Object,
-      required: true
     }
   },
   data() {
@@ -36,50 +29,28 @@ export default {
       chart: null
     }
   },
-  watch: { // 监听父组件中的数据变化，重新触发Echarts
-    chartData: {
-      deep: true,
-      handler(val) {
-        this.setOptions(val)
-      }
-    }
-  },
   mounted() {
-    this.$nextTick(() => {
-      this.initChart()
-    })
+    this.initChart()
+    this.__resizeHandler = debounce(() => {
+      if (this.chart) {
+        this.chart.resize()
+      }
+    }, 100)
+    window.addEventListener('resize', this.__resizeHandler)
   },
   beforeDestroy() {
     if (!this.chart) {
       return
     }
+    window.removeEventListener('resize', this.__resizeHandler)
     this.chart.dispose()
     this.chart = null
   },
   methods: {
     initChart() {
-      // this.chart = echarts.init(this.$el, 'macarons')
-      this.chart = echarts.init(this.$el)
-      this.setOptions(this.chartData)
-    },
-    setOptions({ tags, nums, nums2 } = {}) {
+      this.chart = echarts.init(this.$el, 'macarons')
+
       this.chart.setOption({
-        title: {
-          textStyle: {
-            fontSize: 15
-          }
-        },
-        legend: {
-          data: ['标签数', '含有标签的样本数'],
-          icon: 'circle', // 图例的形状
-          x: 'right' // 图例在右侧
-        },
-        xAxis: {
-          type: 'value',
-          axisTick: {
-            show: false
-          }
-        },
         tooltip: {
           trigger: 'axis',
           axisPointer: { // 坐标轴指示器，坐标轴触发有效
@@ -87,33 +58,45 @@ export default {
           }
         },
         grid: {
-          top: 35,
+          top: 10,
           left: '2%',
           right: '2%',
           bottom: '3%',
           containLabel: true
         },
-        yAxis: [{
+        xAxis: [{
           type: 'category',
-          data: tags,
+          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
           axisTick: {
             alignWithLabel: true
           }
         }],
+        yAxis: [{
+          type: 'value',
+          axisTick: {
+            show: false
+          }
+        }],
         series: [{
-          name: '标签数',
+          name: 'pageA',
           type: 'bar',
           stack: 'vistors',
-          barWidth: '30%',
-          data: nums,
+          barWidth: '60%',
+          data: [79, 52, 200, 334, 390, 330, 220],
           animationDuration
-        },
-        {
-          name: '含有标签的样本数',
+        }, {
+          name: 'pageB',
           type: 'bar',
           stack: 'vistors',
-          barWidth: '30%',
-          data: nums2,
+          barWidth: '60%',
+          data: [80, 52, 200, 334, 390, 330, 220],
+          animationDuration
+        }, {
+          name: 'pageC',
+          type: 'bar',
+          stack: 'vistors',
+          barWidth: '60%',
+          data: [30, 52, 200, 334, 390, 330, 220],
           animationDuration
         }]
       })

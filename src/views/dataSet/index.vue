@@ -2,13 +2,13 @@
   <div class="app-container">
     <el-tabs v-model="activeName" @tab-click="handleClick">
       <el-tab-pane label="我的数据集" name="allData">
-        <el-form :inline="true" :model="filter" >
+        <el-form :inline="true" :model="filter">
           <el-button plain style="text-align: left" type="primary" @click="createDataSet()">
             创建数据集
           </el-button>
           <el-form-item class="dataSer">
-            <el-input v-model="filter.name" placeholder="请输入查询的数据集名称" >
-              <el-button slot="append" icon="el-icon-search" @click="getDataSet()"></el-button>
+            <el-input v-model="filter.name" placeholder="请输入查询的数据集名称" clearable>
+              <el-button slot="append" icon="el-icon-search" @click="getDataSet()" />
             </el-input>
           </el-form-item>
         </el-form>
@@ -26,10 +26,9 @@
           <el-table-column prop="done" align="center" label="标注进度" min-width="250" sortable>
             <template slot-scope="scope">
               <div style="width: 250px; margin:0px auto;">
-                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)">
-                </el-progress>
+                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)" />
                 <span>
-                  {{scope.row.done}} / {{scope.row.tol}}
+                  {{ scope.row.done }} / {{ scope.row.tol }}
                 </span>
               </div>
             </template>
@@ -39,11 +38,10 @@
               <el-tag
                 :type="scope.row.accept == 1 ? 'success' : 'danger'"
                 hit
-                >{{ scope.row.accept == 1 ? '已验收' : '未验收' }}</el-tag>
+              >{{ scope.row.accept == 1 ? '已验收' : '未验收' }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="descr" align="center" label="描述" min-width="120" sortable>
-          </el-table-column>
+          <el-table-column prop="descr" align="center" label="描述" min-width="120" sortable />
           <el-table-column prop="create_time" align="center" label="创建时间" min-width="150" sortable>
             <template slot-scope="scope">
               {{ scope.row.create_time | formatDate }}
@@ -59,16 +57,15 @@
           </el-table-column>
         </el-table>
         <el-col :span="24" class="toolbar">
-          <el-pagination layout="total, sizes ,prev, pager, next, jumper" :page-size="page_size" :page-sizes="[1,5,10,20]" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
-          </el-pagination>
+          <el-pagination layout="total, sizes ,prev, pager, next, jumper" :page-size="page_size" :page-sizes="[1,5,10,20]" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </el-col>
       </el-tab-pane>
 
       <el-tab-pane label="标注数据集" name="manager">
-        <el-form :inline="true" :model="filter" >
+        <el-form :inline="true" :model="filter">
           <el-form-item>
-            <el-input v-model="filter.name" placeholder="请输入查询名称" >
-              <el-button slot="append" icon="el-icon-search" @click="getAssignDataSet()"></el-button>
+            <el-input v-model="filter.name" placeholder="请输入查询名称" clearable>
+              <el-button slot="append" icon="el-icon-search" @click="getAssignDataSet()" />
             </el-input>
           </el-form-item>
         </el-form>
@@ -87,14 +84,12 @@
           <el-table-column prop="done" align="center" label="标注进度" min-width="260" sortable>
             <template slot-scope="scope">
               <div style="width: 250px; margin:0px auto;">
-                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)">
-                </el-progress>
-                {{scope.row.done}} / {{scope.row.tol}}
+                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)" />
+                {{ scope.row.done }} / {{ scope.row.tol }}
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="descr" align="center" label="描述" min-width="150" sortable>
-          </el-table-column>
+          <el-table-column prop="descr" align="center" label="描述" min-width="150" sortable />
           <el-table-column prop="create_time" align="center" label="创建时间" min-width="180" sortable>
             <template slot-scope="scope">
               {{ scope.row.create_time | formatDate }}
@@ -102,16 +97,15 @@
           </el-table-column>
         </el-table>
         <el-col :span="24" class="toolbar">
-          <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size"  :page-sizes="[1,5,10,20]"  :total="total1" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
-            </el-pagination>
+          <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :page-sizes="[1,5,10,20]" :total="total1" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </el-col>
       </el-tab-pane>
 
       <el-tab-pane label="审核任务" name="audit">
-        <el-form :inline="true" :model="filter" >
+        <el-form :inline="true" :model="filter">
           <el-form-item>
-            <el-input v-model="filter.name" placeholder="请输入查询名称" >
-              <el-button slot="append" icon="el-icon-search" @click="getAuditDataSet()"></el-button>
+            <el-input v-model="filter.name" placeholder="请输入查询名称" clearable>
+              <el-button slot="append" icon="el-icon-search" @click="getAuditDataSet()" />
             </el-input>
           </el-form-item>
         </el-form>
@@ -129,14 +123,12 @@
           <el-table-column prop="done" align="center" label="审核进度" min-width="260" sortable>
             <template slot-scope="scope">
               <div style="width: 250px; margin:0px auto;">
-                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)">
-                </el-progress>
-                {{scope.row.done}} / {{scope.row.tol}}
+                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)" />
+                {{ scope.row.done }} / {{ scope.row.tol }}
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="descr" align="center" label="描述" min-width="150" sortable>
-          </el-table-column>
+          <el-table-column prop="descr" align="center" label="描述" min-width="150" sortable />
           <el-table-column prop="create_time" align="center" label="创建时间" min-width="180" sortable>
             <template slot-scope="scope">
               {{ scope.row.create_time | formatDate }}
@@ -144,16 +136,15 @@
           </el-table-column>
         </el-table>
         <el-col :span="24" class="toolbar">
-          <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size"  :page-sizes="[1,5,10,20]"  :total="total2" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
-            </el-pagination>
+          <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :page-sizes="[1,5,10,20]" :total="total2" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </el-col>
       </el-tab-pane>
 
       <el-tab-pane label="验收任务" name="accept">
-        <el-form :inline="true" :model="filter" >
+        <el-form :inline="true" :model="filter">
           <el-form-item>
-            <el-input v-model="filter.name" placeholder="请输入查询名称" >
-              <el-button slot="append" icon="el-icon-search" @click="getAcceptDataSet()"></el-button>
+            <el-input v-model="filter.name" placeholder="请输入查询名称" clearable>
+              <el-button slot="append" icon="el-icon-search" @click="getAcceptDataSet()" />
             </el-input>
           </el-form-item>
         </el-form>
@@ -171,90 +162,112 @@
           <el-table-column prop="done" align="center" label="审核进度" min-width="260" sortable>
             <template slot-scope="scope">
               <div style="width: 250px; margin:0px auto;">
-                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)">
-                </el-progress>
-                {{scope.row.done}} / {{scope.row.tol}}
+                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)" />
+                {{ scope.row.done }} / {{ scope.row.tol }}
               </div>
             </template>
           </el-table-column>
           <el-table-column prop="rate" align="center" label="验收比例" min-width="150" sortable>
             <template slot-scope="scope">
-              <div class="block" >
-                <el-slider v-model="scope.row.rate" :step="10" show-stops></el-slider> 
+              <div class="block">
+                <el-slider v-model="scope.row.rate" :step="10" show-stops />
               </div>
             </template>
           </el-table-column>
         </el-table>
         <el-col :span="24" class="toolbar">
-          <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size"  :page-sizes="[1,5,10,20]"  :total="total3" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
-            </el-pagination>
+          <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :page-sizes="[1,5,10,20]" :total="total3" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </el-col>
       </el-tab-pane>
-      
     </el-tabs>
-
 
     <el-dialog
       title="创建数据集"
       :visible.sync="dialogVisible"
       :before-close="handleCloseDialog"
-      >
-      <el-form :model='form' ref="form" label-width="120px" label-position="left" :rules="addFormRules">
+    >
+      <el-form ref="form" :model="form" label-width="120px" label-position="left" :rules="addFormRules">
         <el-form-item label="名称" prop="name">
-          <el-input v-model="form.name" autocomplete="off"></el-input>
+          <el-input v-model="form.name" autocomplete="off" />
         </el-form-item>
         <el-form-item label="描述">
           <el-input
+            v-model="form.descr"
             type="textarea"
             :autosize="{ minRows: 2, maxRows: 4}"
             autocomplete="off"
-            v-model="form.descr">
-          </el-input>
+          />
         </el-form-item>
         <el-form-item label="标注场景" prop="dataType">
           <el-radio-group v-model="form.dataType" autocomplete="off">
-            <el-radio-button label="0" border><i class="el-icon-picture-outline"/>图片</el-radio-button> 
-            <!-- <el-radio-button label="1" border><i class="el-icon-microphone"/>音频</el-radio-button> -->
+            <el-radio-button label="0" border><i class="el-icon-picture-outline" />图片</el-radio-button>
+            <el-radio-button label="1" border><i class="el-icon-microphone" />音频</el-radio-button>
+            <el-radio-button label="2" border><i class="el-icon-copy-document" />3D</el-radio-button>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="标注类型" prop="labelType">
           <el-radio-group v-model="form.labelType" autocomplete="off">
-            <el-radio-button v-for="index in labels[form.dataType]" :label="index" :key="index" border>{{labelName[index]}}</el-radio-button>
+            <el-radio-button v-for="index in labels[form.dataType]" :key="index" :label="index" border>{{ labelName[index] }}</el-radio-button>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="数据集图片输入位置" prop="input">
-          <el-input style="width: 90%" v-model="form.input" :placeholder="form.input" :disabled="true"></el-input>
-            <!-- <el-button @click="showOssInputDialog(form)" icon="el-icon-folder-add"></el-button> -->
+          <el-input v-model="form.input" style="width: 90%" :placeholder="form.input" :disabled="true" />
+          <!-- <el-button @click="showOssInputDialog(form)" icon="el-icon-folder-add"></el-button> -->
         </el-form-item>
-          <el-form-item label="数据集图片输入位置" prop="input">
-          <el-input style="width: 90%" v-model="form.annotation" :placeholder="form.annotation" :disabled="true"></el-input>
+        <el-form-item label="数据集图片输入位置" prop="input">
+          <el-input v-model="form.annotation" style="width: 90%" :placeholder="form.annotation" :disabled="true" />
           <!-- <el-button @click="showOssAnnotationDialog(form)" icon="el-icon-folder-add"></el-button> -->
         </el-form-item>
-        <el-form-item   label="数据集模型输出位置" prop="output">
-          <el-input style="width: 90%" v-model="form.output" :placeholder="form.output" :disabled="true"></el-input>
+        <el-form-item label="数据集模型输出位置" prop="output">
+          <el-input v-model="form.output" style="width: 90%" :placeholder="form.output" :disabled="true" />
           <!-- <el-button  @click="showOssOutputDialog(form)" icon="el-icon-folder-add"></el-button> -->
         </el-form-item>
         <el-form-item label="添加标签集" prop="tagss">
-          <el-tag 
-           v-model="form.label"
-            :key="tag"
-            v-for="tag in form.label"
+          <el-tag
+            v-for="tag in tags"
+            :key="tag.value"
+            :color="tag.color"
             closable
             :disable-transitions="false"
-            @close="handleClose(tag)">
-            {{tag}}
+            @close="handleCloseTagNew(tag)"
+          >
+            {{ tag.value }}
+          </el-tag>
+          <!-- <template
+            v-if="inputVisible"
+            @keyup.enter.native="handleInputConfirm"
+            @blur="handleInputConfirm"
+          > -->
+          <el-input
+            v-if="inputVisible"
+            ref="saveTagInput"
+            v-model="inputValue"
+            class="input-new-tag"
+            size="small"
+          />
+          <el-color-picker v-if="inputVisible" v-model="color1" class="mycolor" show-alpha="true" size="small" />
+          <el-button v-if="inputVisible" type="primary" size="mini" icon="el-icon-finished" @keyup.enter.native="handleInputConfirm" @click="handleInputConfirm" />
+          <el-button v-else class="button-new-tag" size="small" icon="el-icon-plus" @click="showInput">新标签</el-button>
+          <!-- <el-tag
+            v-for="tag in form.label"
+            :key="tag"
+            v-model="form.label"
+            closable
+            :disable-transitions="false"
+            @close="handleClose(tag)"
+          >
+            {{ tag }}
           </el-tag>
           <el-input
-            class="input-new-tag"
             v-if="inputVisible"
-            v-model="inputValue"
             ref="saveTagInput"
+            v-model="inputValue"
+            class="input-new-tag"
             size="small"
             @keyup.enter.native="handleInputConfirm"
             @blur="handleInputConfirm"
-          >
-          </el-input>
-          <el-button v-else class="button-new-tag" size="small" @click="showInput">+</el-button>
+          />
+          <el-button v-else class="button-new-tag" size="small" @click="showInput">+</el-button> -->
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -268,24 +281,26 @@
       :visible.sync="teamDialogVisible"
       :before-close="handleCloseDialog"
       width="40%"
-      >
-      <el-form :model='teamForm' ref="teamForm" label-width="100px" label-position="left">
+    >
+      <el-form ref="teamForm" :model="teamForm" label-width="100px" label-position="left">
         <el-form-item label="团队名称">
           <span>
-            {{teamForm.dataSetName}}
+            {{ teamForm.dataSetName }}
           </span>
         </el-form-item>
         <el-form-item label="标注团队">
           <template>
             <el-select
               v-model="teamForm.teamValue"
-              placeholder="请选择团队">
+              placeholder="请选择团队"
+              clearable
+            >
               <el-option
                 v-for="item in teams"
                 :key="item.value"
                 :label="item.name"
-                :value="item.id">
-              </el-option>
+                :value="item.id"
+              />
             </el-select>
           </template>
         </el-form-item>
@@ -297,63 +312,73 @@
     </el-dialog>
 
     <el-dialog
-      title="选择路径" :visible.sync="ossInputVisible" width="30%" :show-close="false">
-        <el-form>
-          <el-form-item label="请选择桶:">
-            <el-radio-group v-model="bucketlist" @change="chooseBucket">
-              <el-radio-button :label="item.name" :key="item.name" v-for="item in list">{{item.name}}</el-radio-button>
-            </el-radio-group>
-          </el-form-item>
-        </el-form>
-        <el-divider></el-divider>
-        <el-row>
-          <el-button icon="el-icon-upload2" type="text"  @click="retuenOdlRow">返回上级</el-button>
-          <el-divider direction="vertical"></el-divider>
-          <el-tag type="info" effect="light">当前路径：{{bucketlist}} ：{{objectcurrentRow}}</el-tag>
-        </el-row>
-        <el-table :data="objectList" highlight-current-row @row-click="getobjectbyPerfix">
-          <el-table-column prop="name" label="请选择目录"></el-table-column>
-        </el-table>
-        <div slot="footer" class="dialog-footer">
-            <el-button @click="notInput">取 消</el-button>
-            <el-button type="primary" @click="returnInput">确定</el-button>
-        </div>
+      title="选择路径"
+      :visible.sync="ossInputVisible"
+      width="30%"
+      :show-close="false"
+    >
+      <el-form>
+        <el-form-item label="请选择桶:">
+          <el-radio-group v-model="bucketlist" @change="chooseBucket">
+            <el-radio-button v-for="item in list" :key="item.name" :label="item.name">{{ item.name }}</el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <el-divider />
+      <el-row>
+        <el-button icon="el-icon-upload2" type="text" @click="retuenOdlRow">返回上级</el-button>
+        <el-divider direction="vertical" />
+        <el-tag type="info" effect="light">当前路径：{{ bucketlist }} ：{{ objectcurrentRow }}</el-tag>
+      </el-row>
+      <el-table :data="objectList" highlight-current-row @row-click="getobjectbyPerfix">
+        <el-table-column prop="name" label="请选择目录" />
+      </el-table>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="notInput">取 消</el-button>
+        <el-button type="primary" @click="returnInput">确定</el-button>
+      </div>
     </el-dialog>
     <el-dialog
-      title="选择路径" :visible.sync="ossOutputVisible" width="30%" :show-close="false">
-        <el-form>
-          <el-form-item label="请选择桶:">
-            <el-radio-group v-model="bucketlist" @change="chooseBucket">
-              <el-radio-button :label="item.name" :key="item.name" v-for="item in list">{{item.name}}</el-radio-button>
-            </el-radio-group>
-          </el-form-item>
-        </el-form>
-        <el-divider></el-divider>
-        <el-row>
-          <el-button icon="el-icon-upload2" type="text"  @click="retuenOdlRow">返回上级</el-button>
-          <el-divider direction="vertical"></el-divider>
-          <el-tag type="info" effect="light">当前路径：{{bucketlist}} ：{{objectcurrentRow}}</el-tag>
-        </el-row>
-        <el-table :data="objectList" highlight-current-row @row-click="getobjectbyPerfix">
-          <el-table-column prop="name" label="请选择目录"></el-table-column>
-        </el-table>
-        <div slot="footer" class="dialog-footer">
-            <el-button @click="notOutput">取 消</el-button>
-            <el-button type="primary" @click="returnOutput">确定</el-button>
-        </div>
+      title="选择路径"
+      :visible.sync="ossOutputVisible"
+      width="30%"
+      :show-close="false"
+    >
+      <el-form>
+        <el-form-item label="请选择桶:">
+          <el-radio-group v-model="bucketlist" @change="chooseBucket">
+            <el-radio-button v-for="item in list" :key="item.name" :label="item.name">{{ item.name }}</el-radio-button>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <el-divider />
+      <el-row>
+        <el-button icon="el-icon-upload2" type="text" @click="retuenOdlRow">返回上级</el-button>
+        <el-divider direction="vertical" />
+        <el-tag type="info" effect="light">当前路径：{{ bucketlist }} ：{{ objectcurrentRow }}</el-tag>
+      </el-row>
+      <el-table :data="objectList" highlight-current-row @row-click="getobjectbyPerfix">
+        <el-table-column prop="name" label="请选择目录" />
+      </el-table>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="notOutput">取 消</el-button>
+        <el-button type="primary" @click="returnOutput">确定</el-button>
+      </div>
     </el-dialog>
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import { getLabel, getDataByName, createDataSetApi, deleteDataSet, assignLabel, getAssignData, addTags } from '@/api/data'
-import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder } from '@/api/oss'
+import { getDataByName, createDataSetApi, deleteDataSet, assignLabel, getAssignData, addTags } from '@/api/data'
+import { listBucket, listObject, listObjectByPrefix, createFolder } from '@/api/oss'
 import store from '@/store'
 import { getAllTeam, getSelectTeam } from '@/api/team'
 import { getAuditData } from '@/api/audit'
 import { getAcceptData, setAcceptDataApi } from '@/api/accept'
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuidv4 } from 'uuid'
+import { saveTagApi } from '@/api/tag'
+
 export default {
   namespaced: true,
   filters: {
@@ -383,17 +408,17 @@ export default {
       return ' ' + year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
     },
     formatType(num) {
-      if (num == 0 ) {
-        return 'tensorflow-2D拉框标注';
+      if (num === 0) {
+        return 'tensorflow-2D拉框标注'
       }
-      if (num == 1 || num == 4) {
-        return 'tensorflow-多边形标注';
+      if (num === 1 || num === 4) {
+        return 'tensorflow-多边形标注'
       }
-      if (num == 2) {
-        return '语音标注';
+      if (num === 2) {
+        return '语音标注'
       }
-      if ( num == 3) {
-        return 'pytorch-2D拉框';
+      if (num === 3) {
+        return 'pytorch-2D拉框'
       }
     }
   },
@@ -401,16 +426,16 @@ export default {
     const validateTags = (rule, values, cb) => {
       console.log('1231213213')
       console.log(values)
-      if(this.form.label.length>0){
-        //合法的邮箱
+      if (this.tags.length > 0) {
+        // 合法的邮箱
         return cb()
       }
-      cb(new Error("请输入标签"))
+      cb(new Error('请输入标签'))
     }
     return {
       my_uuid: '',
-      defaultPath:'',
-      isClickFlag:false,//标记是否需要创建默认路径的flag
+      defaultPath: '',
+      isClickFlag: false, // 标记是否需要创建默认路径的flag
       ratevalue: 20,
       activeName: 'allData',
       message: '',
@@ -433,24 +458,24 @@ export default {
       teamDialogVisible: false,
       ossInputVisible: false,
       ossOutputVisible: false,
-      bucketlist:'',//选择的bucket
-      list:[],//bucket radio的数据
-      objectList:[],//object table数据
-      objectcurrentRow:'',//object当前目录
-      objectcurrentPrefix:'',//object后端前缀
-      objectoldRow:'',//object上级目录
-      objectoldPrefix:'',//object上级后端前缀
-      selectBucket:'',//dialog选择的桶
-      selectObject:'',//dialog选择的对象
-      inputBucket:'',//数据集输入桶
-      inputObject:'',//数据集输入对象
-      outputBucket:'',//数据集输出桶
-      outputObject:'',//数据集输出对象
+      bucketlist: '', // 选择的bucket
+      list: [], // bucket radio的数据
+      objectList: [], // object table数据
+      objectcurrentRow: '', // object当前目录
+      objectcurrentPrefix: '', // object后端前缀
+      objectoldRow: '', // object上级目录
+      objectoldPrefix: '', // object上级后端前缀
+      selectBucket: '', // dialog选择的桶
+      selectObject: '', // dialog选择的对象
+      inputBucket: '', // 数据集输入桶
+      inputObject: '', // 数据集输入对象
+      outputBucket: '', // 数据集输出桶
+      outputObject: '', // 数据集输出对象
       inputValue: '',
       teams: [], // 所有团队
-      selectTeams: [], //所选择的团队
+      selectTeams: [], // 所选择的团队
       value: [],
-      teamUser: [],  // 团队成员
+      teamUser: [], // 团队成员
       form: {
         name: '',
         descr: '',
@@ -472,14 +497,17 @@ export default {
         input: [{ required: true, message: '请选择', trigger: 'blur' }],
         output: [{ required: true, message: '请选择', trigger: 'blur' }],
         tagss: [
-          { validator: validateTags, trigger: 'blur'}]
+          { validator: validateTags, trigger: 'blur' }]
       },
       // 0 tf2D拉框，1 tf像素级（多边形），2 语音, 3 py2D拉框, 4py像素级（多边形）
       labels: [
-        [0,1,3],
-        // [2]
+        [0, 1, 3],
+        [2],
+        [4]
       ],
-      labelName: ['tensorflow-2D拉框', 'tensorflow-像素级', '语音', 'pytorch-2D拉框']
+      labelName: ['tensorflow-2D拉框', 'tensorflow-像素级', '语音', 'pytorch-2D拉框', '3D'],
+      tags: [],
+      color1: 'rgba(255, 128, 0, 0.75)'
     }
   },
   computed: {
@@ -487,80 +515,90 @@ export default {
       'name'
     ])
   },
+  mounted() {
+    this.getDataSet()
+  },
   methods: {
     datachange(dataRate) {
       return dataRate
-
+    },
+    handleCloseTagNew(tag) {
+      this.tags.splice(this.tags.indexOf(tag), 1)
     },
     // dialog 关闭
     handleCloseDialog(done) {
       this.$confirm('确认关闭？')
         .then(_ => {
-          done();
+          done()
           this.dialogVisible = false
           this.teamDialogVisible = false
         })
-        .catch(_ => {});
+        .catch(_ => {})
     },
     // 添加标签
     handleClose(tag) {
-      this.form.label.splice(this.form.label.indexOf(tag), 1);
+      this.form.label.splice(this.form.label.indexOf(tag), 1)
     },
     showInput() {
-      this.inputVisible = true;
+      this.inputVisible = true
       this.$nextTick(_ => {
-      this.$refs.saveTagInput.$refs.input.focus();
-      });
+        this.$refs.saveTagInput.$refs.input.focus()
+      })
     },
     handleInputConfirm() {
-      let inputValue = this.inputValue;
+      const inputValue = this.inputValue
+      const color = this.color1
       if (inputValue) {
-        this.form.label.push(inputValue);
+        const params = {
+          value: inputValue,
+          color: color
+        }
+        this.tags.push(params)
       }
-      this.inputVisible = false;
-      this.inputValue = '';
+      this.inputVisible = false
+      this.inputValue = ''
     },
 
     //  修改默认flag
-    changeFlag(){
-      console("flag1",this.isClickFlag)
+    changeFlag() {
+      console('flag1', this.isClickFlag)
       this.isClickFlag = true
-      console("flag2",this.isClickFlag)
+      console('flag2', this.isClickFlag)
     },
     //  数据集图片位置
     showOssInputDialog(form) {
       this.getbucket()
-      if(this.isClickFlag){
-        form.input='';
-        form.annotation='';
-        form.output='';  
+      if (this.isClickFlag) {
+        form.input = ''
+        form.annotation = ''
+        form.output = ''
       }
-      this.isClickFlag=false;
-      this.ossInputVisible= true;
+      this.isClickFlag = false
+      this.ossInputVisible = true
     },
-    //数据集标注文件位置
+    // 数据集标注文件位置
     showOssAnnotationDialog(form) {
       this.getbucket()
-      if(this.isClickFlag){
-        form.input='';
-        form.annotation='';
-        form.output='';  
+      if (this.isClickFlag) {
+        form.input = ''
+        form.annotation = ''
+        form.output = ''
       }
-      this.isClickFlag=false;
-      this.ossInputVisible= true;
+      this.isClickFlag = false
+      this.ossInputVisible = true
     },
     //  数据集模型输出位置
     showOssOutputDialog(form) {
       this.getbucket()
-      if(this.isClickFlag){
-        form.input='';
-        form.annotation='';
-        form.output='';  
+      if (this.isClickFlag) {
+        form.input = ''
+        form.annotation = ''
+        form.output = ''
       }
-      this.isClickFlag=false;
-      this.ossOutputVisible= true;
+      this.isClickFlag = false
+      this.ossOutputVisible = true
     },
-    
+
     cancel() {
       console.log(this.form.label.join(','))
       this.dialogVisible = false
@@ -571,126 +609,156 @@ export default {
     createDataSet: function() {
       this.dialogVisible = true
       this.isClickFlag = true
-      this.my_uuid=uuidv4().replace(/-/g,'')
+      this.my_uuid = uuidv4().replace(/-/g, '')
       this.form = {
         name: '',
         descr: '',
         dataType: '0',
         labelType: '',
-        input: "data/dataset/"+this.my_uuid+"/input/source/",
-        annotation : "data/dataset/"+this.my_uuid+"/input/annotation/",
-        output: "data/dataset/"+this.my_uuid+"/output/ckpt/",
+        input: 'data/dataset/' + this.my_uuid + '/input/source/',
+        annotation: 'data/dataset/' + this.my_uuid + '/input/annotation/',
+        output: 'data/dataset/' + this.my_uuid + '/output/ckpt/',
         label: []
       }
-      if(this.isClickFlag){
+      // eslint-disable-next-line no-empty
+      if (this.isClickFlag) {
       }
     },
 
-    // 添加数据集 
+    // 添加数据集
     add() {
       this.$refs.form.validate(valid => {
         console.log('mnbmbnbm')
         console.log(this.inputBucket)
         if (valid) {
-          if(this.isClickFlag) {
-            console.log("isclcik=trrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrue")
-            let params = {
-            uuid: this.my_uuid,
-            userid: store.getters.userid,
-            labelType: this.form.labelType,
-            name: this.form.name,
-            descr: this.form.descr,
-            input: this.form.input,  // 格式：/data/dataset/0022f6831fbe40b0bd4aae781f202517/input
-            annotation : this.form.annotation,
-            output: this.form.output,
-            bucket: 'modelcraft'
-            }
-            console.log(this.form.label.toString())  //labels
-          createDataSetApi(params).then(res => {
-            let para1={}
-          para1.bucketName='modelcraft'
-          para1.objectName="data/dataset/"+this.my_uuid+"/input/source/"
-          let para2={}
-          para2.bucketName='modelcraft'
-          para2.objectName="data/dataset/"+this.my_uuid+"/input/annotation/"
-          let para3={}
-          para3.bucketName='modelcraft'
-          para3.objectName="data/dataset/"+this.my_uuid+"/output/ckpt/"
-          console.log(para1,para2,para3)
-          //后端新建一个文件夹
-          createFolder(para1).then(response=>{
-          if(20000 == response.code){
-            console.log("haha1success")
-          }else{
-            console.log("haha1error")
-          }
-          })
-          createFolder(para2).then(response=>{
-          if(20000 == response.code){
-            console.log("haha2success")
-            }else{
-            console.log("haha2error")
-            }
-          })
-          createFolder(para3).then(response=>{
-          if(20000 == response.code){
-            console.log("haha3success")
-            }else{
-            console.log("haha3error")
-            }
-          })
-            this.$message({
-              message: '添加成功',
-              type: 'success'
-            })
-            this.getDataSet()
-            const para = {
-              tags: this.form.label.toString(),
-              datasetname: this.form.name
-            }
-            addTags(para).then(res => {
-              this.$message({
-                message: '添加成功',
-                type: 'success'
-              })
-            })
-          })
-          console.log(this.form)
-          this.dialogVisible = false
-          }
-          else {
-            console.log("isclcik=falsssssssssssssssssssssssssssssssssssssssssssssseeee")
+          if (this.isClickFlag) {
+            console.log('isclcik=trrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrue')
             const params = {
-            uuid: this.my_uuid,
-            userid: store.getters.userid,
-            labelType: this.form.labelType,
-            name: this.form.name,
-            descr: this.form.descr,
-            input: this.form.input,  // 格式：/data/dataset/0022f6831fbe40b0bd4aae781f202517/input
-            annotation: this.form.annotation,
-            output: this.form.output,
-            bucket: this.inputBucket
-          }
-          console.log(this.form.label.toString())  //labels
-          createDataSetApi(params).then(res => {
-            this.$message({
-              message: '添加成功',
-              type: 'success'
-            })
-            this.getDataSet()
-            const para = {
-              tags: this.form.label.toString(),
-              datasetname: this.form.name
+              uuid: this.my_uuid,
+              userid: store.getters.userid,
+              labelType: this.form.labelType,
+              name: this.form.name,
+              descr: this.form.descr,
+              input: this.form.input, // 格式：/data/dataset/0022f6831fbe40b0bd4aae781f202517/input
+              annotation: this.form.annotation,
+              output: this.form.output,
+              bucket: 'modelcraft'
             }
-            addTags(para).then(res => {
+            console.log(this.form.label.toString()) // labels
+            createDataSetApi(params).then(res => {
+              const para1 = {}
+              para1.bucketName = 'modelcraft'
+              para1.objectName = 'data/dataset/' + this.my_uuid + '/input/source/'
+              const para2 = {}
+              para2.bucketName = 'modelcraft'
+              para2.objectName = 'data/dataset/' + this.my_uuid + '/input/annotation/'
+              const para3 = {}
+              para3.bucketName = 'modelcraft'
+              para3.objectName = 'data/dataset/' + this.my_uuid + '/output/ckpt/'
+              console.log(para1, para2, para3)
+              // 后端新建一个文件夹
+              createFolder(para1).then(response => {
+                if (response.code == 20000) {
+                  console.log('haha1success')
+                } else {
+                  console.log('haha1error')
+                }
+              })
+              createFolder(para2).then(response => {
+                if (response.code == 20000) {
+                  console.log('haha2success')
+                } else {
+                  console.log('haha2error')
+                }
+              })
+              createFolder(para3).then(response => {
+                if (response.code == 20000) {
+                  console.log('haha3success')
+                } else {
+                  console.log('haha3error')
+                }
+              })
               this.$message({
                 message: '添加成功',
                 type: 'success'
               })
+              this.getDataSet()
+              const paramss = {
+                data: this.tags,
+                uuid: this.my_uuid
+              }
+              saveTagApi(paramss).then(res => {
+                this.$message({
+                  message: '添加成功',
+                  type: 'success'
+                })
+              })
+              // const para = {
+              //   tags: this.form.label.toString(),
+              //   datasetname: this.form.name
+              // }
+              // addTags(para).then(res => {
+              //   this.$message({
+              //     message: '添加成功',
+              //     type: 'success'
+              //   })
+              // })
             })
-          })
-          console.log(this.form)
-          this.dialogVisible = false
+            // const paramss = {
+            //   data: this.tags,
+            //   uuid: this.my_uuid
+            // }
+            // saveTagApi(paramss).then(res => {
+            //   this.$message({
+            //     message: '添加成功',
+            //     type: 'success'
+            //   })
+            // })
+            console.log(this.form)
+            this.dialogVisible = false
+          } else {
+            console.log('isclcik=falsssssssssssssssssssssssssssssssssssssssssssssseeee')
+            const params = {
+              uuid: this.my_uuid,
+              userid: store.getters.userid,
+              labelType: this.form.labelType,
+              name: this.form.name,
+              descr: this.form.descr,
+              input: this.form.input, // 格式：/data/dataset/0022f6831fbe40b0bd4aae781f202517/input
+              annotation: this.form.annotation,
+              output: this.form.output,
+              bucket: this.inputBucket
+            }
+            console.log(this.form.label.toString()) // labels
+            createDataSetApi(params).then(res => {
+              this.$message({
+                message: '添加成功',
+                type: 'success'
+              })
+              this.getDataSet()
+              const params = {
+                data: this.tags,
+                uuid: this.my_uuid
+              }
+              saveTagApi(params).then(res => {
+                this.$message({
+                  message: '添加成功',
+                  type: 'success'
+                })
+              })
+              // const para = {
+              //   tags: this.form.label.toString(),
+              //   datasetname: this.form.name
+              // }
+              // addTags(para).then(res => {
+              //   this.$message({
+              //     message: '添加成功',
+              //     type: 'success'
+              //   })
+              // })
+            })
+            console.log(this.form)
+            this.dialogVisible = false
           }
           // console.log(this.form.label.toString())  //labels
           // createDataSet(params).then(res => {
@@ -764,7 +832,7 @@ export default {
 
     // 添加标注团队
     addLabelTeam() {
-      if(this.teamForm.teamValue === this.oldTeam.name){
+      if (this.teamForm.teamValue === this.oldTeam.name) {
         this.teamForm.teamValue = this.oldTeam.id
       }
       const params = {
@@ -779,12 +847,7 @@ export default {
           type: 'success'
         })
         // this.teamDialogVisible = false
-      }).catch(function(error) {
-        this.$message({
-          message: '不能给数据集创建者分配数据',
-          type: 'error'
-        })
-      })
+      }).catch()
     },
 
     // 得到所有的标注团队
@@ -804,60 +867,60 @@ export default {
     handleClick(tab, event) {
       // console.log(tab.name)
       // this.activeName = tab.name
-      if(this.activeName == 'manager'){
+      if (this.activeName === 'manager') {
         this.getAssignDataSet()
       }
-      if (this.activeName == 'allData') {
+      if (this.activeName === 'allData') {
         this.getDataSet()
       }
-      if(this.activeName == 'audit') {
+      if (this.activeName === 'audit') {
         this.getAuditDataSet()
       }
-      if(this.activeName == 'accept') {
+      if (this.activeName === 'accept') {
         this.getAcceptDataSet()
       }
     },
 
     // 设置标注进度条
     setItemProgress(speed, tol) {
-      if(speed == 0) {
+      if (speed == 0) {
         return 0
       }
-      if(speed > tol) {
+      if (speed > tol) {
         return 100
       } else {
-        return parseInt((speed/tol).toFixed(1) * 100)
+        return parseInt((speed / tol).toFixed(1) * 100)
       }
     },
 
     // 分页查询
     handleSizeChange(val) {
       this.page_size = val
-      if (this.activeName == 'allData') {
+      if (this.activeName === 'allData') {
         this.getDataSet()
       }
-      if (this.activeName == 'manager') {
+      if (this.activeName === 'manager') {
         this.getAssignDataSet()
       }
-      if(this.activeName == 'audit') {
+      if (this.activeName === 'audit') {
         this.getAuditDataSet()
       }
-      if(this.activeName == 'accept') {
+      if (this.activeName === 'accept') {
         this.getAcceptDataSet()
       }
     },
     handleCurrentChange(val) {
       this.page = val
-      if (this.activeName == 'allData') {
+      if (this.activeName === 'allData') {
         this.getDataSet()
       }
-      if (this.activeName == 'manager') {
+      if (this.activeName === 'manager') {
         this.getAssignDataSet()
       }
-      if(this.activeName == 'audit') {
+      if (this.activeName === 'audit') {
         this.getAuditDataSet()
       }
-      if(this.activeName == 'accept') {
+      if (this.activeName === 'accept') {
         this.getAcceptDataSet()
       }
     },
@@ -870,7 +933,7 @@ export default {
         id: store.getters.userid,
         name: this.filter.name
       }
-      console.log("dadadadadad")
+      console.log('dadadadadad')
       console.log(params)
       getDataByName(params).then(res => {
         this.dataSets = res.data.items
@@ -879,7 +942,7 @@ export default {
       this.filter.name = ''
     },
 
-    //得到用户所分配到的数据集
+    // 得到用户所分配到的数据集
     getAssignDataSet: function() {
       const params = {
         page: this.page,
@@ -902,7 +965,7 @@ export default {
         userId: store.getters.userid,
         name: this.filter.name
       }
-      getAuditData(params).then(res =>{
+      getAuditData(params).then(res => {
         this.dataSetAudit = res.data.items
         this.total2 = res.data.total
       })
@@ -917,7 +980,7 @@ export default {
         userId: store.getters.userid,
         name: this.filter.name
       }
-      getAcceptData(params).then(res =>{
+      getAcceptData(params).then(res => {
         this.dataSetAccept = res.data.items
         this.total3 = res.data.total
       })
@@ -928,21 +991,21 @@ export default {
       console.log(val)
       store.dispatch('data/changeUuid', val.uuid)
       store.dispatch('data/changeType', val.label_type)
-      store.dispatch('data/changeDataSet',val)
+      store.dispatch('data/changeDataSet', val)
       // this.$router.push({path:'/dataSet/audit'})
       // this.$router.push({path: '/dataSet/polygonaudit'})
-      this.$router.push({path: '/dataSet/3Daudit'})
-      if(val.label_type === 0) {
-        this.$router.push({path: '/dataSet/2DauditPre'})
+      this.$router.push({ path: '/dataSet/3Daudit' })
+      if (val.label_type === 0) {
+        this.$router.push({ path: '/dataSet/2DauditPre' })
       }
-      if(val.label_type === 1) {
-        this.$router.push({path: '/dataSet/polygonaudit'})
+      if (val.label_type === 1) {
+        this.$router.push({ path: '/dataSet/polygonaudit' })
       }
-      if(val.label_type === 2) {
-        this.$router.push({path: '/dataSet/3Daudit'})
+      if (val.label_type === 2) {
+        this.$router.push({ path: '/dataSet/3Daudit' })
       }
-      if(val.label_type === 3) {
-        this.$router.push({path:'/dataSet/2DauditPre'})
+      if (val.label_type === 3) {
+        this.$router.push({ path: '/dataSet/2DauditPre' })
       }
     },
 
@@ -950,7 +1013,7 @@ export default {
       console.log(val)
       store.dispatch('data/changeUuid', val.uuid)
       store.dispatch('data/changeType', val.label_type)
-      store.dispatch('data/changeDataSet',val)
+      store.dispatch('data/changeDataSet', val)
       // this.$router.push({path:'/dataSet/audit'})
       // this.$router.push({path: '/dataSet/polygonaudit'})
       // this.$router.push({path: '/dataSet/3Daudit'})
@@ -962,38 +1025,39 @@ export default {
       console.log(params)
       // setAcceptDataApi(params)
       this.setAuditDatas(params)
-      if(val.label_type === 0 || val.label_type === 3) {
-        this.$router.push({path: '/dataSet/2Daccept'})
+      if (val.label_type === 0 || val.label_type === 3) {
+        this.$router.push({ path: '/dataSet/2Daccept' })
       }
-      if(val.label_type === 1 || val.label_type === 4) {
-        this.$router.push({path: '/dataSet/polygonaccept'})
+      if (val.label_type === 1 || val.label_type === 4) {
+        this.$router.push({ path: '/dataSet/polygonaccept' })
       }
-      if(val.label_type === 2) {
-        this.$router.push({path: '/label/voice'})
+      if (val.label_type === 2) {
+        this.$router.push({ path: '/label/voice' })
       }
       // if(val.label_type === 3) {
       //   this.$router.push({path:'/label/voice'})
       // }
     },
     setAuditDatas(params) {
-      setAcceptDataApi(params).then(res =>{
+      setAcceptDataApi(params).then(res => {
         this.$message({
           message: '添加成功',
           type: 'success'
-          })
+        })
       })
     },
     // 展示数据
     toDataSet: function(val) {
-      console.log("vallllllllllllllllllllllllllll",val)
+      console.log('vallllllllllllllllllllllllllll', val)
       store.dispatch('data/changeUuid', val.uuid)
       store.dispatch('data/changeType', val.label_type)
-      store.dispatch('data/changeDataSet',val)
+      store.dispatch('user/changeDataSet', val)
       console.log(store.getters.uuid)
       console.log(store.getters.type)
       console.log(store.getters.dataSet)
-      if (val.role_type !== "标注员") {
-        this.$router.push({path:'/dataSet/message', query: {dataName: val.name, key: this.activeName}})
+      if (val.role_type !== '标注员') {
+        // this.$router.push({ path: '/dataSet/message', query: { dataName: val.name, key: this.activeName }})
+        this.$router.push({ path: '/dataSet/message'})
       } else {
         console.log('898989')
         this.toStartLabel(val, val.label_type)
@@ -1007,158 +1071,157 @@ export default {
       console.log(val.labelType)
       store.dispatch('data/changeUuid', val.uuid)
       store.dispatch('data/changeType', val.label_type)
-      store.dispatch('data/changeDataSet',val)
-      if(type === 0 || type === 3) {
+      store.dispatch('data/changeDataSet', val)
+      if (type === 0 || type === 3) {
         this.$router.push('/label/d2imageview')
         // this.$router.push({path: '/dataSet/2DauditPre'})
       }
-      if(type === 1 || type === 4) {
-        this.$router.push({path:'/label/polygonimageview'})
+      if (type === 1 || type === 4) {
+        this.$router.push({ path: '/label/polygonimageview' })
         // this.$router.push({path: '/dataSet/2DauditPre'})
       }
-      if(type === 2) {
-        this.$router.push({path:'/label/voice'})
+      if (type === 2) {
+        this.$router.push({ path: '/label/voice' })
       }
       // if(type === 3) {
       //   this.$router.push({path:'/label/voice'})
       // }
     },
-    
-     //获取bucket列表
-    getbucket(){
-        listBucket().then(response=>{
-        this.list = response.data}).catch(()=>{})
+
+    // 获取bucket列表
+    getbucket() {
+      listBucket().then(response => {
+        this.list = response.data
+      }).catch(() => {})
     },
-    //选择桶后更新object table
-    chooseBucket(val){
-      this.objectList=[]
-      const para = {bucketName : val}
-      console.log(para);
-      this.getobject(para);
-    },
-    
-    //更新object的后台请求
-    getobject(para){
-      listObject(para).then(response=>{
-          if(response){
-            console.log(response);
-            this.objectList = response.data
-            }else{
-            }
-            }).catch()
-    },
-    //递归打开object
-    getobjectbyPerfix(row,event,column){
-      console.log(row.name);
-            const para={}
-            if("/"==((row.name.split("").reverse().join("")).substring(0,1)).split("").reverse().join("")){
-                console.log("isdir");
-                this.objectcurrentRow = row.name;
-                this.objectcurrentPrefix = row.name.substring(0,row.name.length-1)//去/
-                para.bucketName = this.bucketlist
-                para.objectPrefix = this.objectcurrentPrefix
-                console.log(para);
-                this.getobjectlist(para)
-                this.objectoldPrefix=this.objectcurrentPrefix.substring(0,this.objectcurrentPrefix.length-this.objectcurrentPrefix.split("").reverse().indexOf("/")-1)
-                this.objectoldRow=this.objectcurrentPrefix.substring(0,this.objectcurrentPrefix.length-this.objectcurrentPrefix.split("").reverse().indexOf("/"))
-            }else{
-                console.log("isnotdir");
-            }
-            this.selectBucket=this.bucketlist
-            this.selectObject=row.name
-    },
-    //根据前缀更新object
-    getobjectlist(para){
-      listObjectByPrefix(para).then(response=>{
-                this.objectList = response.data
-            }).catch(error=>{console.log(error);})
+    // 选择桶后更新object table
+    chooseBucket(val) {
+      this.objectList = []
+      const para = { bucketName: val }
+      console.log(para)
+      this.getobject(para)
     },
 
-    //返回上级
-    retuenOdlRow(){
-      console.log(this.bucketlist);
-      console.log(this.objectoldPrefix);
-      console.log(this.objectoldRow);
-      if(this.objectoldRow==this.objectoldPrefix){
-                this.objectoldRow=''
-                this.objectoldPrefix=''
-                this.objectcurrentRow=''
-                this.objectcurrentPrefix=''
-                this.selectObject=''
-            }
-      const para={}
-      para.bucketName = this.bucketlist;
-      para.objectPrefix = this.objectoldPrefix;
-      console.log(para);
+    // 更新object的后台请求
+    getobject(para) {
+      listObject(para).then(response => {
+        if (response) {
+          console.log(response)
+          this.objectList = response.data
+        // eslint-disable-next-line no-empty
+        } else {
+        }
+      }).catch()
+    },
+    // 递归打开object
+    getobjectbyPerfix(row, event, column) {
+      console.log(row.name)
+      const para = {}
+      if (((row.name.split('').reverse().join('')).substring(0, 1)).split('').reverse().join('') == '/') {
+        console.log('isdir')
+        this.objectcurrentRow = row.name
+        this.objectcurrentPrefix = row.name.substring(0, row.name.length - 1)// 去/
+        para.bucketName = this.bucketlist
+        para.objectPrefix = this.objectcurrentPrefix
+        console.log(para)
+        this.getobjectlist(para)
+        this.objectoldPrefix = this.objectcurrentPrefix.substring(0, this.objectcurrentPrefix.length - this.objectcurrentPrefix.split('').reverse().indexOf('/') - 1)
+        this.objectoldRow = this.objectcurrentPrefix.substring(0, this.objectcurrentPrefix.length - this.objectcurrentPrefix.split('').reverse().indexOf('/'))
+      } else {
+        console.log('isnotdir')
+      }
+      this.selectBucket = this.bucketlist
+      this.selectObject = row.name
+    },
+    // 根据前缀更新object
+    getobjectlist(para) {
+      listObjectByPrefix(para).then(response => {
+        this.objectList = response.data
+      }).catch(error => { console.log(error) })
+    },
+
+    // 返回上级
+    retuenOdlRow() {
+      console.log(this.bucketlist)
+      console.log(this.objectoldPrefix)
+      console.log(this.objectoldRow)
+      if (this.objectoldRow == this.objectoldPrefix) {
+        this.objectoldRow = ''
+        this.objectoldPrefix = ''
+        this.objectcurrentRow = ''
+        this.objectcurrentPrefix = ''
+        this.selectObject = ''
+      }
+      const para = {}
+      para.bucketName = this.bucketlist
+      para.objectPrefix = this.objectoldPrefix
+      console.log(para)
       this.getobjectlist(para)
       this.objectcurrentRow = this.objectoldRow
       this.objectcurrentPrefix = this.objectoldPrefix
-      this.objectoldRow = this.objectcurrentPrefix.substring(0,this.objectcurrentPrefix.length-this.objectcurrentPrefix.split("").reverse().indexOf("/"))
-      this.objectoldPrefix = this.objectcurrentPrefix.substring(0,this.objectcurrentPrefix.length-this.objectcurrentPrefix.split("").reverse().indexOf("/")-1)
+      this.objectoldRow = this.objectcurrentPrefix.substring(0, this.objectcurrentPrefix.length - this.objectcurrentPrefix.split('').reverse().indexOf('/'))
+      this.objectoldPrefix = this.objectcurrentPrefix.substring(0, this.objectcurrentPrefix.length - this.objectcurrentPrefix.split('').reverse().indexOf('/') - 1)
     },
 
-    //返回输入路径
-    returnInput(){
-      this.inputBucket=this.selectBucket
-      this.inputObject=this.selectObject
+    // 返回输入路径
+    returnInput() {
+      this.inputBucket = this.selectBucket
+      this.inputObject = this.selectObject
       this.form.input = this.selectObject
-      this.bucketlist=''
-      this.list=[]
-      this.objectList=[]
-      this.objectcurrentRow=''
-      this.objectcurrentPrefix=''
-      this.objectoldRow=''
-      this.objectoldPrefix=''
-      this.selectBucket=''
-      this.selectObject=''
-      this.ossInputVisible=false
+      this.bucketlist = ''
+      this.list = []
+      this.objectList = []
+      this.objectcurrentRow = ''
+      this.objectcurrentPrefix = ''
+      this.objectoldRow = ''
+      this.objectoldPrefix = ''
+      this.selectBucket = ''
+      this.selectObject = ''
+      this.ossInputVisible = false
     },
-    //取消返回输入路径
-    notInput(){
-      this.bucketlist=''
-      this.list=[]
-      this.objectList=[]
-      this.objectcurrentRow=''
-      this.objectcurrentPrefix=''
-      this.objectoldRow=''
-      this.objectoldPrefix=''
-      this.selectBucket=''
-      this.selectObject=''
-      this.ossInputVisible=false
+    // 取消返回输入路径
+    notInput() {
+      this.bucketlist = ''
+      this.list = []
+      this.objectList = []
+      this.objectcurrentRow = ''
+      this.objectcurrentPrefix = ''
+      this.objectoldRow = ''
+      this.objectoldPrefix = ''
+      this.selectBucket = ''
+      this.selectObject = ''
+      this.ossInputVisible = false
     },
-    //返回输出路径
-    returnOutput(){
-      this.outputBucket=this.selectBucket
-      this.outputObject=this.selectObject
+    // 返回输出路径
+    returnOutput() {
+      this.outputBucket = this.selectBucket
+      this.outputObject = this.selectObject
       this.form.output = this.selectObject
-      this.bucketlist=''
-      this.list=[]
-      this.objectList=[]
-      this.objectcurrentRow=''
-      this.objectcurrentPrefix=''
-      this.objectoldRow=''
-      this.objectoldPrefix=''
-      this.selectBucket=''
-      this.selectObject=''
-      this.ossOutputVisible=false
+      this.bucketlist = ''
+      this.list = []
+      this.objectList = []
+      this.objectcurrentRow = ''
+      this.objectcurrentPrefix = ''
+      this.objectoldRow = ''
+      this.objectoldPrefix = ''
+      this.selectBucket = ''
+      this.selectObject = ''
+      this.ossOutputVisible = false
     },
-    //取消返回输出路径
-    notOutput(){
-      this.bucketlist=''
-      this.list=[]
-      this.objectList=[]
-      this.objectcurrentRow=''
-      this.objectcurrentPrefix=''
-      this.objectoldRow=''
-      this.objectoldPrefix=''
-      this.selectBucket=''
-      this.selectObject=''
-      this.ossOutputVisible=false
-    },
+    // 取消返回输出路径
+    notOutput() {
+      this.bucketlist = ''
+      this.list = []
+      this.objectList = []
+      this.objectcurrentRow = ''
+      this.objectcurrentPrefix = ''
+      this.objectoldRow = ''
+      this.objectoldPrefix = ''
+      this.selectBucket = ''
+      this.selectObject = ''
+      this.ossOutputVisible = false
+    }
 
-  },
-  mounted() {
-    this.getDataSet()
   }
 }
 </script>
@@ -1187,7 +1250,6 @@ export default {
   width: 90px;
   margin-left: 10px;
   vertical-align: bottom;
- 
 }
 .dataSer {
   margin: 0px 0px 0px 10px;
@@ -1197,5 +1259,15 @@ export default {
 }
 .el-table{
   height: 90%;
+}
+.mycolor{
+  background-color: #EEF3FF;
+  margin-left: 0px;
+  margin-right: 20px;
+  vertical-align: bottom;
+  height: 32px;
+  line-height: 30px;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 </style>

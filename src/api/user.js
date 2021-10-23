@@ -4,9 +4,9 @@ export function login(params) {
   return request({
     url: '/user/login',
     method: 'post',
-    params: params,
-    baseURL: 'http://10.19.1.77:8088'
-    //data,
+    // params: params,
+    baseURL: 'http://10.19.1.77:8088',
+    data: params
     //baseURL: 'http://localhost:9528/dev-api'
   })
 }

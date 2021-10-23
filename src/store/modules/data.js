@@ -3,8 +3,8 @@ const getDefaultState = () => {
       uuid: '',
       type: '',
       dirPath: '',
-      predictcontrol:'',
-      dataSet: []
+      predictcontrol:''
+      // dataSet: []
     }
   }
   
@@ -22,10 +22,10 @@ const mutations = {
   },
   SET_PREDICTCONTROL: (state, predictcontrol) => {
     state.predictcontrol = predictcontrol
-  },
-  SET_DATASET: (state, dataSet) => {
-    state.dataSet = dataSet
   }
+  // SET_DATASET: (state, dataSet) => {
+  //   state.dataSet = dataSet
+  // }
   
 }
   
@@ -41,10 +41,10 @@ const actions = {
   },
   changepredictcontrol({ commit }, data) {
     commit('SET_PREDICTCONTROL', data)
-  },
-  changeDataSet({ commit }, data) {
-    commit('SET_DATASET', data)
   }
+  // changeDataSet({ commit }, data) {
+  //   commit('SET_DATASET', data)
+  // }
 }
 
 export default {   
