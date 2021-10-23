@@ -475,7 +475,7 @@ export default {
                   this.logout()
                 }
                 if (temp.password.length >= 1) {
-                  this.logout()
+                  // this.logout()
                 }
               })
             })
