@@ -201,11 +201,11 @@ export default {
       })
     },
     handleCloseChangePassword() {
-      alert('请修改密码');
+      alert('请修改密码')
     },
     changeDialog() {
       console.log(store.getters.register)
-      if (store.getters.register == 1) {
+      if (store.getters.register === 1) {
         console.log('klklklklklklk')
         this.centerDialogVisible = true
       } else {

@@ -5,7 +5,7 @@ export function getTagApi(params) {
     url: '/dataset/tag',
     method: 'get',
     params: params,
-    baseURL: 'http://10.19.1.181:8082'
+    baseURL: 'http://127.0.0.1:8082'
   })
 }
 
@@ -14,6 +14,7 @@ export function saveTagApi(data) {
     url: '/tag/saveTags',
     method: 'post',
     data: data,
+    // baseURL: 'http://127.0.0.1:8085'
     baseURL: 'http://10.19.1.77:8085'
   })
 }
@@ -23,6 +24,7 @@ export function updateTagApi(data) {
     url: '/tag/updateTags',
     method: 'put',
     data: data,
+    // baseURL: 'http://127.0.0.1:8085'
     baseURL: 'http://10.19.1.77:8085'
   })
 }

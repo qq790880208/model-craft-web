@@ -2,9 +2,9 @@
   <div style="user-select: none;">
     <div v-if="isimageview" class="dashboard-container">
       <div>
-        <el-button type="primary" plain size="mini" @click="returndataset" >返回数据集</el-button>
+        <el-button type="primary" plain size="mini" @click="returndataset">返回数据集</el-button>
         <el-button type="primary" plain size="mini" @click="batchSave">批量通过</el-button>
-        <el-button type="primary" plain size="mini" @click="batchUnAccept">批量不通过</el-button>
+        <el-button type="primary" plain size="mini" @click="batchUnAcceptDialog">批量不通过</el-button>
         <span class="checkAll">
           <input type="checkbox" :checked="checkedList.length === imagelargeArry.length" @change="checkedAll()">
           <span>全选</span>
@@ -41,7 +41,7 @@
       <el-button @click="previousimage">上一张(P)</el-button>
       <!-- <el-button @click="skipimage">跳过当前图片(Q)</el-button> -->
       <el-button @click="pass">通过</el-button>
-      <el-button @click="unAccept">不通过</el-button>
+      <el-button @click="unAcceptDialog">不通过</el-button>
       <!-- <el-button @click="reset">重置</el-button> -->
       <imageselect
         ref="imageselectref"
@@ -53,6 +53,37 @@
         @saveimageinfo="saveimageinfo"
       />
     </div>
+    <el-dialog
+      title="不通过备注"
+      :visible.sync="batchUnAcceptDialogShow"
+      width="30%"
+    >
+      <el-input
+        v-model="acceptRemark"
+        placeholder="请输入备注"
+        clearable
+      />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="batchUnAcceptDialogShow = false">取 消</el-button>
+        <el-button type="primary" @click="submitBatchUnAccept">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog
+      title="不通过备注"
+      :visible.sync="unAcceptDialogShow"
+      width="30%"
+    >
+      <el-input
+        v-model="acceptRemark"
+        placeholder="请输入备注"
+        clearable
+      />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="unAcceptDialogShow = false">取 消</el-button>
+        <el-button type="primary" @click="submitUnAccept">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -150,6 +181,11 @@ export default {
       nowseconds: 0,
       isimageview: true,
       automarkbtntext: '开始自动标注',
+      isloading: false,
+      batchUnAcceptDialogShow: false,
+      acceptRemarks: '',
+      unAcceptDialogShow: false,
+      acceptRemark: '',
       isloading: false
     }
   },
@@ -189,6 +225,22 @@ export default {
     this.nowseconds = 0
   },
   methods: {
+    unAcceptDialog() {
+      this.unAcceptDialogShow = true
+      this.acceptRemark = ''
+    },
+    submitUnAccept() {
+      this.unAccept()
+      this.unAcceptDialogShow = false
+    },
+    batchUnAcceptDialog() {
+      this.batchUnAcceptDialogShow = true
+      this.acceptRemarks = ''
+    },
+    submitBatchUnAccept() {
+      this.batchUnAccept()
+      this.batchUnAcceptDialogShow = false
+    },
     returndataset() {
       // this.$router.go(-1)
       this.$router.push('/data')
@@ -226,9 +278,10 @@ export default {
       unAcceptApi(params).then(res => {
         this.$message({
           message: '验收不通过成功',
-          duration:300,
+          duration: 300,
           type: 'success'
         })
+        this.unAcceptDialogShow = false
       }).catch(function(error) {
         this.$message({
           message: '验收不通过失败',
@@ -303,6 +356,7 @@ export default {
         })
         this.getAcceptDataList()
         this.checkedList = []
+        this.batchUnAcceptDialogShow = false
       })
     },
     // batchReSet() {

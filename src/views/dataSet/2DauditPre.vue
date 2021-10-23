@@ -4,7 +4,7 @@
       <div>
         <el-button type="primary" plain size="mini" @click="returndataset">返回数据集</el-button>
         <el-button type="primary" plain size="mini" @click="batchSave">批量通过</el-button>
-        <el-button type="primary" plain size="mini" @click="batchReject">批量不通过</el-button>
+        <el-button type="primary" plain size="mini" @click="batchRejectDialog">批量不通过</el-button>
         <el-button type="primary" plain size="mini" @click="batchReSet">批量重置</el-button>
         <span class="checkAll">
           <input type="checkbox" :checked="checkedList.length === imagelargeArry.length" @change="checkedAll()">
@@ -41,7 +41,7 @@
       <el-button @click="previousimage">上一张(P)</el-button>
       <!-- <el-button @click="skipimage">跳过当前图片(Q)</el-button> -->
       <el-button @click="pass">通过</el-button>
-      <el-button @click="reject">驳回</el-button>
+      <el-button @click="rejectDialog">驳回</el-button>
       <el-button @click="reset">重置</el-button>
       <imageselect 
         ref="imageselectref" 
@@ -52,6 +52,38 @@
         :lastlabel-arry="this.lastinfoArry[nownum]"
       />
     </div>
+
+    <el-dialog
+      title="驳回备注"
+      :visible.sync="batchRejectDiaglogShow"
+      width="30%"
+    >
+      <el-input
+        v-model="auditRemarks"
+        placeholder="请输入备注"
+        clearable
+      />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="batchRejectDiaglogShow = false">取 消</el-button>
+        <el-button type="primary" @click="submitBatchReject">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog
+      title="驳回备注"
+      :visible.sync="rejectDiaglogShow"
+      width="30%"
+    >
+      <el-input
+        v-model="auditRemark"
+        placeholder="请输入备注"
+        clearable
+      />
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="rejectDiaglogShow = false">取 消</el-button>
+        <el-button type="primary" @click="submitReject">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -149,6 +181,11 @@ export default {
       nowseconds: 0,
       isimageview: true,
       automarkbtntext: '开始自动标注',
+      isloading: false,
+      batchRejectDiaglogShow: false,
+      rejectDiaglogShow: false,
+      auditRemarks: '',
+      auditRemark: '',
       isloading: false
     }
   },
@@ -189,6 +226,22 @@ export default {
   },
 
   methods: {
+    batchRejectDialog() {
+      this.batchRejectDiaglogShow = true
+      this.auditRemarks = ''
+    },
+    rejectDialog() {
+      this.rejectDiaglogShow = true
+      this.auditRemark = ''
+    },
+    submitBatchReject() {
+      this.batchReject()
+      this.batchRejectDiaglogShow = false
+    },
+    submitReject() {
+      this.reject()
+      this.rejectDiaglogShow = false
+    },
     returndataset() {
       // this.$router.go(-1)
       this.$router.push('/data')
@@ -219,7 +272,8 @@ export default {
     reject() {
       this.isAudited = true
       const params = {
-        labelUuid: this.uuidArry[this.nownum]
+        labelUuid: this.uuidArry[this.nownum],
+        auditRemark: this.auditRemark
       }
       rejectApi(params).then(res => {
         this.$message({
@@ -227,6 +281,7 @@ export default {
           duration: 300,
           type: 'success'
         })
+        this.rejectDiaglogShow = false
       }).catch(function(error) {
         this.$message({
           message: '驳回失败',
@@ -292,7 +347,8 @@ export default {
     batchReject() {
       console.log(this.checkedList.join(','))
       const params = {
-        labelUuids: this.checkedList.join(',')
+        labelUuids: this.checkedList.join(','),
+        auditRemark: this.auditRemarks
       }
       batchRejectApi(params).then(res => {
         this.$message({
@@ -301,6 +357,7 @@ export default {
         })
         this.getAuditDataList()
         this.checkedList = []
+        this.batchRejectDiaglogShow = false
       })
     },
     batchReSet() {

@@ -195,6 +195,24 @@ export const asyncRoutes = [
         meta: { title: '数据集管理', resources: 'data', icon: 'tree-table' }
       },
       {
+        path: '/marking',
+        component: () => import('@/views/dataSet/marking'),
+        name: 'marking manage',
+        meta: { title: '标注数据集', resources: 'marking', icon: 'tree-table' }
+      },
+      {
+        path: '/auditing',
+        component: () => import('@/views/dataSet/auditing'),
+        name: 'auditing manage',
+        meta: { title: '审核数据集', resources: 'auditing', icon: 'tree-table' }
+      },
+      {
+        path: '/accepting',
+        component: () => import('@/views/dataSet/accepting'),
+        name: 'accepting manage',
+        meta: { title: '验收数据集', resources: 'accepting', icon: 'tree-table' }
+      },
+      {
         path: '/oss',
         component: () => import('@/views/dataSet/oss'),
         name: 'oss manage',

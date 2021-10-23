@@ -180,14 +180,15 @@ export default {
             }).catch(() => {
               // self.errorInfo = true
               // 重新生成验证码
-              //this.loginForm = this.$options.data().loginForm
+              // this.loginForm = this.$options.data().loginForm
               this.loginForm.password = ''
               this.refreshCode()
               self.loading = false
             })
           }
+          // this.loginForm.password = ''
         } else {
-          console.log('error submit!!')
+          console.log('请重新提交!!')
           return false
         }
       })

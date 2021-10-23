@@ -49,18 +49,18 @@
       </el-col>
     </el-row>
     <!--列表-->
-    <el-table :data="logList" highlight-current-row style="width: 100%;" @selection-change="selsChange">
+    <el-table :data="logList" highlight-current-row style="width: 100%;" @selection-change="selsChange" @sort-change="sortChange">
       <el-table-column type="selection" width="60" />
       <!-- <el-table-column prop="id" align="center" label="id" width="100">
       </el-table-column> -->
-      <el-table-column prop="user_name" align="center" label="用户名" width="100" sortable />
-      <el-table-column prop="message" align="center" label="操作信息" width="240" show-overflow-tooltip sortable />
+      <el-table-column prop="user_name" align="center" label="操作用户" width="100" :sortable="'custom'" />
+      <el-table-column prop="message" align="center" label="操作信息" show-overflow-toolti width="240" :sortable="'custom'" />
       <!-- <el-table-column prop="method" align="center" label="方法" min-width="100" sortable>
         <template slot-scope="scope">
           {{ scope.row.method}}
          </template>
       </el-table-column> -->
-      <el-table-column prop="type" align="center" label="状态" min-width="100" sortable>
+      <el-table-column prop="type" align="center" label="状态" min-width="100" :sortable="'custom'">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.tpye == 1 ? 'success' : 'danger'"
@@ -68,10 +68,10 @@
           >{{ scope.row.type == 1 ? '成功' : '失败' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="ip" align="center" label="IP" min-width="120" sortable />
-      <el-table-column prop="time" align="center" label="耗时" min-width="120" sortable />
-      <el-table-column prop="params" align="center" label="参数" show-overflow-tooltip width="220" sortable />
-      <el-table-column prop="create_time" align="center" label="创建时间" show-overflow-tooltip min-width="180" sortable>
+      <el-table-column prop="ip" align="center" label="IP" min-width="120" :sortable="'custom'" />
+      <el-table-column prop="time" align="center" label="耗时" min-width="120" :sortable="'custom'" />
+      <el-table-column prop="params" align="center" label="修改参数" show-overflow-tooltip width="220" :sortable="'custom'" />
+      <el-table-column prop="create_time" align="center" label="创建时间" show-overflow-tooltip min-width="180" :sortable="'custom'">
         <template slot-scope="scope">
           {{ scope.row.create_time | formatDate }}
         </template>
@@ -88,7 +88,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getListByPage, batchRemoveList } from '@/api/log'
-import store from "@/store"
+import store from '@/store'
 export default {
   name: 'Dashboard',
   filters: {
@@ -156,6 +156,8 @@ export default {
         { key: 1, status: '成功' },
         { key: 0, status: '失败' }
       ],
+      colorder: '',
+      ordering: '',
       filter: {
         name: '',
         method: '',
@@ -174,6 +176,11 @@ export default {
   mounted() {
     this.getList()
   },
+  created() {
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
+  },
   methods: {
     handleSizeChange(val) {
       this.page_size = val
@@ -181,6 +188,12 @@ export default {
     },
     handleCurrentChange(val) {
       this.page = val
+      this.getList()
+    },
+    sortChange(column) {
+      console.log('排序', column.prop, column.order)
+      this.colorder = column.prop
+      this.ordering = column.order
       this.getList()
     },
     getList() {
@@ -195,7 +208,9 @@ export default {
         message: this.filter.method,
         type: this.filter.type,
         ip: this.filter.ip,
-        createTime: this.filter.createTime.toString()
+        createTime: this.filter.createTime.toString(),
+        colorder: this.colorder,
+        ordering: this.ordering
       }
       console.log(para)
       getListByPage(para).then(res => {
@@ -226,14 +241,6 @@ export default {
         })
         .catch(() => {})
     }
-  },
-    created(){
-    if (store.getters.register == 1) {
-      this.$router.push('/dashboard')
-    }
-  },
-  mounted() {
-    this.getList()
   }
 }
 

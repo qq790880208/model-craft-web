@@ -36,15 +36,15 @@
     </el-row>
 
     <!--列表-->
-    <el-table :data="logList" highlight-current-row style="width: 100%;" @selection-change="selsChange">
+    <el-table :data="logList" highlight-current-row style="width: 100%;" @selection-change="selsChange" @sort-change="sortChange">
       <el-table-column type="selection" width="60" />
       <!-- <el-table-column prop="id" align="center" label="id" width="100">
       </el-table-column> -->
-      <el-table-column prop="user_name" align="center" label="用户名" width="120" sortable />
-      <el-table-column prop="ip" align="center" label="IP" min-width="120" sortable />
-      <el-table-column prop="message" align="center" label="信息" width="180" sortable />
-      <el-table-column prop="time" align="center" label="时间" width="100" sortable />
-      <el-table-column prop="create_time" align="center" label="创建时间" show-overflow-tooltip min-width="180" sortable>
+      <el-table-column prop="user_name" align="center" label="用户名" width="120" :sortable="'custom'" />
+      <el-table-column prop="ip" align="center" label="IP" min-width="120" :sortable="'custom'" />
+      <el-table-column prop="message" align="center" label="信息" width="180" :sortable="'custom'" />
+      <el-table-column prop="time" align="center" label="时间" width="100" :sortable="'custom'" />
+      <el-table-column prop="create_time" align="center" label="创建时间" show-overflow-tooltip min-width="180" :sortable="'custom'">
         <template slot-scope="scope">
           {{ scope.row.create_time | formatDate }}
         </template>
@@ -53,7 +53,7 @@
 
     <!--工具条-->
     <el-col :span="24" class="toolbar">
-      <el-pagination layout="total, sizes ,prev, pager, next, jumper" :page-size="page_size" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange"/>
+      <el-pagination layout="total, sizes ,prev, pager, next, jumper" :page-size="page_size" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
     </el-col>
   </div>
 </template>
@@ -61,7 +61,7 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getListByPage, batchRemoveList } from '@/api/loginlog'
-import store from "@/store"
+import store from '@/store'
 export default {
   name: 'Dashboard',
   filters: {
@@ -125,6 +125,8 @@ export default {
           }
         }]
       },
+      colorder: '',
+      ordering: '',
       filter: {
         name: '',
         method: '',
@@ -142,6 +144,11 @@ export default {
   mounted() {
     this.getList()
   },
+  created() {
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
+  },
   methods: {
     handleSizeChange(val) {
       this.page_size = val
@@ -149,6 +156,12 @@ export default {
     },
     handleCurrentChange(val) {
       this.page = val
+      this.getList()
+    },
+    sortChange(column) {
+      console.log('排序', column.prop, column.order)
+      this.colorder = column.prop
+      this.ordering = column.order
       this.getList()
     },
     getList() {
@@ -161,7 +174,9 @@ export default {
         name: this.filter.name,
         message: this.filter.method,
         ip: this.filter.ip,
-        createTime: this.filter.createTime.toString()
+        createTime: this.filter.createTime.toString(),
+        colorder: this.colorder,
+        ordering: this.ordering
       }
       console.log(para)
       getListByPage(para).then(res => {
@@ -192,14 +207,6 @@ export default {
         })
         .catch(() => {})
     }
-  },
-  created(){
-    if (store.getters.register == 1) {
-      this.$router.push('/dashboard')
-    }
-  },
-  mounted() {
-    this.getList()
   }
 }
 

@@ -5,7 +5,7 @@ export function getAcceptData(params) {
     url: '/userAccept/getAccepts',
     method: 'get',
     params: params,
-    baseURL: 'http://10.19.1.77:8085'
+    baseURL: 'http://127.0.0.1:8085'
   })
 }
 
@@ -14,7 +14,7 @@ export function setAcceptDataApi(params) {
     url: '/userAccept/set',
     method: 'post',
     params: params,
-    baseURL: 'http://10.19.1.77:8085'
+    baseURL: 'http://127.0.0.1:8085'
   })
 }
 
@@ -23,7 +23,7 @@ export function getAcceptDataApi(params) {
     url: '/userAccept/getAcceptData',
     method: 'get',
     params: params,
-    baseURL: 'http://10.19.1.77:8085'
+    baseURL: 'http://127.0.0.1:8085'
   })
 }
 
@@ -32,7 +32,7 @@ export function batchAcceptApi(params) {
     url: '/userAccept/batchAccept',
     method: 'put',
     params: params,
-    baseURL: 'http://10.19.1.77:8085'
+    baseURL: 'http://127.0.0.1:8085'
   })
 }
 
@@ -41,7 +41,7 @@ export function batchUnAcceptApi(params) {
     url: '/userAccept/batchUnAccept',
     method: 'put',
     params: params,
-    baseURL: 'http://10.19.1.77:8085'
+    baseURL: 'http://127.0.0.1:8085'
   })
 }
 
@@ -50,7 +50,7 @@ export function acceptApi(params) {
     url: '/userAccept/isAccept',
     method: 'put',
     params: params,
-    baseURL: 'http://10.19.1.77:8085'
+    baseURL: 'http://127.0.0.1:8085'
   })
 }
 
@@ -59,6 +59,6 @@ export function unAcceptApi(params) {
     url: '/userAccept/unAccept',
     method: 'put',
     params: params,
-    baseURL: 'http://10.19.1.77:8085'
+    baseURL: 'http://127.0.0.1:8085'
   })
 }

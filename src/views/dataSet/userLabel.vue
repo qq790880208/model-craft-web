@@ -153,12 +153,21 @@
     </el-dialog>
 
     <!--上传文件dialog-->
+<<<<<<< HEAD
+    <el-dialog title="上传文件" :visible.sync="uploadObjectVisible">
+      <el-button-group>
+        <el-button>上传路径</el-button>
+        <el-button class="dir" plain>{{ uploadBucketName }} : {{ uploadObjectFolder }}</el-button>
+      </el-button-group>
+      <!-- <el-dialog width="30%" title="选择路径" :visible.sync="choosefolder" append-to-body :show-close="false">
+=======
     <el-dialog title="上传文件" :visible.sync="uploadObjectVisible" :close-on-click-modal="false" :destroy-on-close="true">
             <el-button-group>
                 <el-button>上传路径</el-button>
                 <el-button class="dir" plain>{{uploadBucketName}} : {{uploadObjectFolder}}</el-button>
             </el-button-group>
         <!-- <el-dialog width="30%" title="选择路径" :visible.sync="choosefolder" append-to-body :show-close="false">
+>>>>>>> dev
             <el-form>
                 <el-form-item label="请选择桶:">
                     <el-radio-group v-model="uplbucket" @change="chooseuplbucket">

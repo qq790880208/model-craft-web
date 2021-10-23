@@ -94,29 +94,30 @@
             border
             :cell-style="{padding: '8px'}"
             @selection-change="selChange"
+            @sort-change="sortChange"
           >
             <el-table-column type="selection" align="center" width="60" :disabled=" idLabel !=='团队管理员'" />
-            <el-table-column align="center" label="用户名字" show-overflow-tooltip width="130" sortable>
+            <el-table-column prop="name" align="center" label="用户名字" show-overflow-tooltip width="130" :sortable="'custom'">
               <template slot-scope="scope">
                 {{ scope.row.name }}
               </template>
             </el-table-column>
-            <el-table-column align="center" label="角色" show-overflow-tooltip width="130" sortable>
+            <el-table-column align="center" prop="label_role" label="角色" show-overflow-tooltip width="130" :sortable="'custom'">
               <template slot-scope="scope">
                 {{ scope.row.label_role }}
               </template>
             </el-table-column>
-            <el-table-column align="center" label="邮箱" show-overflow-tooltip min-width="140" sortable>
+            <el-table-column align="center" prop="email" label="邮箱" show-overflow-tooltip min-width="140" :sortable="'custom'">
               <template slot-scope="scope">
                 {{ scope.row.email }}
               </template>
             </el-table-column>
-            <el-table-column align="center" label="描述" show-overflow-tooltip min-width="150" sortable>
+            <el-table-column align="center" prop="descr" label="描述" show-overflow-tooltip min-width="150" :sortable="'custom'">
               <template slot-scope="scope">
                 {{ scope.row.descr }}
               </template>
             </el-table-column>
-            <el-table-column align="center" label="创建时间" show-overflow-tooltip width="120" sortable>
+            <el-table-column align="center" prop="create_time" label="创建时间" show-overflow-tooltip width="120" :sortable="'custom'">
               <template slot-scope="scope">
                 {{ scope.row.create_time | formatDate }}
               </template>
@@ -257,6 +258,8 @@ export default {
         email: '',
         descr: ''
       },
+      colorder: '',
+      ordering: '',
       editFormUser: {
         email: '',
         label_role: '',
@@ -294,6 +297,12 @@ export default {
     this.getTeamsList()
   },
   methods: {
+    sortChange(column) {
+      console.log('排序', column.prop, column.order)
+      this.colorder = column.prop
+      this.ordering = column.order
+      this.getUsers()
+    },
     markcolor(id) {
       if (id === this.selectTeamId) return 'blue'
       else return 'white'
@@ -373,6 +382,8 @@ export default {
       para.name = this.selectTeam.name
       para.page = this.page
       para.pagesize = this.page_size
+      para.colorder = this.colorder
+      para.ordering = this.ordering
       console.log(para)
       getTeamsUserPage(para).then(res => {
         this.rolesList = res.data.items

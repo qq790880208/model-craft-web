@@ -45,7 +45,8 @@ service.interceptors.response.use(
    */
   response => {
     const res = response.data
-
+    console.log('-------')
+    console.log(response)
     // if the custom code is not 20000, it is judged as an error.
     if (res.code !== 20000) {
       Message({
@@ -80,6 +81,8 @@ service.interceptors.response.use(
     }
   },
   error => {
+    // console.log(error.response.data)
+    // console.log(error)
     if (error.response.data.status === 50021) {
       // Message({
       //   message: "用户已在其他设备登录！",
@@ -87,7 +90,7 @@ service.interceptors.response.use(
       //   duration: 5 * 1000
       // })
       // console.log('--------------8888888897979797')
-      return Promise.reject("用户已在其他设备登录！")
+      return Promise.reject('用户已在其他设备登录！')
     }
     if (error.response.data.status === 50020) {
       // Message({
@@ -96,7 +99,7 @@ service.interceptors.response.use(
       //   duration: 5 * 1000
       // })
       // console.log('--------------8888888897979797')
-      return Promise.reject("用户未登录！")
+      return Promise.reject('用户未登录！')
     }
     console.log(error.response.data) // for debug
     console.log('err' + error) // for debug
