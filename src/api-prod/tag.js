@@ -5,6 +5,6 @@ export function getTagApi(params) {
     url: '/8082/dataset/tag',
     method: 'get',
     params: params
-    // baseURL: 'http://10.19.1.181:8082'
+    // baseURL: 'http://127.0.0.1:8082'
   })
 }

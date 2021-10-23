@@ -313,7 +313,7 @@ export default {
     imagesrc: function () {
       //获取图片url
       //return require('@/image/'+this.fatherimagesrc)
-      //return require('http://10.19.1.181:18080/images/abc.png')
+      //return require('http://127.0.0.1:18080/images/abc.png')
       //return require('@/'+'image/微信图片_20200927191717'+'.jpg')
       return this.fatherimagesrc;
     },
