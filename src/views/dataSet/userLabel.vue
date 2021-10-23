@@ -148,7 +148,7 @@
     </el-dialog>
 
     <!--上传文件dialog-->
-    <el-dialog title="上传文件" :visible.sync="uploadObjectVisible">
+    <el-dialog title="上传文件" :visible.sync="uploadObjectVisible" :close-on-click-modal="false" :destroy-on-close="true">
             <el-button-group>
                 <el-button>上传路径</el-button>
                 <el-button class="dir" plain>{{uploadBucketName}} : {{uploadObjectFolder}}</el-button>
@@ -429,7 +429,10 @@ export default {
                     this.objectuplData=[]
                     this.fileList=[]
                     this.uploadFilePostfix=''
-                }else{this.$message.error('网络延迟,请同步数据源');}
+                }else{
+                  this.uploadLoading=false
+                  this.$message.error('网络延迟,请同步数据源');
+                  }
             })
         }else{
           for(let i=0;i<multFileListLen;i++){
@@ -464,6 +467,7 @@ export default {
                   this.uploadFilePostfix=''
                 }
               }else{
+                this.uploadLoading=false
                 this.$message.error('网络延迟,请同步数据源');
               }
             })
@@ -482,6 +486,7 @@ export default {
         this.objectuplData=[]
         this.fileList=[]
         this.uploadFilePostfix=''
+        this.uploadLoading=false
         this.uploadObjectVisible = false
     },
 

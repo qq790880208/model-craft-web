@@ -1,76 +1,79 @@
 <template>
   <div class="app-container">
-    <!-- <el-table
-      :data="teamManage"
-      style="width: 90%">
-      <el-table-column type="expand">
-        <template>
-          添加成员
-          修改成员
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="name" align="center" width="200">
-      </el-table-column>
-      <el-table-column
-        prop="remark" align="center" width="200">
-      </el-table-column>
-      <el-table-column
-        prop="description" align="center" width="200">
-      </el-table-column>
-    </el-table>
-
-    <el-table
-      :data="Label"
-      style="width: 90%">
-      <el-table-column type="expand">
-        <template>
-          查看所属团队
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="name" align="center" width="200">
-      </el-table-column>
-      <el-table-column
-        prop="remark" align="center" width="200">
-      </el-table-column>
-      <el-table-column
-        prop="description" align="center" width="200">
-      </el-table-column>
-    </el-table> -->
     <div>
       <H1>权限管理</H1>
     </div>
-    <!-- <el-button>hhh</el-button> -->
+    <el-button type="primary" size="mini" icon="el-icon-plus" @click="handleAddRole">新增角色</el-button>
     <div class="table-container">
       <el-table v-loading="listLoading" :data="list" size="mini" element-loading-text="Loading" fit border highlight-current-row>
-          <el-table-column label="ID" prop="id" align="center"></el-table-column>
-          <el-table-column label="角色编码" prop="name" align="center"></el-table-column>
-          <el-table-column label="备注" prop="remarks" align="center"></el-table-column>
-          <el-table-column label="操作" align="center">
-            <template slot-scope="scope">
-                <!-- <router-link :to="'/systemManage/roleSetting/'+scope.row.roleId"> -->
-                <el-button type="primary" size="mini" style="width: 100px;margin-left: 10px;margin-right: 10px;" icon="el-icon-setting" plain @click="showPremission(scope.row.id)">
-                  权限设置
-                </el-button>
-            </template>
-          </el-table-column>
+        <el-table-column label="ID" prop="id" align="center" />
+        <el-table-column label="角色编码" prop="name" align="center" />
+        <el-table-column label="权限等级" prop="authority" align="center"/>
+        <el-table-column label="备注" prop="remarks" align="center" />
+        <el-table-column label="操作" align="center">
+          <template slot-scope="scope">
+            <!-- <router-link :to="'/systemManage/roleSetting/'+scope.row.roleId"> -->
+            <el-button type="primary" size="mini" style="width: 100px;margin-left: 10px;margin-right: 10px;" icon="el-icon-setting" plain @click="showPremission(scope.row.id)">
+              权限设置
+            </el-button>
+            <el-button type="danger" size="mini" style="margin-left: 10px;margin-right: 10px;" icon="el-icon-delete" plain @click="delRole(scope.row.id)">
+              删除
+            </el-button>
+          </template>
+        </el-table-column>
       </el-table>
 
       <el-dialog title="分配权限" :visible.sync="dialogFormVisible" @close="handleDialogClose">
         <el-tree
-          :check-strictly="true"
+          ref="menuTree"
+          :check-strictly="false"
           :data="menuTree"
           show-checkbox
           node-key="id"
-          ref="menuTree"
           highlight-current
           :default-checked-keys="defaultCheckedKeysMenu"
-          :props="defaultPropsMenu">
-        </el-tree>
-        <div slot="footer" class="dialog-footer" >
+          :props="defaultPropsMenu"
+        />
+        <div slot="footer" class="dialog-footer">
           <el-button @click="dialogFormVisible = false">取 消</el-button>
           <el-button type="primary" @click="setRolePermission()">确 定</el-button>
+        </div>
+      </el-dialog>
+
+      <el-dialog :visible.sync="dialogAddRoleVisible" :title="新增角色" :before-close="handleClose">
+        <el-form :model="roleForm" label-width="80px" label-position="left">
+          <el-form-item label="角色编码">
+            <el-input v-model="roleForm.name" placeholder="角色编码" />
+          </el-form-item>
+          <el-form-item label="备注">
+            <el-input
+              v-model="roleForm.remarks"
+              type="textarea"
+              placeholder="角色描述"
+            />
+          </el-form-item>
+          <el-form-item label="权限等级">
+            <el-input
+              v-model="roleForm.authority"
+              placeholder="权限等级"
+            />
+          </el-form-item>
+          <el-form-item label="分配权限">
+            <el-tree
+              ref="menuTree"
+              :check-strictly="false"
+              :data="menuTree"
+              show-checkbox
+              node-key="id"
+              highlight-current
+              :default-checked-keys="defaultCheckedKeysMenu"
+              :props="defaultPropsMenu"
+            />
+          </el-form-item>
+        </el-form>
+        <div style="text-align:right;">
+          <el-button type="danger" size="mini" @click="closeDialog">取消</el-button>
+          <el-button type="primary" size="mini" @click="confirmRole">添加</el-button>
         </div>
       </el-dialog>
 
@@ -80,16 +83,27 @@
 
 <script>
 
-import { getRoles, getRoleMenuByRoleId, addRoleMenu } from '@/api/role'
+import { getRoles, getRoleMenuByRoleId, addRoleMenu, addNewRoleApi, delRoleApi, getRolesListApi } from '@/api/role'
 import { treeMenu } from '@/api/menu'
+import store from '@/store'
+
+const defaultRole = {
+  key: '',
+  name: '',
+  authority: '',
+  remarks: '',
+  routes: []
+}
 
 export default {
   data() {
     return {
+      roleForm: Object.assign({}, defaultRole),
       roleid: '',
-      list: null,
+      list: [],
       listLoading: true,
       dialogFormVisible: false,
+      dialogAddRoleVisible: false,
       defaultCheckedKeysMenu: [],
       menuList: [],
       menuTree: [],
@@ -97,16 +111,68 @@ export default {
       defaultPropsMenu: {
         children: 'children',
         label: 'name'
-
       }
     }
   },
   created() {
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
     this.getList()
     this.getMenuTabData()
   },
   methods: {
     handleNodeClick(data) {
+    },
+    handleClose() {
+      this.$confirm('确认关闭？').then(_ => {
+        this.dialogAddRoleVisible = false
+        // this.defaultCheckedKeysMenu = []
+        // this.$refs.tree.setCheckedNodes([])
+        this.roleForm = Object.assign({}, defaultRole)
+      }).catch(_ => {})
+    },
+    handleAddRole() {
+      this.dialogAddRoleVisible = true
+      this.defaultCheckedKeysMenu = []
+      this.$nextTick(() => {
+        this.$refs.menuTree.setCheckedKeys([])
+      })
+      // this.$refs.tree.setCheckedNodes([])
+    },
+    closeDialog() {
+      this.dialogAddRoleVisible = false
+      this.defaultCheckedKeysMenu = []
+      this.roleForm = Object.assign({}, defaultRole)
+    },
+    confirmRole() {
+      this.$confirm('确认提交吗？', '提示', {})
+        .then(() => {
+          var selectedIds = this.$refs.menuTree.getCheckedKeys()
+          var menuids = selectedIds.toString()
+          const params = {
+            name: this.roleForm.name,
+            remarks: this.roleForm.remarks,
+            authority: this.roleForm.authority,
+            menuids: menuids
+          }
+          console.log('vvvvvvvvvvvvvv')
+          console.log(params)
+          addNewRoleApi(params).then(() => {
+            this.$message({
+              message: '提交成功',
+              type: 'success'
+            })
+            this.getList()
+            this.dialogAddRoleVisible = false
+            this.defaultCheckedKeysMenu = []
+            this.roleForm = Object.assign({}, defaultRole)
+            const that = this
+            that.$nextTick(() => {
+              that.$refs.tree.setCheckedKeys([])
+            })
+          })
+        })
     },
     getList() {
       this.listLoading = true
@@ -142,9 +208,33 @@ export default {
         }
       })
     },
-    fresh(){//刷新
-      location. reload()
+    delRole(id) {
+      this.$confirm('确定要删除?', '警告', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        const params = {
+          id: id
+        }
+        delRoleApi(params).then(res => {
+          this.$message({
+            message: '提交成功',
+            type: 'success'
+          })
+          this.getList()
+        })
+      })
     },
+    fresh() { // 刷新
+      location.reload()
+    },
+
+    async logout() {
+      await this.$store.dispatch('user/logout')
+      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
+
     setRolePermission() {
       this.$confirm('确认提交吗？', '提示', {})
         .then(() => {
@@ -168,8 +258,13 @@ export default {
             })
             this.getList()
             this.dialogFormVisible = false
-            this.defaultCheckedKeysMenu = []
+            this.$nextTick(() => {
+              this.$refs.menuTree.setCheckedKeys([])
+            })
+            // this.defaultCheckedKeysMenu = []
+            // this.$refs.tree.setCheckedNodes([])
             this.fresh()
+            this.logout()
           })
         })
     }

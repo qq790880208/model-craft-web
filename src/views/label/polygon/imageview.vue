@@ -80,6 +80,11 @@ function keyDownSearch(e){
     console.log("gggggggggg!!!!!!!!!!!!!")
     nomarkedimage()
   }
+    if(code == 27){ //保存并上一张
+    console.log("eeeeeeeeeeeeeeeeeeeeessssssssssccccccccccccccccccc!!!!!!!!!!!!!")
+    undochild()
+    //return false;     
+  }
 }
 
 export default {
@@ -94,7 +99,7 @@ export default {
       lastinfoArry: [],
       //与图片对于的uuid数组，是后台数据库主键
       uuidArry: [],
-      //存储图片url,是否已标注等信息的数组，用于获取远程图片信息
+      //存储图片url,是否已标注等信息的数组，用于获取远程图片信息,小图片组件使用
       imagelargeArry:[],
       //标注状态的数组
       imageislabelArry:[],
@@ -156,6 +161,7 @@ export default {
     window.skipimagenext = this.skipimagenext;
     window.skipimagepre = this.skipimagepre;
     window.nomarkedimage = this.nomarkedimage;
+    window.undochild = this.undochild;
     document.onkeydown = keyDownSearch;
       this.starttimer = setInterval(()=>{
       this.nowseconds++;
@@ -175,6 +181,9 @@ export default {
       },1000);
   },
   methods: {
+    undochild(){
+      this.$refs.drawpolygonref.undo()
+    },
     returndataset(){
       this.$router.go(-1)
     },
@@ -575,7 +584,7 @@ export default {
         console.log("setUnAcceptsetUnAcceptsetUnAccept",response);
       })
       let isab
-      if(this.infoArry[i].polygon.length>0||this.infoArry[i].line.length>0||this.infoArry[i].circle.length>0||!infoFlag) isab=1
+      if(this.infoArry[i].polygon.length>0||this.infoArry[i].line.length>0||this.infoArry[i].circle.length>0||this.infoArry[i].rectangle.length>0||this.infoArry[i].ellipse.length>0||!infoFlag) isab=1
       else isab=2
       let data = {
           label_data: JSON.stringify(this.infoArry[i]),

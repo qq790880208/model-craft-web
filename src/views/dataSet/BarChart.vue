@@ -36,7 +36,7 @@ export default {
       chart: null
     }
   },
-  watch: {         // 监听父组件中的数据变化，重新触发Echarts
+  watch: { // 监听父组件中的数据变化，重新触发Echarts
     chartData: {
       deep: true,
       handler(val) {
@@ -58,7 +58,7 @@ export default {
   },
   methods: {
     initChart() {
-      //this.chart = echarts.init(this.$el, 'macarons')
+      // this.chart = echarts.init(this.$el, 'macarons')
       this.chart = echarts.init(this.$el)
       this.setOptions(this.chartData)
     },
@@ -69,10 +69,10 @@ export default {
             fontSize: 15
           }
         },
-        legend:{
+        legend: {
           data: ['标签数', '含有标签的样本数'],
-          icon:"circle",  //图例的形状
-          x: 'right',        //图例在右侧
+          icon: 'circle', // 图例的形状
+          x: 'right' // 图例在右侧
         },
         xAxis: {
           type: 'value',

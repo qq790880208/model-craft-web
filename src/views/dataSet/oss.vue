@@ -52,7 +52,7 @@
     </el-row>
     </div>
     <!--上传文件dialog-->
-    <el-dialog title="上传文件" :visible.sync="uploadObjectVisible">
+    <el-dialog title="上传文件" :visible.sync="uploadObjectVisible" :close-on-click-modal="false" :destroy-on-close="true"> 
             <el-button-group>
                 <el-button type="primary" @click="choosefolder = true">选择上传路径</el-button>
                 <el-button class="dir" plain>{{uploadBucketName}} : {{uploadObjectFolder}}</el-button>
@@ -570,7 +570,9 @@ export default {
                     this.objectuplData=[]
                     this.fileList=[]
                     this.uploadFilePostfix=''
-                }else{this.fai()}
+                }else{
+                    this.uploadLoading=false
+                    this.fai()}
             })
         }else{
             for(let i=0;i<multFileListLen;i++){
@@ -604,7 +606,9 @@ export default {
                         this.fileList=[]
                         this.uploadFilePostfix=''
                     }
-                }else{this.fai()}
+                }else{
+                    this.uploadLoading=false
+                    this.fai()}
             })
         }
         }
@@ -620,6 +624,7 @@ export default {
         this.objectuplData=[]
         this.fileList=[]
         this.uploadFilePostfix=''
+        this.uploadLoading=false
         this.uploadObjectVisible = false
     },
 
@@ -797,7 +802,7 @@ export default {
             const para={}
             para.bucketName=this.bucket
             para.objectName=this.rightName
-            console.log("para",para);
+            console.log(para);
             fileURL(para).then(response=>{
                 if(20000 == response.code){
                     console.log(response.data);

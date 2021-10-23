@@ -4,7 +4,7 @@ export function addUser(params) {
   return request({
     url: '/userManage/addUser',
     method: 'post',
-    params: params,
+    data: params,
     baseURL: 'http://10.19.1.77:8088'
   })
 }
@@ -21,7 +21,7 @@ export function editUser(params) {
   return request({
     url: '/userManage/editUser',
     method: 'put',
-    params: params,
+    data: params,
     baseURL: 'http://10.19.1.77:8088'
   })
 }
@@ -57,13 +57,30 @@ export function updatePassword(params) {
   return request({
     url: '/userManage/updatePassword',
     method: 'put',
-    params: params,
+    data: params,
     baseURL: 'http://10.19.1.77:8088'
   })
 }
 export function getAllUser(params) {
   return request({
     url: '/userManage/getAll',
+    method: 'get',
+    params: params,
+    baseURL: 'http://10.19.1.77:8088'
+  })
+}
+// 第一次登录，修改用户密码
+export function changePasswordApi(data) {
+  return request({
+    url: '/userManage/changePassword',
+    method: 'put',
+    data: data,
+    baseURL: 'http://10.19.1.77:8088'
+  })
+}
+export function getAuthorityApi(params) {
+  return request({
+    url: '/userManage/authority',
     method: 'get',
     params: params,
     baseURL: 'http://10.19.1.77:8088'
