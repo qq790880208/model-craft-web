@@ -220,7 +220,7 @@ export default {
           let newPassword = this.form.newPassword
           newPassword = md5(newPassword)
           const params = {
-            newPassword: newPassword,
+            newpassword: newPassword,
             id: store.getters.userid
           }
           console.log('9+9++9+++9++9')
