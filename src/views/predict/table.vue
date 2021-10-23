@@ -755,7 +755,11 @@ export default {
       }
 
     },
-    
+    created(){
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
+    },
     mounted() {
       window.searchTask = this.searchTask;
       document.onkeydown = keyDownSearch;

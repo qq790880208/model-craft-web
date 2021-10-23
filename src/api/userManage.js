@@ -79,3 +79,20 @@ export function getAllUser(params) {
     baseURL: 'http://10.19.1.77:8088'
   })
 }
+// 第一次登录，修改用户密码
+export function changePasswordApi(data) {
+  return request({
+    url: '/userManage/changePassword',
+    method: 'put',
+    data: data,
+    baseURL: 'http://10.19.1.77:8088'
+  })
+}
+export function getAuthorityApi(params) {
+  return request({
+    url: '/userManage/authority',
+    method: 'get',
+    params: params,
+    baseURL: 'http://10.19.1.77:8088'
+  })
+}

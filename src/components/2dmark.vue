@@ -297,6 +297,8 @@ export default {
   },
   destroyed(){
     window.removeEventListener('resize', this.GetWindowInfo)
+    window.removeEventListener('mousewheel', this.checkFangdasSuoxiao);
+    //document.onkeydown = keyDownSearch;
   },
   mounted: function () {
     this.imagechange();
@@ -304,6 +306,7 @@ export default {
     this.defaultcolor=this.premarktype[0].color;
     window.addEventListener('resize', this.GetWindowInfo); //注册监听器
     this.GetWindowInfo() //页面创建时先调用一次
+    window.addEventListener('mousewheel', this.checkFangdasSuoxiao,true)
     //this.updatelastdata();
   },
   components: {
@@ -363,6 +366,13 @@ export default {
   methods: {
     getVuex() {
       console.log(this.$store.state.treeData);
+    },
+    
+    checkFangdasSuoxiao(e){
+      let direction = e.deltaY>0?'down':'up'
+      console.log("checkFangdasSuoxiao",direction);
+      if(direction=='up') this.fangda()
+      else this.suoxiao()
     },
     // commitVuex() {
     //   this.$store.commit("changeTreeData", { a: 1, b: 2 });
@@ -529,6 +539,14 @@ export default {
       this.boxArry.splice(i, 1);
       this.labelArry.splice(i, 1);
       this.b_i=-1;
+      console.log(this.boxArry);
+      console.log(this.labelArry);
+    },
+    deletelabel2() {
+      console.log(this.b_i)
+      if(this.b_i<0) return;
+      this.boxArry.splice(this.b_i, 1);
+      this.labelArry.splice(this.b_i, 1);
       console.log(this.boxArry);
       console.log(this.labelArry);
     },

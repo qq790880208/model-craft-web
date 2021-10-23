@@ -62,7 +62,11 @@
       <el-table-column prop="role" align="center" label="身份" show-overflow-tooltip width="120" sortable />
       <el-table-column prop="email" align="center" label="邮箱" show-overflow-tooltip width="120" sortable />
       <el-table-column prop="mobile" align="center" label="手机号" show-overflow-tooltip width="120" sortable />
+<<<<<<< HEAD
       <el-table-column prop="password" align="center" label="密码" show-overflow-tooltip min-width="140" sortable />
+=======
+      <!-- <el-table-column prop="password" align="center" label="密码" show-overflow-tooltip min-width="140" sortable /> -->
+>>>>>>> dev
       <el-table-column label="状态" prop="status" min-width="80" sortable>
         <template slot-scope="scope">
           <el-tag
@@ -98,7 +102,12 @@
         <el-form-item label="姓名" prop="name">
           <el-input v-model="editForm.name" auto-complete="off" placeholder="请输入名字" />
         </el-form-item>
+<<<<<<< HEAD
         <el-form-item label="身份">
+=======
+        <!-- <el-form-item label="身份" prop="identity"> -->
+        <el-form-item label="身份" >
+>>>>>>> dev
           <el-select v-model="editForm.role" class="filter-item" placeholder="请选择角色">
             <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
           </el-select>
@@ -130,7 +139,11 @@
         <el-form-item label="姓名" prop="name">
           <el-input v-model="editForm.name" auto-complete="off" />
         </el-form-item>
+<<<<<<< HEAD
         <el-form-item label="身份">
+=======
+        <el-form-item label="身份" >
+>>>>>>> dev
           <el-select v-model="editForm.role" class="filter-item" placeholder="请选择角色">
             <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
           </el-select>
@@ -158,7 +171,11 @@
 </template>
 
 <script>
+<<<<<<< HEAD
 import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '@/api/userManage'
+=======
+import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser, getAuthorityApi } from '@/api/userManage'
+>>>>>>> dev
 import { getRolesListApi } from '@/api/role'
 import md5 from 'js-md5'
 import store from '@/store'
@@ -300,8 +317,11 @@ export default {
       sels: [], // 列表选中列
       editFormRules: {
         name: [
-          { required: true, message: '尽量不要修改姓名', trigger: 'blur' }
+          { required: true, message: '尽量不要修改姓名', trigger: ['blur','change'] }
         ],
+        // identity:[
+        //   { required:true,message:'必须选择身份',trigger:'blur'}
+        // ],
         email: [
           { required: true, message: '邮箱不能为空', trigger: 'blur' },
           { validator: checkEmail, trigger: 'blur' }
@@ -318,7 +338,7 @@ export default {
       editForm: {
         id: '0',
         name: '',
-        role: '',
+        role: 'user',
         email: '',
         mobile: '',
         descr: '',
@@ -327,6 +347,9 @@ export default {
       addFormVisible: false, // 新增界面是否显示
       addFormRules: {
         name: [{ required: true, message: '请输入名字', trigger: 'blur' }],
+        // identity:[
+        //   { required: true, message: "企业类型不能为空", trigger: ["blur",'change'] }
+        // ],
         password: [
           { required: true, message: '新密码不能为空', trigger: 'blur' },
           { min: 6, max: 20, message: '长度不小于 6 个字符', validator: validatePassword, trigger: 'blur' }
@@ -341,6 +364,27 @@ export default {
         ]
       }
     }
+  },
+<<<<<<< HEAD
+  mounted() {
+    window.getUsers = this.getUsers;
+    document.onkeydown = keyDownSearch;
+    this.getUsers()
+    this.getRoles()
+    this.authority = store.getters.authority
+    console.log('jjjjjjjjjjjjjjjjj')
+    console.log(this.authority)
+    console.log(this.authority.indexOf('user:add'))
+    console.log(this.authority.indexOf('user:add'))
+  },
+  destroyed() {
+    document.onkeydown = undefined
+=======
+  created(){
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
+>>>>>>> dev
   },
   mounted() {
     window.getUsers = this.getUsers;
@@ -389,24 +433,43 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          const para = { id: row.id }
-          console.log(para)
-          removeUser(para).then(res => {
-            this.$message({
-              message: '删除成功',
-              type: 'success'
+          const params = {
+            srcRole: store.getters.role,
+            dstRole: row.role
+          }
+          getAuthorityApi(params).then(res => {
+            const para = { id: row.id }
+            console.log(para)
+            removeUser(para).then(res => {
+              this.$message({
+                message: '删除成功',
+                type: 'success'
+              })
+              this.getUsers()
             })
-            this.getUsers()
           })
         })
         .catch(() => {})
     },
     handleEdit: function(index, row) {
+<<<<<<< HEAD
       this.dialogStatus = 'update'
       this.dialogFormEditVisible = true
       this.oldRow = row
       this.editForm = Object.assign({}, row)
       this.editForm.password = ''
+=======
+      const params = {
+        srcRole: store.getters.role,
+        dstRole: row.role
+      }
+      getAuthorityApi(params).then(res => {
+        this.dialogStatus = 'update'
+        this.dialogFormEditVisible = true
+        this.editForm = Object.assign({}, row)
+        this.editForm.password = ''
+      })
+>>>>>>> dev
     },
     // 显示新增界面
     handleAdd: function() {
@@ -415,7 +478,7 @@ export default {
       this.editForm = {
         id: '',
         name: '',
-        role: '',
+        role: 'user',
         descr: ''
       }
     },
@@ -449,10 +512,17 @@ export default {
                 this.dialogFormEditVisible = false
                 this.getUsers()
                 if(this.name === store.getters.name && this.oldRow.role == temp.role) {
+<<<<<<< HEAD
                   this.logout()
                 }
                 if (temp.password.length >= 1) {
                   this.logout()
+=======
+                  //this.logout()
+                }
+                if (temp.password.length >= 1) {
+                  //this.logout()
+>>>>>>> dev
                 }
               })
             })
@@ -505,7 +575,10 @@ export default {
         type: 'warning'
       })
         .then(() => {
-          const para = { ids: ids }
+          const para = {
+            ids: ids,
+            role: store.getters.role
+          }
           console.log(para)
           batchRemoveUser(para).then(res => {
             this.$message({
@@ -526,6 +599,7 @@ export default {
       })
     }
   }
+  
 }
 </script>
 

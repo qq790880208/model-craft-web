@@ -115,6 +115,9 @@ export default {
     }
   },
   created() {
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
     this.getList()
     this.getMenuTabData()
   },

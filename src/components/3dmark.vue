@@ -314,8 +314,26 @@ export default {
       biaozhuLeft: 0,
     };
   },
-
+  mounted(){
+    //this.checkDivScroolTop
+    window.addEventListener('mousewheel', this.checkFangdasSuoxiao,true)
+    //document.onkeydown = keyDownSearch;
+    console.log("5432543tewsgsdgsdgsdgdsgdsgdsgdsggjnbvncv");
+  },
+  destroyed() {
+    window.removeEventListener('mousewheel', this.checkFangdasSuoxiao);   //  离开页面清除（移除）滚轮滚动事件
+    //document.onkeydown = undefined;
+  },
   methods: {
+    clearStep(){
+
+    },
+    checkFangdasSuoxiao(e){
+      let direction = e.deltaY>0?'down':'up'
+      console.log("checkFangdasSuoxiao",direction);
+      if(direction=='up') this.fangda()
+      else this.suoxiao()
+    },
     changeupdown(index){
       this.boxArry[index].isdown=!this.boxArry[index].isdown
     },
@@ -392,9 +410,17 @@ export default {
       //  this.$emit('saveimageinfo',this.boxArry,this.fatherimagesrc,this.imageindex)
       //  console.log(this.boxArry,this.fatherimagesrc,this.imageindex)
     },
-    deletelabel(i) {
-      this.boxArry.splice(i, 1);
-      this.labelArry.splice(i, 1);
+    deletelabel(index) {
+      this.boxArry.splice(index, 1);
+      this.labelArry.splice(index, 1);
+      console.log(this.boxArry);
+      console.log(this.labelArry);
+    },
+    deletelabel2() {
+      console.log(this.b_i)
+      if(this.b_i<0) return;
+      this.boxArry.splice(this.b_i, 1);
+      this.labelArry.splice(this.b_i, 1);
       console.log(this.boxArry);
       console.log(this.labelArry);
     },

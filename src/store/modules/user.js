@@ -121,6 +121,7 @@ const actions = {
         commit('SET_PASSWORD', password)
         commit('SET_REGISTER', is_assign)
         commit('SET_AUTHORITY', data.authority)
+        commit('SET_REGISTER', is_assign)
         if (data.menus && data.menus.length > 0) { // 验证返回的menus是否是一个非空数组
           commit('SET_MENUS', data.menus)
         }
@@ -132,6 +133,8 @@ const actions = {
         console.log(',.,.,.,.,.,.,.,.,.,.,.')
         console.log(state.register)
         console.log(state.menus)
+        console.log(',.,.,.,.,.,.,.,.,.,.,.')
+        console.log(state.register)
         // resolve(data.items)
         resolve(response)
       }).catch(error => {
@@ -151,6 +154,10 @@ const actions = {
         console.log("2222222222222")
         console.log("eeeeeeee")
         console.log("121qweqweqweqwe31231")
+<<<<<<< HEAD
+=======
+        
+>>>>>>> dev
         resetRouter()
         resolve()
         
