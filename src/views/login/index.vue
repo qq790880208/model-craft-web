@@ -57,6 +57,10 @@
           type="text"
           tabindex="3"
           auto-complete="on"
+<<<<<<< HEAD
+          @keyup.enter.native="handleLogin"
+=======
+>>>>>>> dev
         />
         <div class="code" @click="refreshCode">
           <identify :identify-code="identifyCode" />
@@ -123,6 +127,11 @@ export default {
   mounted() {
     this.identifyCode = ''
     this.makeCode(this.identifyCodes, 4)
+    window.onbeforeunload = function (e) {
+      var storage = window.localStorage;
+      storage.clear()
+      console.log('12312hhhhh3123123123')
+    }
   },
   methods: {
     showPwd() {

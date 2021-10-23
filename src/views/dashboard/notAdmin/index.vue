@@ -97,11 +97,6 @@ export default {
       'userid'
     ])
   },
-  created(){
-    if (store.getters.register == 1) {
-      this.$router.push('/dashboard')
-    }
-  },
   methods: {
     format(percentage) {
       return percentage === 100 ? '满' : `${percentage}%`
@@ -121,12 +116,6 @@ export default {
       this.show = false
       this.$refs['form'].resetFields()
     },
-
-    async logout() {
-      await this.$store.dispatch('user/logout')
-      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
-    },
-
     onSubmit() {
       this.$refs.form.validate(valid => {
         if (valid) {
@@ -136,15 +125,15 @@ export default {
           newPassword = md5(newPassword)
           const params = {
             password: password,
-            new_pwn: newPassword,
+            newPassword: newPassword,
             id: store.getters.userid
           }
           console.log(params)
           updatePassword(params).then(() => {
             this.show = false
             this.form = {}
+
             this.$message.success('密码已修改')
-            this.logout()
           })
         } else {
           this.$message.error('请正确填写表单')

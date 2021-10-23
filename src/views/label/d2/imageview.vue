@@ -280,7 +280,7 @@ export default {
     //   let _this = this;
     //   return request({
     //     url:
-    //       "http://10.19.1.77:8085/label/setLabeling?uuid="+this.uuidArry[this.nownum],
+    //       "http://127.0.0.1:8085/label/setLabeling?uuid="+this.uuidArry[this.nownum],
     //     method: "post",
     //     //timeout:_this.lastinfoArry.length*5000,
     //     //params: query
@@ -300,7 +300,7 @@ export default {
     //post生成xml
           // return request({
       //   url:
-      //     "http://10.19.1.181:8082/dataset/save?dataset_id="+store.getters.uuid,
+      //     "http://127.0.0.1:8082/dataset/save?dataset_id="+store.getters.uuid,
       //   method: "post",
       //   //timeout:_this.lastinfoArry.length*5000,
       //   //params: query
@@ -317,7 +317,7 @@ export default {
       }
       // return request({
       //   url:
-      //     "http://10.19.1.181:8082/dataset/save?dataset_id="+store.getters.uuid,
+      //     "http://127.0.0.1:8082/dataset/save?dataset_id="+store.getters.uuid,
       //   method: "post",
       //   //timeout:_this.lastinfoArry.length*5000,
       //   //params: query
@@ -606,7 +606,7 @@ export default {
       console.log("图片长度预留时间",_this.lastinfoArry.length*5000)
       // return request({
       //   url:
-      //     "http://10.19.1.181:8082/dataset/auto?dataset_id="+store.getters.uuid,
+      //     "http://127.0.0.1:8082/dataset/auto?dataset_id="+store.getters.uuid,
       //   method: "post",
       //   timeout:_this.lastinfoArry.length*5000,
       //   //params: query

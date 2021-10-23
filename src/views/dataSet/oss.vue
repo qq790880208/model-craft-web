@@ -7,7 +7,7 @@
                 <el-radio-group v-model="bucket" @change="choosebucket">
                     <el-radio-button :label="item.name" :key="item.name" v-for="item in list">{{item.name}}</el-radio-button>
                 </el-radio-group>
-            </el-form-item> 
+            </el-form-item>
         </el-form>
         </el-col>
         <el-col :span="8">
@@ -25,7 +25,7 @@
             <el-button  icon="el-icon-folder-add" @click="addFolder">创建文件夹</el-button>
             <el-button  icon="el-icon-folder-remove" @click="remFolder">删除文件夹</el-button>
         </el-button-group>
-    </el-row> 
+    </el-row>
     <el-divider></el-divider>
     <el-row>
         <el-table  :data="objectData" highlight-current-row @row-click="listbyPrefix" @row-contextmenu="rightClick" ref="multipleTable" @selection-change="handleSelectionChange">
@@ -63,14 +63,14 @@
                     <el-radio-group v-model="uplbucket" @change="chooseuplbucket">
                         <el-radio-button :label="item.name" :key="item.name" v-for="item in list">{{item.name}}</el-radio-button>
                     </el-radio-group>
-                </el-form-item> 
+                </el-form-item>
             </el-form>
         <el-divider></el-divider>
         <el-row>
             <el-button icon="el-icon-upload2" type="text"  @click="returnOlduplCurrentRow">返回上级</el-button>
             <el-divider direction="vertical"></el-divider>
             <el-tag type="info" effect="light">当前路径：{{uplbucket}} ：{{objectuplcurrentRow}}</el-tag>
-        </el-row> 
+        </el-row>
         <el-table :data="objectuplData" height="250" highlight-current-row @row-click="upllistbyPrefix">
             <el-table-column prop="name" label="请选择上传位置"></el-table-column>
         </el-table>
@@ -118,7 +118,7 @@
                 <el-radio-group v-model="folder" @change="chooseremFolder">
                     <el-radio-button :label="item.name" :key="item.name" v-for="item in folders">{{item.name}}</el-radio-button>
                 </el-radio-group>
-            </el-form-item> 
+            </el-form-item>
         </el-form>
         <h5> <font color="#e6a23c">*注：删除时确保文件夹为空</font></h5>
         <div slot="footer" class="dialog-footer">
@@ -165,14 +165,14 @@
                     <el-radio-group v-model="copyBucket" @change="choosecopybucket">
                         <el-radio-button :label="item.name" :key="item.name" v-for="item in list">{{item.name}}</el-radio-button>
                     </el-radio-group>
-                </el-form-item> 
+                </el-form-item>
             </el-form>
         <el-divider></el-divider>
         <el-row>
             <el-button icon="el-icon-upload2" type="text"  @click="returnOldcopyCurrentRow">返回上级</el-button>
             <el-divider direction="vertical"></el-divider>
             <el-tag type="info" effect="light">当前路径：{{copyBucket}} ：{{objectcopycurrentRow}}</el-tag>
-        </el-row> 
+        </el-row>
         <el-table :data="objectcopyData" highlight-current-row @row-click="copylistbyPrefix">
             <el-table-column prop="name" label="请选择位置"></el-table-column>
         </el-table>
@@ -200,14 +200,14 @@
                     <el-radio-group v-model="copyBucket" @change="choosecopybucket">
                         <el-radio-button :label="item.name" :key="item.name" v-for="item in list">{{item.name}}</el-radio-button>
                     </el-radio-group>
-                </el-form-item> 
+                </el-form-item>
             </el-form>
         <el-divider></el-divider>
         <el-row>
             <el-button icon="el-icon-upload2" type="text"  @click="returnOldcopyCurrentRow">返回上级</el-button>
             <el-divider direction="vertical"></el-divider>
             <el-tag type="info" effect="light">当前路径：{{copyBucket}} ：{{objectcopycurrentRow}}</el-tag>
-        </el-row> 
+        </el-row>
         <el-table :data="objectcopyData" highlight-current-row @row-click="copylistbyPrefix">
             <el-table-column prop="name" label="请选择位置"></el-table-column>
         </el-table>
@@ -312,7 +312,7 @@ export default {
         fai(){//失败提醒
             //this.$message.error('发生错误');
         },
-        
+
         //获取bucketlist
         bucketlist(){
             listBucket().then(response=>{
@@ -353,7 +353,7 @@ export default {
                 para.objectPrefix = this.objectPrefix
                 console.log(para);
                 this.listObject(para)
-                // this.oldCurrentRow = this.objectPrefix.split("").reverse().indexOf("/") 逆置然后求出第一个/在第几个位置 
+                // this.oldCurrentRow = this.objectPrefix.split("").reverse().indexOf("/") 逆置然后求出第一个/在第几个位置
                 this.oldObjectPrefix = this.objectPrefix.substring(0,this.objectPrefix.length-this.objectPrefix.split("").reverse().indexOf("/")-1)
                 this.oldCurrentRow = this.objectPrefix.substring(0,this.objectPrefix.length-this.objectPrefix.split("").reverse().indexOf("/"))
             }else{
@@ -402,7 +402,7 @@ export default {
                 this.createBucket(para)
                 this.fresh()
             }).catch(() => {
-                    });       
+                    });
         },
 
         //后端创建一个存储桶
@@ -427,7 +427,7 @@ export default {
                 this.removeBucket(para)
                 this.fresh();
             }).catch(() => {
-                    }); 
+                    });
         },
 
         //后端删除一个桶
@@ -478,7 +478,7 @@ export default {
                 para.objectPrefix = this.objectuplPrefix
                 console.log(para);
                 this.listuplObject(para)
-                // this.oldCurrentRow = this.objectPrefix.split("").reverse().indexOf("/") 逆置然后求出第一个/在第几个位置 
+                // this.oldCurrentRow = this.objectPrefix.split("").reverse().indexOf("/") 逆置然后求出第一个/在第几个位置
                 this.oldObjectuplPrefix = this.objectuplPrefix.substring(0,this.objectuplPrefix.length-this.objectuplPrefix.split("").reverse().indexOf("/")-1)
                 this.olduplCurrentRow = this.objectuplPrefix.substring(0,this.objectuplPrefix.length-this.objectuplPrefix.split("").reverse().indexOf("/"))
             }else{
@@ -688,7 +688,7 @@ export default {
                 this.createfolder(para)
                 this.fresh()
             }).catch(() => {
-                    });      
+                    });
         },
 
         //后端新建一个文件夹
@@ -1178,7 +1178,7 @@ li:hover {
 }
 
 .dir:hover{
-    cursor: text 
+    cursor: text
 }
 
 

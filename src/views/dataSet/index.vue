@@ -379,7 +379,6 @@ import { getAcceptData, setAcceptDataApi } from '@/api/accept'
 import { v4 as uuidv4 } from 'uuid'
 import { saveTagApi } from '@/api/tag'
 
-
 export default {
   namespaced: true,
   filters: {
@@ -614,7 +613,7 @@ export default {
       this.form = {
         name: '',
         descr: '',
-        dataType: '0',
+        dat改成aType: '0',
         labelType: '',
         input: 'data/dataset/' + this.my_uuid + '/input/source/',
         annotation: 'data/dataset/' + this.my_uuid + '/input/annotation/',
@@ -684,11 +683,19 @@ export default {
                 type: 'success'
               })
               this.getDataSet()
+<<<<<<< HEAD
+              const paramss = {
+                data: this.tags,
+                uuid: this.my_uuid
+              }
+              saveTagApi(paramss).then(res => {
+=======
               const params = {
                 data: this.tags,
                 uuid: this.my_uuid
               }
               saveTagApi(params).then(res => {
+>>>>>>> dev
                 this.$message({
                   message: '添加成功',
                   type: 'success'
@@ -705,6 +712,19 @@ export default {
               //   })
               // })
             })
+<<<<<<< HEAD
+            // const paramss = {
+            //   data: this.tags,
+            //   uuid: this.my_uuid
+            // }
+            // saveTagApi(paramss).then(res => {
+            //   this.$message({
+            //     message: '添加成功',
+            //     type: 'success'
+            //   })
+            // })
+=======
+>>>>>>> dev
             console.log(this.form)
             this.dialogVisible = false
           } else {
@@ -1213,11 +1233,14 @@ export default {
       this.ossOutputVisible = false
     }
 
+<<<<<<< HEAD
+=======
   },
   created(){
     if (store.getters.register == 1) {
       this.$router.push('/dashboard')
     }
+>>>>>>> dev
   }
 }
 </script>

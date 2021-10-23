@@ -115,7 +115,7 @@ export const constantRoutes = [
       meta: { title: 'polygonaccept', resources: 'polygonaccept' },
       hidden: true
     }
-  ]
+    ]
   }
 ]
 export const asyncRoutes = [
@@ -167,7 +167,7 @@ export const asyncRoutes = [
         path: '/label/voice',
         component: () => import ('@/views/label/voice/voiceview'),
         name: 'voice',
-        meta: { title: '语音标注',  resources: 'voice' }
+        meta: { title: '语音标注', resources: 'voice' }
       },
       {
         path: '/label/d3',
@@ -198,9 +198,8 @@ export const asyncRoutes = [
         path: '/oss',
         component: () => import('@/views/dataSet/oss'),
         name: 'oss manage',
-        meta: { title: '对象存储', resources: 'oss', icon: 'tree' },
-        //hidden: true
-      },
+        meta: { title: '对象存储', resources: 'oss', icon: 'tree' }
+      }
     ]
   },
   {
@@ -218,7 +217,7 @@ export const asyncRoutes = [
         path: '/newtrain/table',
         component: () => import('@/views/newtrain/table'),
         name: 'newTable',
-        meta: { title: '训练管理',  resources: 'newTable', icon: 'skill' }
+        meta: { title: '训练管理', resources: 'newTable', icon: 'skill' }
       }
     ]
   },

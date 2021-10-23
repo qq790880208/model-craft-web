@@ -131,7 +131,7 @@
         <el-form-item label="姓名" prop="name">
           <el-input v-model="editForm.name" auto-complete="off" />
         </el-form-item>
-        <el-form-item label="身份" >
+        <el-form-item label="身份">
           <el-select v-model="editForm.role" class="filter-item" placeholder="请选择角色">
             <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
           </el-select>
@@ -472,10 +472,10 @@ export default {
                 this.dialogFormEditVisible = false
                 this.getUsers()
                 if(this.name === store.getters.name && this.oldRow.role == temp.role) {
-                  //this.logout()
+                  this.logout()
                 }
                 if (temp.password.length >= 1) {
-                  //this.logout()
+                  // this.logout()
                 }
               })
             })

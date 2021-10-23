@@ -19,18 +19,23 @@
         </div>
         <div class="teamdata">
           <div class="list">
-            <div class="teamList" v-for="item in teamsList" v-bind:key="item.id"
-              @click="openDetails(item)" 
+            <div
+              v-for="item in teamsList"
+              :key="item.id"
+              class="teamList"
+              @click="openDetails(item)"
+            >
+              <el-card
+                class="box-card"
+                v-bind="item"
+                :style="{ border: '1px solid ' + markcolor(item.id)
+                }"
               >
-              <el-card class="box-card" v-bind="item"
-              :style="{ border: '1px solid ' + markcolor(item.id) 
-                      }"
-                      >
                 <div slot="header">
                   <span>{{ item.name }}</span>
                 </div>
                 <div>
-                  <i class="el-icon-user"> {{item.nums}} </i> <span style="float: right"> <i class="el-icon-date"> {{item.create_time | formatDate}}</i> </span> 
+                  <i class="el-icon-user"> {{ item.nums }} </i> <span style="float: right"> <i class="el-icon-date"> {{ item.create_time | formatDate }}</i> </span>
                 </div>
               </el-card>
             </div>
@@ -44,7 +49,7 @@
           </span>
         </div>
         <div class="teamMssage">
-          <table style = "border-collapse:separate; border-spacing:10px;">
+          <table style="border-collapse:separate; border-spacing:10px;">
             <tr class="teamTr">
               <td width="350">
                 <span style="float: left">团队名称：</span>
@@ -52,7 +57,7 @@
               </td>
               <td width="250">
                 <span style="float: left">团队成员：</span>
-                <span> {{ userTotal}} </span>
+                <span> {{ userTotal }} </span>
               </td>
             </tr>
             <tr>
@@ -61,16 +66,16 @@
               </td>
               <td width="350">
                 <span style="float: left">团队信息：</span>
-                  <div v-if="flag">
-                    <div style="float: left">{{ selectTeam.descr }}</div>
-                  </div>
-                  <div v-else>
-                    <input class="teamDescr" type="text" v-model="selectTeam.descr" style="float: left">
-                  </div>
-                  <div>
-                    <el-button class="edit" size="mini" icon="el-icon-edit" @click="editClick"></el-button>
-                  </div>
-                </td>
+                <div v-if="flag">
+                  <div style="float: left">{{ selectTeam.descr }}</div>
+                </div>
+                <div v-else>
+                  <input v-model="selectTeam.descr" class="teamDescr" type="text" style="float: left">
+                </div>
+                <div>
+                  <el-button class="edit" size="mini" icon="el-icon-edit" @click="editClick" />
+                </div>
+              </td>
             </tr>
           </table>
         </div>
@@ -82,10 +87,14 @@
           </div>
         </el-row>
         <div class="teamUserMessage">
-          <el-table class="showuser" :data="rolesList"
-            style="width: 100%; font-size: 10px" border
+          <el-table
+            class="showuser"
+            :data="rolesList"
+            style="width: 100%; font-size: 10px"
+            border
+            :cell-style="{padding: '8px'}"
             @selection-change="selChange"
-            :cell-style="{padding: '8px'}">
+          >
             <el-table-column type="selection" align="center" width="60" :disabled=" idLabel !=='团队管理员'" />
             <el-table-column align="center" label="用户名字" show-overflow-tooltip width="130" sortable>
               <template slot-scope="scope">
@@ -99,7 +108,7 @@
             </el-table-column>
             <el-table-column align="center" label="邮箱" show-overflow-tooltip min-width="140" sortable>
               <template slot-scope="scope">
-                {{scope.row.email}}
+                {{ scope.row.email }}
               </template>
             </el-table-column>
             <el-table-column align="center" label="描述" show-overflow-tooltip min-width="150" sortable>
@@ -109,7 +118,7 @@
             </el-table-column>
             <el-table-column align="center" label="创建时间" show-overflow-tooltip width="120" sortable>
               <template slot-scope="scope">
-                {{ scope.row.create_time | formatDate}}
+                {{ scope.row.create_time | formatDate }}
               </template>
             </el-table-column>
             <el-table-column align="left" label="操作" min-width="150">
@@ -120,12 +129,15 @@
             </el-table-column>
           </el-table>
           <el-col :span="24" class="tool-bar">
-            <el-pagination layout="total, sizes, prev, pager, next, jumper" 
-            :page-size="page_size" 
-            :page-sizes="[2,3,4, 10, 12, 15]"
-            :total="userTotal" style="float: right" 
-            @size-change="handleSizeChange" 
-            @current-change="handleCurrentChange" />
+            <el-pagination
+              layout="total, sizes, prev, pager, next, jumper"
+              :page-size="page_size"
+              :page-sizes="[2,3,4, 10, 12, 15]"
+              :total="userTotal"
+              style="float: right"
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+            />
           </el-col>
         </div>
       </div>
@@ -152,7 +164,7 @@
     <el-dialog :title="textMap[dialogStatusUser]" :visible.sync="dialogFormVisibleUser" :close-on-click-modal="false">
       <el-form ref="editForm" :model="editFormUser" label-width="80px" :rules="editFormRulesUser">
         <el-form-item label="邮箱" prop="email">
-          <el-input v-model="editFormUser.email" placeholder="请输入邮箱" :disabled="dialogStatusUser === 'update'"></el-input>
+          <el-input v-model="editFormUser.email" placeholder="请输入邮箱" :disabled="dialogStatusUser === 'update'" />
         </el-form-item>
         <el-form-item label="角色" prop="label_role">
           <el-select v-model="editFormUser.label_role" placeholder="请选择">
@@ -178,11 +190,11 @@ import { getTeams, delTeams, addTeams, editTeams } from '@/api/team'
 import { addUser, batchDelUser, delUser, editUser, getTeamsUserPage } from '@/api/teamUser'
 import { getTeamPerm, getAllUser } from '@/api/userManage'
 import store from '@/store'
-//import table from '@/views/newtrain/table.vue'
+// import table from '@/views/newtrain/table.vue'
 
 export default {
-  //components: { table },
-  //name: 'Dashboard',
+  // components: { table },
+  // name: 'Dashboard',
   filters: {
     formatDate(nows) {
       if (!nows) { // 在这里进行一次传递数据判断.如果传递进来的为空值,返回其空字符串.解决其问题
@@ -212,14 +224,14 @@ export default {
     }
   },
   data() {
-    //验证邮箱的规则
-    const checkEmail = (rule,value,cb) =>{
-      const regEmail = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
-      if(regEmail.test(value)){
-        //合法的邮箱
+    // 验证邮箱的规则
+    const checkEmail = (rule, value, cb) => {
+      const regEmail = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
+      if (regEmail.test(value)) {
+        // 合法的邮箱
         return cb()
       }
-      cb(new Error("请输入合法的邮箱"))
+      cb(new Error('请输入合法的邮箱'))
     }
     return {
       isRole: store.getters.role,
@@ -234,7 +246,7 @@ export default {
       teamsList: [],
       rolesList: [],
       userTotal: 0,
-      statusOptions: [ '标注员', '团队管理员','审核员','验收员'],
+      statusOptions: ['标注员', '团队管理员', '审核员', '验收员'],
       idLabel: '',
       dialogStatus: '',
       dialogStatusUser: '',
@@ -282,16 +294,16 @@ export default {
     this.getTeamsList()
   },
   methods: {
-    markcolor(id){
-        if(id === this.selectTeamId) return 'blue'
-        else return 'white'
+    markcolor(id) {
+      if (id === this.selectTeamId) return 'blue'
+      else return 'white'
     },
     edit() {
       this.flag = false
     },
     editClick() {
-      this.flag = ! this.flag
-      if(this.flag) {
+      this.flag = !this.flag
+      if (this.flag) {
         const params = {
           id: this.selectTeam.id,
           descr: this.selectTeam.descr
@@ -333,7 +345,7 @@ export default {
         })
     },
 
-    // 得到团队列表 
+    // 得到团队列表
     getTeamsList() {
       const para = {
         name: store.getters.name,
@@ -365,7 +377,6 @@ export default {
       getTeamsUserPage(para).then(res => {
         this.rolesList = res.data.items
         this.userTotal = res.data.total
-
       })
     },
 
@@ -399,7 +410,6 @@ export default {
       this.dialogStatus = 'update'
       this.dialogFormVisible = true
       this.editForm = Object.assign({}, row)
-    
     },
 
     // 删除团队
@@ -407,24 +417,24 @@ export default {
       this.$confirm('确认删除该记录吗?', '提示', {
         type: 'warning'
       }).then(() => {
-          const para = {
-            id: this.selectTeamId,
-            name: store.getters.name
-          }
-          console.log(para)
-          delTeams(para).then(res => {
-            this.$message({
-              message: res.message,
-              type: 'success'
-            })
-            this.getTeamsList()
-          }).catch(res => {
-              this.$message({
-                message: res.message,
-                type: 'success'
-              })
-            })
+        const para = {
+          id: this.selectTeamId,
+          name: store.getters.name
+        }
+        console.log(para)
+        delTeams(para).then(res => {
+          this.$message({
+            message: res.message,
+            type: 'success'
+          })
+          this.getTeamsList()
+        }).catch(res => {
+          this.$message({
+            message: res.message,
+            type: 'success'
+          })
         })
+      })
     },
 
     // 删除团队用户
@@ -587,9 +597,8 @@ export default {
         })
         .catch(() => {})
     }
-  },
+  }
 
-  
 }
 </script>
 

@@ -8,11 +8,16 @@
       <el-dropdown class="avatar-container" trigger="click">
         <div class="avatar-wrapper">
           <span class="link-type">
-            {{name}}
+            {{ name }}
           </span>
         </div>
         <el-dropdown-menu slot="dropdown" class="user-dropdown">
           <router-link to="/">
+            <el-dropdown-item>
+              主页
+            </el-dropdown-item>
+          </router-link>
+          <router-link to="/profile">
             <el-dropdown-item>
               个人中心
             </el-dropdown-item>
