@@ -192,17 +192,14 @@ export default {
         })
         .catch(() => {})
     }
-<<<<<<< HEAD
-=======
   },
-    created(){
+  created(){
     if (store.getters.register == 1) {
       this.$router.push('/dashboard')
     }
   },
   mounted() {
     this.getList()
->>>>>>> dev
   }
 }
 

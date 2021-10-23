@@ -62,15 +62,15 @@ export function updatePassword(data) {
     baseURL: 'http://10.19.1.77:8088'
   })
 }
-// 第一次登录，修改用户密码
-export function changePasswordApi(params) {
-  return request({
-    url: '/userManage/changePassword',
-    method: 'put',
-    params: params,
-    baseURL: 'http://10.19.1.77:8088'
-  })
-}
+// // 第一次登录，修改用户密码
+// export function changePasswordApi(params) {
+//   return request({
+//     url: '/userManage/changePassword',
+//     method: 'post',
+//     params: params,
+//     baseURL: 'http://10.19.1.77:8088'
+//   })
+// }
 export function getAllUser(params) {
   return request({
     url: '/userManage/getAll',

@@ -198,14 +198,8 @@ export const asyncRoutes = [
         path: '/oss',
         component: () => import('@/views/dataSet/oss'),
         name: 'oss manage',
-<<<<<<< HEAD
         meta: { title: '对象存储', resources: 'oss', icon: 'tree' }
       }
-=======
-        meta: { title: '对象存储', resources: 'oss', icon: 'tree' },
-        //hidden: true
-      },
->>>>>>> dev
     ]
   },
   {

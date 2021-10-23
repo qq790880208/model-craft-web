@@ -153,21 +153,12 @@
     </el-dialog>
 
     <!--上传文件dialog-->
-<<<<<<< HEAD
-    <el-dialog title="上传文件" :visible.sync="uploadObjectVisible">
-      <el-button-group>
-        <el-button>上传路径</el-button>
-        <el-button class="dir" plain>{{ uploadBucketName }} : {{ uploadObjectFolder }}</el-button>
-      </el-button-group>
-      <!-- <el-dialog width="30%" title="选择路径" :visible.sync="choosefolder" append-to-body :show-close="false">
-=======
     <el-dialog title="上传文件" :visible.sync="uploadObjectVisible" :close-on-click-modal="false" :destroy-on-close="true">
             <el-button-group>
                 <el-button>上传路径</el-button>
                 <el-button class="dir" plain>{{uploadBucketName}} : {{uploadObjectFolder}}</el-button>
             </el-button-group>
         <!-- <el-dialog width="30%" title="选择路径" :visible.sync="choosefolder" append-to-body :show-close="false">
->>>>>>> dev
             <el-form>
                 <el-form-item label="请选择桶:">
                     <el-radio-group v-model="uplbucket" @change="chooseuplbucket">
@@ -417,75 +408,6 @@ export default {
     },
 
     uploadObject() {
-<<<<<<< HEAD
-      this.uploadLoading = true
-      const multFileList = this.fileList
-      const multFileListLen = multFileList.length
-      let s = 0
-      console.log(multFileList)
-      console.log(multFileListLen)
-      if (multFileListLen === 1) {
-        const formData = new FormData()
-        formData.append('bucketName', this.uploadBucketName)
-        console.log(this.uploadBucketName)
-        formData.append('folderName', this.uploadObjectFolder)
-        console.log(this.uploadObjectFolder)
-        formData.append('file', multFileList[0].raw)
-        console.log(multFileList[0].raw)
-        formData.append('objectName', this.uploadobjectName)
-        console.log(this.uploadobjectName)
-        formData.append('userid', store.getters.userid)
-        console.log('sssssssssssssssssssssssss')
-        console.log(store.getters.uuid)
-        formData.append('dataset_id', store.getters.uuid)
-        uploadNew(formData).then(response => {
-          if (response.code === 20000) {
-            this.uploadLoading = false
-            this.suc()
-            this.getData()
-            this.uploadObjectVisible = false
-            this.uploadBucketName = ''
-            this.uploadObjectFolder = ''
-            this.uploadobjectName = ''
-            this.uplbucket = ''
-            this.objectuplcurrentRow = ''
-            this.objectuplData = []
-            this.fileList = []
-            this.uploadFilePostfix = ''
-          } else { this.$message.error('网络延迟,请同步数据源') }
-        })
-      } else {
-        for (let i = 0; i < multFileListLen; i++) {
-          const formData = new FormData()
-          formData.append('bucketName', this.uploadBucketName)
-          console.log(this.uploadBucketName)
-          formData.append('folderName', this.uploadObjectFolder)
-          console.log(this.uploadObjectFolder)
-          formData.append('file', multFileList[i].raw)
-          console.log(multFileList[i].raw)
-          formData.append('objectName', '')
-          formData.append('userid', store.getters.userid)
-          console.log('sssssssssssssssssssssssss')
-          console.log(store.getters.uuid)
-          formData.append('dataset_id', store.getters.uuid)
-          uploadNew(formData).then(response => {
-            if (response.code === 20000) {
-              s++
-              console.log(response)
-              if (s === multFileListLen - 1) {
-                this.uploadLoading = false
-                this.suc()
-                this.getData()
-                this.uploadObjectVisible = false
-                this.uploadBucketName = ''
-                this.uploadObjectFolder = ''
-                this.uploadobjectName = ''
-                this.uplbucket = ''
-                this.objectuplcurrentRow = ''
-                this.objectuplData = []
-                this.fileList = []
-                this.uploadFilePostfix = ''
-=======
         this.uploadLoading=true
         let multFileList = this.fileList
         let multFileListLen = multFileList.length
@@ -560,30 +482,13 @@ export default {
               }else{
                 this.uploadLoading=false
                 this.$message.error('网络延迟,请同步数据源');
->>>>>>> dev
               }
-            } else {
-              this.$message.error('网络延迟,请同步数据源')
-            }
-          })
+            })
         }
         this.getData()
       }
     },
 
-<<<<<<< HEAD
-    // 上传文件的取消键
-    uploadObjectNull() {
-      this.uploadBucketName = ''
-      this.uploadObjectFolder = ''
-      this.uploadobjectName = ''
-      this.uplbucket = ''
-      this.objectuplcurrentRow = ''
-      this.objectuplData = []
-      this.fileList = []
-      this.uploadFilePostfix = ''
-      this.uploadObjectVisible = false
-=======
     //上传文件的取消键
     uploadObjectNull(){
         this.uploadBucketName=''
@@ -596,7 +501,6 @@ export default {
         this.uploadFilePostfix=''
         this.uploadLoading=false
         this.uploadObjectVisible = false
->>>>>>> dev
     },
 
     // 返回内层dialog

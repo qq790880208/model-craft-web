@@ -53,15 +53,8 @@
       <el-table-column type="selection" width="60" />
       <!-- <el-table-column prop="id" align="center" label="id" width="100">
       </el-table-column> -->
-<<<<<<< HEAD
       <el-table-column prop="user_name" align="center" label="用户名" width="100" sortable />
       <el-table-column prop="message" align="center" label="操作信息" width="240" show-overflow-tooltip sortable />
-=======
-      <el-table-column prop="user_name" align="center" label="用户名" width="100" sortable>
-      </el-table-column>
-      <el-table-column prop="message" align="center" label="操作信息" width="240" show-overflow-tooltip sortable>
-      </el-table-column>
->>>>>>> dev
       <!-- <el-table-column prop="method" align="center" label="方法" min-width="100" sortable>
         <template slot-scope="scope">
           {{ scope.row.method}}
@@ -233,8 +226,6 @@ export default {
         })
         .catch(() => {})
     }
-<<<<<<< HEAD
-=======
   },
     created(){
     if (store.getters.register == 1) {
@@ -243,7 +234,6 @@ export default {
   },
   mounted() {
     this.getList()
->>>>>>> dev
   }
 }
 

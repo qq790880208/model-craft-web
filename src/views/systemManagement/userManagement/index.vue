@@ -62,11 +62,7 @@
       <el-table-column prop="role" align="center" label="身份" show-overflow-tooltip width="120" sortable />
       <el-table-column prop="email" align="center" label="邮箱" show-overflow-tooltip width="120" sortable />
       <el-table-column prop="mobile" align="center" label="手机号" show-overflow-tooltip width="120" sortable />
-<<<<<<< HEAD
-      <el-table-column prop="password" align="center" label="密码" show-overflow-tooltip min-width="140" sortable />
-=======
       <!-- <el-table-column prop="password" align="center" label="密码" show-overflow-tooltip min-width="140" sortable /> -->
->>>>>>> dev
       <el-table-column label="状态" prop="status" min-width="80" sortable>
         <template slot-scope="scope">
           <el-tag
@@ -102,12 +98,8 @@
         <el-form-item label="姓名" prop="name">
           <el-input v-model="editForm.name" auto-complete="off" placeholder="请输入名字" />
         </el-form-item>
-<<<<<<< HEAD
-        <el-form-item label="身份">
-=======
         <!-- <el-form-item label="身份" prop="identity"> -->
         <el-form-item label="身份" >
->>>>>>> dev
           <el-select v-model="editForm.role" class="filter-item" placeholder="请选择角色">
             <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
           </el-select>
@@ -139,11 +131,7 @@
         <el-form-item label="姓名" prop="name">
           <el-input v-model="editForm.name" auto-complete="off" />
         </el-form-item>
-<<<<<<< HEAD
         <el-form-item label="身份">
-=======
-        <el-form-item label="身份" >
->>>>>>> dev
           <el-select v-model="editForm.role" class="filter-item" placeholder="请选择角色">
             <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
           </el-select>
@@ -171,11 +159,7 @@
 </template>
 
 <script>
-<<<<<<< HEAD
-import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser } from '@/api/userManage'
-=======
 import { getUserListPage, removeUser, batchRemoveUser, editUser, addUser, getAuthorityApi } from '@/api/userManage'
->>>>>>> dev
 import { getRolesListApi } from '@/api/role'
 import md5 from 'js-md5'
 import store from '@/store'
@@ -365,26 +349,10 @@ export default {
       }
     }
   },
-<<<<<<< HEAD
-  mounted() {
-    window.getUsers = this.getUsers;
-    document.onkeydown = keyDownSearch;
-    this.getUsers()
-    this.getRoles()
-    this.authority = store.getters.authority
-    console.log('jjjjjjjjjjjjjjjjj')
-    console.log(this.authority)
-    console.log(this.authority.indexOf('user:add'))
-    console.log(this.authority.indexOf('user:add'))
-  },
-  destroyed() {
-    document.onkeydown = undefined
-=======
   created(){
     if (store.getters.register == 1) {
       this.$router.push('/dashboard')
     }
->>>>>>> dev
   },
   mounted() {
     window.getUsers = this.getUsers;
@@ -452,13 +420,6 @@ export default {
         .catch(() => {})
     },
     handleEdit: function(index, row) {
-<<<<<<< HEAD
-      this.dialogStatus = 'update'
-      this.dialogFormEditVisible = true
-      this.oldRow = row
-      this.editForm = Object.assign({}, row)
-      this.editForm.password = ''
-=======
       const params = {
         srcRole: store.getters.role,
         dstRole: row.role
@@ -469,7 +430,6 @@ export default {
         this.editForm = Object.assign({}, row)
         this.editForm.password = ''
       })
->>>>>>> dev
     },
     // 显示新增界面
     handleAdd: function() {
@@ -512,17 +472,10 @@ export default {
                 this.dialogFormEditVisible = false
                 this.getUsers()
                 if(this.name === store.getters.name && this.oldRow.role == temp.role) {
-<<<<<<< HEAD
                   this.logout()
                 }
                 if (temp.password.length >= 1) {
                   this.logout()
-=======
-                  //this.logout()
-                }
-                if (temp.password.length >= 1) {
-                  //this.logout()
->>>>>>> dev
                 }
               })
             })

@@ -154,10 +154,6 @@ const actions = {
         console.log("2222222222222")
         console.log("eeeeeeee")
         console.log("121qweqweqweqwe31231")
-<<<<<<< HEAD
-=======
-        
->>>>>>> dev
         resetRouter()
         resolve()
         
