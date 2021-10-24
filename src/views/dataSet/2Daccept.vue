@@ -185,8 +185,7 @@ export default {
       batchUnAcceptDialogShow: false,
       acceptRemarks: '',
       unAcceptDialogShow: false,
-      acceptRemark: '',
-      isloading: false
+      acceptRemark: ''
     }
   },
 
@@ -273,7 +272,8 @@ export default {
       this.isAudited = true
       const params = {
         labelUuid: this.uuidArry[this.nownum],
-        dataset_id: store.getters.uuid
+        dataset_id: store.getters.uuid,
+        accept_remark: this.acceptRemark
       }
       unAcceptApi(params).then(res => {
         this.$message({
@@ -347,7 +347,8 @@ export default {
       console.log(this.checkedList.join(','))
       const params = {
         labelUuids: this.checkedList.join(','),
-        dataset_id: store.getters.uuid
+        dataset_id: store.getters.uuid,
+        accept_remark: this.acceptRemarks
       }
       batchUnAcceptApi(params).then(res => {
         this.$message({

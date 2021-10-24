@@ -183,8 +183,7 @@ export default {
       batchUnAcceptDialogShow: false,
       acceptRemarks: '',
       unAcceptDialogShow: false,
-      acceptRemark: '',
-      isloading: false
+      acceptRemark: ''
     }
   },
   computed: {
@@ -268,7 +267,7 @@ export default {
       const params = {
         labelUuid: this.uuidArry[this.nownum],
         dataset_id: store.getters.uuid,
-        acceptRemark: this.acceptRemark
+        accept_remark: this.acceptRemark
       }
       unAcceptApi(params).then(res => {
         this.$message({
@@ -343,7 +342,7 @@ export default {
       const params = {
         labelUuids: this.checkedList.join(','),
         dataset_id: store.getters.uuid,
-        acceptRemark: this.acceptRemarks
+        accept_remark: this.acceptRemarks
       }
       batchUnAcceptApi(params).then(res => {
         this.$message({
