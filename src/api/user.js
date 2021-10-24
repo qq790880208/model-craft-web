@@ -5,11 +5,11 @@ export function login(params) {
     url: '/user/login',
     method: 'post',
     data: params,
-    // baseURL: 'http://127.0.0.1:8088'
+    baseURL: 'http://127.0.0.1:8088'
     // data,
     // baseURL: 'http://localhost:9528/dev-api'
     // params: params,
-    baseURL: 'http://10.19.1.77:8088'
+    // baseURL: 'http://10.19.1.77:8088'
   })
 }
 

@@ -185,8 +185,7 @@ export default {
       batchRejectDiaglogShow: false,
       rejectDiaglogShow: false,
       auditRemarks: '',
-      auditRemark: '',
-      isloading: false
+      auditRemark: ''
     }
   },
   destroyed() {
@@ -273,7 +272,7 @@ export default {
       this.isAudited = true
       const params = {
         labelUuid: this.uuidArry[this.nownum],
-        auditRemark: this.auditRemark
+        audit_remark: this.auditRemark
       }
       rejectApi(params).then(res => {
         this.$message({
@@ -348,7 +347,7 @@ export default {
       console.log(this.checkedList.join(','))
       const params = {
         labelUuids: this.checkedList.join(','),
-        auditRemark: this.auditRemarks
+        audit_remark: this.auditRemarks
       }
       batchRejectApi(params).then(res => {
         this.$message({

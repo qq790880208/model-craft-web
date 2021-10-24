@@ -117,7 +117,6 @@ export function getModels(params) {
     baseURL: 'http://127.0.0.1:8081'
   })
 }
-
 export function getTargetDataSets(model_id) { // 创建任务时获取数据集
   return request({
     url: '/model/getTargetDatasets?model_id=' + model_id,
@@ -125,7 +124,6 @@ export function getTargetDataSets(model_id) { // 创建任务时获取数据�
     baseURL: 'http://127.0.0.1:8081'
   })
 }
-
 export function getDataByName(params) { // 创建任务时获取数据集
   return request({
     url: '/data/getdataSet',

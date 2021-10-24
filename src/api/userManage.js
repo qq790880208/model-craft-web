@@ -6,8 +6,8 @@ export function addUser(params) {
     url: '/userManage/addUser',
     method: 'post',
     data: params,
-    // baseURL: 'http://127.0.0.1:8088'
-    baseURL: 'http://10.19.1.77:8088'
+    baseURL: 'http://127.0.0.1:8088'
+    // baseURL: 'http://10.19.1.77:8088'
   })
 }
 export function getUserListPage(params) {
@@ -24,8 +24,8 @@ export function editUser(params) {
     url: '/userManage/editUser',
     method: 'put',
     data: params,
-    // baseURL: 'http://127.0.0.1:8088'
-    baseURL: 'http://10.19.1.77:8088'
+    baseURL: 'http://127.0.0.1:8088'
+    // baseURL: 'http://10.19.1.77:8088'
   })
 }
 /* removeUser */
@@ -60,9 +60,9 @@ export function updatePassword(data) {
   return request({
     url: '/userManage/updatePassword',
     method: 'post',
-    data: params,
-    // baseURL: 'http://127.0.0.1:8088'
-    baseURL: 'http://10.19.1.77:8088'
+    data: data,
+    baseURL: 'http://127.0.0.1:8088'
+    // baseURL: 'http://10.19.1.77:8088'
   })
 }
 // // 第一次登录，修改用户密码
@@ -87,8 +87,8 @@ export function getAuthorityApi(params) {
     url: '/userManage/authority',
     method: 'get',
     params: params,
-    // baseURL: 'http://127.0.0.1:8088'
-    baseURL: 'http://10.19.1.77:8088'
+    baseURL: 'http://127.0.0.1:8088'
+    // baseURL: 'http://10.19.1.77:8088'
   })
 }
 // 第一次登录，修改用户密码
@@ -97,6 +97,7 @@ export function changePasswordApi(data) {
     url: '/userManage/changePassword',
     method: 'post',
     data: data,
-    baseURL: 'http://10.19.1.77:8088'
+    baseURL: 'http://127.0.0.1:8088'
+    // baseURL: 'http://10.19.1.77:8088'
   })
 }
