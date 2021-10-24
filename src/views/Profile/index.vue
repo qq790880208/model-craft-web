@@ -97,7 +97,7 @@ export default {
       'userid'
     ])
   },
-    created(){
+  created() {
     if (store.getters.register == 1) {
       this.$router.push('/dashboard')
     }
@@ -121,12 +121,10 @@ export default {
       this.show = false
       this.$refs['form'].resetFields()
     },
-
     async logout() {
       await this.$store.dispatch('user/logout')
       this.$router.push(`/login?redirect=${this.$route.fullPath}`)
     },
-
     onSubmit() {
       this.$refs.form.validate(valid => {
         if (valid) {
@@ -136,14 +134,14 @@ export default {
           newPassword = md5(newPassword)
           const params = {
             password: password,
-            new_pwn: newPassword,
+            newpassword: newPassword,
             id: store.getters.userid
           }
           console.log(params)
           updatePassword(params).then(() => {
             this.show = false
             this.form = {}
-            this.$message.success('密码已修改')
+            this.$message.success('密码已修改, 请重新登录')
             this.logout()
           })
         } else {

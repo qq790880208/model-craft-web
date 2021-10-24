@@ -115,7 +115,7 @@ export const constantRoutes = [
       meta: { title: 'polygonaccept', resources: 'polygonaccept' },
       hidden: true
     }
-  ]
+    ]
   }
 ]
 export const asyncRoutes = [
@@ -167,7 +167,7 @@ export const asyncRoutes = [
         path: '/label/voice',
         component: () => import ('@/views/label/voice/voiceview'),
         name: 'voice',
-        meta: { title: '语音标注',  resources: 'voice' }
+        meta: { title: '语音标注', resources: 'voice' }
       },
       {
         path: '/label/d3',
@@ -195,12 +195,29 @@ export const asyncRoutes = [
         meta: { title: '数据集管理', resources: 'data', icon: 'tree-table' }
       },
       {
+        path: '/marking',
+        component: () => import('@/views/dataSet/marking'),
+        name: 'marking manage',
+        meta: { title: '标注数据集', resources: 'marking', icon: 'tree-table' }
+      },
+      {
+        path: '/auditing',
+        component: () => import('@/views/dataSet/auditing'),
+        name: 'auditing manage',
+        meta: { title: '审核数据集', resources: 'auditing', icon: 'tree-table' }
+      },
+      {
+        path: '/accepting',
+        component: () => import('@/views/dataSet/accepting'),
+        name: 'accepting manage',
+        meta: { title: '验收数据集', resources: 'accepting', icon: 'tree-table' }
+      },
+      {
         path: '/oss',
         component: () => import('@/views/dataSet/oss'),
         name: 'oss manage',
-        meta: { title: '对象存储', resources: 'oss', icon: 'tree' },
-        //hidden: true
-      },
+        meta: { title: '对象存储', resources: 'oss', icon: 'tree' }
+      }
     ]
   },
   {
@@ -218,7 +235,7 @@ export const asyncRoutes = [
         path: '/newtrain/table',
         component: () => import('@/views/newtrain/table'),
         name: 'newTable',
-        meta: { title: '训练管理',  resources: 'newTable', icon: 'skill' }
+        meta: { title: '训练管理', resources: 'newTable', icon: 'skill' }
       }
     ]
   },

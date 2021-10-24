@@ -111,8 +111,8 @@
             </div>
             <el-divider class="divider" />
             <div class="label">
-              <el-row :gutter="32">
-                <el-col :xs="24" :sm="24" :lg="8">
+              <el-row :gutter="24">
+                <el-col :span="6">
                   <div class="speed">
                     <div>
                       <span> 标注进度 </span>
@@ -171,7 +171,7 @@
                     </div>
                   </div>
                 </el-col>
-                <el-col :xs="24" :sm="24" :lg="8">
+                <el-col :span="8">
                   <div class="count">
                     <div>
                       标签统计
@@ -181,8 +181,25 @@
                     </div>
                   </div>
                 </el-col>
-                <el-col :xs="24" :sm="24" :lg="8">
-                  <div class="chart-wrapper" />
+                <el-col :span="5">
+                  <div>
+                    <div>
+                      质检统计
+                    </div>
+                    <div class="chart-wrapper">
+                      <pie-Chart :chart-data="pieChartDataTol" />
+                    </div>
+                  </div>
+                </el-col>
+                <el-col :span="5">
+                  <div>
+                    <div>
+                      上次质检结果统计
+                    </div>
+                    <div class="chart-wrapper">
+                      <pie-Chart :chart-data="pieChartDataPass" />
+                    </div>
+                  </div>
                 </el-col>
               </el-row>
             </div>
@@ -305,15 +322,20 @@
 <script>
 import { mapGetters } from 'vuex'
 import BarChart from './BarChart'
+import PieChart from './PieChart'
 import { getTags, updateTags } from '@/api/data'
 import { updateTagApi } from '@/api/tag'
 import { getAllTeam, getSelectTeam } from '@/api/team'
+import { getAcceptPieDataApi, getAcceptPieDataPassApi } from '@/api/message'
 import { getLabel, getDataByName, createDataSet, deleteDataSet, assignLabel, getAssignData, addTags, delTeamTaskApi } from '@/api/data'
 import store from '@/store'
 
 export default {
   name: 'Dashboard',
-  components: { BarChart },
+  components: {
+    BarChart,
+    PieChart
+  },
   filters: {
     formatDate(nows) {
       if (!nows) { // 在这里进行一次传递数据判断.如果传递进来的为空值,返回其空字符串.解决其问题
@@ -342,24 +364,24 @@ export default {
       return ' ' + year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
     },
     formatType(num) {
-      if (num == 0) {
+      if (num === 0) {
         return 'tensorflow-2D拉框标注'
       }
-      if (num == 1 || num == 4) {
+      if (num === 1 || num === 4) {
         return 'tensorflow-多边形标注'
       }
-      if (num == 2) {
+      if (num === 2) {
         return '语音标注'
       }
-      if (num == 3) {
+      if (num === 3) {
         return 'pytorch-2D拉框'
       }
     },
     formatStatus(num) {
-      if (num == 0) {
+      if (num === 0) {
         return '未完成验收'
       }
-      if (num == 1) {
+      if (num === 1) {
         return '完成验收'
       }
     }
@@ -388,6 +410,14 @@ export default {
         nums: [],
         nums2: []
       },
+      pieChartDataTol: [
+        { value: 0, name: '总数' },
+        { value: 0, name: '抽检数' }
+      ],
+      pieChartDataPass: [
+        { value: 0, name: '总数' },
+        { value: 0, name: '抽检数' }
+      ],
       labelName: ['2D拉框', '像素级', '3D拉框', '语音'],
       // dynamicTags: ['标签一', '标签二', '标签三'],
       inputVisible: false,
@@ -408,6 +438,8 @@ export default {
   },
   created() {
     this.getTag()
+    this.getAcceptDataPieDataTol()
+    this.getAcceptDataPieDataPass()
   },
   methods: {
 
@@ -429,6 +461,26 @@ export default {
     // tabs 切换
     handleClick(tab, event) {
       console.log(tab, event)
+    },
+
+    getAcceptDataPieDataTol() {
+      const params = {
+        dataSet_uuid: store.getters.dataSet.uuid
+      }
+      getAcceptPieDataApi(params).then(res => {
+        this.pieChartDataTol = res.data.items
+        console.log(res.data.items)
+      })
+    },
+
+    getAcceptDataPieDataPass() {
+      const params = {
+        dataSet_uuid: store.getters.dataSet.uuid
+      }
+      getAcceptPieDataPassApi(params).then(res => {
+        this.pieChartDataPass = res.data.items
+        console.log(res.data.items)
+      })
     },
 
     //
@@ -592,6 +644,7 @@ export default {
           type: 'success'
         })
         this.changeDialogVisible = false
+        this.$router.push({ path: '/data' })
       })
     },
 

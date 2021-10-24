@@ -5,13 +5,13 @@
       <el-col>
         <el-form :inline="true" :model="filter">
           <el-form-item>
-            <el-input v-model="filter.name" placeholder="用户名" style="width:150px" clearable></el-input>
+            <el-input v-model="filter.name" placeholder="用户名" style="width:150px" clearable />
           </el-form-item>
           <el-form-item>
-            <el-input v-model="filter.method" placeholder="信息" style="width:150px" clearable></el-input>
+            <el-input v-model="filter.method" placeholder="信息" style="width:150px" clearable />
           </el-form-item>
           <el-form-item>
-            <el-input v-model="filter.ip" placeholder="ip" style="width:150px" clearable></el-input>
+            <el-input v-model="filter.ip" placeholder="ip" style="width:150px" clearable />
           </el-form-item>
           <el-form-item>
             <el-date-picker
@@ -23,44 +23,37 @@
               value-format="yyyy-MM-dd HH:mm:ss"
               align="right"
               :picker-options="pickerOptions"
-              >
-            </el-date-picker>
+            />
           </el-form-item>
         </el-form>
       </el-col>
     </el-row>
     <el-row :span="24" class="toolbar" style="padding-bottom: 10px;">
       <el-col>
-        <el-button type="primary" v-on:click="getList">查询</el-button>
+        <el-button type="primary" @click="getList">查询</el-button>
         <el-button type="danger" :disabled="sels.length===0" @click="batchRemove">批量删除</el-button>
       </el-col>
     </el-row>
 
     <!--列表-->
-    <el-table :data="logList" highlight-current-row style="width: 100%;" @selection-change="selsChange">
-      <el-table-column type="selection" width="60">
-      </el-table-column>
+    <el-table :data="logList" highlight-current-row style="width: 100%;" @selection-change="selsChange" @sort-change="sortChange">
+      <el-table-column type="selection" width="60" />
       <!-- <el-table-column prop="id" align="center" label="id" width="100">
       </el-table-column> -->
-      <el-table-column prop="user_name" align="center" label="用户名" width="120" sortable>
-      </el-table-column>
-      <el-table-column prop="ip" align="center" label="IP" min-width="120" sortable>
-      </el-table-column>
-      <el-table-column prop="message" align="center" label="信息" width="180" sortable>
-      </el-table-column>
-      <el-table-column prop="time" align="center" label="时间" width="100" sortable>
-      </el-table-column>
-      <el-table-column prop="create_time" align="center" label="创建时间" show-overflow-tooltip min-width="180" sortable>
+      <el-table-column prop="user_name" align="center" label="用户名" width="120" :sortable="'custom'" />
+      <el-table-column prop="ip" align="center" label="IP" min-width="120" :sortable="'custom'" />
+      <el-table-column prop="message" align="center" label="信息" width="180" :sortable="'custom'" />
+      <el-table-column prop="time" align="center" label="时间" width="100" :sortable="'custom'" />
+      <el-table-column prop="create_time" align="center" label="创建时间" show-overflow-tooltip min-width="180" :sortable="'custom'">
         <template slot-scope="scope">
           {{ scope.row.create_time | formatDate }}
-         </template>
+        </template>
       </el-table-column>
     </el-table>
 
     <!--工具条-->
     <el-col :span="24" class="toolbar">
-      <el-pagination layout="total, sizes ,prev, pager, next, jumper" :page-size="page_size" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange">
-      </el-pagination>
+      <el-pagination layout="total, sizes ,prev, pager, next, jumper" :page-size="page_size" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
     </el-col>
   </div>
 </template>
@@ -68,51 +61,9 @@
 <script>
 import { mapGetters } from 'vuex'
 import { getListByPage, batchRemoveList } from '@/api/loginlog'
-import store from "@/store"
+import store from '@/store'
 export default {
   name: 'Dashboard',
-  data() {
-    return {
-      total: 0,
-      sels: [], // 列表选中列
-      page: 1,
-      page_size: 10,
-      pickerOptions: {
-        shortcuts: [{
-          text: '最近一周',
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-            picker.$emit('pick', [start, end]);
-          }
-        }, {
-          text: '最近一个月',
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-            picker.$emit('pick', [start, end]);
-          }
-        }, {
-          text: '最近三个月',
-          onClick(picker) {
-            const end = new Date();
-            const start = new Date();
-            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-            picker.$emit('pick', [start, end]);
-          }
-        }]
-      },
-      filter: {
-        name: '',
-        method: '',
-        ip: '',
-        createTime: []
-      },
-      logList: []
-    }
-  },
   filters: {
     formatDate(nows) {
       if (!nows) { // 在这里进行一次传递数据判断.如果传递进来的为空值,返回其空字符串.解决其问题
@@ -141,10 +92,62 @@ export default {
       return ' ' + year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
     }
   },
+  data() {
+    return {
+      total: 0,
+      sels: [], // 列表选中列
+      page: 1,
+      page_size: 10,
+      pickerOptions: {
+        shortcuts: [{
+          text: '最近一周',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近一个月',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30)
+            picker.$emit('pick', [start, end])
+          }
+        }, {
+          text: '最近三个月',
+          onClick(picker) {
+            const end = new Date()
+            const start = new Date()
+            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90)
+            picker.$emit('pick', [start, end])
+          }
+        }]
+      },
+      colorder: '',
+      ordering: '',
+      filter: {
+        name: '',
+        method: '',
+        ip: '',
+        createTime: []
+      },
+      logList: []
+    }
+  },
   computed: {
     ...mapGetters([
       'name'
     ])
+  },
+  mounted() {
+    this.getList()
+  },
+  created() {
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
   },
   methods: {
     handleSizeChange(val) {
@@ -155,8 +158,14 @@ export default {
       this.page = val
       this.getList()
     },
+    sortChange(column) {
+      console.log('排序', column.prop, column.order)
+      this.colorder = column.prop
+      this.ordering = column.order
+      this.getList()
+    },
     getList() {
-      if(this.filter.createTime === null) {
+      if (this.filter.createTime === null) {
         this.filter.createTime = ''
       }
       const para = {
@@ -165,7 +174,9 @@ export default {
         name: this.filter.name,
         message: this.filter.method,
         ip: this.filter.ip,
-        createTime: this.filter.createTime.toString()
+        createTime: this.filter.createTime.toString(),
+        colorder: this.colorder,
+        ordering: this.ordering
       }
       console.log(para)
       getListByPage(para).then(res => {
@@ -196,14 +207,6 @@ export default {
         })
         .catch(() => {})
     }
-  },
-    created(){
-    if (store.getters.register == 1) {
-      this.$router.push('/dashboard')
-    }
-  },
-  mounted() {
-    this.getList()
   }
 }
 

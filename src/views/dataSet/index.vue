@@ -1,6 +1,6 @@
 <template>
   <div class="app-container">
-    <el-tabs v-model="activeName" @tab-click="handleClick">
+    <el-tabs v-model="activeName">
       <el-tab-pane label="我的数据集" name="allData">
         <el-form :inline="true" :model="filter">
           <el-button plain style="text-align: left" type="primary" @click="createDataSet()">
@@ -12,18 +12,18 @@
             </el-input>
           </el-form-item>
         </el-form>
-        <el-table :data="dataSets" highlight-current-row style="width: 100%; margin: 20px 0px 0px 0px">
-          <el-table-column prop="name" align="center" label="名称" min-width="120" sortable>
+        <el-table :data="dataSets" highlight-current-row style="width: 100%; margin: 20px 0px 0px 0px" @sort-change="sortChange">
+          <el-table-column prop="name" align="center" label="名称" min-width="120" :sortable="'custom'">
             <template slot-scope="scope">
               <span class="link-type" @click="toDataSet(scope.row)">{{ scope.row.name }}</span>
             </template>
           </el-table-column>
-          <el-table-column prop="label_type" align="center" label="标注类型" min-width="120" sortable>
+          <el-table-column prop="label_type" align="center" label="标注类型" min-width="120" :sortable="'custom'">
             <template slot-scope="scope">
               {{ scope.row.label_type | formatType }}
             </template>
           </el-table-column>
-          <el-table-column prop="done" align="center" label="标注进度" min-width="250" sortable>
+          <el-table-column prop="done" align="center" label="标注进度" min-width="250" :sortable="'custom'">
             <template slot-scope="scope">
               <div style="width: 250px; margin:0px auto;">
                 <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)" />
@@ -33,7 +33,7 @@
               </div>
             </template>
           </el-table-column>
-          <el-table-column prop="accept" align="center" label="状态" min-width="100" sortable>
+          <el-table-column prop="accept" align="center" label="状态" min-width="100" :sortable="'custom'">
             <template slot-scope="scope">
               <el-tag
                 :type="scope.row.accept == 1 ? 'success' : 'danger'"
@@ -41,8 +41,8 @@
               >{{ scope.row.accept == 1 ? '已验收' : '未验收' }}</el-tag>
             </template>
           </el-table-column>
-          <el-table-column prop="descr" align="center" label="描述" min-width="120" sortable />
-          <el-table-column prop="create_time" align="center" label="创建时间" min-width="150" sortable>
+          <el-table-column prop="descr" align="center" label="描述" min-width="120" :sortable="'custom'" />
+          <el-table-column prop="create_time" align="center" label="创建时间" min-width="150" :sortable="'custom'">
             <template slot-scope="scope">
               {{ scope.row.create_time | formatDate }}
             </template>
@@ -58,125 +58,6 @@
         </el-table>
         <el-col :span="24" class="toolbar">
           <el-pagination layout="total, sizes ,prev, pager, next, jumper" :page-size="page_size" :page-sizes="[1,5,10,20]" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
-        </el-col>
-      </el-tab-pane>
-
-      <el-tab-pane label="标注数据集" name="manager">
-        <el-form :inline="true" :model="filter">
-          <el-form-item>
-            <el-input v-model="filter.name" placeholder="请输入查询名称" clearable>
-              <el-button slot="append" icon="el-icon-search" @click="getAssignDataSet()" />
-            </el-input>
-          </el-form-item>
-        </el-form>
-        <!-- toDataSet(scope.row.name, scope.row.role_type, scope.row.uuid, scope.row.label_type) -->
-        <el-table :data="dataSetAssigned" highlight-current-row style="width: 100%;">
-          <el-table-column prop="name" align="center" label="名称" min-width="200" sortable>
-            <template slot-scope="scope">
-              <span class="link-type" @click="toDataSet(scope.row)">{{ scope.row.name }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="type" align="center" label="标注类型" min-width="120" sortable>
-            <template slot-scope="scope">
-              {{ scope.row.label_type | formatType }}
-            </template>
-          </el-table-column>
-          <el-table-column prop="done" align="center" label="标注进度" min-width="260" sortable>
-            <template slot-scope="scope">
-              <div style="width: 250px; margin:0px auto;">
-                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)" />
-                {{ scope.row.done }} / {{ scope.row.tol }}
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="descr" align="center" label="描述" min-width="150" sortable />
-          <el-table-column prop="create_time" align="center" label="创建时间" min-width="180" sortable>
-            <template slot-scope="scope">
-              {{ scope.row.create_time | formatDate }}
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-col :span="24" class="toolbar">
-          <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :page-sizes="[1,5,10,20]" :total="total1" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
-        </el-col>
-      </el-tab-pane>
-
-      <el-tab-pane label="审核任务" name="audit">
-        <el-form :inline="true" :model="filter">
-          <el-form-item>
-            <el-input v-model="filter.name" placeholder="请输入查询名称" clearable>
-              <el-button slot="append" icon="el-icon-search" @click="getAuditDataSet()" />
-            </el-input>
-          </el-form-item>
-        </el-form>
-        <el-table :data="dataSetAudit" highlight-current-row style="width: 100%;">
-          <el-table-column prop="name" align="center" label="名称" min-width="200" sortable>
-            <template slot-scope="scope">
-              <span class="link-type" @click="toAudit(scope.row)">{{ scope.row.name }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="type" align="center" label="审核类型" min-width="120" sortable>
-            <template slot-scope="scope">
-              {{ scope.row.label_type | formatType }}
-            </template>
-          </el-table-column>
-          <el-table-column prop="done" align="center" label="审核进度" min-width="260" sortable>
-            <template slot-scope="scope">
-              <div style="width: 250px; margin:0px auto;">
-                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)" />
-                {{ scope.row.done }} / {{ scope.row.tol }}
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="descr" align="center" label="描述" min-width="150" sortable />
-          <el-table-column prop="create_time" align="center" label="创建时间" min-width="180" sortable>
-            <template slot-scope="scope">
-              {{ scope.row.create_time | formatDate }}
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-col :span="24" class="toolbar">
-          <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :page-sizes="[1,5,10,20]" :total="total2" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
-        </el-col>
-      </el-tab-pane>
-
-      <el-tab-pane label="验收任务" name="accept">
-        <el-form :inline="true" :model="filter">
-          <el-form-item>
-            <el-input v-model="filter.name" placeholder="请输入查询名称" clearable>
-              <el-button slot="append" icon="el-icon-search" @click="getAcceptDataSet()" />
-            </el-input>
-          </el-form-item>
-        </el-form>
-        <el-table :data="dataSetAccept" highlight-current-row style="width: 100%;">
-          <el-table-column prop="name" align="center" label="名称" min-width="200" sortable>
-            <template slot-scope="scope">
-              <span class="link-type" @click="toAccept(scope.row)">{{ scope.row.name }}</span>
-            </template>
-          </el-table-column>
-          <el-table-column prop="type" align="center" label="验收类型" min-width="120" sortable>
-            <template slot-scope="scope">
-              {{ scope.row.label_type | formatType }}
-            </template>
-          </el-table-column>
-          <el-table-column prop="done" align="center" label="审核进度" min-width="260" sortable>
-            <template slot-scope="scope">
-              <div style="width: 250px; margin:0px auto;">
-                <el-progress :percentage="setItemProgress(scope.row.done, scope.row.tol)" />
-                {{ scope.row.done }} / {{ scope.row.tol }}
-              </div>
-            </template>
-          </el-table-column>
-          <el-table-column prop="rate" align="center" label="验收比例" min-width="150" sortable>
-            <template slot-scope="scope">
-              <div class="block">
-                <el-slider v-model="scope.row.rate" :step="10" show-stops />
-              </div>
-            </template>
-          </el-table-column>
-        </el-table>
-        <el-col :span="24" class="toolbar">
-          <el-pagination layout="total, sizes ,prev, pager, next" :page-size="page_size" :page-sizes="[1,5,10,20]" :total="total3" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </el-col>
       </el-tab-pane>
     </el-tabs>
@@ -374,11 +255,8 @@ import { getDataByName, createDataSetApi, deleteDataSet, assignLabel, getAssignD
 import { listBucket, listObject, listObjectByPrefix, createFolder } from '@/api/oss'
 import store from '@/store'
 import { getAllTeam, getSelectTeam } from '@/api/team'
-import { getAuditData } from '@/api/audit'
-import { getAcceptData, setAcceptDataApi } from '@/api/accept'
 import { v4 as uuidv4 } from 'uuid'
 import { saveTagApi } from '@/api/tag'
-
 
 export default {
   namespaced: true,
@@ -443,17 +321,13 @@ export default {
       filter: {
         name: ''
       },
+      colorder: '',
+      ordering: '',
       oldTeam: '',
       dataSets: [],
-      dataSetAssigned: [],
-      dataSetAudit: [],
-      dataSetAccept: [],
       total: 0,
-      total1: 0,
-      total2: 0,
-      total3: 0,
       page: 1,
-      page_size: 20,
+      page_size: 2,
       dialogVisible: false,
       inputVisible: false, // tag显示
       teamDialogVisible: false,
@@ -502,12 +376,15 @@ export default {
       },
       // 0 tf2D拉框，1 tf像素级（多边形），2 语音, 3 py2D拉框, 4py像素级（多边形）
       labels: [
-        [0, 1, 3],
+        [0, 1, 3, 4],
         [2],
-        [4]
+        [5]
       ],
-      labelName: ['tensorflow-2D拉框', 'tensorflow-像素级', '语音', 'pytorch-2D拉框', '3D'],
-      tags: [],
+      labelName: ['tensorflow-2D拉框', 'tensorflow-像素级', '语音', 'pytorch-2D拉框', 'pytorch-像素级', '3D'],
+      tags: [{
+        value: '西瓜',
+        color: 'rgba(255, 128, 255, 0.75)'
+      }],
       color1: 'rgba(255, 128, 0, 0.75)'
     }
   },
@@ -519,7 +396,19 @@ export default {
   mounted() {
     this.getDataSet()
   },
+  created() {
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
+  },
   methods: {
+    // 排序
+    sortChange(column) {
+      console.log('排序', column.prop, column.order)
+      this.colorder = column.prop
+      this.ordering = column.order
+      this.getDataSet()
+    },
     datachange(dataRate) {
       return dataRate
     },
@@ -614,7 +503,7 @@ export default {
       this.form = {
         name: '',
         descr: '',
-        dataType: '0',
+        dat改成aType: '0',
         labelType: '',
         input: 'data/dataset/' + this.my_uuid + '/input/source/',
         annotation: 'data/dataset/' + this.my_uuid + '/input/annotation/',
@@ -684,11 +573,11 @@ export default {
                 type: 'success'
               })
               this.getDataSet()
-              const params = {
+              const paramss = {
                 data: this.tags,
                 uuid: this.my_uuid
               }
-              saveTagApi(params).then(res => {
+              saveTagApi(paramss).then(res => {
                 this.$message({
                   message: '添加成功',
                   type: 'success'
@@ -705,6 +594,16 @@ export default {
               //   })
               // })
             })
+            // const paramss = {
+            //   data: this.tags,
+            //   uuid: this.my_uuid
+            // }
+            // saveTagApi(paramss).then(res => {
+            //   this.$message({
+            //     message: '添加成功',
+            //     type: 'success'
+            //   })
+            // })
             console.log(this.form)
             this.dialogVisible = false
           } else {
@@ -854,27 +753,9 @@ export default {
       })
     },
 
-    // 切换tab  我的数据集/标注数据集
-    handleClick(tab, event) {
-      // console.log(tab.name)
-      // this.activeName = tab.name
-      if (this.activeName === 'manager') {
-        this.getAssignDataSet()
-      }
-      if (this.activeName === 'allData') {
-        this.getDataSet()
-      }
-      if (this.activeName === 'audit') {
-        this.getAuditDataSet()
-      }
-      if (this.activeName === 'accept') {
-        this.getAcceptDataSet()
-      }
-    },
-
     // 设置标注进度条
     setItemProgress(speed, tol) {
-      if (speed == 0) {
+      if (speed === 0) {
         return 0
       }
       if (speed > tol) {
@@ -887,42 +768,22 @@ export default {
     // 分页查询
     handleSizeChange(val) {
       this.page_size = val
-      if (this.activeName === 'allData') {
-        this.getDataSet()
-      }
-      if (this.activeName === 'manager') {
-        this.getAssignDataSet()
-      }
-      if (this.activeName === 'audit') {
-        this.getAuditDataSet()
-      }
-      if (this.activeName === 'accept') {
-        this.getAcceptDataSet()
-      }
+      this.getDataSet()
     },
     handleCurrentChange(val) {
       this.page = val
-      if (this.activeName === 'allData') {
-        this.getDataSet()
-      }
-      if (this.activeName === 'manager') {
-        this.getAssignDataSet()
-      }
-      if (this.activeName === 'audit') {
-        this.getAuditDataSet()
-      }
-      if (this.activeName === 'accept') {
-        this.getAcceptDataSet()
-      }
+      this.getDataSet()
     },
 
     // 得到用户创建的数据集
-    getDataSet: function() {
+    getDataSet() {
       const params = {
         page: this.page,
         pagesize: this.page_size,
         id: store.getters.userid,
-        name: this.filter.name
+        name: this.filter.name,
+        colorder: this.colorder,
+        ordering: this.ordering
       }
       console.log('dadadadadad')
       console.log(params)
@@ -948,95 +809,6 @@ export default {
       this.filter.name = ''
     },
 
-    // 得到审核数据集
-    getAuditDataSet: function() {
-      const params = {
-        page: this.page,
-        pagesize: this.page_size,
-        userId: store.getters.userid,
-        name: this.filter.name
-      }
-      getAuditData(params).then(res => {
-        this.dataSetAudit = res.data.items
-        this.total2 = res.data.total
-      })
-      this.filters.name = ''
-    },
-
-    // 得到验收数据集
-    getAcceptDataSet: function() {
-      const params = {
-        page: this.page,
-        pagesize: this.page_size,
-        userId: store.getters.userid,
-        name: this.filter.name
-      }
-      getAcceptData(params).then(res => {
-        this.dataSetAccept = res.data.items
-        this.total3 = res.data.total
-      })
-      this.filters.name = ''
-    },
-
-    toAudit: function(val) {
-      console.log(val)
-      store.dispatch('data/changeUuid', val.uuid)
-      store.dispatch('data/changeType', val.label_type)
-      store.dispatch('data/changeDataSet', val)
-      // this.$router.push({path:'/dataSet/audit'})
-      // this.$router.push({path: '/dataSet/polygonaudit'})
-      this.$router.push({ path: '/dataSet/3Daudit' })
-      if (val.label_type === 0) {
-        this.$router.push({ path: '/dataSet/2DauditPre' })
-      }
-      if (val.label_type === 1) {
-        this.$router.push({ path: '/dataSet/polygonaudit' })
-      }
-      if (val.label_type === 2) {
-        this.$router.push({ path: '/dataSet/3Daudit' })
-      }
-      if (val.label_type === 3) {
-        this.$router.push({ path: '/dataSet/2DauditPre' })
-      }
-    },
-
-    toAccept: function(val) {
-      console.log(val)
-      store.dispatch('data/changeUuid', val.uuid)
-      store.dispatch('data/changeType', val.label_type)
-      store.dispatch('data/changeDataSet', val)
-      // this.$router.push({path:'/dataSet/audit'})
-      // this.$router.push({path: '/dataSet/polygonaudit'})
-      // this.$router.push({path: '/dataSet/3Daudit'})
-      const params = {
-        dataSetUuid: val.uuid,
-        rate: val.rate,
-        userId: store.getters.userid
-      }
-      console.log(params)
-      // setAcceptDataApi(params)
-      this.setAuditDatas(params)
-      if (val.label_type === 0 || val.label_type === 3) {
-        this.$router.push({ path: '/dataSet/2Daccept' })
-      }
-      if (val.label_type === 1 || val.label_type === 4) {
-        this.$router.push({ path: '/dataSet/polygonaccept' })
-      }
-      if (val.label_type === 2) {
-        this.$router.push({ path: '/label/voice' })
-      }
-      // if(val.label_type === 3) {
-      //   this.$router.push({path:'/label/voice'})
-      // }
-    },
-    setAuditDatas(params) {
-      setAcceptDataApi(params).then(res => {
-        this.$message({
-          message: '添加成功',
-          type: 'success'
-        })
-      })
-    },
     // 展示数据
     toDataSet: function(val) {
       console.log('vallllllllllllllllllllllllllll', val)
@@ -1048,7 +820,7 @@ export default {
       console.log(store.getters.dataSet)
       if (val.role_type !== '标注员') {
         // this.$router.push({ path: '/dataSet/message', query: { dataName: val.name, key: this.activeName }})
-        this.$router.push({ path: '/dataSet/message'})
+        this.$router.push({ path: '/dataSet/message' })
       } else {
         console.log('898989')
         this.toStartLabel(val, val.label_type)
@@ -1211,12 +983,6 @@ export default {
       this.selectBucket = ''
       this.selectObject = ''
       this.ossOutputVisible = false
-    }
-
-  },
-  created(){
-    if (store.getters.register == 1) {
-      this.$router.push('/dashboard')
     }
   }
 }

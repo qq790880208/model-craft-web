@@ -95,7 +95,7 @@
             @click="handleStop(scope.$index, scope.row)">终止</el-button>
           <el-button
             size="mini"
-            @click="handleShow()">可视化</el-button>
+            @click="handleShow()">可视化</el-button> -->
           <el-button
             size="mini" v-if="scope.row.status!=0"
             @click="handleShowlog(scope.$index, scope)" >日志</el-button>

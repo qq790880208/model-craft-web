@@ -119,6 +119,7 @@ const actions = {
         // commit('SET_LABELROLE', labelrole)
         commit('SET_DESCR', descr)
         commit('SET_PASSWORD', password)
+        commit('SET_REGISTER', is_assign)
         commit('SET_AUTHORITY', data.authority)
         commit('SET_REGISTER', is_assign)
         if (data.menus && data.menus.length > 0) { // 验证返回的menus是否是一个非空数组
@@ -129,6 +130,8 @@ const actions = {
         console.log(state.descr)
         console.log(state.userid)
         console.log(state.password)
+        console.log(',.,.,.,.,.,.,.,.,.,.,.')
+        console.log(state.register)
         console.log(state.menus)
         console.log(',.,.,.,.,.,.,.,.,.,.,.')
         console.log(state.register)
@@ -151,7 +154,6 @@ const actions = {
         console.log("2222222222222")
         console.log("eeeeeeee")
         console.log("121qweqweqweqwe31231")
-        
         resetRouter()
         resolve()
         

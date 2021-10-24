@@ -57,6 +57,7 @@
           type="text"
           tabindex="3"
           auto-complete="on"
+          @keyup.enter.native="handleLogin"
         />
         <div class="code" @click="refreshCode">
           <identify :identify-code="identifyCode" />
@@ -123,6 +124,11 @@ export default {
   mounted() {
     this.identifyCode = ''
     this.makeCode(this.identifyCodes, 4)
+    window.onbeforeunload = function (e) {
+      var storage = window.localStorage;
+      storage.clear()
+      console.log('12312hhhhh3123123123')
+    }
   },
   methods: {
     showPwd() {
@@ -174,14 +180,15 @@ export default {
             }).catch(() => {
               // self.errorInfo = true
               // 重新生成验证码
-              //this.loginForm = this.$options.data().loginForm
+              // this.loginForm = this.$options.data().loginForm
               this.loginForm.password = ''
               this.refreshCode()
               self.loading = false
             })
           }
+          // this.loginForm.password = ''
         } else {
-          console.log('error submit!!')
+          console.log('请重新提交!!')
           return false
         }
       })

@@ -345,7 +345,7 @@ export default {
       let _this = this;
       // return request({
       //   url:
-      //     "http://10.19.1.181:8082/dataset/save?dataset_id="+store.getters.uuid,
+      //     "http://127.0.0.1:8082/dataset/save?dataset_id="+store.getters.uuid,
       //   method: "post",
       //   //timeout:_this.lastinfoArry.length*5000,
       //   //params: query

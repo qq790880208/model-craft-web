@@ -67,7 +67,7 @@ export default {
     requireimage: function () {
       let _this = this;
       return request({
-        url: "http://10.19.1.181:8082/label?dataset_uuid=0022f6831fbe40b0bd4aae781f202517&user_id=10",
+        url: "http://127.0.0.1:8082/label?dataset_uuid=0022f6831fbe40b0bd4aae781f202517&user_id=10",
         method: "get",
         //params: query
       }).then(function (response) {
@@ -104,7 +104,7 @@ export default {
       console.log(store.getters.uuid)
       console.log(JSON.stringify(this.infoArry[i][0]));
       return request({
-        url: "http://10.19.1.181:8082/label",
+        url: "http://127.0.0.1:8082/label",
         method: "put",
         data: {
           label_data: JSON.stringify(this.infoArry[i][0]),

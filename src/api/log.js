@@ -1,5 +1,5 @@
 import request from '@/utils/request'
-/* 
+/*
 * 操作日志
 */
 export function getListByPage(params) {
@@ -7,15 +7,15 @@ export function getListByPage(params) {
     url: '/log/findPage',
     method: 'get',
     params: params,
-    baseURL: 'http://10.19.1.77:8083'
+    baseURL: 'http://127.0.0.1:8083'
   })
 }
 
 export function batchRemoveList(params) {
-    return request({
-        url: '/log/delete',
-        method: 'delete',
-        params: params,
-        baseURL: 'http://10.19.1.77:8083'
-    })
+  return request({
+    url: '/log/delete',
+    method: 'delete',
+    params: params,
+    baseURL: 'http://127.0.0.1:8083'
+  })
 }

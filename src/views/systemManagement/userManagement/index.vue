@@ -55,15 +55,21 @@
       </el-col>
     </el-row>
     <!--列表-->
-    <el-table :data="users" highlight-current-row style="width: 100%;" @selection-change="selsChange">
+    <el-table
+      :data="users"
+      highlight-current-row
+      style="width: 100%;"
+      @selection-change="selsChange"
+      @sort-change="sortChange"
+    >
       <el-table-column type="selection" width="60" />
       <el-table-column type="index" align="center" label="index" show-overflow-tooltip width="70" />
-      <el-table-column prop="name" align="center" label="姓名" show-overflow-tooltip width="120" sortable />
-      <el-table-column prop="role" align="center" label="身份" show-overflow-tooltip width="120" sortable />
-      <el-table-column prop="email" align="center" label="邮箱" show-overflow-tooltip width="120" sortable />
-      <el-table-column prop="mobile" align="center" label="手机号" show-overflow-tooltip width="120" sortable />
+      <el-table-column prop="name" align="center" label="姓名" show-overflow-tooltip width="120" :sortable="'custom'" />
+      <el-table-column prop="role" align="center" label="身份" show-overflow-tooltip width="120" :sortable="'custom'" />
+      <el-table-column prop="email" align="center" label="邮箱" show-overflow-tooltip width="120" :sortable="'custom'" />
+      <el-table-column prop="mobile" align="center" label="手机号" show-overflow-tooltip width="120" :sortable="'custom'" />
       <!-- <el-table-column prop="password" align="center" label="密码" show-overflow-tooltip min-width="140" sortable /> -->
-      <el-table-column label="状态" prop="status" min-width="80" sortable>
+      <el-table-column label="状态" prop="status" min-width="80" :sortable="'custom'">
         <template slot-scope="scope">
           <el-tag
             :type="scope.row.status == 1 ? 'success' : 'danger'"
@@ -71,8 +77,8 @@
           >{{ scope.row.status == 1 ? '在线' : '离线' }}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="descr" align="center" label="用户描述" show-overflow-tooltip min-width="100" sortable />
-      <el-table-column prop="create_time" align="center" label="创建时间" show-overflow-tooltip min-width="160" sortable>
+      <el-table-column prop="descr" align="center" label="用户描述" show-overflow-tooltip min-width="100" :sortable="'custom'" />
+      <el-table-column prop="create_time" align="center" label="创建时间" show-overflow-tooltip min-width="160" :sortable="'custom'">
         <template slot-scope="scope">
           {{ scope.row.create_time | formatDate }}
         </template>
@@ -89,7 +95,7 @@
     <el-col :span="24" class="toolbar">
       <!-- <el-button type="danger" @click="batchRemove" :disabled="sels.length===0">批量删除</el-button> -->
       <!--<el-pagination layout="prev, pager, next" @current-change="handleCurrentChange" :page-size="5" :total="total" style="float:right;">-->
-      <el-pagination layout="total, sizes ,prev, pager, next, jumper" :page-size="page_size" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange"/>
+      <el-pagination layout="total, sizes ,prev, pager, next, jumper" :page-size="page_size" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
     </el-col>
 
     <!--编辑界面-->
@@ -98,8 +104,7 @@
         <el-form-item label="姓名" prop="name">
           <el-input v-model="editForm.name" auto-complete="off" placeholder="请输入名字" />
         </el-form-item>
-        <!-- <el-form-item label="身份" prop="identity"> -->
-        <el-form-item label="身份" >
+        <el-form-item label="身份">
           <el-select v-model="editForm.role" class="filter-item" placeholder="请选择角色">
             <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
           </el-select>
@@ -131,7 +136,7 @@
         <el-form-item label="姓名" prop="name">
           <el-input v-model="editForm.name" auto-complete="off" />
         </el-form-item>
-        <el-form-item label="身份" >
+        <el-form-item label="身份">
           <el-select v-model="editForm.role" class="filter-item" placeholder="请选择角色">
             <el-option v-for="item in statusOptions" :key="item" :label="item" :value="item" />
           </el-select>
@@ -150,7 +155,7 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click.native="dialogFormVisible=false">取消</el-button>
+        <el-button @click.native="dialogFormEditVisible=false">取消</el-button>
         <!-- <el-button type="primary" @click="createData">添加</el-button> -->
         <el-button type="primary" @click="updateData">修改</el-button>
       </div>
@@ -222,8 +227,8 @@ export default {
       }
     }
     // 验证邮箱的规则
-    const checkEmail = (rule,value,cb) =>{
-      const regEmail = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/;
+    const checkEmail = (rule, value, cb) => {
+      const regEmail = /^([a-zA-Z]|[0-9])(\w|\-)+@[a-zA-Z0-9]+\.([a-zA-Z]{2,4})$/
       if (regEmail.test(value)) {
         // 合法的邮箱
         return cb()
@@ -291,6 +296,8 @@ export default {
         type: '',
         createTime: []
       },
+      colorder: '',
+      ordering: '',
       users: [],
       // statusOptions: ['admin', 'user', 'Manager'],
       statusOptions: [],
@@ -349,14 +356,9 @@ export default {
       }
     }
   },
-  created(){
-    if (store.getters.register == 1) {
-      this.$router.push('/dashboard')
-    }
-  },
   mounted() {
-    window.getUsers = this.getUsers;
-    document.onkeydown = keyDownSearch;
+    window.getUsers = this.getUsers
+    document.onkeydown = keyDownSearch
     this.getUsers()
     this.getRoles()
     this.authority = store.getters.authority
@@ -368,6 +370,11 @@ export default {
   destroyed() {
     document.onkeydown = undefined
   },
+  created() {
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
+  },
   methods: {
     handleSizeChange(val) {
       this.page_size = val
@@ -377,6 +384,13 @@ export default {
       this.page = val
       this.getUsers()
     },
+    sortChange(column) {
+      console.log('排序', column.prop, column.order)
+      this.colorder = column.prop
+      this.ordering = column.order
+      this.getUsers()
+    },
+
     // 获取用户列表
     getUsers() {
       const para = {
@@ -387,7 +401,9 @@ export default {
         mobile: this.filters.mobile,
         role: this.filters.role,
         type: this.filters.type,
-        createTime: this.filters.createTime.toString()
+        createTime: this.filters.createTime.toString(),
+        colorder: this.colorder,
+        ordering: this.ordering
       }
       console.log(para)
       getUserListPage(para).then(res => {
@@ -472,10 +488,10 @@ export default {
                 this.dialogFormEditVisible = false
                 this.getUsers()
                 if(this.name === store.getters.name && this.oldRow.role == temp.role) {
-                  //this.logout()
+                  this.logout()
                 }
                 if (temp.password.length >= 1) {
-                  //this.logout()
+                  // this.logout()
                 }
               })
             })
@@ -543,6 +559,15 @@ export default {
         })
         .catch(() => {})
     },
+    // getUserAuthority(role) {
+    //   const params = {
+    //     srcRole: store.getters.role,
+    //     dstRole: role
+    //   }
+    //   getAuthorityApi(params).then(res => {
+
+    //   })
+    // },
     getRoles() {
       const params = {
         role: store.getters.role
@@ -552,7 +577,6 @@ export default {
       })
     }
   }
-  
 }
 </script>
 
