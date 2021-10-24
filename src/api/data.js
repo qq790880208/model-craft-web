@@ -5,7 +5,7 @@ export function getDataByName(params) {
     url: '/data/getdataSet',
     method: 'get',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -14,7 +14,7 @@ export function getAssignData(params) {
     url: '/data/getAssignedData',
     method: 'get',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -23,7 +23,7 @@ export function getDataByTeam(params) {
     url: '/data/getDataTeam',
     method: 'get',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -32,7 +32,7 @@ export function getDataByManager(params) {
     url: '/data/getDataManager',
     method: 'get',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -41,7 +41,7 @@ export function createDataSetApi(params) {
     url: '/data/create',
     method: 'post',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -50,7 +50,7 @@ export function createDataSetApi(params) {
 //     url: '/data/delete',
 //     method: 'delete',
 //     params: params,
-//     baseURL: 'http://127.0.0.1:8085'
+//     baseURL: 'http://10.19.1.77:8085'
 //   })
 // }
 
@@ -59,7 +59,7 @@ export function deleteDataSet(params) {
     url: '/dataset/delete',
     method: 'delete',
     params: params,
-    baseURL: 'http://127.0.0.1:8089'
+    baseURL: 'http://10.19.1.77:8089'
   })
 }
 
@@ -68,7 +68,7 @@ export function getLabel(params) {
     url: '/userlabel/getAll',
     method: 'get',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -77,7 +77,7 @@ export function getLabelDataApi(params) {
     url: '/userlabel/getLabel',
     method: 'get',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -86,7 +86,7 @@ export function deleteData(params) {
     url: '/userlabel/deleteData',
     method: 'delete',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -95,7 +95,7 @@ export function assignLabel(params) {
     url: '/userlabel/assignLabel',
     method: 'post',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -104,7 +104,7 @@ export function addNewLabels(params) {
     url: '/label/addNewLabel',
     method: 'post',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -113,7 +113,7 @@ export function assignNewData(params) {
     url: '/userlabel/assignNewData',
     method: 'post',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -122,7 +122,7 @@ export function getNewFile(params) {
     url: '/file/getFiles',
     method: 'get',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -131,7 +131,7 @@ export function refresh(params) {
     url: '/label/fresh',
     method: 'put',
     params: params,
-    baseURL: 'http://127.0.0.1:8089'
+    baseURL: 'http://10.19.1.77:8089'
   })
 }
 
@@ -140,7 +140,7 @@ export function addTags(params) {
     url: '/tag/add',
     method: 'post',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -149,7 +149,7 @@ export function getTags(params) {
     url: '/tag/get',
     method: 'get',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -158,7 +158,7 @@ export function updateTags(params) {
     url: '/tag/update',
     method: 'put',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -167,7 +167,7 @@ export function assignByNewTeamUser(params) {
     url: '/userlabel/reAssignByAddUser',
     method: 'put',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -176,7 +176,7 @@ export function assignLabelDataChange(params) {
     url: '/userlabel/assignNewData',
     method: 'post',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -185,7 +185,7 @@ export function outTimeReAssign(params) {
     url: '/userlabel/reAssign',
     method: 'post',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -194,7 +194,7 @@ export function getNewLabels(params) {
     url: '/userlabel/getNewLabel',
     method: 'get',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }
 
@@ -203,6 +203,6 @@ export function delTeamTaskApi(params) {
     url: '/teamdataset/delTeam',
     method: 'delete',
     params: params,
-    baseURL: 'http://127.0.0.1:8085'
+    baseURL: 'http://10.19.1.77:8085'
   })
 }

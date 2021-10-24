@@ -5,7 +5,7 @@ export function getList(tmp) {
     url: '/model/group',
     method: 'get',
     params: tmp,
-    baseURL: 'http://127.0.0.1:8081'
+    baseURL: 'http://10.19.1.181:8081'
   })
 }
 
@@ -14,7 +14,7 @@ export function getListByName(tmp) {
     url: '/model/name/',
     method: 'get',
     params: tmp,
-    baseURL: 'http://127.0.0.1:8081'
+    baseURL: 'http://10.19.1.181:8081'
   })
 }
 
@@ -23,7 +23,7 @@ export function delModelById(mid) {
     url: '/model?label_uuid=' + mid,
     method: 'delete',
     data: mid,
-    baseURL: 'http://127.0.0.1:8081'
+    baseURL: 'http://10.19.1.181:8081'
   })
 }
 
@@ -32,7 +32,7 @@ export function addModel(data) {
     url: '/model',
     method: 'post',
     data: data,
-    baseURL: 'http://127.0.0.1:8081'
+    baseURL: 'http://10.19.1.181:8081'
   })
 }
 

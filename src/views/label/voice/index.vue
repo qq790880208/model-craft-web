@@ -18,7 +18,7 @@ export default {
   name: 'Dashboard',
   data(){
     return{
-              //存储图片url数组，用于获取远程图片信息
+      //存储图片url数组，用于获取远程图片信息
       imageArry: [],
       //与图片一一对应的标注信息数组
       infoArry: [],

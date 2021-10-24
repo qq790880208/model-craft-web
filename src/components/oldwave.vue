@@ -285,6 +285,9 @@ export default {
   },
   watch: {},
   methods: {
+    entermark(){
+
+    },
     changebi() {
       console.log("change!!!!!!!!!!!!!!!!!!!!");
       this.b_i = -1;

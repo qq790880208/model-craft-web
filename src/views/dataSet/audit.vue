@@ -3,11 +3,7 @@
     <div class="header">
       <div class="title">
         <!-- <span>{{store.getters.dataSet.name}}</span> -->
-<<<<<<< HEAD
         <span>{{ name }}</span>
-=======
-        <span>{{ this.name }}</span>
->>>>>>> dev
         <el-button class="titlebutton" size="small" style="margin-left:100px; border: 0px" icon="el-icon-arrow-left" @click="toDataList">
           返回数据集
         </el-button>
