@@ -102,8 +102,7 @@
         display: 'flex',
       }"
     >
-      <div
-        id="leftdiv"
+      <div id="leftdiv"
         ref="outdiv"
         :style="{
           maxWidth: 1000 + 'px',
@@ -239,6 +238,14 @@
         </div>
       </div>
     </div>
+    <div id="remarkinfodiv">
+      <div>
+        <p>{{auditremakeinfo}}</p>
+      </div>
+      <div>
+        <p>{{acceptremakeinfo}}</p>
+      </div>
+    </div>
   </div>
 </template>
 <script>
@@ -319,6 +326,14 @@ export default {
     premarktype: {
       type: Array,
       default: () => [],
+    },
+    auditremakeinfo:{
+      type:String,
+      default:'',
+    },
+    acceptremakeinfo:{
+      type:String,
+      default:'',
     },
     lastlabelArry: {
       type: Object,
@@ -1113,6 +1128,7 @@ export default {
     updatelastdata() {
       //查看上次标注保存的信息
       console.log("image select lastlabelArry", this.lastlabelArry);
+      console.log("remarkinfo", this.auditremakeinfo,this.acceptremakeinfo);
       if(this.lastlabelArry==undefined) return
       // this.clearinfo();
       // this.clearobj();

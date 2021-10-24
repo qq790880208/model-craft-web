@@ -32,6 +32,8 @@
       :fatherimagesrc="this.imageArry[nownum]"
       :imageindex="this.nownum"
       :premarktype="this.marktype"
+      :auditremakeinfo="this.auditinfoArry[nownum]"
+      :acceptremakeinfo="this.acceptinfoArry[nownum]"
       :lastlabelArry="this.lastinfoArry[nownum]"
       @closebutton="closebutton"
       @saveimageinfo="saveimageinfo"
@@ -103,6 +105,10 @@ export default {
       imagelargeArry:[],
       //标注状态的数组
       imageislabelArry:[],
+      //审核驳回信息数组
+      auditinfoArry:[],
+      //验收驳回信息数组
+      acceptinfoArry:[],
     //   //预读取每张图片的分辨率，以适应画布
     //   imagesize:[],
       //后台读取的标注类别
@@ -385,12 +391,15 @@ export default {
           datasetuuid: store.getters.uuid
         }
         getLabel(params).then(function (response) {
+        console.log("response",response)
         _this.imageArry=[]
         _this.infoArry=[]
         _this.lastinfoArry=[]
         _this.uuidArry=[]
         _this.imagelargeArry=[]
         _this.imageislabelArry=[]
+        _this.auditinfoArry=[]
+        _this.acceptinfoArry=[]
         console.log("get response.data.items",response.data.items);
         for (let i = 0; i < response.data.items.length; i++) {
           console.log("get items",[i],response.data.items[i]);
@@ -406,6 +415,8 @@ export default {
           //   _this.imagesize.push(imagea)
           // }
           // console.log("ima",_this.imagesize)
+          _this.auditinfoArry[i]=response.data.items[i].audit_remark
+          _this.acceptinfoArry[i]=response.data.items[i].accept_remark
           if(response.data.items[i].is_label!=1) _this.isalllabeled=false;
           if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
           _this.lastinfoArry.push({})
@@ -465,6 +476,8 @@ export default {
         _this.uuidArry=[]
         _this.imagelargeArry=[]
         _this.imageislabelArry=[]
+        _this.auditinfoArry=[]
+        _this.acceptinfoArry=[]
         console.log("get response.data.items",response.data.items);
         for (let i = 0; i < response.data.items.length; i++) {
           console.log(response.data.items[i]);
@@ -480,6 +493,8 @@ export default {
           //   _this.imagesize.push(imagea)
           // }
           // console.log("ima",_this.imagesize)
+          _this.auditinfoArry[i]=response.data.items[i].audit_remark
+          _this.acceptinfoArry[i]=response.data.items[i].accept_remark
           if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
           _this.lastinfoArry.push({})
           }
