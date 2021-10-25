@@ -110,6 +110,8 @@ import Timeline from "wavesurfer.js/dist/plugin/wavesurfer.timeline.js";
 import Regions from "wavesurfer.js/dist/plugin/wavesurfer.regions.js";
 import Minimap from "wavesurfer.js/dist/plugin/wavesurfer.minimap.js";
 import Cursor from "wavesurfer.js/dist/plugin/wavesurfer.cursor.js";
+
+import mp3 from "@/music/abc.mp3";
 ////js////
 // let wavesurfer = WaveSurfer.create({
 //     container: document.querySelector('#testwave'),
@@ -134,9 +136,15 @@ export default {
       type: Array,
       default: () => [],
     },
+    audioUrl:{
+      type: String ,
+      default: ""
+    }
   },
   data() {
     return {
+      
+
       wavesurfer: null,
       newregion: null,
       b_i: -1,
@@ -153,9 +161,14 @@ export default {
   components: {
     labelinfo,
   },
+  computed:{
+      nowaudioUrl: function () {
+      return require(this.audioUrl);
+    },
+  },
   mounted() {
     this.$nextTick(() => {
-      console.log(WaveSurfer);
+      console.log("mp3",mp3);
       this.wavesurfer = WaveSurfer.create({
         container: this.$refs.waveform,
         //container: "#waveform",
@@ -219,6 +232,11 @@ export default {
       });
       //放大缩小效果
       let _this = this;
+      let a = "@/music/abc.mp3"
+      // 特别提醒：此处需要使用require(相对路径)，否则会报错
+      //this.wavesurfer.load(require("@/music/abc.mp3"));
+      console.log("dsadsadsa",this.audioUrl)
+      this.wavesurfer.load(mp3);
       {
         // Zoom slider
         //let slider = document.querySelector('[data-action="zoom"]');
@@ -236,8 +254,7 @@ export default {
         // set initial zoom to match slider value
         this.wavesurfer.zoom(slider.value);
       }
-      // 特别提醒：此处需要使用require(相对路径)，否则会报错
-      this.wavesurfer.load(require("@/music/abc.mp3"));
+
       //允许标注并选中第一个标签的颜色
       this.wavesurfer.on("ready", () => {
         //选中第一个标签的颜色

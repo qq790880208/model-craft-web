@@ -26,10 +26,29 @@ export function addRoleMenu(params) {
   })
 }
 
-export function getRolesListApi() {
+export function getRolesListApi(params) {
   return request({
     url: '/role/rolesList',
     method: 'get',
+    params: params,
+    baseURL: 'http://10.19.1.77:8088'
+  })
+}
+
+export function addNewRoleApi(params) {
+  return request({
+    url: '/role/addNewRole',
+    method: 'post',
+    params: params,
+    baseURL: 'http://10.19.1.77:8088'
+  })
+}
+
+export function delRoleApi(params) {
+  return request({
+    url: '/role/delRole',
+    method: 'DELETE',
+    params: params,
     baseURL: 'http://10.19.1.77:8088'
   })
 }

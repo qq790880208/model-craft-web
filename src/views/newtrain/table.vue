@@ -87,15 +87,15 @@
       </el-table-column> -->
       <el-table-column label="操作" width="400"> 
         <template slot-scope="scope">
-            <el-button
-            size="mini"
-            @click="handleStart(scope.$index, scope.row)">开始</el-button>
-          <!-- <el-button
-            size="mini"
-            @click="handleStop(scope.$index, scope.row)">终止</el-button> -->
           <el-button
             size="mini"
-            @click="handleShow()">可视化</el-button>
+            @click="handleStart(scope.$index, scope.row)">开始</el-button>
+          <el-button
+            size="mini"
+            @click="handleStop(scope.$index, scope.row)">终止</el-button>
+          <el-button
+            size="mini"
+            @click="handleShow()">可视化</el-button> -->
           <el-button
             size="mini" v-if="scope.row.status!=0"
             @click="handleShowlog(scope.$index, scope)" >日志</el-button>
@@ -209,8 +209,21 @@
         </el-form-item> -->
         <el-form-item label="参数选择" >
           <el-form>
-            <div style="height:150px; " class="scrollbar">
-              <!-- <el-scrollbar style="height:100%; "> -->
+            <el-form-item >
+                <el-select v-model="value" clearable placeholder="根据任务名称选取参数" @change="search">
+                  <el-option
+                    v-for="item in options"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item >      
+            
+              <div style="height:150px; " class="scrollbar">
+              <!-- <el-scrollbar style="height:100%; "> 
                 <el-form-item v-for="(item, index) in paraNameList[currentAlgorithm]" :key="index">
                   <p sty autocomplete="off" style="width: 15%;display: inline-block" >{{item}}</p>
                   <b style="margin-left:15px;">=</b>
@@ -218,20 +231,35 @@
                   </el-input>
                 </el-form-item>
                 <div v-if="isdisplaytl">
-                <p sty autocomplete="off" style="width: 15%;display: inline-block" >transferLearning</p>
-                <b style="margin-left:15px;" >=</b>
-                <el-select v-model="transferLearningValue" placeholder="请选择" style="width: 35%; margin-left:15px;" >
-                  <div style="height:150px;" class="scrollbar" >
-                    <el-scrollbar style="height:100%;">
-                      <el-option v-for="(item, index) in transferLearningList" :key="index"
-                      :label="item" :value="item">
-                      </el-option>
-                    </el-scrollbar>
-                  </div>
-                </el-select>
+                  <p sty autocomplete="off" style="width: 15%;display: inline-block" >transferLearning</p>
+                  <b style="margin-left:15px;" >=</b>
+                  <el-select v-model="transferLearningValue" placeholder="请选择" style="width: 35%; margin-left:15px;" >
+                    <div style="height:150px;" class="scrollbar" >
+                      <el-scrollbar style="height:100%;">
+                        <el-option v-for="(item, index) in transferLearningList" :key="index"
+                        :label="item" :value="item">
+                        </el-option>
+                      </el-scrollbar>
+                    </div>
+                  </el-select>
                 </div>
-              <!-- </el-scrollbar> -->
-            </div>
+              </el-scrollbar> -->
+                <el-form-item  v-for="(item, index) in list_model_para" :key="index">
+                    <el-col :span="5">
+                        <el-input v-model="item[0]"></el-input>
+                    </el-col>
+                    <el-col :span="2" style="text-align:center;"> = </el-col>
+                    <el-col :span="5">
+                        <el-input v-model="item[1]"></el-input>
+                    </el-col>
+                    <el-col :span="5" style="text-align:center;"> 
+                        <el-button icon="el-icon-plus" circle @click="addpara" size="small"></el-button>
+                        <el-button icon="el-icon-minus" circle @click="deletepara(index)" size="small"></el-button>
+                    </el-col>
+                </el-form-item>
+
+              </div>
+            </el-form-item>
           </el-form>
 
         </el-form-item>
@@ -252,10 +280,72 @@ import visualf from "./visual1"
 import visualt from "./visual2"
 import {startTask, showLog,getAcceptData,stopTask, getTableData1,deleteTask,  search, searchStatus, getVisualData, submitTask, getinitialPara} from '@/api/newTrain'
 import store from '@/store'
+
+function keyDownSearch(e){
+  console.log("keydown!!!!!!!!!!!!")
+  let theEvent = e.event || window.event;
+  let code = theEvent.keyCode ||  theEvent.which || theEvent.charCode
+  if(code == 13){ //保存并上一张
+    console.log("enter!!!!!!!!!!!!!")
+    searchTask()
+    //return false;     
+  }
+}
+
 export default {
     components: {visual, visualf, visualt},
     data() {
       return {
+        all_list_model_para:
+                [
+                    ['epoch', 100], 
+                    ['size', 512], 
+                    ['learning_rate', 0.01]
+                ],
+                    
+                list_model_para:
+                [
+                    ['epoch', 100],
+                    ['size', 512], 
+                    ['learning_rate', 0.01]
+                ],
+                options:
+                [
+                    {
+                        value: 'Option1',
+                        label: 'Option1',
+                    },
+                    {
+                        value: 'Option2',
+                        label: 'Option2',
+                    },
+                    {
+                        value: 'Option3',
+                        label: 'Option3',
+                    },
+                    {
+                        value: 'Option4',
+                        label: 'Option4',
+                    },
+                    {
+                        value: 'Option5',
+                        label: 'Option5',
+                    }
+                ],
+                value:'',
+
+
+
+
+
+
+
+
+
+
+
+
+
         //2021/07/08新增数据
         imageOssPath:"none",
         textOssPath:"none",
@@ -419,6 +509,7 @@ export default {
       },
       //主页面部分
       searchTask(){//输入框查询
+      //console.log("312321321321321")
       if(this.queryInfo.query=="") {
         this.isSearchingFlag=false;
         return
@@ -503,9 +594,9 @@ export default {
           }
           console.log(this.initialPara)
         })
-        getinitialPara().then(res =>{
-          this.initialPara.outpath = res.data.outpath
-        })
+        // getinitialPara().then(res =>{
+        //   this.initialPara.outpath = res.data.outpath
+        // })
         
       }, 
       handleStart(index, row) {//开始某行训练
@@ -535,12 +626,13 @@ export default {
               });  
             }
           })
-        }).catch(() => { 
-          this.$message({
-            type: 'info',
-            message: '已取消删除'
-          });       
-        });
+        })
+        // .catch(() => { 
+        //   this.$message({
+        //     type: 'info',
+        //     message: '已取消删除'
+        //   });       
+        // });
         
         
       },
@@ -559,12 +651,13 @@ export default {
             type: 'success',
             message: '终止成功!'
           });  
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消终止'
-          });          
-        });
+        })
+        // .catch(() => {
+        //   this.$message({
+        //     type: 'info',
+        //     message: '已取消终止'
+        //   });          
+        // });
         
         
       },
@@ -747,10 +840,13 @@ export default {
       setTimerLog(train_id) {//读取日志的定时器
       console.log("this.timerLog",this.timerLog)
       this.logText = ''
+      let parm = {
+        'trainjob_id' : train_id
+      }
         if(this.timerLog == null) {
           this.timerLog = setInterval( () => {
               //console.log('开始定时...每过一秒执行一次')
-              showLog(train_id).then(res =>{
+              showLog(parm).then(res =>{
                 console.log(res)
                 this.logText = res.data.content
                 const textarea = document.getElementById('textarea_id');
@@ -778,12 +874,20 @@ export default {
     },
     
     mounted() {
+      window.searchTask = this.searchTask;
+      document.onkeydown = keyDownSearch;
       this.fetchData()
       // clearInterval(this.timer)
       // this.timer = null
       this.setTimer()
     },
+    created(){
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
+    },
     destroyed() {
+      document.onkeydown = undefined;
       clearInterval(this.timer)
       this.timer = null
     }

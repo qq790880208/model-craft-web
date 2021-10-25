@@ -201,6 +201,18 @@ import visualf from "./visual1"
 import visualt from "./visual2"
 import {startTask, showLog,getDataByName,stopTask, getTableData1 ,deleteTask,  search, searchStatus, getVisualData, submitTask, getinitialPara, getModels, getTargetDataSets} from '@/api/predict'
 import store from '@/store'
+
+function keyDownSearch(e){
+  console.log("keydown!!!!!!!!!!!!")
+  let theEvent = e.event || window.event;
+  let code = theEvent.keyCode ||  theEvent.which || theEvent.charCode
+  if(code == 13){ //保存并上一张
+    console.log("enter!!!!!!!!!!!!!")
+    searchTask()
+    //return false;     
+  }
+}
+
 export default {
     components: {visual, visualf, visualt},
     data() {
@@ -749,14 +761,21 @@ export default {
       }
 
     },
-    
+    created(){
+    if (store.getters.register == 1) {
+      this.$router.push('/dashboard')
+    }
+    },
     mounted() {
+      window.searchTask = this.searchTask;
+      document.onkeydown = keyDownSearch;
       this.fetchData()
       // clearInterval(this.timer)
       // this.timer = null
       this.setTimer()
     },
     destroyed() {
+      document.onkeydown = undefined;
       clearInterval(this.timer)
       this.timer = null
     }

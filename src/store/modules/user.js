@@ -14,7 +14,9 @@ const getDefaultState = () => {
     userid: '',
     role: '',
     password: '',
-    authority: []
+    authority: [],
+    register: '',
+    dataSet: []
   }
 }
 
@@ -54,12 +56,21 @@ const mutations = {
   SET_PASSWORD: (state, password) => {
     state.password = password
   },
+  SET_DATASET: (state, dataSet) => {
+    state.dataSet = dataSet
+  },
   SET_AUTHORITY: (state, authority) => {
     state.authority = authority
+  },
+  SET_REGISTER: (state, register) => {
+    state.register = register
   }
 }
 
 const actions = {
+  changeDataSet({ commit }, data) {
+    commit('SET_DATASET', data)
+  },
   // user login
   login({ commit }, userInfo) {
     const { username, password } = userInfo
@@ -97,7 +108,9 @@ const actions = {
         if (!data) {
           return reject('Verification failed, please Login again.')
         }
-        const { name, role, descr, id, password } = data.items
+        const { name, role, descr, id, password, is_assign } = data.items
+        console.log("sssssssssssssssss")
+        console.log(is_assign)
         console.log(role.split(','))
         commit('SET_ROLE', role)
         commit('SET_ROLES', role.split(','))
@@ -106,7 +119,9 @@ const actions = {
         // commit('SET_LABELROLE', labelrole)
         commit('SET_DESCR', descr)
         commit('SET_PASSWORD', password)
+        commit('SET_REGISTER', is_assign)
         commit('SET_AUTHORITY', data.authority)
+        commit('SET_REGISTER', is_assign)
         if (data.menus && data.menus.length > 0) { // 验证返回的menus是否是一个非空数组
           commit('SET_MENUS', data.menus)
         }
@@ -115,7 +130,11 @@ const actions = {
         console.log(state.descr)
         console.log(state.userid)
         console.log(state.password)
+        console.log(',.,.,.,.,.,.,.,.,.,.,.')
+        console.log(state.register)
         console.log(state.menus)
+        console.log(',.,.,.,.,.,.,.,.,.,.,.')
+        console.log(state.register)
         // resolve(data.items)
         resolve(response)
       }).catch(error => {
@@ -129,12 +148,19 @@ const actions = {
     return new Promise((resolve, reject) => {
       logout().then(() => {
         removeToken() // must remove  token  first
-        resetRouter()
+        console.log("wwwwwwwwwww")
+        console.log("qqqqqqqqqq")
         commit('RESET_STATE')
+        console.log("2222222222222")
+        console.log("eeeeeeee")
+        console.log("121qweqweqweqwe31231")
+        resetRouter()
         resolve()
+        
       }).catch(error => {
         reject(error)
       })
+
     })
   },
 

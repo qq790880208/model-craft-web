@@ -32,6 +32,8 @@
       :fatherimagesrc="this.imageArry[nownum]"
       :imageindex="this.nownum"
       :premarktype="this.marktype"
+      :auditremakeinfo="this.auditinfoArry[nownum]"
+      :acceptremakeinfo="this.acceptinfoArry[nownum]"
       :lastlabelArry="this.lastinfoArry[nownum]"
       @closebutton="closebutton"
       @saveimageinfo="saveimageinfo"
@@ -80,6 +82,11 @@ function keyDownSearch(e){
     console.log("gggggggggg!!!!!!!!!!!!!")
     nomarkedimage()
   }
+    if(code == 27){ //保存并上一张
+    console.log("eeeeeeeeeeeeeeeeeeeeessssssssssccccccccccccccccccc!!!!!!!!!!!!!")
+    undochild()
+    //return false;     
+  }
 }
 
 export default {
@@ -94,10 +101,14 @@ export default {
       lastinfoArry: [],
       //与图片对于的uuid数组，是后台数据库主键
       uuidArry: [],
-      //存储图片url,是否已标注等信息的数组，用于获取远程图片信息
+      //存储图片url,是否已标注等信息的数组，用于获取远程图片信息,小图片组件使用
       imagelargeArry:[],
       //标注状态的数组
       imageislabelArry:[],
+      //审核驳回信息数组
+      auditinfoArry:[],
+      //验收驳回信息数组
+      acceptinfoArry:[],
     //   //预读取每张图片的分辨率，以适应画布
     //   imagesize:[],
       //后台读取的标注类别
@@ -156,6 +167,7 @@ export default {
     window.skipimagenext = this.skipimagenext;
     window.skipimagepre = this.skipimagepre;
     window.nomarkedimage = this.nomarkedimage;
+    window.undochild = this.undochild;
     document.onkeydown = keyDownSearch;
       this.starttimer = setInterval(()=>{
       this.nowseconds++;
@@ -175,6 +187,9 @@ export default {
       },1000);
   },
   methods: {
+    undochild(){
+      this.$refs.drawpolygonref.undo()
+    },
     returndataset(){
       this.$router.go(-1)
     },
@@ -330,7 +345,7 @@ export default {
       let _this = this;
       // return request({
       //   url:
-      //     "http://10.19.1.181:8082/dataset/save?dataset_id="+store.getters.uuid,
+      //     "http://127.0.0.1:8082/dataset/save?dataset_id="+store.getters.uuid,
       //   method: "post",
       //   //timeout:_this.lastinfoArry.length*5000,
       //   //params: query
@@ -369,19 +384,25 @@ export default {
     //get请求图片数据
     requireimage() {
       console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
+      console.log("store.getters.dataSet.role_type",store.getters.dataSet.role_type,"store.getters.predictcontrol",store.getters.predictcontrol)
       let _this = this;
       this.isalllabeled = true;
-      if(store.getters.dataSet.role_type === "创建者" || store.getters.predictcontrol === '1') {
+      //if(store.getters.dataSet.role_type === "创建者" || store.getters.predictcontrol === '1') {
+      if(1){
         const params = {
           datasetuuid: store.getters.uuid
         }
         getLabel(params).then(function (response) {
+        console.log("response",response)
+        return
         _this.imageArry=[]
         _this.infoArry=[]
         _this.lastinfoArry=[]
         _this.uuidArry=[]
         _this.imagelargeArry=[]
         _this.imageislabelArry=[]
+        _this.auditinfoArry=[]
+        _this.acceptinfoArry=[]
         console.log("get response.data.items",response.data.items);
         for (let i = 0; i < response.data.items.length; i++) {
           console.log("get items",[i],response.data.items[i]);
@@ -397,6 +418,8 @@ export default {
           //   _this.imagesize.push(imagea)
           // }
           // console.log("ima",_this.imagesize)
+          _this.auditinfoArry[i]=response.data.items[i].audit_remark
+          _this.acceptinfoArry[i]=response.data.items[i].accept_remark
           if(response.data.items[i].is_label!=1) _this.isalllabeled=false;
           if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
           _this.lastinfoArry.push({})
@@ -456,6 +479,8 @@ export default {
         _this.uuidArry=[]
         _this.imagelargeArry=[]
         _this.imageislabelArry=[]
+        _this.auditinfoArry=[]
+        _this.acceptinfoArry=[]
         console.log("get response.data.items",response.data.items);
         for (let i = 0; i < response.data.items.length; i++) {
           console.log(response.data.items[i]);
@@ -471,6 +496,8 @@ export default {
           //   _this.imagesize.push(imagea)
           // }
           // console.log("ima",_this.imagesize)
+          _this.auditinfoArry[i]=response.data.items[i].audit_remark
+          _this.acceptinfoArry[i]=response.data.items[i].accept_remark
           if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
           _this.lastinfoArry.push({})
           }
@@ -575,7 +602,7 @@ export default {
         console.log("setUnAcceptsetUnAcceptsetUnAccept",response);
       })
       let isab
-      if(this.infoArry[i].polygon.length>0||this.infoArry[i].line.length>0||this.infoArry[i].circle.length>0||!infoFlag) isab=1
+      if(this.infoArry[i].polygon.length>0||this.infoArry[i].line.length>0||this.infoArry[i].circle.length>0||this.infoArry[i].rectangle.length>0||this.infoArry[i].ellipse.length>0||!infoFlag) isab=1
       else isab=2
       let data = {
           label_data: JSON.stringify(this.infoArry[i]),
@@ -625,39 +652,39 @@ export default {
       });
       }
     },
-        //post半自动标注
-    automark1(){
-      let _this = this;
-      _this.$message('开始像素级拉框自动标注');
-      _this.automarkbtntext="标注中";
-      _this.isloading=true;
-      console.log("图片长度预留时间",_this.lastinfoArry.length*5000)
-      const params = {
-        dataset_id:store.getters.uuid
-      }
-      automark(params,_this.lastinfoArry.length)
-      .then(function (response) {
-        console.log(response);
-        _this.$message({
-          message:"像素级自动标注成功",
-          type: 'success'
-          });
-        _this.automarkbtntext="开始自动标注";
-        _this.isloading=false;
-        _this.requireimage();
-        _this.requiretag();
-      }).catch(function(error){
-        console.log("error111",error)
-          _this.$message({
-          message:"像素级自动标注失败",
-          type: 'error'
-          });
-        _this.automarkbtntext="开始自动标注";
-        _this.isloading=false;
-        _this.requireimage();
-        _this.requiretag();
-      });
-    },
+    //     //post半自动标注
+    // automark1(){
+    //   let _this = this;
+    //   _this.$message('开始像素级拉框自动标注');
+    //   _this.automarkbtntext="标注中";
+    //   _this.isloading=true;
+    //   console.log("图片长度预留时间",_this.lastinfoArry.length*5000)
+    //   const params = {
+    //     dataset_id:store.getters.uuid
+    //   }
+    //   automark(params,_this.lastinfoArry.length)
+    //   .then(function (response) {
+    //     console.log(response);
+    //     _this.$message({
+    //       message:"像素级自动标注成功",
+    //       type: 'success'
+    //       });
+    //     _this.automarkbtntext="开始自动标注";
+    //     _this.isloading=false;
+    //     _this.requireimage();
+    //     _this.requiretag();
+    //   }).catch(function(error){
+    //     console.log("error111",error)
+    //       _this.$message({
+    //       message:"像素级自动标注失败",
+    //       type: 'error'
+    //       });
+    //     _this.automarkbtntext="开始自动标注";
+    //     _this.isloading=false;
+    //     _this.requireimage();
+    //     _this.requiretag();
+    //   });
+    // },
   },
   destroyed(){
     document.onkeydown = undefined;

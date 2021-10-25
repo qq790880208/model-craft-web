@@ -1,15 +1,15 @@
 const getDefaultState = () => {
-    return {
-      uuid: '',
-      type: '',
-      dirPath: '',
-      predictcontrol:'',
-      dataSet: []
-    }
+  return {
+    uuid: '',
+    type: '',
+    dirPath: '',
+    predictcontrol:''
+    // dataSet: []
   }
-  
+}
+
 const state = getDefaultState()
-  
+
 const mutations = {
   SET_UUID: (state, uuid) => {
     state.uuid = uuid
@@ -22,13 +22,13 @@ const mutations = {
   },
   SET_PREDICTCONTROL: (state, predictcontrol) => {
     state.predictcontrol = predictcontrol
-  },
-  SET_DATASET: (state, dataSet) => {
-    state.dataSet = dataSet
   }
-  
+  // SET_DATASET: (state, dataSet) => {
+  //   state.dataSet = dataSet
+  // }
+
 }
-  
+
 const actions = {
   changeUuid({ commit }, data) {
     commit('SET_UUID', data)
@@ -41,16 +41,15 @@ const actions = {
   },
   changepredictcontrol({ commit }, data) {
     commit('SET_PREDICTCONTROL', data)
-  },
-  changeDataSet({ commit }, data) {
-    commit('SET_DATASET', data)
   }
+  // changeDataSet({ commit }, data) {
+  //   commit('SET_DATASET', data)
+  // }
 }
 
 export default {   
-  namespaced: true,
-  state,
-  mutations,
-  actions
+namespaced: true,
+state,
+mutations,
+actions
 }
-  

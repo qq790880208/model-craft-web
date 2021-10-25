@@ -78,6 +78,11 @@ function keyDownSearch(e){
     console.log("gggggggggg!!!!!!!!!!!!!")
     nomarkedimage()
   }
+  if(code == 46){ //删除快捷键
+    console.log("ddddddddddelete!!!!!!!!!!!!!")
+    deleteSelect();
+  //return true;
+  }
 }
 
 export default {
@@ -143,6 +148,9 @@ export default {
     // labelinfo
   },
   methods: {
+    deleteSelect(){
+      this.$refs.imageselectref.deletelabel2();
+    },
     returndataset(){
       this.$router.go(-1)
     },
@@ -272,7 +280,7 @@ export default {
     //   let _this = this;
     //   return request({
     //     url:
-    //       "http://10.19.1.77:8085/label/setLabeling?uuid="+this.uuidArry[this.nownum],
+    //       "http://127.0.0.1:8085/label/setLabeling?uuid="+this.uuidArry[this.nownum],
     //     method: "post",
     //     //timeout:_this.lastinfoArry.length*5000,
     //     //params: query
@@ -292,7 +300,7 @@ export default {
     //post生成xml
           // return request({
       //   url:
-      //     "http://10.19.1.181:8082/dataset/save?dataset_id="+store.getters.uuid,
+      //     "http://127.0.0.1:8082/dataset/save?dataset_id="+store.getters.uuid,
       //   method: "post",
       //   //timeout:_this.lastinfoArry.length*5000,
       //   //params: query
@@ -309,7 +317,7 @@ export default {
       }
       // return request({
       //   url:
-      //     "http://10.19.1.181:8082/dataset/save?dataset_id="+store.getters.uuid,
+      //     "http://127.0.0.1:8082/dataset/save?dataset_id="+store.getters.uuid,
       //   method: "post",
       //   //timeout:_this.lastinfoArry.length*5000,
       //   //params: query
@@ -598,7 +606,7 @@ export default {
       console.log("图片长度预留时间",_this.lastinfoArry.length*5000)
       // return request({
       //   url:
-      //     "http://10.19.1.181:8082/dataset/auto?dataset_id="+store.getters.uuid,
+      //     "http://127.0.0.1:8082/dataset/auto?dataset_id="+store.getters.uuid,
       //   method: "post",
       //   timeout:_this.lastinfoArry.length*5000,
       //   //params: query
@@ -643,6 +651,7 @@ export default {
     window.skipimagenext = this.skipimagenext;
     window.skipimagepre = this.skipimagepre;
     window.nomarkedimage = this.nomarkedimage;
+    window.deleteSelect = this.deleteSelect;
     document.onkeydown = keyDownSearch;
     this.starttimer = setInterval(()=>{
       this.nowseconds++;

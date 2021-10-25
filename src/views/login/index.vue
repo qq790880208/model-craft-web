@@ -1,9 +1,10 @@
 <template>
   <div class="login-container">
+
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" auto-complete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">Login Form</h3>
+        <h3 class="title">AI标注系统-欢迎登录</h3>
       </div>
 
       <el-form-item prop="username">
@@ -13,7 +14,7 @@
         <el-input
           ref="username"
           v-model="loginForm.username"
-          placeholder="Username"
+          placeholder="用户名"
           name="username"
           type="text"
           tabindex="1"
@@ -30,23 +31,40 @@
           ref="password"
           v-model="loginForm.password"
           :type="passwordType"
-          placeholder="Password"
+          placeholder="密码"
           name="password"
           tabindex="2"
           auto-complete="on"
           @keyup.enter.native="handleLogin"
+          onpaste="return false" 
+          oncontextmenu="return false" 
+          oncopy="return false" 
+          oncut="return false"
         />
         <span class="show-pwd" @click="showPwd">
           <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
         </span>
       </el-form-item>
 
-      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
+      <el-form-item prop="validate">
+        <span class="svg-container">
+          <i class="el-icon-s-order" />
+        </span>
+        <el-input
+          v-model="loginForm.validate"
+          class="validate-code"
+          placeholder="输入验证码"
+          type="text"
+          tabindex="3"
+          auto-complete="on"
+          @keyup.enter.native="handleLogin"
+        />
+        <div class="code" @click="refreshCode">
+          <identify :identify-code="identifyCode" />
+        </div>
+      </el-form-item>
 
-      <div class="tips">
-        <span style="margin-right:20px;">username: admin</span>
-        <span> password: any</span>
-      </div>
+      <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">Login</el-button>
 
     </el-form>
   </div>
@@ -55,9 +73,13 @@
 <script>
 // import { validUsername } from '@/utils/validate'
 import crypto from 'crypto'
+import identify from './Identify.vue'
 
 export default {
   name: 'Login',
+  components: {
+    identify
+  },
   data() {
     // const validateUsername = (rule, value, callback) => {
     //   if (!validUsername(value)) {
@@ -68,19 +90,23 @@ export default {
     // }
     const validatePassword = (rule, value, callback) => {
       if (value.length < 6) {
-        callback(new Error('The password can not be less than 6 digits'))
+        callback(new Error('密码不能少于6位'))
       } else {
         callback()
       }
     }
     return {
+      identifyCodes: '1234567890',
+      identifyCode: '',
       loginForm: {
-        username: 'admin',
-        password: '123456'
+        username: '',
+        password: '',
+        validate: ''
       },
       loginRules: {
         // username: [{ required: true, trigger: 'blur', validator: validateUsername }],
-        password: [{ required: true, trigger: 'blur', validator: validatePassword }]
+        password: [{ required: true, trigger: 'blur', validator: validatePassword }],
+        validate: [{ required: true, message: '请输入验证码', trigger: 'blur' }]
       },
       loading: false,
       passwordType: 'password',
@@ -95,6 +121,15 @@ export default {
       immediate: true
     }
   },
+  mounted() {
+    this.identifyCode = ''
+    this.makeCode(this.identifyCodes, 4)
+    window.onbeforeunload = function (e) {
+      var storage = window.localStorage;
+      storage.clear()
+      console.log('12312hhhhh3123123123')
+    }
+  },
   methods: {
     showPwd() {
       if (this.passwordType === 'password') {
@@ -106,25 +141,54 @@ export default {
         this.$refs.password.focus()
       })
     },
+    refreshCode() {
+      this.identifyCode = ''
+      this.makeCode(this.identifyCodes, 4)
+    },
+    randomNum(min, max) {
+      return Math.floor(Math.random() * (max - min) + min)
+    },
+    makeCode(o, l) {
+      for (let i = 0; i < l; i++) {
+        this.identifyCode += this.identifyCodes[
+          this.randomNum(0, this.identifyCodes.length)
+        ]
+      }
+      console.log(this.identifyCode)
+    },
     handleLogin() {
-      this.$refs.loginForm.validate(valid => {
+      const self = this
+      self.$refs.loginForm.validate(valid => {
         if (valid) {
-          this.loading = true
-          // md5 加密
-          var md5 = crypto.createHash('md5')
-          var temppassword = this.loginForm.password
-          md5.update(temppassword)
-          this.loginForm.password = md5.digest('hex')
-          console.log(this.loginForm)
-          this.$store.dispatch('user/login', this.loginForm).then(() => {
-            //this.$router.push({ path: this.redirect || '/' })
-            this.$router.push('/')
-            this.loading = false
-          }).catch(() => {
-            this.loading = false
-          })
+          if (self.loginForm.validate !== this.identifyCode) {
+            // self.errorInfo = true
+            // self.errInfo = '验证码错误'
+            self.$message.error('验证码错误')
+            this.refreshCode()
+          } else {
+            self.loading = true
+            // md5 加密
+            var md5 = crypto.createHash('md5')
+            var temppassword = self.loginForm.password
+            md5.update(temppassword)
+            self.loginForm.password = md5.digest('hex')
+            console.log(self.loginForm)
+            self.$store.dispatch('user/login', self.loginForm).then(() => {
+              // this.$router.push({ path: this.redirect || '/' })
+              self.$router.push('/')
+              self.loading = false
+            }).catch(() => {
+              // self.errorInfo = true
+              // 重新生成验证码
+              // this.loginForm = this.$options.data().loginForm
+              this.loginForm.password = ''
+              this.refreshCode()
+              self.loading = false
+            })
+          }
+          // this.loginForm.password = ''
         } else {
-          console.log('error submit!!')
+          console.log('请重新提交!!')
           return false
         }
       })
@@ -174,6 +238,18 @@ $cursor: #fff;
     background: rgba(0, 0, 0, 0.1);
     border-radius: 5px;
     color: #454545;
+  }
+  .code {
+    width: 112px;
+    height: 50px;
+    border: 1px solid rgb(255, 255, 255);
+    float: right;
+    border-radius: 2px;
+  }
+
+  .validate-code {
+    width: 136px;
+    // float: left;
   }
 }
 </style>
