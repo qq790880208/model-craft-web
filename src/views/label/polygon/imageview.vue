@@ -384,14 +384,17 @@ export default {
     //get请求图片数据
     requireimage() {
       console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
+      console.log("store.getters.dataSet.role_type",store.getters.dataSet.role_type,"store.getters.predictcontrol",store.getters.predictcontrol)
       let _this = this;
       this.isalllabeled = true;
-      if(store.getters.dataSet.role_type === "创建者" || store.getters.predictcontrol === '1') {
+      //if(store.getters.dataSet.role_type === "创建者" || store.getters.predictcontrol === '1') {
+      if(1){
         const params = {
           datasetuuid: store.getters.uuid
         }
         getLabel(params).then(function (response) {
         console.log("response",response)
+        return
         _this.imageArry=[]
         _this.infoArry=[]
         _this.lastinfoArry=[]
@@ -649,39 +652,39 @@ export default {
       });
       }
     },
-        //post半自动标注
-    automark1(){
-      let _this = this;
-      _this.$message('开始像素级拉框自动标注');
-      _this.automarkbtntext="标注中";
-      _this.isloading=true;
-      console.log("图片长度预留时间",_this.lastinfoArry.length*5000)
-      const params = {
-        dataset_id:store.getters.uuid
-      }
-      automark(params,_this.lastinfoArry.length)
-      .then(function (response) {
-        console.log(response);
-        _this.$message({
-          message:"像素级自动标注成功",
-          type: 'success'
-          });
-        _this.automarkbtntext="开始自动标注";
-        _this.isloading=false;
-        _this.requireimage();
-        _this.requiretag();
-      }).catch(function(error){
-        console.log("error111",error)
-          _this.$message({
-          message:"像素级自动标注失败",
-          type: 'error'
-          });
-        _this.automarkbtntext="开始自动标注";
-        _this.isloading=false;
-        _this.requireimage();
-        _this.requiretag();
-      });
-    },
+    //     //post半自动标注
+    // automark1(){
+    //   let _this = this;
+    //   _this.$message('开始像素级拉框自动标注');
+    //   _this.automarkbtntext="标注中";
+    //   _this.isloading=true;
+    //   console.log("图片长度预留时间",_this.lastinfoArry.length*5000)
+    //   const params = {
+    //     dataset_id:store.getters.uuid
+    //   }
+    //   automark(params,_this.lastinfoArry.length)
+    //   .then(function (response) {
+    //     console.log(response);
+    //     _this.$message({
+    //       message:"像素级自动标注成功",
+    //       type: 'success'
+    //       });
+    //     _this.automarkbtntext="开始自动标注";
+    //     _this.isloading=false;
+    //     _this.requireimage();
+    //     _this.requiretag();
+    //   }).catch(function(error){
+    //     console.log("error111",error)
+    //       _this.$message({
+    //       message:"像素级自动标注失败",
+    //       type: 'error'
+    //       });
+    //     _this.automarkbtntext="开始自动标注";
+    //     _this.isloading=false;
+    //     _this.requireimage();
+    //     _this.requiretag();
+    //   });
+    // },
   },
   destroyed(){
     document.onkeydown = undefined;
