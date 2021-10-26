@@ -57,7 +57,7 @@
           </el-table-column>
         </el-table>
         <el-col :span="24" class="toolbar">
-          <el-pagination layout="total, sizes ,prev, pager, next, jumper" :page-size="page_size" :page-sizes="[1,5,10,20]" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
+          <el-pagination layout="total, sizes ,prev, pager, next, jumper" :page-size="page_size" :page-sizes="[2,5,10,20]" :total="total" style="float: right" @size-change="handleSizeChange" @current-change="handleCurrentChange" />
         </el-col>
       </el-tab-pane>
     </el-tabs>
@@ -327,7 +327,7 @@ export default {
       dataSets: [],
       total: 0,
       page: 1,
-      page_size: 2,
+      page_size: 5,
       dialogVisible: false,
       inputVisible: false, // tag显示
       teamDialogVisible: false,
