@@ -159,6 +159,7 @@
         <el-form-item label="模型文件" prop="model_path" >
           <el-select v-model="taskForm.trainjob_index" placeholder="请选择" style="width:100%">
             <div style="height:150px;" class="scrollbar">
+              
               <el-scrollbar style="height:100%;">
                 <el-option v-for="(item, index) in initialPara.trainjob_path" :key="index"
                 :label="item" :value="index">
@@ -332,7 +333,6 @@ export default {
         //console.log(listIndex)
         this.sublist[listIndex].splice(scope0.$index, 1)
         this.$message('已删除')
-        this.fetchData()
       })
      }).catch(() => {
      })
@@ -344,7 +344,6 @@ export default {
      }).then(() => {
        delModelById(scope.row.uuid).then(response => {
         this.$message('已删除')
-        this.fetchData()
       })
       //this.$message('已删除' + scope.$index + '')
       //console.log(listIndex)

@@ -327,7 +327,7 @@ export default {
       dataSets: [],
       total: 0,
       page: 1,
-      page_size: 2,
+      page_size: 5,
       dialogVisible: false,
       inputVisible: false, // tag显示
       teamDialogVisible: false,

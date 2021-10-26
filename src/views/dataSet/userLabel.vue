@@ -26,7 +26,7 @@
                 <el-button plain type="mini" icon="el-icon-refresh" @click="assign()">分配</el-button>
               </el-row>
               <!-- @click="select(item)" -->
-              <div>
+              <div v-if="isVoice === 0">
                 <div
                   v-for="(item, index) in imagelargeArry"
                   :key="index"
@@ -46,8 +46,31 @@
                     @select="select(index)"
                     @childSelectList="fromChildList($event)"
                   />
+                </div> 
+              </div>
+              <div v-if="isVoice === 1">
+                <div
+                  v-for="(item, index) in imagelargeArry"
+                  :key="index"
+                  class="dataList"
+                  style="
+                  float:left;
+                  margin-left:20px
+                  margin-top:20px
+                  "
+                >
+                  <myaudio
+                    :audioname="item.url"
+                    :ismarked="item.islabel"
+                    :parent-select-list="selectList"
+                    :parent-uuid="index"
+                    @select="select(index)"
+                    @childSelectList="fromChildList($event)"
+                  >
+                  </myaudio>
                 </div>
               </div>
+
             </el-main>
           </el-container>
         </el-tab-pane>
@@ -220,14 +243,17 @@ import { getLabel, refresh, assignByNewTeamUser, assignLabelDataChange, deleteDa
 import { listBucket, uploadNew, listObject, listObjectByPrefix, createBucket, removeBucket, removeFile, upload, createFolder, listFolder, fileRename, fileURL, fileCopy, fileCopyNew, downloadZipByPrefixApi } from '@/api/oss'
 import store from '@/store'
 import myimage from '@/components/myimage.vue'
+import myaudio from '@/components/myaudio.vue'
 
 export default {
   name: 'Dashboard',
   components: {
-    myimage
+    myimage,
+    myaudio
   },
   data() {
     return {
+      isVoice: 1,
       bucket: 'modelcraft', // 双向绑定已选择的bucket(默认值设为modelcraft)
       visible: '',
       message: '',
@@ -288,6 +314,11 @@ export default {
   },
 
   created() {
+    if (store.getters.dataSet.label_type === 2) {
+      this.isVoice = 1
+    } else {
+      this.isVoice = 0
+    }
     this.bucketlist()
     this.choosebucket('modelcraft')// (默认值设为modelcraft)
   },

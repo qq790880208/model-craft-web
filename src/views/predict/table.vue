@@ -85,9 +85,13 @@
       <el-table-column label="操作" width="400"> 
         <template slot-scope="scope">
             <el-button
-            v-if="scope.row.status!=2"
+            v-if="scope.row.status == 0"
             size="mini"
             @click="handleStart(scope.$index, scope.row)">开始</el-button>
+            <el-button
+            v-if="scope.row.status!=0"
+            size="mini"
+            @click="handleStart(scope.$index, scope.row) " disabled>开始</el-button>
             <el-button
             v-if="scope.row.status==2"
             size="mini"
@@ -497,12 +501,14 @@ export default {
         
       }, 
       handleStart(index, row) {//开始某行训练
+
         this.commonPara.trainjob_id = row.uuid
         startTask(this.commonPara).then(res=>{
           console.log(res)
           //==需要重新获取用户列表
           this.fetchData()
         })
+        row.status = 1 
         
       },
       handleDelete(index, row) {//删除某行
@@ -670,6 +676,7 @@ export default {
           'predict_tjid': this.initialPara.tjid[this.taskForm.model_path_index],
           'predict_model_name': this.initialPara.tjname[this.taskForm.model_path_index],
           'descr': this.taskForm.description,
+          'status': 0
         }
         console.log('params0',params0)
         submitTask(params0).then(res => {
@@ -719,7 +726,6 @@ export default {
           this.timer = setInterval( () => {
               console.log('开始定时...每过一秒执行一次,刷新页面')
               if(!this.isSearchingFlag)  this.fetchData()
-              
               // if (this.Mockprocess != 100){
               //   this.Mockprocess = this.Mockprocess + 0.5
               // }
