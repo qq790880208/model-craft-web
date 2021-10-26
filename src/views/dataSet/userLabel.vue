@@ -26,25 +26,27 @@
                 <el-button plain type="mini" icon="el-icon-refresh" @click="assign()">分配</el-button>
               </el-row>
               <!-- @click="select(item)" -->
-              <div
-                v-for="(item, index) in imagelargeArry"
-                :key="index"
-                class="dataList"
-                style="
-                float:left;
-                margin-left:20px
-                margin-top:20px
-                "
-              >
-                <!-- :parentSelectList="selectList" -->
-                <myimage
-                  :fatherimagesrc="item.url"
-                  :ismarked="item.islabel"
-                  :parent-select-list="selectList"
-                  :parent-uuid="index"
-                  @select="select(index)"
-                  @childSelectList="fromChildList($event)"
-                />
+              <div>
+                <div
+                  v-for="(item, index) in imagelargeArry"
+                  :key="index"
+                  class="dataList"
+                  style="
+                  float:left;
+                  margin-left:20px
+                  margin-top:20px
+                  "
+                >
+                  <!-- :parentSelectList="selectList" -->
+                  <myimage
+                    :fatherimagesrc="item.url"
+                    :ismarked="item.islabel"
+                    :parent-select-list="selectList"
+                    :parent-uuid="index"
+                    @select="select(index)"
+                    @childSelectList="fromChildList($event)"
+                  />
+                </div>
               </div>
             </el-main>
           </el-container>
