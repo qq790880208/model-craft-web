@@ -1,4 +1,3 @@
-
 <template>
   <div style="display: flex">
     <div id="testwave">
@@ -57,17 +56,17 @@
         </div>
         <div style="max-height: 600px; overflow: auto">
           <div
-            v-for="(items, index) in infoArry"
+            v-for="(items, index) in audioPointArry"
             :key="index"
             style="margin-top: 10px"
           >
             <labelinfo
-              :inputname1="infoArry[index].info1"
-              :inputname2="infoArry[index].info2"
+              :inputname1="audioPointArry[index].infodata.text1"
+              :inputname2="audioPointArry[index].infodata.text2"
               :nowindex="index + 1"
               @deletelabel="deletelabel(index)"
-              @changeinfo1="changeinfo1($event, index)"
-              @changeinfo2="changeinfo2($event, index)"
+              @changetext1="changetext1($event, index)"
+              @changetext2="changetext2($event, index)"
               @mousedown.native="handelClick(index)"
               :style="{
                 //textAlign:'center',
@@ -111,7 +110,7 @@ import Regions from "wavesurfer.js/dist/plugin/wavesurfer.regions.js";
 import Minimap from "wavesurfer.js/dist/plugin/wavesurfer.minimap.js";
 import Cursor from "wavesurfer.js/dist/plugin/wavesurfer.cursor.js";
 
-import mp3 from "@/music/abc.mp3";
+//import mp3 from "@/music/abc.mp3";
 ////js////
 // let wavesurfer = WaveSurfer.create({
 //     container: document.querySelector('#testwave'),
@@ -132,29 +131,42 @@ import mp3 from "@/music/abc.mp3";
 export default {
   name: "Details",
   props: {
+    audioindex: Number,
     premarktype: {
       type: Array,
       default: () => [],
     },
-    audioUrl:{
+    fatheraudioUrl:{
       type: String ,
       default: ""
-    }
+    },
+    auditremakeinfo:{
+      type:String,
+      default:'',
+    },
+    acceptremakeinfo:{
+      type:String,
+      default:'',
+    },
+    lastlabelArry: {
+      type: Object,
+      default: () => {},
+    },
   },
   data() {
     return {
-      
-
       wavesurfer: null,
       newregion: null,
       b_i: -1,
       buttonindex: -1,
       markcolor: null, //标记颜色
+      markspeaker: null,//讲话人
       //selsectlabel:false,
       minnum: 1,
       maxnum: 200,
       valuenum: 200,
-      infoArry: [],
+      audioPointArry:[],
+      audioInfoArry: [],
       highlight: [],
     };
   },
@@ -162,13 +174,14 @@ export default {
     labelinfo,
   },
   computed:{
-      nowaudioUrl: function () {
-      return require(this.audioUrl);
+      audioUrl: function () {
+      return this.fatheraudioUrl
     },
   },
   mounted() {
     this.$nextTick(() => {
-      console.log("mp3",mp3);
+      this.emitfather();
+      console.log("mp3");
       this.wavesurfer = WaveSurfer.create({
         container: this.$refs.waveform,
         //container: "#waveform",
@@ -230,14 +243,15 @@ export default {
           }),
         ],
       });
-      //放大缩小效果
+      
       let _this = this;
-      let a = "@/music/abc.mp3"
+      //let a = "@/music/abc.mp3"
+      console.log("dsadsadsa",this.audioUrl)
       // 特别提醒：此处需要使用require(相对路径)，否则会报错
       //this.wavesurfer.load(require("@/music/abc.mp3"));
-      console.log("dsadsadsa",this.audioUrl)
-      this.wavesurfer.load(mp3);
-      {
+      //this.wavesurfer.load(mp3);
+      //
+      {//放大缩小效果
         // Zoom slider
         //let slider = document.querySelector('[data-action="zoom"]');
         let slider = this.$refs.inputtest;
@@ -264,13 +278,14 @@ export default {
           //color: this.premarktype[0].color
         });
       });
+      //点击播放区域
       this.wavesurfer.on("region-click", (region, e) => {
         // console.log("region",region);
-        // console.log("e",e);
+        console.log("e",e);
         e.stopPropagation();
         //let index;
         let _this = this;
-        this.infoArry.forEach(function (item, id) {
+        this.audioPointArry.forEach(function (item, id) {
           console.log("item", item, "id", id);
           if (item.id === region.id) _this.b_i = id;
         });
@@ -285,6 +300,7 @@ export default {
       this.wavesurfer.on("region-created", this.createRegions);
       //更新标注信息数组
       this.wavesurfer.on("region-update-end", this.changeRegions);
+      this.wavesurfer.on("waveform-ready",this.readyupdate)
       //this.wavesurfer.on("region-update")
       //this.wavesurfer.on('region-removed', this.saveRegions);
       //this.wavesurfer.on("region-in", ()=>{console.log("in")});
@@ -298,10 +314,98 @@ export default {
       //                 _this.wavesurfer.pause();}
       //   });
       // });
+      setTimeout(() => {
+        this.updatelastdata();
+      },100)
     });
+    
   },
-  watch: {},
+  watch: {
+    audioUrl(){
+      console.log("watch!!!!!!!!",this.lastlabelArry);
+      this.emitfather()
+      this.wavesurfer.clearRegions();
+      this.audioPointArry=[];
+      this.audioInfoArry=[];
+      this.updatelastdata();
+    }
+  },
   methods: {
+    updatelastdata(){
+      this.wavesurfer.load(this.fatheraudioUrl)
+    },
+    emitfather() {
+      console.log("sonemit");
+      this.$emit("closebutton");
+    },
+    readyupdate(){
+      console.log("lastlabelArry",this.lastlabelArry)
+      for (let i = 0; i < this.lastlabelArry.audio.length; i++){
+        this.findcolor(this.lastlabelArry.audio[i].speaker)
+        let temregion = this.wavesurfer.addRegion({
+          start:this.lastlabelArry.audio[i].start,
+          end:this.lastlabelArry.audio[i].end,
+          color:this.markcolor
+        })
+      console.log("this.audioPointArry",this.audioPointArry[i])
+        this.audioPointArry[i].infodata.start=this.lastlabelArry.audio[i].start
+        this.audioPointArry[i].infodata.end=this.lastlabelArry.audio[i].end
+        this.audioPointArry[i].infodata.speaker=this.lastlabelArry.audio[i].speaker
+        this.audioPointArry[i].infodata.text1=this.lastlabelArry.audio[i].text1
+        this.audioPointArry[i].infodata.text2=this.lastlabelArry.audio[i].text2
+      //   this.audioPointArry.push({
+      //   id: temregion.id,
+      //   infodata:{
+      //     start: lastlabelArry.audio[i].start,
+      //     end: lastlabelArry.audio[i].end,
+      //     speaker: lastlabelArry.audio[i].speaker,
+      //     text1: lastlabelArry.audio[i].text1,
+      //     text2: lastlabelArry.audio[i].text2,
+      //   }
+      // });
+      }
+      console.log("1jieshu")
+      console.log("this.audioPointArry",this.audioPointArry)
+      this.emitfather()
+    },
+    saveinfo(infoFlag,changeFlag) {
+      //保存标注信息时传递的信息
+      console.log("start!!!", this.audioPointArry);
+      for (let i = 0; i < this.audioPointArry.length; i++){
+        this.audioInfoArry.push(this.audioPointArry[i].infodata)
+      }
+      console.log("start!!!", this.audioInfoArry);
+      let tempArry = {}
+      //变为深拷贝
+      tempArry.audio=JSON.parse(JSON.stringify(this.audioInfoArry))
+      // tempArry.line=JSON.parse(JSON.stringify(this.reallineinfoArray))
+      // tempArry.circle=JSON.parse(JSON.stringify(this.realcircleinfoArray))
+      // tempArry.rectangle=JSON.parse(JSON.stringify(this.realrectangleinfoArray))//可能在一些奇怪的情况下会和2D拉框标注有奇怪的冲突，因为名称都是regctangle，但是里面存的数据格式不同，解析方法也不同
+      // tempArry.ellipse=JSON.parse(JSON.stringify(this.realellipseinfoArray))
+      //tempArry.push(JSON.parse(JSON.stringify(this.realpolygoninfoArray})));
+      // tempArry.put(JSON.parse(JSON.stringify({"polygon":this.realpolygoninfoArray})));
+      // tempArry.push(JSON.parse(JSON.stringify({"line":this.reallineinfoArray})));
+      //this.tempArry[0]=this.boxArry
+      // this.tempArry.push(this.fatheraudiosrc);
+      // this.tempArry.push(this.audioindex);
+      console.log("11111", tempArry);
+      this.$emit("saveaudioinfo", tempArry, this.audioindex,infoFlag,changeFlag);
+      tempArry = [];
+      console.log("22222", tempArry);
+      //  this.$emit('saveaudioinfo',this.boxArry,this.fatheraudiosrc,this.audioindex)
+      //  console.log(this.boxArry,this.fatheraudiosrc,this.audioindex)
+    },
+    //找到标签对应的颜色
+    findcolor(abcdefg) {
+      this.premarktype.forEach((item) => {
+        console.log("infind", abcdefg);
+        //if(item.name===null) this.markcolor = "rgba(0,128,128,0.5)";
+        if (item.name === abcdefg) {
+          console.log("find", item.color, typeof item.color);
+          this.markcolor = item.color;
+        }
+      });
+    },
     changebi() {
       console.log("change!!!!!!!!!!!!!!!!!!!!");
       this.b_i = -1;
@@ -319,22 +423,25 @@ export default {
     },
     createRegions(region) {
       this.b_i = -1;
-      //console.log("dsadsadadsadasdsadsadsadasdasdasdsadsadasdasdasd")
+      console.log("dsadsadadsadasdsadsadsadasdasdasdsadsadasdasdasd")
       region.color = this.markcolor;
-      this.infoArry.push({
+      this.audioPointArry.push({
         id: region.id,
-        start: null,
-        end: null,
-        info1: "pinyin",
-        info2: "hanzi",
+        infodata:{
+          start: null,
+          end: null,
+          speaker: this.markspeaker,
+          text1: "pinyin",
+          text2: "hanzi",
+        }
       });
-      this.highlight.push(false);
+      //this.highlight.push(false);
     },
     changeRegions(region) {
       let _this = this;
       console.log(region.id, _this);
       let index;
-      this.infoArry.forEach(function (item, id) {
+      this.audioPointArry.forEach(function (item, id) {
         console.log("item", item, "id", id);
         if (item.id === region.id) {
           _this.b_i = id;
@@ -342,19 +449,19 @@ export default {
         }
       });
       console.log("index", index);
-      this.infoArry[index].start = region.start;
-      this.infoArry[index].end = region.end;
-      console.log("labbababbaba", this.infoArry);
+      this.audioPointArry[index].infodata.start = region.start;
+      this.audioPointArry[index].infodata.end = region.end;
+      console.log("labbababbaba", this.audioPointArry);
     },
     deletelabel(i) {
       //删除对应的标注信息和标注片段
       this.b_i = -1;
-      let regionId = this.infoArry[i].id;
-      this.infoArry.splice(i, 1);
+      let regionId = this.audioPointArry[i].id;
+      this.audioPointArry.splice(i, 1);
       if (regionId) {
         this.wavesurfer.regions.list[regionId].remove();
       }
-      console.log(this.infoArry);
+      console.log(this.audioPointArry);
       console.log(this.wavesurfer.regions.list);
     },
     changecolor(item, i) {
@@ -362,17 +469,17 @@ export default {
       console.log("changecolor", i);
       this.buttonindex = i;
       this.markcolor = item.color;
-      //this.markinfo = item.name;
+      this.markspeaker = item.name;
     },
-    changeinfo1(input, i) {
+    changetext1(input, i) {
       //保存标注信息
       //console.log("father"+input,i)
-      this.infoArry[i].info1 = input;
+      this.audioPointArry[i].infodata.text1 = input;
     },
-    changeinfo2(input, i) {
+    changetext2(input, i) {
       //保存标注信息
       //console.log("father"+input,i)
-      this.infoArry[i].info2 = input;
+      this.audioPointArry[i].infodata.text2 = input;
     },
     randomColor(alpha) {
       return (
