@@ -171,7 +171,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="待预测数据" prop="dataset_index">
-          <el-select v-model="taskForm.dataset_index" placeholder="请选择">
+          <el-select v-model="taskForm.dataset_index" placeholder="请选择" @change="handleChangeDataset()">
             <div style="height:150px;" class="scrollbar">
               <el-scrollbar style="height:100%;;">
                 <el-option v-for="(item, index) in initialPara.inputData.name" :key="index"
@@ -426,7 +426,7 @@ export default {
       handleChangeModel() {
         let model_index = this.initialPara.model_ids[this.taskForm.model_path_index]
           //获取数据集
-        getTargetDataSets(model_index).then(res =>{//从后台读取数据来源的目录
+        getTargetDataSets(model_index, store.getters.userid).then(res =>{//从后台读取数据来源的目录
           console.log(res)
           this.initialPara.inputData.name = []
           this.initialPara.inputData.uuid = []
@@ -437,6 +437,9 @@ export default {
             this.initialPara.inputData.algorithmType.push(res.data.items[i].label_type)
           }
         })
+      },
+      handleChangeDataset() {
+        this.taskForm.name = this.initialPara.inputData.name[this.taskForm.dataset_index] + '-predict-' + this.taskForm.uuid.slice(0,4)
       },
       createbtn:function(){//点击桌面的创建按钮
         this.dialogFormVisible = true
@@ -449,25 +452,25 @@ export default {
         this.taskForm.description = ''
         this.taskForm.paras = []
 
-        //获取数据集
-        const params = {
-          'page': 1,
-          'pagesize': 100,
-          'id': store.getters.userid,
-          'name':''
-        }
-        getDataByName(params).then(res =>{//从后台读取数据来源的目录
-          console.log("getDataByName",res)
-          this.initialPara.inputData.name = []
-          this.initialPara.inputData.uuid = []
-          this.initialPara.inputData.algorithmType = []
-          for(let i = 0;i < res.data.total;i++){
-            this.initialPara.inputData.name.push(res.data.items[i].name)
-            this.initialPara.inputData.uuid.push(res.data.items[i].uuid)
-            this.initialPara.inputData.algorithmType.push(res.data.items[i].label_type)
-          }
-          console.log("initialPara",this.initialPara)
-        })
+//         //获取数据集
+//         const params = {
+//           'page': 1,
+//           'pagesize': 100,
+//           'id': store.getters.userid,
+//           'name':''
+//         }
+//         getDataByName(params).then(res =>{//从后台读取数据来源的目录
+//           console.log("getDataByName",res)
+//           this.initialPara.inputData.name = []
+//           this.initialPara.inputData.uuid = []
+//           this.initialPara.inputData.algorithmType = []
+//           for(let i = 0;i < res.data.total;i++){
+//             this.initialPara.inputData.name.push(res.data.items[i].name)
+//             this.initialPara.inputData.uuid.push(res.data.items[i].uuid)
+//             this.initialPara.inputData.algorithmType.push(res.data.items[i].label_type)
+//           }
+//           console.log("initialPara",this.initialPara)
+//         })
         const params1 = {
           'curr': 1,
           'size': 100,

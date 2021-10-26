@@ -15,7 +15,7 @@
           "
           @mousedown="entermark"
         >
-        <a>{{nowaudioname}}</a>
+        <a>{{nowaudioname.url}}</a>
         </div>
       </div>
         <div class="info" style="{width:100%;}">
@@ -34,15 +34,15 @@
      return {
        input: "",
 
-       markcolor:'rgba(128,0,0,0.75)'
+       //markcolor:'rgba(128,0,0,0.75)'
      }
    },
    props: {
-     audioname: String,
-    //  ismarked:{
-    //   type: Number,
-    //   default: false,
-    // },
+     audioname: Object,
+     ismarked:{
+      type: Number,
+      default: false,
+    },
    },
    destroyed(){
     console.log("miniimageddddddddddddddddddddddddddddddddddddddddddddddddddddd")
@@ -51,10 +51,10 @@
     nowaudioname: function () {
       return this.audioname;
     },
-    // markcolor(){
-    //     if(this.ismarked===1) return '#ff0000'
-    //     else return '#ffffff'
-    // },
+    markcolor(){
+        if(this.ismarked===1) return '#ff0000'
+        else return '#ffffff'
+    },
     ismarkedtext: function(){
       if(this.ismarked===1) return '已标注'
         else return '未标注'

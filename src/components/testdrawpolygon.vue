@@ -465,6 +465,7 @@ export default {
     window.removeEventListener('mousewheel', this.checkFangdasSuoxiao);
   },
   mounted() {
+    this.emitfather()
     window.addEventListener('resize', this.GetWindowInfo); //注册监听器
     window.addEventListener('mousewheel', this.checkFangdasSuoxiao,true)
     this.GetWindowInfo() //页面创建时先调用一次
@@ -495,8 +496,9 @@ export default {
   watch: {
     //监听图片变化
     imagesrc() {
+      this.emitfather()
       console.log("watch!!!!!!!!");
-      this.havefabricobj=false
+      //this.havefabricobj=false
       this.buttonindex = -1;
       this.createBackgroundImage();
       setTimeout(() => {
@@ -1324,7 +1326,7 @@ export default {
       }
       this.fabricObj.renderAll();
       this.fabricObj.hoverCursor="default";
-      this.havefabricobj=true;
+      //this.havefabricobj=true;
       // console.log("realpolygoninfoArray", this.realpolygoninfoArray);
       console.log("fabricobjuuu", this.fabricObj);
       console.log("polygonArrayuuu", this.polygonArray);
@@ -1343,6 +1345,7 @@ export default {
       console.log("polygonArrayuuu", this.polygonArray);
       console.log("polygonArrayuuu", this.polygonArray);
       console.log("allobjArrayuuu", this.allobjArray);
+      this.emitfather()
     },
     createBackgroundImage() {
       //加载图片为背景

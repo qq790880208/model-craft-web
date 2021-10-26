@@ -6,7 +6,7 @@
     v-model="input1" 
     placeholder="请输入拼音" 
     style="width:150px" 
-    @blur="changefatherinfo1"
+    @blur="changefathertext1"
     clearable
     ></el-input>
     <el-input style="width:150px" v-model="inputname1" :disabled="true" ></el-input>
@@ -14,7 +14,7 @@
     v-model="input2" 
     placeholder="请输入汉字 " 
     style="width:150px" 
-    @blur="changefatherinfo2"
+    @blur="changefathertext2"
     clearable
     ></el-input>
     <el-input style="width:150px" v-model="inputname2" :disabled="true" ></el-input>
@@ -47,16 +47,16 @@
        //console.log("emit!!!!!!!!!")
      },
      //保存输入的标注信息
-     changefatherinfo1(){
+     changefathertext1(){
        console.log(this.input1)
        console.log(this.inputname1)
-       this.$emit("changeinfo1",this.input1)
+       this.$emit("changetext1",this.input1)
        this.input1=""
      },
-     changefatherinfo2(){
+     changefathertext2(){
        console.log(this.input2)
        console.log(this.inputname2)
-       this.$emit("changeinfo2",this.input2)
+       this.$emit("changetext2",this.input2)
        this.input2=""
      }
    },
