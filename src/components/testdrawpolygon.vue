@@ -364,6 +364,7 @@ export default {
       mousePointerEvent:null,//存储鼠标最后点击事件
 
       b_i: "", //获取目前点击的div的index
+      temitem:null,
       fangdasuoxiaoFlag:false,
       buttonindex: -1,
       input: null,
@@ -465,6 +466,7 @@ export default {
     window.removeEventListener('mousewheel', this.checkFangdasSuoxiao);
   },
   mounted() {
+    this.emitfather()
     window.addEventListener('resize', this.GetWindowInfo); //注册监听器
     window.addEventListener('mousewheel', this.checkFangdasSuoxiao,true)
     this.GetWindowInfo() //页面创建时先调用一次
@@ -495,8 +497,9 @@ export default {
   watch: {
     //监听图片变化
     imagesrc() {
+      this.emitfather()
       console.log("watch!!!!!!!!");
-      this.havefabricobj=false
+      //this.havefabricobj=false
       this.buttonindex = -1;
       this.createBackgroundImage();
       setTimeout(() => {
@@ -572,6 +575,7 @@ export default {
       
     },
     getBorder(item){//显示对象边框
+      this.temitem = item
       if(item.type=="polygon"){
         let index2 = this.polygonArray.indexOf(item)
         let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.polygonArray[index2])];
@@ -644,6 +648,7 @@ export default {
       }
     },
     deleteBorder(item){//移除对象边框
+      this.temitem=null
       if(item.type=="polygon"){
         let index2 = this.polygonArray.indexOf(item)
         let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.polygonArray[index2])];
@@ -795,6 +800,9 @@ export default {
         }
     },
     Edit() {
+      if(this.temitem!=null){
+        this.deleteBorder(this.temitem)
+      }
       if (!this.isimagechange) {
         console.log("caonima",this.fabricObj._objects)
         console.log("caonimarectangleArray",this.rectangleArray)
@@ -962,6 +970,7 @@ export default {
       this.temEllipse = [];
       this.temlineCounter = 0;
       this.temcircleCounter = 0;
+      this.b_i=-1;
       console.log("count",this.testcirclearray.length,"objarr",this.testcirclearray)
       if(this.testcirclearray.length%2==1&&this.testcirclearray.length>0) { //移除未完成线段的单个端点
         console.log("delete one")
@@ -1324,7 +1333,7 @@ export default {
       }
       this.fabricObj.renderAll();
       this.fabricObj.hoverCursor="default";
-      this.havefabricobj=true;
+      //this.havefabricobj=true;
       // console.log("realpolygoninfoArray", this.realpolygoninfoArray);
       console.log("fabricobjuuu", this.fabricObj);
       console.log("polygonArrayuuu", this.polygonArray);
@@ -1343,6 +1352,7 @@ export default {
       console.log("polygonArrayuuu", this.polygonArray);
       console.log("polygonArrayuuu", this.polygonArray);
       console.log("allobjArrayuuu", this.allobjArray);
+      this.emitfather()
     },
     createBackgroundImage() {
       //加载图片为背景

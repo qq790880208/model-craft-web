@@ -27,7 +27,7 @@
               :data="sublist[String(scope.$index)]"
               v-loading="sublistLoading"
             >
-            <el-table-column label="来自训练作业" width="120">
+            <el-table-column label="来自训练作业" width="200">
                 <template slot-scope="scope0"> 
                   {{ scope0.row.tj_name }}
                 </template>
@@ -64,10 +64,11 @@
               </el-table-column>
       
               <!-- 子表格操作列 -->
-              <el-table-column label="操作" align="center" width="300">
+              <el-table-column label="操作" align="center" width="500">
                 <template slot-scope="scope0">
                   <!-- <el-button size="mini" type="primary">在线预测</el-button> -->
                   <el-button size="mini" type="gray" @click="handleDownload(scope0.row.model_oss_path)">下载模型文件</el-button>
+                  <el-button size="mini" type="gray" @click="handleCopyDownloadURL(scope0.row.model_oss_path)">复制下载链接</el-button>
                   <el-button size="mini" type="danger" @click="handleSubDelete(scope0, scope.$index)">删除</el-button>
                 </template>
               </el-table-column>
@@ -84,7 +85,7 @@
           </el-pagination>
         </template>
       </el-table-column>
-      <el-table-column label="模型名称" width="110" >
+      <el-table-column label="模型名称" width="0" >
         <template slot-scope="scope">
           {{ scope.row.name }}
         </template>
@@ -159,7 +160,6 @@
         <el-form-item label="模型文件" prop="model_path" >
           <el-select v-model="taskForm.trainjob_index" placeholder="请选择" style="width:100%">
             <div style="height:150px;" class="scrollbar">
-              
               <el-scrollbar style="height:100%;">
                 <el-option v-for="(item, index) in initialPara.trainjob_path" :key="index"
                 :label="item" :value="index">
@@ -333,6 +333,7 @@ export default {
         //console.log(listIndex)
         this.sublist[listIndex].splice(scope0.$index, 1)
         this.$message('已删除')
+        this.fetchData()
       })
      }).catch(() => {
      })
@@ -344,6 +345,7 @@ export default {
      }).then(() => {
        delModelById(scope.row.uuid).then(response => {
         this.$message('已删除')
+        this.fetchData()
       })
       //this.$message('已删除' + scope.$index + '')
       //console.log(listIndex)
@@ -358,7 +360,23 @@ export default {
         this.taskForm.name = scope.row.name
         this.taskForm.algorithm = ''
         this.taskForm.description = scope.row.descr
-        this.taskForm.version = scope.row.latest_ver
+
+        var ver0 = scope.row.latest_ver
+        var vers = ver0.split('.')
+
+        var a1 = parseInt(vers[0])
+        var a2 = parseInt(vers[1])
+        var a3 = parseInt(vers[2]) + 1
+        if (a3 >= 100) {
+          a3 = 0;
+          a2 = a2 + 1;
+        }
+        if (a2 >= 100) {
+          a2 = 0;
+          a1 = a1 + 1;
+        }
+        this.taskForm.version = a1 + "." + a2 + "." + a3;
+
 //         const params = {
 //           'page': 1,
 //           'pagesize': 100,
@@ -528,8 +546,26 @@ export default {
         let a = document.createElement('a')
         a.href ="/8089/minio-service/downloadZipByPrefix/?bucketName=" + encodeURI(params.bucketName) +
           "&objectPrefix=" + encodeURI(params.objectPrefix);
+        // a.href ="http://10.19.1.77:8089/minio-service/downloadZipByPrefix/?bucketName=" + encodeURI(params.bucketName) +
+        //   "&objectPrefix=" + encodeURI(params.objectPrefix);
           a.click();
-      }
+      },
+      handleCopyDownloadURL(model_oss_path){
+        const params = {
+        bucketName: 'modelcraft',
+        objectPrefix: model_oss_path.substring(0, model_oss_path.length-1)
+        }
+        var copyTest = "http://121.36.6.55:9528/8089/minio-service/downloadZipByPrefix/?bucketName=" + encodeURI(params.bucketName) +
+          "&objectPrefix=" + encodeURI(params.objectPrefix);
+        var inputTest = document.createElement('input')
+        inputTest.value = copyTest
+        document.body.appendChild(inputTest)
+        inputTest.select()
+        document.execCommand('Copy')
+        inputTest.className = 'oInput'
+        inputTest.style.display = 'none'
+        this.$message.success('已复制到剪贴板\n下载链接：'+ copyTest + '')
+      },
   }
 }
 </script>

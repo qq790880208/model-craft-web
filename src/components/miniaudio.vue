@@ -4,7 +4,11 @@
       <!-- <el-button @click="kanurl">kanurl</el-button> -->
       <a>
       <div >
-        <div 
+        <div :style="{
+            width: 200+'px',
+            height: 200+'px',}"
+            >
+        <img 
           :style="{
             width: 200+'px',
             height: 200+'px',
@@ -13,6 +17,7 @@
             //c
           }
           "
+          src="/audioimage.jpg"
           @mousedown="entermark"
         >
         <a>{{nowaudioname}}</a>
@@ -34,27 +39,34 @@
      return {
        input: "",
 
-       markcolor:'rgba(128,0,0,0.75)'
+       //markcolor:'rgba(128,0,0,0.75)'
      }
    },
    props: {
-     audioname: String,
-    //  ismarked:{
-    //   type: Number,
-    //   default: false,
-    // },
+     audioname: Object,
+     ismarked:{
+      type: Number,
+      default: false,
+    },
    },
    destroyed(){
     console.log("miniimageddddddddddddddddddddddddddddddddddddddddddddddddddddd")
    },
     computed: {
-    nowaudioname: function () {
-      return this.audioname;
-    },
-    // markcolor(){
-    //     if(this.ismarked===1) return '#ff0000'
-    //     else return '#ffffff'
+    // imagesrc: function () {
+    //   return this.image
     // },
+    nowaudioname: function () {
+      const str = this.audioname.url
+      const index = str.lastIndexOf('/')
+      console.log("str",str,"index",index)
+      // return this.audioname
+      return str.substring(index+1)
+    },
+    markcolor(){
+        if(this.ismarked===1) return '#ff0000'
+        else return '#ffffff'
+    },
     ismarkedtext: function(){
       if(this.ismarked===1) return '已标注'
         else return '未标注'
@@ -69,9 +81,9 @@
           this.$emit("entermark")
       }
   },
-   components: {
-
-   }
+  // mounted(){
+  //   console.log("imagersrc",image)
+  // }
  }
 </script>
 

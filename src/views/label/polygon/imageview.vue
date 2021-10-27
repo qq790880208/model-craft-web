@@ -394,7 +394,6 @@ export default {
         }
         getLabel(params).then(function (response) {
         console.log("response",response)
-        return
         _this.imageArry=[]
         _this.infoArry=[]
         _this.lastinfoArry=[]

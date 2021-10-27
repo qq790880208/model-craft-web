@@ -36,6 +36,7 @@
             <ul id="menu" class="menu">
                 <li class="menu__item" @click="downLoadObject">文件外链</li>
                 <li class="menu__item" @click="renameObject">重命名</li>
+                <li class="menu__item" @click="moveObject">移动</li>
                 <li class="menu__item" @click="copyObject">拷贝</li>
                 <li class="menu__item" @click="deleteObject">删除</li>
             </ul>
@@ -49,6 +50,7 @@
 		<el-button plain slot="reference">批量删除</el-button>
 		</el-popconfirm>
         <el-button plain @click="allCopy">批量拷贝</el-button>
+        <el-button plain @click="allMove">批量移动</el-button>
     </el-row>
     </div>
     <!--上传文件dialog-->
@@ -187,6 +189,49 @@
         </div>
     </el-dialog>
 
+    <!--移动弹出框-->
+    <el-dialog title="移动" :visible.sync="moveVisible">
+        <el-button-group>
+            <el-button icon="el-icon-folder" size="medium">源文件</el-button>
+            <el-button size="medium" class="dir" plain>{{bucket}}:</el-button>
+            <el-button size="medium" v-show="objectcurrentRow" class="dir" plain>{{objectcurrentRow}}</el-button>
+            <el-button size="medium" class="dir" plain>{{moveNameOrg}}</el-button>
+        </el-button-group>
+        <el-divider></el-divider>
+        <el-button-group>
+            <el-button icon="el-icon-folder" size="medium" @click="moveFolder" type="primary">目标路径</el-button>
+            <el-button size="medium" v-show="moveBucketName" class="dir" plain>{{moveBucketName}}:</el-button>
+            <el-button size="medium" v-show="moveObjectRow" class="dir" plain>{{moveObjectRow}}</el-button>
+        </el-button-group>
+        <el-divider></el-divider>
+        <el-dialog width="30%" title="选择路径" :visible.sync="moveFolderVisible" append-to-body :show-close="false">
+            <el-form>
+                <el-form-item label="请选择桶:">
+                    <el-radio-group v-model="moveBucket" @change="choosemovebucket">
+                        <el-radio-button :label="item.name" :key="item.name" v-for="item in list">{{item.name}}</el-radio-button>
+                    </el-radio-group>
+                </el-form-item>
+            </el-form>
+        <el-divider></el-divider>
+        <el-row>
+            <el-button icon="el-icon-upload2" type="text"  @click="returnOldmoveCurrentRow">返回上级</el-button>
+            <el-divider direction="vertical"></el-divider>
+            <el-tag type="info" effect="light">当前路径：{{moveBucket}} ：{{objectmovecurrentRow}}</el-tag>
+        </el-row>
+        <el-table :data="objectmoveData" highlight-current-row @row-click="movelistbyPrefix">
+            <el-table-column prop="name" label="请选择位置"></el-table-column>
+        </el-table>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="returnMoveNull">取 消</el-button>
+            <el-button type="primary" @click="returnMoveFolder">确定</el-button>
+        </div>
+        </el-dialog>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="returnMoveCancel">取 消</el-button>
+            <el-button type="primary" @click="returnMove">确 定</el-button>
+        </div>
+    </el-dialog>
+
     <!--批量拷贝弹出框-->
     <el-dialog title="选择目标路径" :visible.sync="multipleCopyVisible">
         <el-button-group>
@@ -221,11 +266,46 @@
             <el-button type="primary" @click="returnMultipleCopy">确 定</el-button>
         </div>
     </el-dialog>
+
+    <!--批量移动弹出框-->
+    <el-dialog title="选择目标路径" :visible.sync="multipleMoveVisible">
+        <el-button-group>
+            <el-button icon="el-icon-folder" size="medium" @click="moveFolder">目标路径</el-button>
+            <el-button size="medium" v-show="MultipleMoveBucketName" class="dir" plain>{{MultipleMoveBucketName}}:</el-button>
+            <el-button size="medium" v-show="MultipleMoveObjectRow" class="dir" plain>{{MultipleMoveObjectRow}}</el-button>
+        </el-button-group>
+        <el-dialog width="30%" title="选择路径" :visible.sync="moveFolderVisible" append-to-body :show-close="false">
+            <el-form>
+                <el-form-item label="请选择桶:">
+                    <el-radio-group v-model="moveBucket" @change="choosemovebucket">
+                        <el-radio-button :label="item.name" :key="item.name" v-for="item in list">{{item.name}}</el-radio-button>
+                    </el-radio-group>
+                </el-form-item>
+            </el-form>
+        <el-divider></el-divider>
+        <el-row>
+            <el-button icon="el-icon-upload2" type="text"  @click="returnOldmoveCurrentRow">返回上级</el-button>
+            <el-divider direction="vertical"></el-divider>
+            <el-tag type="info" effect="light">当前路径：{{moveBucket}} ：{{objectmovecurrentRow}}</el-tag>
+        </el-row>
+        <el-table :data="objectmoveData" highlight-current-row @row-click="movelistbyPrefix">
+            <el-table-column prop="name" label="请选择位置"></el-table-column>
+        </el-table>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="returnMultipleMoveNull">取 消</el-button>
+            <el-button type="primary" @click="returnMultipleMoveFolder">确定</el-button>
+        </div>
+        </el-dialog>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="returnMultipleMoveCancel">取 消</el-button>
+            <el-button type="primary" @click="returnMultipleMove">确 定</el-button>
+        </div>
+    </el-dialog>
 </div>
 </template>
 
 <script>
-import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder,fileRename,fileURL,fileCopy } from '@/api/oss'
+import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder,fileRename,fileURL,fileCopy,fileMove } from '@/api/oss'
 import request from "@/utils/request"
 import store from '@/store'
 export default {
@@ -288,6 +368,25 @@ export default {
             MultipleCopyBucketName:'',//批量拷贝的目标桶
             MultipleCopyObjectRow:'',//批量拷贝的目标路径
             multipleCopySignal:0,//批量拷贝计数
+            moveVisible:false,//移动弹出框信号
+            moveNameOrg:'',//移动文件原名称
+            moveFolderVisible:false,//移动文件选择目标路径框信号
+            moveBucketName:'',//要移动去的桶名
+            moveObjectRow:'',//要移动去的路径
+            moveBucket:'',//移动文件的目标桶
+            objectmoveData:'',//移动文件对象列表
+            movesignal:false,//移动的选择具体文件信号控制
+            objectmovecurrentRow:'',//移动文件的当前显示列表
+            objectmovePrefix:'',//移动文件的后端调用
+            oldObjectmovePrefix:'',//移动文件的上一级前缀名
+            oldmoveCurrentRow:'',//移动文件的上级目录
+            selectMoveBucketName:'',//内层选中的bucket
+            selectMoveObjectFolder:'',//内存选中的路径
+            moveSeleFolder:false,//移动是否选择文件夹
+            multipleMoveVisible:false,//批量移动弹出框信号
+            MultipleMoveBucketName:'',//批量移动的目标桶
+            MultipleMoveObjectRow:'',//批量移动的目标路径
+            multipleMoveSignal:0,//批量移动计数
         }
     },
 
@@ -875,8 +974,8 @@ export default {
                 para.objectPrefix = this.objectcopyPrefix
                 console.log(para);
                 this.listCopyObject(para)
-                this.oldObjectcopyPrefix = this.objectuplPrefix.substring(0,this.objectuplPrefix.length-this.objectuplPrefix.split("").reverse().indexOf("/")-1)
-                this.oldcopyCurrentRow = this.objectuplPrefix.substring(0,this.objectuplPrefix.length-this.objectuplPrefix.split("").reverse().indexOf("/"))
+                this.oldObjectcopyPrefix = this.objectcopyPrefix.substring(0,this.objectcopyPrefix.length-this.objectcopyPrefix.split("").reverse().indexOf("/")-1)
+                this.oldcopyCurrentRow = this.objectcopyPrefix.substring(0,this.objectcopyPrefix.length-this.objectcopyPrefix.split("").reverse().indexOf("/"))
                 this.selectBucketName=this.copyBucket;
                 this.selectObjectFolder=row.name;
             }else{
@@ -990,6 +1089,7 @@ export default {
             this.copyVisible=false
         },
 
+        
         //右键删除
         deleteObject(){
             if("/"==this.rightName.substring(this.rightName.length-1)){
@@ -1124,6 +1224,11 @@ export default {
                 this.suc()
                 this.multipleCopySignal=0
                 this.multipleCopyVisible=false
+                const secounds = 100
+	            let num = 0
+                while(num<=secounds){num++}
+                this.fresh()
+                num=0
             }else{this.fai()}
         },
 
@@ -1135,6 +1240,244 @@ export default {
             this.objectcopycurrentRow=''
             this.objectcopyData=[]
             this.multipleCopyVisible=false
+        },
+
+        //移动的点击事件
+        moveObject(){
+            if("/"==this.rightName.substring(this.rightName.length-1)){
+                this.choosefile()
+            }else{
+                this.moveVisible=true
+            this.moveNameOrg=this.rightName.substring(this.objectcurrentRow.length);
+            const para={}
+            para.bucketNameOrg=this.bucket
+            para.folderNameOrg=this.objectcurrentRow
+            para.objectNameOrg=this.moveNameOrg
+            console.log(para);
+            }
+        },
+
+        //移动
+        moveFolder(){
+            this.moveFolderVisible=true;
+        },
+
+        //移动目标桶
+        choosemovebucket(val){
+            this.objectmoveData=[]
+            const para = {bucketName : val}
+            console.log(para);
+            this.objectmovelist(para);
+        },
+
+        //移动对象的object列表数据,更新上传列表
+        objectmovelist(para){
+            listObject(para).then(response=>{
+                if(response){
+                    console.log(response);
+                    this.objectmoveData = response.data
+                }else{
+                }
+            }).catch()
+        },
+
+        movelistbyPrefix(row,event,column){
+            console.log(row.name);
+            const para={}
+            if("/"==((row.name.split("").reverse().join("")).substring(0,1)).split("").reverse().join("")){
+                console.log("isdir");
+                this.movesignal=true //选择路径
+                this.objectmovecurrentRow = row.name;
+                console.log(this.objectmovecurrentRow.substring(0,row.name.length-1));
+                this.objectmovePrefix = this.objectmovecurrentRow.substring(0,row.name.length-1)
+                para.bucketName = this.moveBucket
+                para.objectPrefix = this.objectmovePrefix
+                console.log(para);
+                this.listMoveObject(para)
+                this.oldObjectmovePrefix = this.objectmovePrefix.substring(0,this.objectmovePrefix.length-this.objectmovePrefix.split("").reverse().indexOf("/")-1)
+                this.oldmoveCurrentRow = this.objectmovePrefix.substring(0,this.objectmovePrefix.length-this.objectmovePrefix.split("").reverse().indexOf("/"))
+                this.selectMoveBucketName=this.moveBucket;
+                this.selectMoveObjectFolder=row.name;
+            }else{
+                console.log("isnotdir");
+                this.movesignal=false //选择的不是路径
+            }
+        },
+
+        //更新objectmoveData的值
+        listMoveObject(para){
+            listObjectByPrefix(para).then(response=>{
+                this.objectmoveData = response.data
+            }).catch(error=>{console.log(error);})
+        },
+
+        returnOldmoveCurrentRow(){
+            console.log(this.moveBucket);
+            console.log(this.oldmoveCurrentRow);
+            console.log(this.oldObjectmovePrefix);
+            if(this.oldmoveCurrentRow==this.oldObjectmovePrefix){
+                this.oldmoveCurrentRow=''
+                this.oldObjectmovePrefix=''
+                this.objectmovecurrentRow=''
+                this.objectmovePrefix=''
+                this.selectMoveObjectFolder=''
+            }
+            const para={}
+            para.bucketName = this.moveBucket;
+            para.objectPrefix = this.oldObjectmovePrefix;
+            console.log(para);
+            this.listMoveObject(para)
+            this.objectmovecurrentRow = this.oldmoveCurrentRow
+            this.objectmovePrefix = this.oldObjectmovePrefix
+            this.oldmoveCurrentRow = this.objectmovePrefix.substring(0,this.objectmovePrefix.length-this.objectmovePrefix.split("").reverse().indexOf("/"))
+            this.oldObjectmovePrefix = this.objectmovePrefix.substring(0,this.objectmovePrefix.length-this.objectmovePrefix.split("").reverse().indexOf("/")-1)
+        },
+
+        returnMoveFolder(){
+            this.objectmoveData=[]
+            this.moveBucket=''
+            if(this.movesignal==true){
+                if(this.selectMoveBucketName==''){this.selectMoveBucketName=this.moveBucket}
+                this.moveBucketName=this.selectMoveBucketName
+                this.moveObjectRow=this.selectMoveObjectFolder
+                this.moveFolderVisible=false
+                this.movesignal=false
+            }else{
+                this.choosedir()
+            }
+        },
+        returnMoveNull(){
+            this.moveBucketName=''
+            this.moveBucket=''
+            this.moveObjectRow=''
+            this.objectmovecurrentRow=''
+            this.objectmoveData=[]
+            this.moveFolderVisible=false;
+            this.movesignal = false
+        },
+        returnMove(){
+            this.moveVisible=false
+
+            const para={}
+            para.bucketNameOrg=this.bucket
+            para.bucketName=this.moveBucketName
+            para.folderNameOrg=this.objectcurrentRow
+            para.folderName=this.moveObjectRow
+            para.objectNameOrg=this.moveNameOrg
+            para.objectName=''
+            para.userid=store.getters.userid
+            console.log('here:');
+            console.log(para);
+            fileMove(para).then(response=>{
+                if(20000 == response.code){
+                    this.suc()
+                    this.moveBucketName=''
+                    this.moveBucket=''
+                    this.moveObjectRow=''
+                    this.objectmovecurrentRow=''
+                    this.objectmoveData=[]
+                }else{
+                    this.fai()
+                    this.moveBucketName=''
+                    this.moveBucket=''
+                    this.moveObjectRow=''
+                    this.objectmovecurrentRow=''
+                    this.objectmoveData=[]
+                }
+            })
+            this.copyVisible=false
+        },
+        returnMoveCancel(){
+            this.moveBucketName=''
+            this.moveObjectRow=''
+            this.moveName=''
+            this.moveBucketName=''
+            this.moveBucket=''
+            this.objectmovecurrentRow=''
+            this.objectmoveData=[]
+            this.moveVisible=false
+        },
+
+        //批量移动
+        allMove(){
+            let  multData = this.multipleSelection;
+            let  multDataLen = multData.length;
+            if(multDataLen<1){
+                this.choosefile()//判断是否选了
+            }else if(this.moveSeleFolder==true){
+                this.choosefile()//判断选的是不是文件
+                this.moveSeleFolder=false
+            }else{
+                this.multipleMoveVisible=true
+            }
+        },
+
+        //返回批量移动目标文件路径
+        returnMultipleMoveFolder(){
+            if(this.movesignal==true){
+                if(this.selectMoveBucketName==''){this.selectMoveBucketName=this.moveBucket}
+                this.MultipleMoveBucketName=this.selectMoveBucketName
+                this.MultipleMoveObjectRow=this.selectMoveObjectFolder
+                this.moveFolderVisible=false
+                this.movesignal=false
+            }else{
+                this.choosedir()
+            }
+        },
+
+        //批量移动路径的取消键
+        returnMultipleMoveNull(){
+            this.MultipleMoveBucketName=''
+            this.moveBucket=''
+            this.MultipleMoveObjectRow=''
+            this.objectmovecurrentRow=''
+            this.objectmoveData=[]
+            this.moveFolderVisible = false
+            this.movesignal = false
+        },
+
+        //批量移动确认
+        returnMultipleMove(){
+            let  multData = this.multipleSelection;
+            let  multDataLen = multData.length;
+            for(let i = 0; i < multDataLen ;i++){
+                const para={}
+                para.bucketName=this.MultipleMoveBucketName
+                para.folderName=this.MultipleMoveObjectRow
+                para.bucketNameOrg=this.bucket
+                para.folderNameOrg=this.objectcurrentRow
+                para.userid=store.getters.userid
+                para.objectNameOrg=multData[i].name.substring(this.objectcurrentRow.length)
+                console.log(para);
+                this.multipleMoveSignal++
+                fileMove(para).then(response=>{
+                if(20000 == response.code){
+                }else{
+                }
+            })
+            }
+            console.log(multDataLen);
+            console.log(this.multipleMoveSignal);
+            if(this.multipleMoveSignal==multDataLen){
+                this.suc()
+                this.multipleMoveSignal=0
+                this.multipleMoveVisible=false
+                const secounds = 100
+	            let num = 0
+                while(num<=secounds){num++}
+                this.fresh()
+                num=0
+            }else{this.fai()}
+        },
+
+        //批量移动取消
+        returnMultipleMoveCancel(){
+            this.MultipleMoveBucketName=''
+            this.MultipleMoveObjectRow=''
+            this.moveBucket=''
+            this.objectmovecurrentRow=''
+            this.objectmoveData=[]
+            this.multipleMoveVisible=false
         },
     }
 
