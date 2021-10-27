@@ -4,7 +4,11 @@
       <!-- <el-button @click="kanurl">kanurl</el-button> -->
       <a>
       <div >
-        <div 
+        <div :style="{
+            width: 200+'px',
+            height: 200+'px',}"
+            >
+        <img 
           :style="{
             width: 200+'px',
             height: 200+'px',
@@ -13,9 +17,10 @@
             //c
           }
           "
+          src="/audioimage.jpg"
           @mousedown="entermark"
         >
-        <a>{{nowaudioname.url}}</a>
+        <a>{{nowaudioname}}</a>
         </div>
       </div>
         <div class="info" style="{width:100%;}">
@@ -48,8 +53,15 @@
     console.log("miniimageddddddddddddddddddddddddddddddddddddddddddddddddddddd")
    },
     computed: {
+    // imagesrc: function () {
+    //   return this.image
+    // },
     nowaudioname: function () {
-      return this.audioname;
+      const str = this.audioname.url
+      const index = str.lastIndexOf('/')
+      console.log("str",str,"index",index)
+      // return this.audioname
+      return str.substring(index+1)
     },
     markcolor(){
         if(this.ismarked===1) return '#ff0000'
@@ -69,9 +81,9 @@
           this.$emit("entermark")
       }
   },
-   components: {
-
-   }
+  // mounted(){
+  //   console.log("imagersrc",image)
+  // }
  }
 </script>
 

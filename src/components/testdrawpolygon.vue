@@ -364,6 +364,7 @@ export default {
       mousePointerEvent:null,//存储鼠标最后点击事件
 
       b_i: "", //获取目前点击的div的index
+      temitem:null,
       fangdasuoxiaoFlag:false,
       buttonindex: -1,
       input: null,
@@ -574,6 +575,7 @@ export default {
       
     },
     getBorder(item){//显示对象边框
+      this.temitem = item
       if(item.type=="polygon"){
         let index2 = this.polygonArray.indexOf(item)
         let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.polygonArray[index2])];
@@ -646,6 +648,7 @@ export default {
       }
     },
     deleteBorder(item){//移除对象边框
+      this.temitem=null
       if(item.type=="polygon"){
         let index2 = this.polygonArray.indexOf(item)
         let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.polygonArray[index2])];
@@ -797,6 +800,9 @@ export default {
         }
     },
     Edit() {
+      if(this.temitem!=null){
+        this.deleteBorder(this.temitem)
+      }
       if (!this.isimagechange) {
         console.log("caonima",this.fabricObj._objects)
         console.log("caonimarectangleArray",this.rectangleArray)
@@ -964,6 +970,7 @@ export default {
       this.temEllipse = [];
       this.temlineCounter = 0;
       this.temcircleCounter = 0;
+      this.b_i=-1;
       console.log("count",this.testcirclearray.length,"objarr",this.testcirclearray)
       if(this.testcirclearray.length%2==1&&this.testcirclearray.length>0) { //移除未完成线段的单个端点
         console.log("delete one")

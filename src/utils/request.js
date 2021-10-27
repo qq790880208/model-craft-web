@@ -11,7 +11,7 @@ const service = axios.create({
   // withCredentials: true,
   // crossDomain: true
 })
-service.defaults.withCredentials = true
+// service.defaults.withCredentials = true
 // request interceptor
 service.interceptors.request.use(
   config => {

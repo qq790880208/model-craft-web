@@ -7,7 +7,11 @@
             <img src="./imag/checkbox.png" style="width: 20px;height: 20px;" alt>
           </div>
         </div>
-        <div
+                <div :style="{
+            width: 200+'px',
+            height: 200+'px',}"
+            >
+        <img
           class="test1"
           :style="{
             //hover: 'filter: blur(1px);}',
@@ -16,6 +20,7 @@
             border: '3px solid '+ markcolor1
           }
           "
+          src="/audioimage.jpg"
           @click="select"
         >
           <a>{{ nowaudioname }}</a>
