@@ -4,142 +4,143 @@
       <div>
         <el-button type="primary" plain size="mini" @click="returndataset">返回数据集</el-button>
         <el-button type="primary" plain size="mini" @click="batchSave">批量通过</el-button>
-        <el-button type="primary" plain size="mini" @click="batchRejectDialog">批量不通过</el-button>
-        <el-button type="primary" plain size="mini" @click="batchReSet">批量重置</el-button>
+        <el-button type="primary" plain size="mini" @click="batchUnAcceptDialog">批量不通过</el-button>
         <span class="checkAll">
           <input type="checkbox" :checked="checkedList.length === imagelargeArry.length" @change="checkedAll()">
           <span>全选</span>
         </span>
+
+        <!-- <el-button type="primary" plain size="mini" @click="batchReSet">批量重置</el-button> -->
       </div>
       <div
         v-for="(item, index) in imagelargeArry"
         :key="index"
         style="
         display:inline-block;
-        margin-left:20px
-      "
+        margin-left:20px"
       >
         <div>
           <div style="margin-top:20px">
-            <input type="checkbox" name="" :checked="checkedList.indexOf(item.uuid)!=-1" @change="addToList(item.uuid)">
+            <input type="checkbox" name="" @change="addToList(item.uuid)" :checked="checkedList.indexOf(item.uuid)!=-1">
             <!-- <el-checkbox @change="addToList(item.uuid)" v-if="item.uuid in this.checkedList" checked></el-checkbox> -->
           </div>
-          <miniimage
+          <myaudio
             style="margin-top:1px"
-            :fatherimagesrc="item.url"
+            :audioname="item.url"
             :ismarked="item.islabel"
             @entermark="entermark(index)"
           />
         </div>
-
       </div>
     </div>
+
+    <!--  -->
     <div v-if="!isimageview" class="dashboard-container" style="margin-left:100px">
-      <!-- <div class="dashboard-text">name: {{ name }}</div> -->
-      <el-button :disabled="isdisablebutton" @click="returnimageview">返回图片预览</el-button>
-      <el-button :disabled="isdisablebutton" @click="nextimage">下一张(N)</el-button>
-      <el-button :disabled="isdisablebutton" @click="previousimage">上一张(P)</el-button>
-      <!-- <el-button :disabled="isdisablebutton" @click="skipimage">跳过当前图片(Q)</el-button> -->
+      <el-button @click="returnimageview">返回语音预览</el-button>
+      <el-button @click="nextimage">下一张(N)</el-button>
+      <el-button @click="previousimage">上一张(P)</el-button>
+      <!-- <el-button @click="skipimage">跳过当前图片(Q)</el-button> -->
       <el-button @click="pass">通过</el-button>
-      <el-button @click="rejectDialog">驳回</el-button>
-      <el-button @click="reset">重置</el-button>
-      <drawpolygon
-        ref="drawpolygonref"
-        style="margin-top:20px"
-        :fatherimagesrc="this.imageArry[nownum]"
-        :imageindex="this.nownum"
-        :premarktype="this.marktype"
-        :lastlabel-arry="this.lastinfoArry[nownum]"
+      <el-button @click="unAcceptDialog">不通过</el-button>
+      <!-- <el-button @click="reset">重置</el-button> -->
+      <imageselect
+        ref="imageselectref"
+        style="margin-top:20px;"
+        :fatherimagesrc="imageArry[nownum]"
+        :imageindex="nownum"
+        :premarktype="marktype"
+        :lastlabel-arry="lastinfoArry[nownum]"
+        @saveimageinfo="saveimageinfo"
       />
-    <!-- <canvas id="canvas" width='800' height='800'></canvas> -->
     </div>
     <el-dialog
-      title="驳回备注"
-      :visible.sync="batchRejectDiaglogShow"
+      title="不通过备注"
+      :visible.sync="batchUnAcceptDialogShow"
       width="30%"
     >
       <el-input
-        v-model="auditRemarks"
+        v-model="acceptRemark"
         placeholder="请输入备注"
         clearable
       />
       <span slot="footer" class="dialog-footer">
-        <el-button @click="batchRejectDiaglogShow = false">取 消</el-button>
-        <el-button type="primary" @click="submitBatchReject">确 定</el-button>
+        <el-button @click="batchUnAcceptDialogShow = false">取 消</el-button>
+        <el-button type="primary" @click="submitBatchUnAccept">确 定</el-button>
       </span>
     </el-dialog>
 
     <el-dialog
-      title="驳回备注"
-      :visible.sync="rejectDiaglogShow"
+      title="不通过备注"
+      :visible.sync="unAcceptDialogShow"
       width="30%"
     >
       <el-input
-        v-model="auditRemark"
+        v-model="acceptRemark"
         placeholder="请输入备注"
         clearable
       />
       <span slot="footer" class="dialog-footer">
-        <el-button @click="rejectDiaglogShow = false">取 消</el-button>
-        <el-button type="primary" @click="submitReject">确 定</el-button>
+        <el-button @click="unAcceptDialogShow = false">取 消</el-button>
+        <el-button type="primary" @click="submitUnAccept">确 定</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-// :canvaswidth="this.imagesize[nownum].width"
-// :canvasheight="this.imagesize[nownum].height"
 import { mapGetters } from 'vuex'
-import { getLabel } from '@/api/data' // zeng
-import drawpolygon from '@/components/drawpolygonaudit.vue'
-import request from '@/utils/request'
-import miniimage from '@/components/auditdatashow.vue'
+import imageselect from '@/components/2daudit.vue'
+// import miniimage from "@/components/miniimage.vue"
+import myaudio from '@/components/audioacceptdatashow.vue'
 import store from '@/store'
+import { outTimeReAssign, getNewLabels } from '@/api/data'
+import { getAcceptDataApi, batchAcceptApi, acceptApi, unAcceptApi, batchUnAcceptApi } from '@/api/accept'
 import { getAuditDatasByUserId, getIsAuditApi, batchSaveApi, batchRejectApi, batchReSetApi, passApi, reSetApi, rejectApi } from '@/api/audit'
 import { getTagApi } from '@/api/tag'
 
+// import axios from 'node_modules/axios';
+// import labelinfo from '@/components/labelinfo.vue'
 // 页面键盘监听
+// document.onkeydown = keyDownSearch;
 function keyDownSearch(e) {
   console.log('keydown!!!!!!!!!!!!')
-  const theEvent = e.event || window.event
-  const code = theEvent.keyCode || theEvent.which || theEvent.charCode
-  if (code == 80) { // 上一张
+  let theEvent = e.event || window.event
+  let code = theEvent.keyCode || theEvent.which || theEvent.charCode
+  if (code === 80) { // 上一张
     console.log('pppppppp!!!!!!!!!!!!!')
-    previousimage()
-    // return false;
+    this.previousimage()
+    // return false
   }
-  if (code == 78) { // 下一张
+  if (code === 78) { // 下一张
     console.log('nnnnnnnn!!!!!!!!!!!!!')
-    nextimage()
+    this.nextimage()
   // return true;
   }
-  if (code == 81) { // 跳过
+  if (code === 81) { // 跳过
     console.log('qqqqqqqq!!!!!!!!!!!!!')
-    skipimage()
+    this.skipimage()
   }
   if (code === 65) { // 通过  A
     this.pass()
   }
   if (code === 68) { // 不通过 D
-    this.rejectDialog()
-  }
-  if (code === 71) { // 重置 G
-    this.reset()
+    this.unAcceptDialog()
   }
 }
 
 export default {
-  name: 'Dashboard',
+  name: 'Imageselect',
+
   components: {
-    drawpolygon,
-    miniimage
+    imageselect,
+    myaudio
+    // labelinfo
   },
   data() {
     return {
-      isAudited: 1,
-      isCheckedAll: false,
+      isAudited: 0,
       checkedList: [],
+      isCheckedAll: false,
       // 存储图片url数组，用于获取远程图片信息
       imageArry: [],
       // 与图片一一对应的标注信息数组
@@ -149,9 +150,7 @@ export default {
       // 与图片对于的uuid数组，是后台数据库主键
       uuidArry: [],
       // 存储图片url,是否已标注等信息的数组，用于获取远程图片信息
-      imagelargeArry: [],
-      //   //预读取每张图片的分辨率，以适应画布
-      //   imagesize:[],
+      imagelargeArry:[],
       // 后台读取的标注类别
       testmarktype: [
         {
@@ -180,45 +179,46 @@ export default {
         }
       ],
       marktype: [],
-      nopnum: 0, // 标记上一张下一张的数字
-      unable: false,
+
+      unable: false, // 防止连续切换图片
       nownum: 0,
       isalllabeled: false,
       starttimer: null,
       nowseconds: 0,
-      isdisablebutton: false,
       isimageview: true,
       automarkbtntext: '开始自动标注',
       isloading: false,
-      batchRejectDiaglogShow: false,
-      rejectDiaglogShow: false,
-      auditRemarks: '',
-      auditRemark: ''
+      batchUnAcceptDialogShow: false,
+      acceptRemarks: '',
+      unAcceptDialogShow: false,
+      acceptRemark: ''
     }
   },
-  mounted() {
-    this.infoArry = new Array(this.imageArry.length)
+
+  mounted: function() {
+    // console.log(this.infoArry[0])
     console.log('mounted!!!!', this.infoArry.length, this.infoArry)
     console.log('mounted!!!!uuid', store.getters.uuid, 'mounted!!!!store.getters.userid', store.getters.userid)
-    this.getAuditDataList()
+    this.getAcceptDataList()
+    this.infoArry = new Array(this.imageArry.length)
     this.getTags()
     window.nextimage = this.nextimage
     window.previousimage = this.previousimage
     window.skipimage = this.skipimage
     document.onkeydown = keyDownSearch
-    this.starttimer = setInterval(() => {
+    this.starttimer = setInterval(() => {
       this.nowseconds++
       // console.log(this.nowseconds,"my定时器！！！！")
-      if (this.nowseconds >= 60000) {
+      if (this.nowseconds >= 30000) {
         console.log('超时')
         const params = {
-          userId: store.getters.userId,
+          userId: store.getters.userid,
           dataSetId: store.getters.dataSet.user_id,
           dataSetUuid: store.getters.uuid
         }
-        // outTimeReAssign(params)
+        outTimeReAssign(params)
         this.$store.dispatch('user/logout')
-        this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+        this.$router.push('/login?redirect=${this.$route.fullPath}')
         location.reload()
       }
     }, 1000)
@@ -230,87 +230,93 @@ export default {
     this.nowseconds = 0
   },
   methods: {
-    batchRejectDialog() {
-      this.batchRejectDiaglogShow = true
-      this.auditRemarks = ''
+    unAcceptDialog() {
+      this.unAcceptDialogShow = true
+      this.acceptRemark = ''
     },
-    rejectDialog() {
-      this.rejectDiaglogShow = true
-      this.auditRemark = ''
+    submitUnAccept() {
+      this.unAccept()
+      this.unAcceptDialogShow = false
     },
-    submitBatchReject() {
-      this.batchReject()
-      this.batchRejectDiaglogShow = false
+    batchUnAcceptDialog() {
+      this.batchUnAcceptDialogShow = true
+      this.acceptRemarks = ''
     },
-    submitReject() {
-      this.reject()
-      this.rejectDiaglogShow = false
+    submitBatchUnAccept() {
+      this.batchUnAccept()
+      this.batchUnAcceptDialogShow = false
     },
     returndataset() {
       // this.$router.go(-1)
       this.$router.push('/data')
     },
+    out() {
+      console.log(this.checkedList)
+    },
     pass() {
+      this.isAudited = true
       console.log(this.imagelargeArry)
       const params = {
-        labelUuid: this.uuidArry[this.nownum]
+        labelUuid: this.uuidArry[this.nownum],
+        dataset_id: store.getters.uuid
       }
-      passApi(params).then(res => {
+      acceptApi(params).then(res => {
         this.$message({
-          message: '审核通过',
+          message: '验收通过',
           duration: 300,
           type: 'success'
         })
       }).catch(function(error) {
         this.$message({
-          message: '审核失败',
+          message: '验收失败',
           duration: 300,
           type: 'error'
         })
       })
     },
-    reject() {
+    unAccept() {
+      this.isAudited = true
       const params = {
         labelUuid: this.uuidArry[this.nownum],
-        audit_remark: this.auditRemark
+        dataset_id: store.getters.uuid,
+        accept_remark: this.acceptRemark
       }
-      rejectApi(params).then(res => {
+      unAcceptApi(params).then(res => {
         this.$message({
-          message: '驳回成功',
+          message: '验收不通过成功',
           duration: 300,
           type: 'success'
         })
-        this.rejectDiaglogShow = false
+        this.unAcceptDialogShow = false
       }).catch(function(error) {
         this.$message({
-          message: '驳回失败',
-          duration: 300,
+          message: '验收不通过失败',
+          duration:300,
           type: 'error'
         })
       })
     },
-    reset() {
-      const params = {
-        labelUuid: this.uuidArry[this.nownum]
-      }
-      reSetApi(params).then(res => {
-        this.$message({
-          message: '重置成功',
-          duration: 300,
-          type: 'success'
-        })
-        this.getAuditDataList()
-      }).catch(function(error) {
-        this.$message({
-          message: '重置失败',
-          duration: 300,
-          type: 'error'
-        })
-      })
-    },
+    // reset() {
+    //     this.isAudited = true;
+    //     const params = {
+    //         labelUuid: this.uuidArry[this.nownum]
+    //     }
+    //     reSetApi(params).then(res => {
+    //         this.$message({
+    //             message: '重置成功',
+    //             type: 'success'
+    //         })
+    //         this.getAcceptDataList()
+    //     }).catch(function(error) {
+    //         this.$message({
+    //             message: '重置失败',
+    //             type: 'error'
+    //         })
+    //     })
+    // },
     addToList(uuid) {
       console.log(uuid)
-      if (this.checkedList.indexOf(uuid) == -1) {
+      if (this.checkedList.indexOf(uuid) === -1) {
         this.checkedList.push(uuid)
       } else {
         this.checkedList.splice(this.checkedList.indexOf(uuid), 1)
@@ -331,110 +337,80 @@ export default {
     batchSave() {
       console.log(this.checkedList.join(','))
       const params = {
-        labelUuids: this.checkedList.join(',')
+        labelUuids: this.checkedList.join(','),
+        dataset_id: store.getters.uuid
       }
-      batchSaveApi(params).then(res => {
+      batchAcceptApi(params).then(res => {
         this.$message({
           message: res.message,
           type: 'success'
         })
-        this.getAuditDataList()
+        this.getAcceptDataList()
         this.checkedList = []
       })
     },
-    batchReject() {
+    batchUnAccept() {
       console.log(this.checkedList.join(','))
       const params = {
         labelUuids: this.checkedList.join(','),
-        audit_remark: this.auditRemarks
+        dataset_id: store.getters.uuid,
+        accept_remark: this.acceptRemarks
       }
-      batchRejectApi(params).then(res => {
+      batchUnAcceptApi(params).then(res => {
         this.$message({
           message: res.message,
           type: 'success'
         })
-        this.getAuditDataList()
+        this.getAcceptDataList()
         this.checkedList = []
-        this.batchRejectDiaglogShow = false
+        this.batchUnAcceptDialogShow = false
       })
     },
-    batchReSet() {
-      console.log(this.checkedList.join(','))
-      const params = {
-        labelUuids: this.checkedList.join(',')
-      }
-      batchReSetApi(params).then(res => {
-        this.$message({
-          message: res.message,
-          type: 'success'
-        })
-        this.getAuditDataList()
-        this.checkedList = []
-      })
-    },
-    async setAudited() {
-      const params = {
-        labelUuid: this.uuidArry[this.nownum]
-      }
-
-      await getIsAuditApi(params).then(res => {
-        this.isAudited = res.data.items
-      })
-    },
+    // batchReSet() {
+    //     console.log(this.checkedList.join(","))
+    //     const params = {
+    //         labelUuids: this.checkedList.join(",")
+    //     }
+    //     batchReSetApi(params).then(res => {
+    //         this.$message({
+    //             message: res.message,
+    //             type: 'success'
+    //         })
+    //         this.getAcceptDataList()
+    //         this.checkedList = []
+    //     })
+    // },
     entermark(index) {
-      console.log('faaaaaaaaaaaatherenter!', this.nownum, this.uuidArry[this.nownum])
+      console.log('faaaaaaaaaaaatherenter!')
       this.nownum = index
-      // this.isnowlabel();
+      //   this.isnowlabel();
       this.isimageview = !this.isimageview
     },
     returnimageview() {
-      this.getAuditDataList()
+      this.getAcceptDataList()
+
       this.getTags()
-      this.nownum = 0
+      this.nopnum = 0
+      // this.$refs.imageselectref.saveinfo()
+      // this.nownum=0;
       this.isimageview = !this.isimageview
     },
-    // 下一张图片
-    async nextimage() {
-      await this.setAudited()
-      console.log('llllokonojiojo', this.isAudited)
-      if (this.isAudited == 1) {
-        this.$message('请进行审核操作')
-      } else {
-        if (this.isimageview) {
-          console.log('处于预览界面')
-          return
-        }
-        if (this.nownum < this.imageArry.length - 1) {
-          this.nownum++
-        }
-        console.log('nextimage', this.nownum)
-      }
+    markarray: function(childinfoArry) {
+      this.infoArry = childinfoArry
+      console.log('222' + this.infoArry)
     },
-    // 上一张图片
-    async previousimage() {
-      await this.setAudited()
-
-      if (this.isAudited == 1) {
-        this.$message('请进行审核操作')
-      } else {
-        if (this.isimageview) {
-          console.log('处于预览界面')
-          return
-        }
-        if (this.nownum > 0) {
-          this.nownum--
-        }
-        console.log('previousimage', this.nownum)
+    setAudited() {
+      const params = {
+        labelUuid: this.uuidArry[this.nownum]
       }
+      getIsAuditApi(params).then(res => {
+        this.isAudited = res.data.items
+      })
     },
     // 跳过图片
     skipimage() {
       if (this.isimageview) {
         console.log('处于预览界面')
-        return
-      }
-      if (this.isdisablebutton) {
-        console.log('您现在正在修改图片')
         return
       }
       if (this.nownum < this.imageArry.length - 1) {
@@ -443,10 +419,32 @@ export default {
       console.log('skipimage', this.nownum)
       this.nowseconds = 0
     },
+    // 下一张图片
+    nextimage() {
+      if (this.isimageview) {
+        console.log('处于预览界面')
+        return
+      }
+      if (this.nownum < this.imageArry.length - 1) {
+        this.nownum++
+      }
+      console.log('nextimage', this.nownum)
+    },
+    // 上一张图片
+    previousimage() {
+      if (this.isimageview) {
+        console.log('处于预览界面')
+        return
+      }
 
+      if (this.nownum > 0) {
+        this.nownum--
+      }
+      console.log('previousimage', this.nownum)
+    },
     // get 请求图片
-    getAuditDataList() {
-      const _this = this
+    getAcceptDataList() {
+      let _this = this
       this.isalllabeled = true
       this.imageArry = []
       const params = {
@@ -454,25 +452,38 @@ export default {
         userId: store.getters.userid
       }
       console.log(params)
-      getAuditDatasByUserId(params).then(response => {
+      getAcceptDataApi(params).then(response => {
         _this.imageArry = []
         _this.infoArry = []
         _this.lastinfoArry = []
         _this.uuidArry = []
         _this.imagelargeArry = []
-        console.log('get图片结果', response)
+        console.log('get语音结果', response)
         for (let i = 0; i < response.data.items.length; i++) {
-          if (response.data.items[i].label_data == undefined || response.data.items[i].label_data === '[]') {
-            _this.lastinfoArry.push({})
-          } else {
-            console.log('testtttttttttt', response.data.items[i].label_data)
-            const tempa = JSON.parse(response.data.items[i].label_data)
-            _this.lastinfoArry.push(tempa)
-            console.log('lastinfoArry', response.data.items[i].is_label)
+          if (response.data.items[i].label_data === undefined || response.data.items[i].label_data === '[]') {
+            _this.lastinfoArry.push([])
           }
-          const a = {}
+          // if(response.data.items[i].label_data!==undefined) {
+          else {
+            console.log('testtttttttttt',JSON.parse(response.data.items[i].label_data).rectangle)
+            let tempa = JSON.parse(response.data.items[i].label_data).rectangle
+            let len = eval(tempa).length
+            // console.log("len", len);
+            let arr = []
+            for (let i = 0; i < len; i++) {
+              arr[i] = [] // js中二维数组必须进行重复的声明，否则会undefind
+              arr[i].x1 = tempa[i].x1
+              arr[i].y1 = tempa[i].y1
+              arr[i].x2 = tempa[i].x2
+              arr[i].y2 = tempa[i].y2
+              arr[i].info = tempa[i].info
+            }
+            _this.lastinfoArry.push(arr)
+            console.log('lastinfoArry', _this.lastinfoArry, response.data.items[i].is_label)
+          }
+          let a = {}
           a['url'] = response.data.items[i].file_path
-          a['islabel'] = response.data.items[i].is_audit
+          a['islabel'] = response.data.items[i].is_accept
           a['uuid'] = response.data.items[i].uuid
           // a["index"]=i
           _this.imagelargeArry.push(a)
@@ -484,23 +495,22 @@ export default {
       }).catch(function(error) {
         console.log('error', error)
         _this.$message({
-          message: '图片数量不足',
+          message: '数据为0，重新设置验收比例',
           duration: 1000,
           type: 'error'
         })
       })
-      // this.setAudited()
     },
     // get请求数据集的标签集
     getTags() {
-      const _this = this
+      let _this = this
       this.marktype = []
       const params = {
         dataset_uuid: store.getters.uuid
       }
-      getTagApi(params).then(response => {
+      getTagApi(params).then(response =>{
         for (let i = 0; i < response.data.items.length; i++) {
-          const a = {}
+          let a = {}
           a['name'] = response.data.items[i].name
           a['color'] = response.data.items[i].color
           _this.marktype.push(a)
@@ -534,5 +544,10 @@ export default {
 }
 .checkAll{
   padding: 0px 5px 0px 15px;
+}
+</style>
+<style scoped>
+.imageviewa{
+  display:flex;
 }
 </style>

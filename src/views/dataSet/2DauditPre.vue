@@ -121,6 +121,15 @@ function keyDownSearch(e) {
     console.log('qqqqqqqq!!!!!!!!!!!!!')
     this.skipimage()
   }
+  if (code === 65) { // 通过  A
+    this.pass()
+  }
+  if (code === 68) { // 不通过 D
+    this.rejectDialog()
+  }
+  if (code === 71) { // 重置 G
+    this.reset()
+  }
 }
 
 export default {
