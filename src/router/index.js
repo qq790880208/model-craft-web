@@ -114,6 +114,20 @@ export const constantRoutes = [
       name: 'polygonaccept',
       meta: { title: 'polygonaccept', resources: 'polygonaccept' },
       hidden: true
+    },
+    {
+      path: '/dataSet/audioaccept',
+      component: () => import('@/views/dataSet/audioaccept'),
+      name: 'audioaccept',
+      meta: { title: 'audioaccept', resources: 'audioaccept' },
+      hidden: true
+    },
+    {
+      path: '/dataSet/audioaudit',
+      component: () => import('@/views/dataSet/audioaudit'),
+      name: 'polygonaccept',
+      meta: { title: 'audioaudit', resources: 'audioaudit' },
+      hidden: true
     }
     ]
   }

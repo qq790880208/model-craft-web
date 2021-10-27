@@ -90,6 +90,9 @@ export default {
       if (num === 3) {
         return 'pytorch-2D拉框'
       }
+      if (num === 5) {
+        return '3D'
+      }
     }
   },
   data() {
@@ -170,10 +173,16 @@ export default {
         this.$router.push({ path: '/dataSet/polygonaudit' })
       }
       if (val.label_type === 2) {
-        this.$router.push({ path: '/dataSet/3Daudit' })
+        this.$router.push({ path: '/dataSet/audioaudit' })
       }
       if (val.label_type === 3) {
         this.$router.push({ path: '/dataSet/2DauditPre' })
+      }
+      if (val.label_type === 4) {
+        this.$router.push({ path: '/dataSet/polygonaudit' })
+      }
+      if (val.label_type === 5) {
+        this.$router.push({ path: '/dataSet/3Dnaudit' })
       }
     }
   }
