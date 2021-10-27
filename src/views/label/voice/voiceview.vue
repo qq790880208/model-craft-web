@@ -31,7 +31,7 @@
       <el-button @click="nextaudio">保存并下一个D)</el-button>   
       <el-button @click="skipaudionext">下一个(F)</el-button>
       <el-button @click="nomarkedaudio">无可标注类型(G)</el-button> -->
-      <wave ref='waveref'
+      <wave ref='waveref' style="margin-top:20px"
       :premarktype="this.marktype" 
       :audioindex="this.nownum"
       :fatheraudioUrl="this.audioArry[nownum]"
