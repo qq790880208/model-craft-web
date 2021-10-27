@@ -142,6 +142,16 @@ export function fileCopyNew(params) {
     })
 }
 
+export function fileMove(params) {
+    return request({
+        url: '/minio-service/fileMove',
+        method: 'get',
+        params: params,
+        baseURL: 'http://localhost:8089'
+        // baseURL: 'http://10.19.1.77:8089'
+    })
+}
+
 export function downloadZipByPrefixApi(params) {
   return request({
     url: '/minio-service/downloadZipByPrefix',
