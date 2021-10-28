@@ -6,14 +6,14 @@
         <el-button type="primary" plain size="mini" @click="batchSave">批量通过</el-button>
         <el-button type="primary" plain size="mini" @click="batchUnAcceptDialog">批量不通过</el-button>
         <span class="checkAll">
-          <input type="checkbox" :checked="checkedList.length === imagelargeArry.length" @change="checkedAll()">
+          <input type="checkbox" :checked="checkedList.length === audiolargeArry.length" @change="checkedAll()">
           <span>全选</span>
         </span>
 
         <!-- <el-button type="primary" plain size="mini" @click="batchReSet">批量重置</el-button> -->
       </div>
       <div
-        v-for="(item, index) in imagelargeArry"
+        v-for="(item, index) in audiolargeArry"
         :key="index"
         style="
         display:inline-block;
@@ -43,15 +43,13 @@
       <el-button @click="pass">通过</el-button>
       <el-button @click="unAcceptDialog">不通过</el-button>
       <!-- <el-button @click="reset">重置</el-button> -->
-      <imageselect
-        ref="imageselectref"
-        style="margin-top:20px;"
-        :fatherimagesrc="imageArry[nownum]"
-        :imageindex="nownum"
-        :premarktype="marktype"
-        :lastlabel-arry="lastinfoArry[nownum]"
-        @saveimageinfo="saveimageinfo"
-      />
+      <wave ref='waveref' style="margin-top:20px"
+        :premarktype="this.marktype" 
+        :audioindex="this.nownum"
+        :fatheraudioUrl="this.audioArry[nownum]"
+        :lastlabelArry="this.lastinfoArry[nownum]"
+        >
+      </wave>
     </div>
     <el-dialog
       title="不通过备注"
@@ -89,7 +87,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import imageselect from '@/components/2daudit.vue'
+import wave from '@/components/audioacceptPre.vue'
 // import miniimage from "@/components/miniimage.vue"
 import myaudio from '@/components/audioacceptdatashow.vue'
 import store from '@/store'
@@ -132,9 +130,8 @@ export default {
   name: 'Imageselect',
 
   components: {
-    imageselect,
-    myaudio
-    // labelinfo
+    myaudio,
+    wave
   },
   data() {
     return {
@@ -142,7 +139,7 @@ export default {
       checkedList: [],
       isCheckedAll: false,
       // 存储图片url数组，用于获取远程图片信息
-      imageArry: [],
+      audioArry: [],
       // 与图片一一对应的标注信息数组
       infoArry: [],
       // 存储上次标注的信息的数组
@@ -150,7 +147,7 @@ export default {
       // 与图片对于的uuid数组，是后台数据库主键
       uuidArry: [],
       // 存储图片url,是否已标注等信息的数组，用于获取远程图片信息
-      imagelargeArry:[],
+      audiolargeArry:[],
       // 后台读取的标注类别
       testmarktype: [
         {
@@ -200,7 +197,7 @@ export default {
     console.log('mounted!!!!', this.infoArry.length, this.infoArry)
     console.log('mounted!!!!uuid', store.getters.uuid, 'mounted!!!!store.getters.userid', store.getters.userid)
     this.getAcceptDataList()
-    this.infoArry = new Array(this.imageArry.length)
+    this.infoArry = new Array(this.audioArry.length)
     this.getTags()
     window.nextimage = this.nextimage
     window.previousimage = this.previousimage
@@ -255,7 +252,7 @@ export default {
     },
     pass() {
       this.isAudited = true
-      console.log(this.imagelargeArry)
+      console.log(this.audiolargeArry)
       const params = {
         labelUuid: this.uuidArry[this.nownum],
         dataset_id: store.getters.uuid
@@ -327,7 +324,7 @@ export default {
       if (this.isCheckedAll) {
         // 全选时
         this.checkedList = []
-        this.imagelargeArry.forEach(function(item) {
+        this.audiolargeArry.forEach(function(item) {
           this.checkedList.push(item.uuid)
         }, this)
       } else {
@@ -413,7 +410,7 @@ export default {
         console.log('处于预览界面')
         return
       }
-      if (this.nownum < this.imageArry.length - 1) {
+      if (this.nownum < this.audioArry.length - 1) {
         this.nownum++
       }
       console.log('skipimage', this.nownum)
@@ -425,7 +422,7 @@ export default {
         console.log('处于预览界面')
         return
       }
-      if (this.nownum < this.imageArry.length - 1) {
+      if (this.nownum < this.audioArry.length - 1) {
         this.nownum++
       }
       console.log('nextimage', this.nownum)
@@ -446,51 +443,58 @@ export default {
     getAcceptDataList() {
       let _this = this
       this.isalllabeled = true
-      this.imageArry = []
+      this.audioArry = []
       const params = {
         dataSetUuid: store.getters.uuid,
         userId: store.getters.userid
       }
       console.log(params)
       getAcceptDataApi(params).then(response => {
-        _this.imageArry = []
+        _this.audioArry = []
         _this.infoArry = []
         _this.lastinfoArry = []
         _this.uuidArry = []
-        _this.imagelargeArry = []
+        _this.audiolargeArry = []
         console.log('get语音结果', response)
         for (let i = 0; i < response.data.items.length; i++) {
-          if (response.data.items[i].label_data === undefined || response.data.items[i].label_data === '[]') {
-            _this.lastinfoArry.push([])
+console.log("get items",[i],response.data.items[i]);
+          //读取音频分辨率
+          // let audio = new audio();
+          // audio.src = response.data.items[i].file_path; 
+          // console.log("audiosize",audio)       
+          // audio.onload=() =>{
+          //   console.log("audioonloadsuccess",audio.width,audio.height)
+          //   let audioa={}
+          //   audioa["width"]=audio.width
+          //   audioa["height"]=audio.height
+          //   _this.audiosize.push(audioa)
+          // }
+          // console.log("ima",_this.audiosize)
+          // _this.auditinfoArry[i]=response.data.items[i].audit_remark
+          // _this.acceptinfoArry[i]=response.data.items[i].accept_remark
+          // if(response.data.items[i].is_label!=1) _this.isalllabeled=false;
+          if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
+          _this.lastinfoArry.push({})
           }
-          // if(response.data.items[i].label_data!==undefined) {
-          else {
-            console.log('testtttttttttt',JSON.parse(response.data.items[i].label_data).rectangle)
-            let tempa = JSON.parse(response.data.items[i].label_data).rectangle
-            let len = eval(tempa).length
-            // console.log("len", len);
-            let arr = []
-            for (let i = 0; i < len; i++) {
-              arr[i] = [] // js中二维数组必须进行重复的声明，否则会undefind
-              arr[i].x1 = tempa[i].x1
-              arr[i].y1 = tempa[i].y1
-              arr[i].x2 = tempa[i].x2
-              arr[i].y2 = tempa[i].y2
-              arr[i].info = tempa[i].info
-            }
-            _this.lastinfoArry.push(arr)
-            console.log('lastinfoArry', _this.lastinfoArry, response.data.items[i].is_label)
+          //if(response.data.items[i].label_data!==undefined) {
+          else{
+          let tempa = JSON.parse(response.data.items[i].label_data)
+          // let len = eval(tempa).length;
+          // console.log("len", len);
+          console.log("tempa",tempa)
+          _this.lastinfoArry.push(tempa)
+          console.log("lastinfoArry", _this.lastinfoArry[i]);
           }
           let a = {}
           a['url'] = response.data.items[i].file_path
           a['islabel'] = response.data.items[i].is_accept
           a['uuid'] = response.data.items[i].uuid
           // a["index"]=i
-          _this.imagelargeArry.push(a)
+          _this.audiolargeArry.push(a)
 
           _this.uuidArry.push(response.data.items[i].uuid)
 
-          _this.imageArry.push(response.data.items[i].file_path)
+          _this.audioArry.push(response.data.items[i].file_path)
         }
       }).catch(function(error) {
         console.log('error', error)

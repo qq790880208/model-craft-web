@@ -7,7 +7,7 @@
             <img src="./imag/checkbox.png" style="width: 20px;height: 20px;" alt>
           </div>
         </div>
-                <div :style="{
+        <div :style="{
             width: 200+'px',
             height: 200+'px',}"
             >

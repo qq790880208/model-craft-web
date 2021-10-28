@@ -2,12 +2,25 @@
   <div class="ih-item">
     <a>
       <div>
-        <div v-if="parentSelectList.indexOf(parentUuid)!=-1" class="checked">
-          <div class="topic-shade">
-            <img src="./imag/checkbox.png" style="width: 20px;height: 20px;" alt>
-          </div>
+        <div class="test1"
+         :style="{
+            width: 200+'px',
+            height: 200+'px',}"
+            >
+          <img 
+            :style="{
+              height: 200+'px',
+              border: '3px solid '+this.markcolor,
+              //display:'inline',
+              //c
+            }
+            "
+            src="/audioimage.jpg"
+            @mousedown="entermark"
+          >
+            <a>{{nowaudioname}}</a>
         </div>
-        <div
+        <!-- <div
           class="test1"
           :style="{
             //hover: 'filter: blur(1px);}',
@@ -16,10 +29,10 @@
             border: '3px solid '+ this.markcolor,
           }
           "
-          @mousedown="entermark"@click="select"
+          @mousedown="entermark"
         >
           <a>{{ nowaudioname }}</a>
-        </div>
+        </div> -->
       </div>
       <div class="info" style="{width:100%;}">
         <h3

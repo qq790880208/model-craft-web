@@ -844,11 +844,11 @@ export default {
         }
       },
       setTimerLog(train_id) {//读取日志的定时器
-      console.log("this.timerLog",this.timerLog)
-      this.logText = ''
-      let parm = {
-        'trainjob_id' : train_id
-      }
+        console.log("this.timerLog",this.timerLog)
+        this.logText = ''
+        let parm = {
+          'trainjob_id' : train_id
+        }
         if(this.timerLog == null) {
           this.timerLog = setInterval( () => {
               //console.log('开始定时...每过一秒执行一次')
