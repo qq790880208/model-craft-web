@@ -27,7 +27,7 @@
         :disabled="islabeling"
         >
         </el-switch>
-        <el-radio-group v-model="radio" style="display: inline-block">
+        <el-radio-group v-model="radio" style="display: inline-block" :disabled="lockradio">
           <el-radio-button label="pointmark">点标注</el-radio-button>
           <el-radio-button label="linemark">线标注</el-radio-button>
           <el-radio-button label="polygonmark">多边形标注</el-radio-button>
@@ -181,8 +181,8 @@
               }">
                 {{items.type=="polygon"?"多边形":items.type=="line"?"线":items.type=="point"?"点":items.type=="rectangle"?"矩形":"椭圆形"}} {{items.info}}
               </p>
-              <el-select v-model="items.info"  @visible-change	="forceSelect(items,index,$event)"  @change="changeinfo3(items,index,$event)" filterable placeholder=" " 
-              style="width:300px;margin-left:30px;display:block;" ref="selectchangeref">
+              <el-select  v-model="items.info"  @visible-change	="forceSelect(items,index,$event)"  @change="changeinfo3(items,index,$event)" filterable placeholder=" " 
+              style="width:300px;margin-left:30px;display:block;" ref="selectchangeref" :disabled="!allowchangebi">
                 <el-option
                 v-for="item1 in premarktype"
                 :key="item1.index"
@@ -191,7 +191,7 @@
                 </el-option>
               </el-select>
               </div>
-              <el-button
+              <el-button v-if="b_i === index ? allowchangebi==false ? 0:1:1"
               :style="{
                 width: 100 + 'px',
                 height:35+'px',
@@ -201,9 +201,30 @@
                 display:'inline-block'
               }"
               type="warning"
+              :disabled="!allowchangebi"
+              @mouseup.native="editone(index)"
+              @mousedown.native="forceSelect(items,index,'button')"
               >修改
-                            <!-- @mouseover.native="infotip(index)"
+              <!-- @mouseover.native="infotip(index)"
               @mouseout.native="removetip(index)"
+              @mouseup.native="deletemarked(index)" -->
+              </el-button>
+              <el-button v-if="b_i === index ? allowchangebi==false ? 1:0:0"
+              :style="{
+                width: 100 + 'px',
+                height:35+'px',
+                marginTop:10+'px',
+                marginBottom: 10 + 'px',
+                marginLeft:75 +'px',
+                display:'inline-block'
+              }"
+              type="warning"
+              @mouseup.native="finishone(index)"
+              
+              >完成修改
+              <!-- @mouseover.native="infotip(index)"
+              @mouseout.native="removetip(index)"
+              @mousedown.native="forceSelect(items,index,'button')"
               @mouseup.native="deletemarked(index)" -->
               </el-button>
                 <el-button
@@ -216,6 +237,7 @@
                 display:'inline-block'
               }"
               type="danger"
+              :disabled="!allowchangebi"
               @mouseover.native="infotip(index)"
               @mouseout.native="removetip(index)"
               @mouseup.native="deletemarked(index)"
@@ -362,8 +384,11 @@ export default {
       markcolor2: "rgba(0,128,128,0.5)", //标记颜色
       markinfo2: null, //标记信息
       mousePointerEvent:null,//存储鼠标最后点击事件
+      //isoneedit:false,
 
       b_i: "", //获取目前点击的div的index
+      allowchangebi:true,
+      lockradio:false,
       temitem:null,
       fangdasuoxiaoFlag:false,
       buttonindex: -1,
@@ -540,18 +565,40 @@ export default {
     // this.buttonindex = i;
     // console.log("hahaha" + this.buttonindex);
     // },
+    editone(){
+      if(this.allowchangebi){
+      let tem=this.b_i
+      this.lockradio=true;
+      this.allowchangebi=false;
+      this.emitfather();
+      this.clearobj();
+      this.b_i=tem
+      console.log("upuppupsaudsaiodhchbzxjkvb",this.allowchangebi)
+      }
+    },
+    finishone(){
+      this.allowchangebi=true;
+      this.lockradio=false;
+      this.emitfather();
+    },
     forceSelect(item,index,e){
-      console.log(e)
-      if(e){
+      console.log("e",item,index,e)
+      if(e==true){
         if(this.b_i != index) {
          this.b_i = index;
          this.getBorder(item);
         }
-        console.log("fsdfsfdsfdfsdfsdf" + item.type);
+        console.log("fsdfsfdsfdfsdfsdf " + item.type);
       }
-      if(!e){
+      else if(e==false){
         this.deleteBorder(item);
         this.b_i=-1;
+      }
+      else if(e=="button"){
+        if(this.b_i == index) {
+         this.b_i = -1;
+        }
+        console.log("button")
       }
     },
     forceUnselect(item,index){
@@ -559,18 +606,43 @@ export default {
         this.b_i=-1;
     },
     handelClick(item,index) {
+      //if(!this.allowchangebi) return
       //存储点击对象的index
       // if(this.b_i!=-1){
       //   this.deleteBorder(item);
       // }
-      if(this.b_i != index) {
-        this.b_i = index;
-        this.getBorder(item);
+      if(this.allowchangebi) {
+        if(this.b_i != index) {
+          this.b_i = index;
+          this.getBorder(item);
+        }
+        else {
+          this.deleteBorder(item);
+          this.b_i=-1;
+        }
       }
-      else {
-        this.deleteBorder(item);
-        this.b_i=-1;
+      else{
+        // if(this.b_i != index) {
+        //   this.b_i = index;
+        //   this.getBorder(item);
+        // }
+        // else {
+        //   this.deleteBorder(item);
+        //   this.b_i=-1;
+        // }
+        // if(this.b_i==index){
+        //   this.deleteBorder(item);
+        //   this.b_i=-1;
+        // }
       }
+      // if(this.b_i != index) {
+      //   this.b_i = index;
+      //   this.getBorder(item);
+      // }
+      // else {
+      //   this.deleteBorder(item);
+      //   this.b_i=-1;
+      // }
       console.log("hahaha" + item.type);
       
     },
@@ -800,10 +872,9 @@ export default {
         }
     },
     Edit() {
-      if(this.temitem!=null){
-        this.deleteBorder(this.temitem)
-      }
       if (!this.isimagechange) {
+        if(this.temitem!=null) this.deleteBorder(this.temitem)
+        this.allowchangebi=false
         console.log("caonima",this.fabricObj._objects)
         console.log("caonimarectangleArray",this.rectangleArray)
         this.fabricObj.hoverCursor="move";
@@ -869,6 +940,7 @@ export default {
         console.log("this.ellipseArray",this.ellipseArray)
       } else {
         console.log("this.ellipseArray",this.ellipseArray)
+        this.allowchangebi=true
         this.isimagechange = false;
         this.fabricObj.hoverCursor="default";
         this.clearobj();
@@ -1138,13 +1210,16 @@ export default {
       //查看上次标注保存的信息
       console.log("image select lastlabelArry", this.lastlabelArry);
       console.log("remarkinfo", this.auditremakeinfo,this.acceptremakeinfo);
-      if(this.lastlabelArry==undefined) return
+      // if(this.lastlabelArry==undefined){
+      //   this.emitfather()
+      //   return
+      // } 
       // this.clearinfo();
       // this.clearobj();
       this.b_i = -1;
       console.log("img11111111111111111", this.scalewidth, this.scaleheight);
       //if(this.lastlabelArry.line!=undefined) console.log("gahga")
-      if(this.lastlabelArry.line!=null&&this.lastlabelArry.line!=undefined&&this.lastlabelArry.line!=null){
+      if(this.lastlabelArry.line!=undefined&&this.lastlabelArry.line!=null){
       //线
       for (let i = 0; i < this.lastlabelArry.line.length; i++) {
         for (let j = 0; j < this.lastlabelArry.line[i].point.length; j++) {
@@ -1180,7 +1255,7 @@ export default {
         this.markinfo = null;
       }
       }
-      if(this.lastlabelArry.polygon!=null&&this.lastlabelArry.polygon!=undefined){
+      if(this.lastlabelArry.polygon!=undefined&&this.lastlabelArry.polygon!=null){
       //多边形
       for (let i = 0; i < this.lastlabelArry.polygon.length; i++) {
         this.realpolygoninfoArray.push(this.lastlabelArry.polygon[i]);
@@ -1217,7 +1292,7 @@ export default {
         this.roofPoints = [];
       }
       }
-      if(this.lastlabelArry.rectangle!=null&&this.lastlabelArry.rectangle!=undefined){
+      if(this.lastlabelArry.rectangle!=undefined&&this.lastlabelArry.rectangle!=null){
       //矩形
       for (let i = 0; i < this.lastlabelArry.rectangle.length; i++) {
         console.log("rectangle1",this.lastlabelArry.rectangle[i])
@@ -1251,7 +1326,7 @@ export default {
         this.rectangle=null;
       }
       }
-      if(this.lastlabelArry.ellipse!=null&&this.lastlabelArry.ellipse!=undefined){
+      if(this.lastlabelArry.ellipse!=undefined&&this.lastlabelArry.ellipse!=null){
       //椭圆形
       for (let i = 0; i < this.lastlabelArry.ellipse.length; i++) {
         console.log("ellipse1",this.lastlabelArry.ellipse[i])
@@ -1285,7 +1360,7 @@ export default {
         this.ellipse=null;
       }
       }
-      if(this.lastlabelArry.circle!=null&&this.lastlabelArry.circle!=undefined){
+      if(this.lastlabelArry.circle!=undefined&&this.lastlabelArry.circle!=null){
       //点
       for (let i = 0; i < this.lastlabelArry.circle.length; i++) {
         console.log("circle",this.lastlabelArry.circle[i].point)
@@ -1358,7 +1433,7 @@ export default {
       //加载图片为背景
       let _this = this;
       console.log(this.imagesrc);
-      if (this.imagesrc === null || this.imagesrc === undefined) return;
+      if (this.imagesrc === undefined || this.imagesrc === null) return;
       // console.log(this.fabricObj.width);
       // console.log(this.fabricObj.height);
       this.fabricimageObj = new fabric.Image.fromURL(
@@ -1745,7 +1820,7 @@ export default {
         "mouse:down": (e) => {
           // console.log("eeeeeeeeeeee",e)
           // if(e.)
-          if (this.isimagechange) return;
+          if (this.isimagechange||!this.allowchangebi) return;
           if (this.markinfo == null && this.radio!="drag" && this.markstyle==true) {
             this.$message({
               message: "您没有选中任何标签",

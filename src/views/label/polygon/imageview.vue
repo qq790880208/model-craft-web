@@ -47,7 +47,7 @@
       // :canvaswidth="this.imagesize[nownum].width"
       // :canvasheight="this.imagesize[nownum].height"
 import { mapGetters } from "vuex";
-import { getLabel, getAssignData, getLabelDataApi} from '@/api/data'  // zeng
+import { getLabel, getAssignData, getLabelDataApi,getTags} from '@/api/data'  // zeng
 import drawpolygon from "@/components/testdrawpolygon.vue";
 import request from "@/utils/request";
 import miniimage from "@/components/miniimage.vue"
