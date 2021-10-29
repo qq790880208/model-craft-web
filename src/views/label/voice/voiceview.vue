@@ -352,7 +352,8 @@ export default {
           _this.acceptinfoArry[i]=response.data.items[i].accept_remark
           if(response.data.items[i].is_label!=1) _this.isalllabeled=false;
           if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
-          _this.lastinfoArry.push({})
+          _this.lastinfoArry.push({audio:[]})
+          console.log("lastinfoArry", _this.lastinfoArry[i]);
           }
           //if(response.data.items[i].label_data!==undefined) {
           else{
