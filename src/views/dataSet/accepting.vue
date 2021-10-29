@@ -118,7 +118,9 @@ export default {
     sortChange(column) {
       console.log('排序', column.prop, column.order)
       this.colorder = column.prop
-      this.ordering = column.order
+      if (column.order != null) {
+        this.ordering = column.order
+      }
       this.getAcceptDataSet()
     },
     // 分页查询
