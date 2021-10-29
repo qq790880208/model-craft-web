@@ -202,7 +202,7 @@
               }"
               type="warning"
               :disabled="!allowchangebi"
-              @mouseup.native="editone(index)"
+              @mouseup.native="editone(items)"
               @mousedown.native="forceSelect(items,index,'button')"
               >修改
               <!-- @mouseover.native="infotip(index)"
@@ -219,7 +219,7 @@
                 display:'inline-block'
               }"
               type="warning"
-              @mouseup.native="finishone(index)"
+              @mouseup.native="finishone(items)"
               
               >完成修改
               <!-- @mouseover.native="infotip(index)"
@@ -262,10 +262,10 @@
     </div>
     <div id="remarkinfodiv">
       <div>
-        <p>{{auditremakeinfo}}</p>
+        <p>驳回备注：{{auditremakeinfo}}</p>
       </div>
       <div>
-        <p>{{acceptremakeinfo}}</p>
+        <p>验收备注：{{acceptremakeinfo}}</p>
       </div>
     </div>
   </div>
@@ -565,21 +565,144 @@ export default {
     // this.buttonindex = i;
     // console.log("hahaha" + this.buttonindex);
     // },
-    editone(){
+    editone(item){
       if(this.allowchangebi){
-      let tem=this.b_i
-      this.lockradio=true;
-      this.allowchangebi=false;
-      this.emitfather();
-      this.clearobj();
-      this.b_i=tem
-      console.log("upuppupsaudsaiodhchbzxjkvb",this.allowchangebi)
+        let tem=this.b_i
+        this.lockradio=true;
+        this.allowchangebi=false;
+        this.emitfather();
+        this.clearobj();
+        this.b_i=tem
+        this.deleteBorder(item)
+        console.log("upuppupsaudsaiodhchbzxjkvb",this.allowchangebi)
+        if(item.type=="polygon"){
+          let index2 = this.polygonArray.indexOf(item)
+          let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.polygonArray[index2])];
+          console.log(index2,poly)
+          let _this=this;
+          poly.edit = true;
+          poly.selectable = true;
+          // poly.lockMovementX=true;
+          // poly.lockMovementY=true;
+          console.log("poly.edit", poly.edit);
+          console.log("poly.selectable", poly.selectable);
+          //if (poly.edit) {
+          var lastControl = poly.points.length - 1;
+          poly.cornerStyle = "circle";
+          poly.cornerColor = "rgba(0,128,255,0.8)";
+          this.fabricObj.setActiveObject(poly);
+          console.log(lastControl);
+          poly.controls = poly.points.reduce(function (acc, point, index) {
+            //console.log("index",index)
+            //_this.controlsObjectArryCount = index;
+            acc[index] = new fabric.Control({
+              // positionHandler: _this.polygonPositionHandler,
+              positionHandler: polygonPositionHandler,
+              actionHandler: anchorWrapper(
+                index > 0 ? index - 1 : lastControl,
+                actionHandler,
+                _this.fabricObj
+              ),
+              actionName: "modifyPolygon",
+              pointIndex: index,
+            });
+            //_this.fabricObj.renderAll();
+            return acc;
+          }, {});
+        }else if(item.type=="line"){
+          let index2 = this.lineArray.indexOf(item)
+          //let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.lineArray[index2])];
+          this.fabricObj.add(this.testcirclearray[2*index2])
+          this.fabricObj.add(this.testcirclearray[2*index2+1])
+        }else if(item.type=="point"){
+          let index2 = this.circleArray.indexOf(item)
+          let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.circleArray[index2])];
+          this.fabricObj.setActiveObject(poly);
+          poly.selectable=true;
+          poly.hasBorders=true;
+        }else if(item.type=="rectangle"){
+          let index2 = this.rectangleArray.indexOf(item)
+          let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.rectangleArray[index2])];
+          this.fabricObj.setActiveObject(poly);
+          poly.selectable = true;
+          poly.hasBorders = true;
+          poly.hasControls = true;
+          poly.lockMovementX=false;
+          poly.lockMovementY=false;
+          poly.hasRotatingPoint = false;
+        }else if(item.type=="ellipse"){
+          let index2 = this.ellipseArray.indexOf(item)
+          let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.ellipseArray[index2])];
+          this.fabricObj.setActiveObject(poly);
+          poly.selectable = true;
+          poly.hasBorders = true;
+          poly.hasControls = true;
+          poly.lockMovementX=false;
+          poly.lockMovementY=false;
+          poly.hasRotatingPoint = false;
+        }
+        this.fabricObj.renderAll();
       }
     },
-    finishone(){
+    finishone(item){
       this.allowchangebi=true;
       this.lockradio=false;
       this.emitfather();
+      if(item.type=="polygon"){
+        //this.realpolygoninfoArray = [];
+        let index2 = this.polygonArray.indexOf(item)
+        console.log("polygoninfoArray", this.polygoninfoArray[index2]);
+          console.log("realpolygoninfoArray", this.realpolygoninfoArray[index2]);
+          console.log("polygonArray", this.polygonArray[index2].points);
+          console.log(
+            "this.fabricObj.getObjects()[i]",
+            this.fabricObj.getObjects()[index2]
+          );
+          let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.polygonArray[index2])];
+          //poly.isselect = false;
+          this.fabricObj.discardActiveObject(poly);
+          poly.edit = false;
+          poly.selectable = false;
+          this.realPoints = [];
+          for (let j = 0; j < this.polygoninfoArray[index2].point.length; j++) {
+            console.log("point!!!!!!!!!", this.polygoninfoArray[index2].point[j]);
+            let reala = {};
+            reala["x"] = this.polygonArray[index2].points[j].x / this.scalewidth;
+            reala["y"] = this.polygonArray[index2].points[j].y / this.scaleheight;
+            this.realPoints.push(reala);
+          }
+          this.realpolygoninfoArray[index2].point = this.realPoints
+          // this.realpolygoninfoArray.push({
+          //   point: this.realPoints,
+          //   info: this.polygoninfoArray[index2].info,
+          // });
+          // this.getBorder(item)
+          // this.fabricObj.renderAll();
+        }else if(item.type=="line"){
+          let index2 = this.lineArray.indexOf(item)
+          this.fabricObj.remove(this.testcirclearray[2*index2]);
+          this.fabricObj.remove(this.testcirclearray[2*index2+1]);
+        }else if(item.type=="point"){
+          let index2 = this.circleArray.indexOf(item)
+          let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.circleArray[index2])];
+          poly.edit = false;
+          poly.selectable=false;
+          this.fabricObj.discardActiveObject(poly);
+        }else if(item.type=="rectangle"){
+          let index2 = this.rectangleArray.indexOf(item)
+          let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.rectangleArray[index2])];
+          poly.selectable = false;
+          poly.hasControls = false;
+          this.fabricObj.discardActiveObject(poly);
+        }else if(item.type=="ellipse"){
+          let index2 = this.ellipseArray.indexOf(item)
+          let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.ellipseArray[index2])];
+          poly.selectable = false;
+          poly.hasControls = false;
+          this.fabricObj.discardActiveObject(poly);
+        }
+        this.getBorder(item)
+        this.fabricObj.renderAll();
     },
     forceSelect(item,index,e){
       console.log("e",item,index,e)
@@ -915,7 +1038,7 @@ export default {
             return acc;
           }, {});
         }
-        for(let i = 0; i < this.testcirclearray.length; i++){
+        for(let i = 0; i < this.testcirclearray.length; i++){//线标注的端点
           this.fabricObj.add(this.testcirclearray[i])
         }
         for(let i = 0;i < this.circleArray.length;i++){
@@ -927,14 +1050,20 @@ export default {
           let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.rectangleArray[i])];
           console.log("789787897897897564564564564654564564654",poly,i);
           poly.selectable = true;
+          poly.hasBorders = true;
           poly.hasControls = true;
+          poly.lockMovementX=false;
+          poly.lockMovementY=false;
           //poly.hasRotatingPoint = false;
         }
         for(let i = 0;i<this.ellipseArray.length;i++){
           let poly = this.fabricObj.getObjects()[this.fabricObj._objects.indexOf(this.ellipseArray[i])];
           console.log("i0dhid9sdsubgdjsibdjsnklsdjvlknvodshvdiuh",poly,i);
           poly.selectable = true;
+          poly.hasBorders = true;
           poly.hasControls = true;
+          poly.lockMovementX=false;
+          poly.lockMovementY=false;
           //poly.hasRotatingPoint = false;
         }
         console.log("this.ellipseArray",this.ellipseArray)
@@ -944,8 +1073,10 @@ export default {
         this.isimagechange = false;
         this.fabricObj.hoverCursor="default";
         this.clearobj();
+        //清空线两头的点
         this.testcirclearray.forEach((item) => this.fabricObj.remove(item));
         this.imagechangebtntext = "修改图形";
+        //清空多边形的真实点位置数组
         console.log("realpolygoninfoArray", this.realpolygoninfoArray);
         this.realpolygoninfoArray = [];
         for(let i = 0;i < this.circleArray.length;i++){
@@ -1617,8 +1748,13 @@ export default {
         this.fabricObj.renderAll();
       }
     },
+    deletemarkedbi(){
+      this.deletemarked(this.b_i)
+    },
     deletemarked(index) {
+      if(index<0) return
       //删除对应形状
+      if(this.temitem) this.deleteBorder(this.temitem)
       var poly = this.fabricObj.getObjects()[index]
       console.log(poly)
       if(poly.type=="polygon"){

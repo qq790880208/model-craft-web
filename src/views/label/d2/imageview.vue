@@ -19,17 +19,20 @@
       </div>
     </div>
     <div class="dashboard-container" v-if="!isimageview" style="margin-left:100px">
-      <el-button @click="returnimageview">保存并返回图片预览</el-button>
-      <el-button @click="skipimagepre">上一张(A)</el-button>
-      <el-button @click="previousimage">保存并上一张(S)</el-button>
-      <el-button @click="nextimage">保存并下一张D)</el-button>   
-      <el-button @click="skipimagenext">下一张(F)</el-button>
-      <el-button @click="nomarkedimage">无可标注类型(G)</el-button>
+    <el-button :disabled="isdisablebutton" @click="returnimageview">保存并返回图片预览</el-button>
+    <el-button :disabled="isdisablebutton" @click="skipimagepre">上一张(A)</el-button>
+    <el-button :disabled="isdisablebutton" @click="previousimage">保存并上一张(S)</el-button>
+    <el-button :disabled="isdisablebutton" @click="nextimage">保存并下一张D)</el-button>   
+    <el-button :disabled="isdisablebutton" @click="skipimagenext">下一张(F)</el-button>
+    <el-button :disabled="isdisablebutton" @click="nomarkedimage">无可标注类型(G)</el-button>
       <imageselect style="margin-top:20px;" ref='imageselectref' 
         :fatherimagesrc="this.imageArry[nownum]"
         :imageindex="this.nownum"
         :premarktype="this.marktype"
+        :auditremakeinfo="this.auditinfoArry[nownum]"
+        :acceptremakeinfo="this.acceptinfoArry[nownum]"
         :lastlabelArry="this.lastinfoArry[nownum]"
+        @closebutton="closebutton"
         @saveimageinfo="saveimageinfo"
       ></imageselect>
     </div>
@@ -83,6 +86,11 @@ function keyDownSearch(e){
     deleteSelect();
   //return true;
   }
+  if(code == 27){ //保存并上一张
+    console.log("eeeeeeeeeeeeeeeeeeeeessssssssssccccccccccccccccccc!!!!!!!!!!!!!")
+    undochild()
+    //return false;     
+  }
 }
 
 export default {
@@ -135,6 +143,7 @@ export default {
       isalllabeled: false,
       starttimer:null,
       nowseconds:0,
+      isdisablebutton:false,
       isimageview: true,
       automarkbtntext:"开始自动标注",
       isloading:false,
@@ -148,8 +157,24 @@ export default {
     // labelinfo
   },
   methods: {
+    closebutton(){
+      console.log("fatherdisbtnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
+      this.isdisablebutton=!this.isdisablebutton
+    },
     deleteSelect(){
-      this.$refs.imageselectref.deletelabel2();
+      if(this.unable) return
+      if(this.isimageview) {
+        console.log("处于预览界面");
+        return
+        }
+      if(this.isdisablebutton) {
+        console.log("您现在正在修改图片")
+        return
+      }
+      this.$refs.imageselectref.deletemarkedbi();
+    },
+    undochild(){
+      this.$refs.imageselectref.undo()
     },
     returndataset(){
       this.$router.go(-1)
@@ -347,44 +372,55 @@ export default {
     },
     //get请求图片数据
     requireimage() {
+      console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
+      console.log("store.getters.dataSet.role_type",store.getters.dataSet.role_type,"store.getters.predictcontrol",store.getters.predictcontrol)
       let _this = this;
       this.isalllabeled = true;
-      console.log("uuid",store.getters.uuid,"store.getters.userid",store.getters.userid)
-      if(store.getters.dataSet.role_type === "创建者"||store.getters.predictcontrol === '1') {
+      //if(store.getters.dataSet.role_type === "创建者" || store.getters.predictcontrol === '1') {
+      if(1){
         const params = {
           datasetuuid: store.getters.uuid
         }
         getLabel(params).then(function (response) {
-         _this.imageArry=[]
-         _this.infoArry=[]
-         _this.lastinfoArry=[]
-         _this.uuidArry=[] 
-         _this.imagelargeArry=[]
-         _this.imageislabelArry=[]
-        console.log("get图片结果", response,response.data.items[0].label_data);
+        console.log("response",response)
+        _this.imageArry=[]
+        _this.infoArry=[]
+        _this.lastinfoArry=[]
+        _this.uuidArry=[]
+        _this.imagelargeArry=[]
+        _this.imageislabelArry=[]
+        _this.auditinfoArry=[]
+        _this.acceptinfoArry=[]
+        console.log("get response.data.items",response.data.items);
         for (let i = 0; i < response.data.items.length; i++) {
+          console.log("get items",[i],response.data.items[i]);
+          //读取图片分辨率
+          // let image = new Image();
+          // image.src = response.data.items[i].file_path; 
+          // console.log("imagesize",image)       
+          // image.onload=() =>{
+          //   console.log("imageonloadsuccess",image.width,image.height)
+          //   let imagea={}
+          //   imagea["width"]=image.width
+          //   imagea["height"]=image.height
+          //   _this.imagesize.push(imagea)
+          // }
+          // console.log("ima",_this.imagesize)
+          _this.auditinfoArry[i]=response.data.items[i].audit_remark
+          _this.acceptinfoArry[i]=response.data.items[i].accept_remark
+          if(response.data.items[i].is_label!=1) _this.isalllabeled=false;
           if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
-            _this.lastinfoArry.push([]);
+          _this.lastinfoArry.push({})
           }
           //if(response.data.items[i].label_data!==undefined) {
           else{
-          console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data).rectangle);
-          let tempa = JSON.parse(response.data.items[i].label_data).rectangle;
-          let len = eval(tempa).length;
-          //console.log("len", len);
-          let arr = [];
-          for (let i = 0; i < len; i++) {
-            arr[i] = []; //js中二维数组必须进行重复的声明，否则会undefind
-            arr[i].x1 = tempa[i].x1;
-            arr[i].y1 = tempa[i].y1;
-            arr[i].x2 = tempa[i].x2;
-            arr[i].y2 = tempa[i].y2;
-            arr[i].info = tempa[i].info;
-          }
-          _this.lastinfoArry.push(arr);
-          console.log("lastinfoArry", response.data.items[i].is_label);
-          }
-          if(response.data.items[i].is_label!=1) _this.isalllabeled=false;
+          let tempa = JSON.parse(response.data.items[i].label_data)
+          // let len = eval(tempa).length;
+          // console.log("len", len);
+          console.log("tempa",tempa)
+          _this.lastinfoArry.push(tempa)
+          console.log("lastinfoArry", _this.lastinfoArry[i]);
+        } 
           let a={};
           a["url"]=response.data.items[i].file_path
           a["islabel"]=response.data.items[i].is_label
@@ -395,14 +431,19 @@ export default {
         //   console.log("uuid", response.data.items[i].uuid);
         //   console.log("is_label", response.data.items[i].is_label);
           //_this.islabelArry.push(response.data.items[i].is_label)
-          //console.log("3ffafnzxvnkzjxc", _this.imagelargeArry);
+          console.log("3ffafnzxvnkzjxc", _this.imagelargeArry);
+        //   console.log("get response.data.items[i]",response.data.items[i]);
+        //   console.log("get response.data.items[i].file_path",response.data.items[i].file_path);
+        //   console.log("get response.data.items[i].uuid",response.data.items[i].uuid);
+        //   console.log("get response.data.items[i].label_data",response.data.items[i].label_data);
           _this.uuidArry.push(response.data.items[i].uuid);
-          //console.log("3213331232", _this.uuidArry);
+        //   console.log("_this.uuidArry", _this.uuidArry);
           _this.imageArry.push(response.data.items[i].file_path);
           _this.imageislabelArry.push(response.data.items[i].is_label)
         }
         console.log("imageislabelArry",_this.imageislabelArry)
-        //console.log("imageArry", _this.imageArry);
+        console.log("_this.imageArry",_this.imageArry);
+        console.log("_this.lastinfoArry",_this.lastinfoArry);
         //console.log("transforjson",JSON.stringify(_this.infoArry[0][0]))
       }).catch(function(error){
         console.log("error",error)
@@ -410,53 +451,62 @@ export default {
           message:"请求图片失败",
           type: 'error'
           })
-          // for (let i = 0; i < testmarktype.length; i++) {
-          //   let a={};
-          // a["url"]=response.data.items[i].file_path
-          // a["islabel"]=response.data.items[i].is_label
-          // //a["index"]=i
-          // _this.imagelargeArry.push(a);
-          // }
       });
       }
-      //////////////////////////////////////
-      else{
+      ///////////////////////////////////////
+      else {
       const params = {
             dataset_uuid: store.getters.uuid,
             user_id: store.getters.userid
         }
         console.log(params)
         getLabelDataApi(params).then(function (response) {
-         _this.imageArry=[]
-         _this.infoArry=[]
-         _this.lastinfoArry=[]
-         _this.uuidArry=[]
-         _this.imagelargeArry=[]
-         _this.imageislabelArry=[]
-        console.log("get图片结果", response);
+        _this.imageArry=[]
+        _this.infoArry=[]
+        _this.lastinfoArry=[]
+        _this.uuidArry=[]
+        _this.imagelargeArry=[]
+        _this.imageislabelArry=[]
+        _this.auditinfoArry=[]
+        _this.acceptinfoArry=[]
+        console.log("get response.data.items",response.data.items);
         for (let i = 0; i < response.data.items.length; i++) {
-          let info = response.data.items[i].is_label
-          if(response.data.items[i].label_data==undefined||response.data.items[i].label_data=="[]"){
-            _this.lastinfoArry.push([]);
+          console.log(response.data.items[i]);
+          //读取图片分辨率
+          // let image = new Image();
+          // image.src = response.data.items[i].file_path; 
+          // console.log("imagesize",image)       
+          // image.onload=() =>{
+          //   console.log("imageonloadsuccess",image.width,image.height)
+          //   let imagea={}
+          //   imagea["width"]=image.width
+          //   imagea["height"]=image.height
+          //   _this.imagesize.push(imagea)
+          // }
+          // console.log("ima",_this.imagesize)
+          _this.auditinfoArry[i]=response.data.items[i].audit_remark
+          _this.acceptinfoArry[i]=response.data.items[i].accept_remark
+          if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
+          _this.lastinfoArry.push({})
           }
           //if(response.data.items[i].label_data!==undefined) {
           else{
-          console.log("testtttttttttt",JSON.parse(response.data.items[i].label_data).rectangle);
-          let tempa = JSON.parse(response.data.items[i].label_data).rectangle;
+          let tempa = JSON.parse(response.data.items[i].label_data)
           let len = eval(tempa).length;
-          //console.log("len", len);
-          let arr = [];
-          for (let i = 0; i < len; i++) {
-            arr[i] = []; //js中二维数组必须进行重复的声明，否则会undefind
-            arr[i].x1 = tempa[i].x1;
-            arr[i].y1 = tempa[i].y1;
-            arr[i].x2 = tempa[i].x2;
-            arr[i].y2 = tempa[i].y2;
-            arr[i].info = tempa[i].info;
-          }
-          _this.lastinfoArry.push(arr);
+          console.log("len", len);
+          console.log("tempa",tempa)
+          //   let arr=[];
+          // for (let i = 0; i < len; i++) {
+          //   arr[i] = []; //js中二维数组必须进行重复的声明，否则会undefind
+          //   arr[i].x1 = tempa[i].x1;
+          //   arr[i].y1 = tempa[i].y1;
+          //   arr[i].x2 = tempa[i].x2;
+          //   arr[i].y2 = tempa[i].y2;
+          //   arr[i].info = tempa[i].info;
+          // }
+          _this.lastinfoArry.push(tempa)
           console.log("lastinfoArry", response.data.items[i].is_label);
-          }
+        }
           let a={};
           a["url"]=response.data.items[i].file_path
           a["islabel"]=response.data.items[i].is_label
@@ -467,14 +517,19 @@ export default {
         //   console.log("uuid", response.data.items[i].uuid);
         //   console.log("is_label", response.data.items[i].is_label);
           //_this.islabelArry.push(response.data.items[i].is_label)
-          //console.log("3ffafnzxvnkzjxc", _this.imagelargeArry);
+          console.log("3ffafnzxvnkzjxc", _this.imagelargeArry);
+        //   console.log("get response.data.items[i]",response.data.items[i]);
+        //   console.log("get response.data.items[i].file_path",response.data.items[i].file_path);
+        //   console.log("get response.data.items[i].uuid",response.data.items[i].uuid);
+        //   console.log("get response.data.items[i].label_data",response.data.items[i].label_data);
           _this.uuidArry.push(response.data.items[i].uuid);
-          //console.log("3213331232", _this.uuidArry);
+        //   console.log("_this.uuidArry", _this.uuidArry);
           _this.imageArry.push(response.data.items[i].file_path);
           _this.imageislabelArry.push(response.data.items[i].is_label)
         }
         console.log("imageislabelArry",_this.imageislabelArry)
-        //console.log("imageArry", _this.imageArry);
+        console.log("_this.imageArry",_this.imageArry);
+        console.log("_this.lastinfoArry",_this.lastinfoArry);
         //console.log("transforjson",JSON.stringify(_this.infoArry[0][0]))
       }).catch(function(error){
         console.log("error",error)
@@ -482,16 +537,8 @@ export default {
           message:"请求图片失败",
           type: 'error'
           })
-          // for (let i = 0; i < testmarktype.length; i++) {
-          //   let a={};
-          // a["url"]=response.data.items[i].file_path
-          // a["islabel"]=response.data.items[i].is_label
-          // //a["index"]=i
-          // _this.imagelargeArry.push(a);
-          // }
       });
       }
-      
     },
     //get请求数据集的标签集
     requiretag() {
@@ -651,6 +698,7 @@ export default {
     window.skipimagenext = this.skipimagenext;
     window.skipimagepre = this.skipimagepre;
     window.nomarkedimage = this.nomarkedimage;
+    window.undochild = this.undochild;
     window.deleteSelect = this.deleteSelect;
     document.onkeydown = keyDownSearch;
     this.starttimer = setInterval(()=>{
