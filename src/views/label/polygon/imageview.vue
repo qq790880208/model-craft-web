@@ -82,7 +82,12 @@ function keyDownSearch(e){
     console.log("gggggggggg!!!!!!!!!!!!!")
     nomarkedimage()
   }
-    if(code == 27){ //保存并上一张
+  if(code == 46){ //删除快捷键
+    console.log("ddddddddddelete!!!!!!!!!!!!!")
+    deleteSelect();
+  //return true;
+  }
+  if(code == 27){ //撤销
     console.log("eeeeeeeeeeeeeeeeeeeeessssssssssccccccccccccccccccc!!!!!!!!!!!!!")
     undochild()
     //return false;     
@@ -168,6 +173,7 @@ export default {
     window.skipimagepre = this.skipimagepre;
     window.nomarkedimage = this.nomarkedimage;
     window.undochild = this.undochild;
+    window.deleteSelect = this.deleteSelect;
     document.onkeydown = keyDownSearch;
       this.starttimer = setInterval(()=>{
       this.nowseconds++;
@@ -187,6 +193,18 @@ export default {
       },1000);
   },
   methods: {
+    deleteSelect(){
+      if(this.unable) return
+      if(this.isimageview) {
+        console.log("处于预览界面");
+        return
+        }
+      if(this.isdisablebutton) {
+        console.log("您现在正在修改图片")
+        return
+      }
+      this.$refs.drawpolygonref.deletemarkedbi();
+    },
     undochild(){
       this.$refs.drawpolygonref.undo()
     },
