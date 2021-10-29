@@ -4,7 +4,7 @@
       <div class="title">
         <!-- <span>{{ this.$route.query.dataName }}</span> -->
         <spa>{{ dataSet.name }}</spa>
-        <el-button class="titlebutton" size="small" style="margin-left:100px; border: 0px" icon="el-icon-arrow-left" @click="toDataSet">
+        <el-button class="titlebutton" size="small" style="margin-left:100px; border: 0px" icon="el-icon-arrow-left" @click="toDataSets">
           返回数据集
         </el-button>
       </div>
@@ -467,6 +467,7 @@ export default {
       const params = {
         dataSet_uuid: store.getters.dataSet.uuid
       }
+      console.log*('qqqqqqqqqqqqqqq', store.getters.dataSet)
       getAcceptPieDataApi(params).then(res => {
         this.pieChartDataTol = res.data.items
         console.log(res.data.items)
@@ -484,7 +485,7 @@ export default {
     },
 
     //
-    toDataSet: function() {
+    toDataSets: function() {
       this.$router.push('/data')
     },
 

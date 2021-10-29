@@ -40,9 +40,9 @@
       <el-button :disabled="isdisablebutton" @click="nextimage">下一张(N)</el-button>
       <el-button :disabled="isdisablebutton" @click="previousimage">上一张(P)</el-button>
       <!-- <el-button :disabled="isdisablebutton" @click="skipimage">跳过当前图片(Q)</el-button> -->
-      <el-button @click="pass">通过</el-button>
-      <el-button @click="rejectDialog">驳回</el-button>
-      <el-button @click="reset">重置</el-button>
+      <el-button @click="pass">通过(A)</el-button>
+      <el-button @click="rejectDialog">驳回(D)</el-button>
+      <el-button @click="reset">重置(G)</el-button>
       <drawpolygon
         ref="drawpolygonref"
         style="margin-top:20px"
