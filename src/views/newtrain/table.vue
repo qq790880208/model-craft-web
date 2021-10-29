@@ -88,21 +88,27 @@
       <el-table-column label="操作" width="400"> 
         <template slot-scope="scope">
           <el-button
-            size="mini"
+            size="mini" v-if="scope.row.status!=0"
+            @click="handleStart(scope.$index, scope.row) "  disabled>开始</el-button>
+          <el-button
+            size="mini" v-if="scope.row.status==0"
             @click="handleStart(scope.$index, scope.row)">开始</el-button>
           <el-button
-            size="mini"
+            size="mini" v-if="scope.row.status!=1"
+            @click="handleStop(scope.$index, scope.row)"  disabled>终止</el-button>
+          <el-button
+            size="mini" v-if="scope.row.status==1"
             @click="handleStop(scope.$index, scope.row)">终止</el-button>
           <el-button
             size="mini"
-            @click="handleShow()">可视化</el-button> -->
+            @click="handleShow()">可视化</el-button>
           <el-button
             size="mini" v-if="scope.row.status!=0"
             @click="handleShowlog(scope.$index, scope)" >日志</el-button>
           <el-button
             size="mini" v-if="scope.row.status==0"
             @click="handleShowlog(scope.$index, scope)"  disabled>日志</el-button>
-            <el-button
+          <el-button
             size="mini" type="danger"
             @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
@@ -838,11 +844,11 @@ export default {
         }
       },
       setTimerLog(train_id) {//读取日志的定时器
-      console.log("this.timerLog",this.timerLog)
-      this.logText = ''
-      let parm = {
-        'trainjob_id' : train_id
-      }
+        console.log("this.timerLog",this.timerLog)
+        this.logText = ''
+        let parm = {
+          'trainjob_id' : train_id
+        }
         if(this.timerLog == null) {
           this.timerLog = setInterval( () => {
               //console.log('开始定时...每过一秒执行一次')
