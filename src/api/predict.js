@@ -134,3 +134,14 @@ export function getDataByName(params) {//创建任务时获取数据集
       baseURL: 'http://10.19.1.77:8085'
     })
   }
+
+export function uploadPic(formData) {
+    return request({
+        url: '/predict/pic0',
+        method: 'post',
+        data: formData,
+        headers: {"Content-Type": "multipart/form-data;charset=utf-8"},
+        ////baseURL: 'http://localhost:8089'
+        baseURL: 'http://10.19.1.181:8084'
+    })
+}

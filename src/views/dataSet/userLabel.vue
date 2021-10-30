@@ -737,16 +737,20 @@ export default {
       this.fileList = []
     },
     handleChange(file, fileList) {
+      console.log(1)
       this.fileList = fileList
       this.uploadFilePostfix = file.name.substring(file.name.indexOf('.'))
     },
     uplFile(file) {
+      console.log(2);
       this.formData.append('file', file.file)
     },
     handleRemove(file, fileList) {
+      console.log(3);
       console.log(file, fileList)
     },
     handlePreview(file) {
+      console.log(4);
       console.log(file)
     },
 
