@@ -80,6 +80,11 @@ function keyDownSearch(e){
     console.log("gggggggggg!!!!!!!!!!!!!")
     nomarkedaudio()
   }
+  if(code == 46){ //删除快捷键
+    console.log("ddddddddddelete!!!!!!!!!!!!!")
+    deleteSelect();
+  //return true;
+  }
 }
 export default {
   name: 'Dashboard',
@@ -146,7 +151,8 @@ export default {
     window.skipaudionext = this.skipaudionext;
     window.skipaudiopre = this.skipaudiopre;
     window.nomarkedaudio = this.nomarkedaudio;
-    window.undochild = this.undochild;
+    window.deleteSelect = this.deleteSelect;
+    //window.undochild = this.undochild;
     document.onkeydown = keyDownSearch;
     // this.starttimer = setInterval(()=>{
     //   this.nowseconds++;
@@ -183,6 +189,18 @@ export default {
     closebutton(){
       console.log("fatherdisbtnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
       this.isdisablebutton=!this.isdisablebutton
+    },
+    deleteSelect(){
+      if(this.unable) return
+      if(this.isimageview) {
+        console.log("处于预览界面");
+        return
+        }
+      if(this.isdisablebutton) {
+        console.log("您现在正在修改图片")
+        return
+      }
+      this.$refs.waveref.deletemarkedbi();
     },
     //保存并下一个音频
     nextaudio() {

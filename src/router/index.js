@@ -294,7 +294,12 @@ export const asyncRoutes = [
         path: '/predict',
         component: () => import('@/views/predict/table'),
         name: 'predict admin',
-        meta: { title: '在线预测', resources: 'model', icon: 'people' }
+        meta: { title: '预测数据集', resources: 'model', icon: 'people' }
+      },{
+        path: '/predict_edge',
+        component: () => import('@/views/predict/edge'),
+        name: 'predict edge',
+        meta: { title: '边缘端预测接口', resources: 'model', icon: 'people' }
       }
     ]
   },
