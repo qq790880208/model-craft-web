@@ -40,8 +40,8 @@
       <el-button :disabled="isdisablebutton" @click="nextimage">下一张(N)</el-button>
       <el-button :disabled="isdisablebutton" @click="previousimage">上一张(P)</el-button>
       <!-- <el-button :disabled="isdisablebutton" @click="skipimage">跳过当前图片(Q)</el-button> -->
-      <el-button @click="pass">通过</el-button>
-      <el-button @click="unAcceptDialog">不通过</el-button>
+      <el-button @click="pass">通过(A)</el-button>
+      <el-button @click="unAcceptDialog">不通过(D)</el-button>
       <!-- <el-button @click="reset">重置</el-button> -->
       <drawpolygon
         ref="drawpolygonref"
@@ -116,6 +116,12 @@ function keyDownSearch(e) {
   if (code === 81) { // 跳过
     console.log('qqqqqqqq!!!!!!!!!!!!!')
     this.skipimage()
+  }
+  if (code === 65) { // 通过  A
+    this.pass()
+  }
+  if (code === 68) { // 不通过 D
+    this.unAcceptDialog()
   }
 }
 

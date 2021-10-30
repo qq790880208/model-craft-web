@@ -2,16 +2,26 @@
   <div class="ih-item">
     <a>
       <div>
-        <div v-if="parentSelectList.indexOf(parentUuid)!=-1" class="checked">
-          <div class="topic-shade">
-            <img src="./imag/checkbox.png" style="width: 20px;height: 20px;" alt>
-          </div>
-        </div>
-        <div :style="{
-            width: 200+'px',
+        <div
+         :style="{
+           width: 200+'px',
             height: 200+'px',}"
             >
-        <img
+        <img 
+          class="test1"
+          :style="{
+            height: 200+'px',
+            border: '3px solid '+this.markcolor,
+            //display:'inline',
+            //c
+          }
+          "
+          src="/audioimage.jpg"
+          @mousedown="entermark"
+        >
+        <a>{{nowaudioname}}</a>
+        </div>
+        <!-- <div
           class="test1"
           :style="{
             //hover: 'filter: blur(1px);}',
@@ -20,11 +30,10 @@
             border: '3px solid '+ markcolor1
           }
           "
-          src="/audioimage.jpg"
-          @click="select"
+          @mousedown="entermark"
         >
           <a>{{ nowaudioname }}</a>
-        </div>
+        </div> -->
       </div>
       <div class="info" style="{width:100%;}">
         <h3
@@ -48,18 +57,11 @@ export default {
       type: Number,
       default: false
     },
-    parentUuid: '',
-    parentSelectList: ''
-    //  ismarked:{
-    //   type: Number,
-    //   default: false,
-    // },
+    ishighlight:Boolean
   },
   data() {
     return {
-      input: '',
-      //   markcolors: 'rgba(128,0,0,0.75)',
-      visible: false
+      input: ''
     }
   },
   computed: {
@@ -70,21 +72,17 @@ export default {
       // return this.audioname
       return str.substring(index)
     },
-    markcolor() {
-      if (this.ismarked === 1) return '#ff0000'
-      else return '#ffffff'
+    markcolor(){
+        if(this.ismarked===1) return '#ffffff'
+        else if(this.ismarked ===2) return '#ff0000'
+        else if(this.ismarked ===3) return '#ffff00'
+        else return '#000000'
     },
-    ismarkedtext: function() {
-      if (this.ismarked === 1) return '已标注'
-      else return '未标注'
-    },
-    isSelect: function() {
-      if (this.isSelected === 1) return '选中'
-      else return ''
-    },
-    markcolor1() {
-      if (this.parentSelectList.indexOf(this.parentUuid) !== -1) return '#1334ed'
-      else return '#EEF3FF'
+    ismarkedtext: function(){
+      if(this.ismarked===2) return '已通过'
+      else if(this.ismarked ===3) return '已驳回'
+      else if(this.ismarked ===4) return '已重置'
+      else return '未审核' 
     }
   },
   destroyed() {
@@ -94,33 +92,10 @@ export default {
     kanurl() {
       console.log(this.audioname)
     },
-    select() {
-      console.log('---------*************------------')
-      console.log(this.parentSelectList)
-      console.log(this.parentUuid)
-      console.log('hhhhhhhhhhhhh123456789')
-      var _index = this.checkSelect(this.parentUuid)
-      console.log('index =============')
-      // if (_index != -1) {
-      //   this.visible = true
-      // } else {
-      //   this.visible = false
-      // }
-      console.log(_index)
-      if (~_index) {
-        console.log('存在')
-        this.parentSelectList.splice(_index, 1)
-      } else {
-        console.log('不存在')
-        this.parentSelectList.push(this.parentUuid)
-        console.log('seleeeeeeeeeeeeeeeeeeeeee')
-        console.log(this.parentSelectList)
+    entermark(){
+          console.log("entermark")
+          this.$emit("entermark")
       }
-      this.$emit('childSelectList', this.parentSelectList)
-    },
-    checkSelect(id) {
-      return this.parentSelectList.indexOf(id)
-    }
   }
 }
 </script>

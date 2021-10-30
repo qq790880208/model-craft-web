@@ -31,7 +31,7 @@
       <el-button @click="nextaudio">保存并下一个D)</el-button>   
       <el-button @click="skipaudionext">下一个(F)</el-button>
       <el-button @click="nomarkedaudio">无可标注类型(G)</el-button> -->
-      <wave ref='waveref'
+      <wave ref='waveref' style="margin-top:20px"
       :premarktype="this.marktype" 
       :audioindex="this.nownum"
       :fatheraudioUrl="this.audioArry[nownum]"
@@ -352,7 +352,8 @@ export default {
           _this.acceptinfoArry[i]=response.data.items[i].accept_remark
           if(response.data.items[i].is_label!=1) _this.isalllabeled=false;
           if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
-          _this.lastinfoArry.push({})
+          _this.lastinfoArry.push({audio:[]})
+          console.log("lastinfoArry", _this.lastinfoArry[i]);
           }
           //if(response.data.items[i].label_data!==undefined) {
           else{

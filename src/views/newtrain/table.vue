@@ -87,22 +87,28 @@
       </el-table-column> -->
       <el-table-column label="操作" width="400"> 
         <template slot-scope="scope">
+          <!-- <el-button
+            size="mini" v-if="scope.row.status!=0"
+            @click="handleStart(scope.$index, scope.row) "  disabled>开始</el-button> -->
           <el-button
-            size="mini"
+            size="mini" 
             @click="handleStart(scope.$index, scope.row)">开始</el-button>
           <el-button
-            size="mini"
+            size="mini" 
             @click="handleStop(scope.$index, scope.row)">终止</el-button>
+          <!-- <el-button
+            size="mini" v-if="scope.row.status==1"
+            @click="handleStop(scope.$index, scope.row)">终止</el-button> -->
           <el-button
             size="mini"
-            @click="handleShow()">可视化</el-button> -->
+            @click="handleShow(scope.$index, scope.row)">可视化</el-button>
           <el-button
             size="mini" v-if="scope.row.status!=0"
             @click="handleShowlog(scope.$index, scope)" >日志</el-button>
           <el-button
             size="mini" v-if="scope.row.status==0"
             @click="handleShowlog(scope.$index, scope)"  disabled>日志</el-button>
-            <el-button
+          <el-button
             size="mini" type="danger"
             @click="handleDelete(scope.$index, scope.row)">删除</el-button>
         </template>
@@ -125,9 +131,9 @@
          <visualt :dData="drawData.first" id="2"></visualt>
          <visualf :Data="drawData.second" id="1"></visualf>
       </div>
-      <div slot="footer" class="dialog-footer">
+      <!-- <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="handleStop()" >终止训练</el-button>
-      </div>
+      </div> -->
     </el-dialog>
     <!-- 日志可视化 -->
     <el-dialog
@@ -209,7 +215,7 @@
         </el-form-item> -->
         <el-form-item label="参数选择" >
           <el-form>
-            <el-form-item >
+            <!-- <el-form-item >
                 <el-select v-model="value" clearable placeholder="根据任务名称选取参数" @change="search">
                   <el-option
                     v-for="item in options"
@@ -219,11 +225,11 @@
                   >
                   </el-option>
                 </el-select>
-            </el-form-item>
+            </el-form-item> -->
             <el-form-item >      
             
               <div style="height:150px; " class="scrollbar">
-              <!-- <el-scrollbar style="height:100%; "> 
+              <el-scrollbar style="height:100%; "> 
                 <el-form-item v-for="(item, index) in paraNameList[currentAlgorithm]" :key="index">
                   <p sty autocomplete="off" style="width: 15%;display: inline-block" >{{item}}</p>
                   <b style="margin-left:15px;">=</b>
@@ -243,8 +249,8 @@
                     </div>
                   </el-select>
                 </div>
-              </el-scrollbar> -->
-                <el-form-item  v-for="(item, index) in list_model_para" :key="index">
+              </el-scrollbar>
+                <!-- <el-form-item  v-for="(item, index) in list_model_para" :key="index">
                     <el-col :span="5">
                         <el-input v-model="item[0]"></el-input>
                     </el-col>
@@ -256,7 +262,7 @@
                         <el-button icon="el-icon-plus" circle @click="addpara" size="small"></el-button>
                         <el-button icon="el-icon-minus" circle @click="deletepara(index)" size="small"></el-button>
                     </el-col>
-                </el-form-item>
+                </el-form-item> -->
 
               </div>
             </el-form-item>
@@ -464,7 +470,7 @@ export default {
           "pagesize":10,
           "query":""
         },
-        commonPara:{//三个按钮给后台传递的参数
+        commonPara:{//开始、停止、删除按钮给后台传递的参数
           'trainjob_id':0
         },
         showPara:{
@@ -602,6 +608,7 @@ export default {
       handleStart(index, row) {//开始某行训练
         this.commonPara.trainjob_id = row.uuid
         startTask(this.commonPara).then(res=>{
+          console.log(this.commonPara)
           console.log(res)
           //==需要重新获取用户列表
           this.fetchData()
@@ -636,13 +643,14 @@ export default {
         
         
       },
-      handleStop() {//终止某行训练
+      handleStop(index, row) {//终止某行训练
          this.$confirm('此操作将终止该任务训练, 是否继续?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          stopTask(this.showPara).then(res=>{
+          this.commonPara.trainjob_id = row.uuid
+          stopTask(this.commonPara).then(res=>{
             console.log(res)
             //==需要重新获取用户列表
             this.fetchData()
@@ -662,7 +670,7 @@ export default {
         
       },
       handleShow(index, row) {//可视化某行 
-      console.log(this.showPara,index,row)
+        console.log(this.showPara,index,row)
         this.picVisible = true
         this.showPara.trainjob_id = row.trainjob_id
         let tmp = {
@@ -677,7 +685,8 @@ export default {
           this.drawData.second.valAccuaccy = res.data.valAccuaccy
         })
       },
-      handleShowlog(index, row){//日志可视化
+      
+      log(index, row){//日志可视化
         this.logdialogVisible = true
         clearInterval(this.timerLog)
         this.timerLog = null
@@ -838,11 +847,11 @@ export default {
         }
       },
       setTimerLog(train_id) {//读取日志的定时器
-      console.log("this.timerLog",this.timerLog)
-      this.logText = ''
-      let parm = {
-        'trainjob_id' : train_id
-      }
+        console.log("this.timerLog",this.timerLog)
+        this.logText = ''
+        let parm = {
+          'trainjob_id' : train_id
+        }
         if(this.timerLog == null) {
           this.timerLog = setInterval( () => {
               //console.log('开始定时...每过一秒执行一次')

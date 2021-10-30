@@ -40,8 +40,8 @@
       <el-button @click="nextimage">下一张(N)</el-button>
       <el-button @click="previousimage">上一张(P)</el-button>
       <!-- <el-button @click="skipimage">跳过当前图片(Q)</el-button> -->
-      <el-button @click="pass">通过</el-button>
-      <el-button @click="unAcceptDialog">不通过</el-button>
+      <el-button @click="pass">通过(A)</el-button>
+      <el-button @click="unAcceptDialog">不通过(D)</el-button>
       <!-- <el-button @click="reset">重置</el-button> -->
       <imageselect
         ref="imageselectref"
@@ -106,19 +106,25 @@ function keyDownSearch(e) {
   console.log('keydown!!!!!!!!!!!!')
   let theEvent = e.event || window.event
   let code = theEvent.keyCode || theEvent.which || theEvent.charCode
-  if (code === 80) { // 上一张
+  if (code === 80) { // 上一张 P
     console.log('pppppppp!!!!!!!!!!!!!')
     this.previousimage()
     // return false
   }
-  if (code === 78) { // 下一张
+  if (code === 78) { // 下一张 N
     console.log('nnnnnnnn!!!!!!!!!!!!!')
     this.nextimage()
   // return true;
   }
-  if (code === 81) { // 跳过
+  if (code === 81) { // 跳过 Q
     console.log('qqqqqqqq!!!!!!!!!!!!!')
     this.skipimage()
+  }
+  if (code === 65) { // 通过  A
+    this.pass()
+  }
+  if (code === 68) { // 不通过 D
+    this.unAcceptDialog()
   }
 }
 

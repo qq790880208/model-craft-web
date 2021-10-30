@@ -14,6 +14,7 @@
             <el-button plain round @click="createbucketmsg">创建桶</el-button>
             <el-button plain round @click="removebucketmsg">删除桶</el-button>
             <el-button plain round @click="uploadobjectmsg">上传文件</el-button>
+            <el-button plain round @click="uploadZipmsg">上传ZIP</el-button>
         </el-col>
     </el-row>
     <el-divider></el-divider>
@@ -107,6 +108,58 @@
         <div slot="footer" class="dialog-footer">
             <el-button @click="uploadObjectNull">取 消</el-button>
             <el-button type="primary" @click="uploadObject">确 定</el-button>
+        </div>
+    </el-dialog>
+
+    <!--上传ZIP弹出框-->
+    <el-dialog title="上传ZIP文件" :visible.sync="uploadZipVisible" :close-on-click-modal="false" :destroy-on-close="true"> 
+            <el-button-group>
+                <el-button type="primary" @click="chooseZipFolder">选择上传路径</el-button>
+                <el-button class="dir" plain>{{uploadZipBucketName}} : {{uploadZipFolder}}</el-button>
+            </el-button-group>
+        <el-dialog width="30%" title="选择路径" :visible.sync="uploadZipFolderVisible" append-to-body :show-close="false">
+            <el-form>
+                <el-form-item label="请选择桶:">
+                    <el-radio-group v-model="uplZipbucket" @change="chooseuplZipbucket">
+                        <el-radio-button :label="item.name" :key="item.name" v-for="item in list">{{item.name}}</el-radio-button>
+                    </el-radio-group>
+                </el-form-item>
+            </el-form>
+        <el-divider></el-divider>
+        <el-row>
+            <el-button icon="el-icon-upload2" type="text"  @click="returnOldzipuplCurrentRow">返回上级</el-button>
+            <el-divider direction="vertical"></el-divider>
+            <el-tag type="info" effect="light">当前路径：{{uplZipbucket}} ：{{zipuplcurrentRow}}</el-tag>
+        </el-row>
+        <el-table :data="ZipuplData" height="250" highlight-current-row @row-click="uplZiplistbyPrefix">
+            <el-table-column prop="name" label="请选择上传位置"></el-table-column>
+        </el-table>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="returnZipFolderNull">取 消</el-button>
+            <el-button type="primary" @click="returnZipFolder" >确定</el-button>
+        </div>
+        </el-dialog>
+        <el-divider></el-divider>
+            <el-upload
+                class="upload"
+                ref="upload"
+                action="string"
+                :file-list="zipFileList"
+                :auto-upload="false"
+                :http-request="uplZipFile"
+                :on-change="handleZipChange"
+                :on-preview="handlePreview"
+                :on-remove="handleZipRemove"
+                multiple="multiple"
+                v-loading="uploadZipLoading"
+                element-loading-text="上传中"
+                element-loading-spinner="el-icon-loading">
+                <el-button slot="trigger" size="small" type="primary" @click="delZipFile">选取ZIP文件</el-button>
+            </el-upload>
+        <el-divider></el-divider>
+        <div slot="footer" class="dialog-footer">
+            <el-button @click="uploadZipNull">取 消</el-button>
+            <el-button type="primary" @click="uploadZip">确 定</el-button>
         </div>
     </el-dialog>
 
@@ -305,7 +358,7 @@
 </template>
 
 <script>
-import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder,fileRename,fileURL,fileCopy,fileMove } from '@/api/oss'
+import{ listBucket,listObject,listObjectByPrefix,createBucket,removeBucket,removeFile,upload,createFolder,listFolder,fileRename,fileURL,fileCopy,fileMove,uploadZip } from '@/api/oss'
 import request from "@/utils/request"
 import store from '@/store'
 export default {
@@ -387,6 +440,24 @@ export default {
             MultipleMoveBucketName:'',//批量移动的目标桶
             MultipleMoveObjectRow:'',//批量移动的目标路径
             multipleMoveSignal:0,//批量移动计数
+            uploadZipVisible:false,//上传ZIP弹出框信号
+            uploadZipFolderVisible:false,//上传ZIP选择目标路径框信号
+            uploadZipBucketName:'',//上传ZIP目标桶
+            uploadZipFolder:'',//上传ZIP目标路径
+            uplZipbucket:'',//上传ZIP对象bucket
+            ZipuplData:[],//上传ZIP对象列表
+            zipuplcurrentRow:'',//页面显式的上传路径
+            zipuplPrefix:'',//后端调用的上传路径
+            oldzipuplPrefix:'',//上传的上一级目录
+            oldzipuplCurrentRow:'',//上传的后端调用上级目录
+            selectZipBucketName:'',//内层dialog选中的bucket
+            selectZipFolder:'',//内层dialog选中的目录
+            zipFileList:[],
+            uploadZipFilePostfix:'',//上传的后缀名
+            formZipData:"",
+            uploadZipLoading:false,//文件上传加载
+
+
         }
     },
 
@@ -538,6 +609,220 @@ export default {
                     this.fai()
                 }
             })
+        },
+
+        //上传ZIP点击事件
+        uploadZipmsg(){
+            this.uploadZipVisible=true
+        },
+
+        //选择目标路径点击按钮
+        chooseZipFolder(){
+            this.uploadZipFolderVisible=true
+        },
+
+        //选择上传ZIP的bucket
+        chooseuplZipbucket(val){
+            this.ZipuplData=[]
+            const para = {bucketName : val}
+            console.log(para);
+            this.Zipupllist(para);
+        },
+
+        //上传ZIP的object列表数据
+        Zipupllist(para){
+            listObject(para).then(response=>{
+                if(response){
+                    console.log(response);
+                    this.ZipuplData = response.data
+                }else{
+                }
+            }).catch()
+        },
+
+        //根据前缀名递归列上传ZIP列表
+        uplZiplistbyPrefix(row,event,column){
+            console.log(row.name);
+            const para={}
+            if("/"==((row.name.split("").reverse().join("")).substring(0,1)).split("").reverse().join("")){
+                console.log("isdir");
+                this.zipuplcurrentRow = row.name;
+                console.log(this.zipuplcurrentRow.substring(0,row.name.length-1));
+                this.zipuplPrefix = this.zipuplcurrentRow.substring(0,row.name.length-1)
+                para.bucketName = this.uplZipbucket
+                para.objectPrefix = this.zipuplPrefix
+                console.log(para);
+                this.listuplZip(para)
+                // this.oldCurrentRow = this.objectPrefix.split("").reverse().indexOf("/") 逆置然后求出第一个/在第几个位置
+                this.oldzipuplPrefix = this.zipuplPrefix.substring(0,this.zipuplPrefix.length-this.zipuplPrefix.split("").reverse().indexOf("/")-1)
+                this.oldzipuplCurrentRow = this.zipuplPrefix.substring(0,this.zipuplPrefix.length-this.zipuplPrefix.split("").reverse().indexOf("/"))
+            }else{
+                console.log("isnotdir");
+            }
+            this.selectZipBucketName=this.uplZipbucket;
+            this.selectZipFolder=row.name;
+        },
+
+        //更新ZipuplData的值
+        listuplZip(para){
+            listObjectByPrefix(para).then(response=>{
+                this.ZipuplData = response.data
+            }).catch(error=>{console.log(error);})
+        },
+
+        //ZIP上传的返回上一级事件
+        returnOldzipuplCurrentRow(){
+            console.log(this.uplZipbucket);
+            console.log(this.oldzipuplCurrentRow);
+            console.log(this.oldzipuplPrefix);
+            if(this.oldzipuplCurrentRow==this.oldzipuplPrefix){
+                this.oldzipuplCurrentRow=''
+                this.oldzipuplPrefix=''
+                this.zipuplcurrentRow=''
+                this.zipuplPrefix=''
+                this.selectZipFolder=''
+            }
+            const para={}
+            para.bucketName = this.uplZipbucket;
+            para.objectPrefix = this.oldzipuplPrefix;
+            console.log(para);
+            this.listuplZip(para)
+            this.zipuplcurrentRow = this.oldzipuplCurrentRow
+            this.zipuplPrefix = this.oldzipuplPrefix
+            this.oldzipuplCurrentRow = this.zipuplPrefix.substring(0,this.zipuplPrefix.length-this.zipuplPrefix.split("").reverse().indexOf("/"))
+            this.oldzipuplPrefix = this.zipuplPrefix.substring(0,this.zipuplPrefix.length-this.zipuplPrefix.split("").reverse().indexOf("/")-1)
+        },
+
+        //ZIP目标路径确定键
+        returnZipFolder(){
+            if(this.selectZipBucketName==''){this.selectZipBucketName=this.uplZipbucket}
+            this.uploadZipBucketName=this.selectZipBucketName
+            this.uploadZipFolder=this.selectZipFolder
+            this.ZipuplData=[]
+            this.uplZipbucket=''
+            this.uploadZipFolderVisible=false
+        },
+
+        //ZIP目标路径取消键
+        returnZipFolderNull(){
+            this.uploadZipBucketName=''
+            this.uploadZipFolder=''
+            this.zipuplcurrentRow=''
+            this.ZipuplData=[]
+            this.uplZipbucket=''
+            this.uploadZipFolderVisible=false
+        },
+
+
+        //清除zipFileList
+        delZipFile(){
+            this.zipFileList = [];
+        },
+
+        //当文件列表改变
+        handleZipChange(file, fileList){
+            this.zipFileList = fileList;
+            this.uploadZipFilePostfix = file.name.substring(file.name.indexOf('.'))
+        },
+
+        //上传列表
+        uplZipFile(file) {
+        this.formZipData.append("file", file.file);
+        },
+
+        //当文件列表删除
+        handleZipRemove(file, fileList) {
+            console.log(file, fileList);
+        },
+
+        //当前文件
+        handleZipPreview(file) {
+        console.log(file);
+        },
+
+        //上传ZIP的取消键
+        uploadZipNull(){
+            this.uploadZipBucketName=''
+            this.uploadZipFolder=''
+            this.selectZipBucketName=''
+            this.selectZipFolder=''
+            this.uploadZipVisible=false
+            
+        },
+        //上传ZIP的确定键
+        uploadZip(){
+            this.uploadZipLoading=true
+            let multFileList = this.zipFileList
+            let multFileListLen = multFileList.length
+            let s=0
+            console.log(multFileList);
+            console.log(multFileListLen);
+        if(multFileListLen==1){
+            let formData = new FormData();
+            formData.append("bucketName", this.uploadZipBucketName);
+            console.log(this.uploadZipBucketName);
+            formData.append("file", multFileList[0].raw);
+            console.log( multFileList[0].raw);
+            formData.append("objectName", this.uploadZipFolder);
+            console.log(this.uploadZipFolder);
+            formData.append("userid", store.getters.userid)
+            console.log('sssssssssssssssssssssssss')
+            console.log(store.getters.uuid)
+            formData.append("dataset_id", store.getters.uuid)
+            uploadZip(formData).then(response=>{
+                if(response.code==20000){
+                    this.uploadZipLoading=false
+                    this.suc()
+                    this.uploadZipVisible=false
+                    this.choosebucket(this.bucket)//刷新
+                    this.uploadZipBucketName=''
+                    this.uploadZipFolder=''
+                    this.uplZipbucket=''
+                    this.zipuplcurrentRow=''
+                    this.ZipuplData=[]
+                    this.zipFileList=[]
+                    this.uploadZipFilePostfix=''
+                }else{
+                    this.uploadZipLoading=false
+                    this.fai()}
+            })
+        
+        }else{
+            for(let i=0;i<multFileListLen;i++){
+            let formData = new FormData();
+            formData.append("bucketName", this.uploadZipBucketName);
+            console.log(this.uploadZipBucketName);
+            formData.append("file", multFileList[i].raw);
+            console.log( multFileList[i].raw);
+            formData.append("objectName", this.uploadZipFolder);
+            console.log(this.uploadZipFolder);
+            formData.append("userid", store.getters.userid)
+            console.log('sssssssssssssssssssssssss')
+            console.log(store.getters.uuid)
+            formData.append("dataset_id", store.getters.uuid)
+            uploadZip(formData).then(response=>{
+                if(response.code==20000){
+                    s++
+                    console.log(response);
+                    if(s==multFileListLen-1){
+                    this.uploadZipLoading=false
+                    this.suc()
+                    this.uploadZipVisible=false
+                    this.choosebucket(this.bucket)//刷新
+                    this.uploadZipBucketName=''
+                    this.uploadZipFolder=''
+                    this.uplZipbucket=''
+                    this.zipuplcurrentRow=''
+                    this.ZipuplData=[]
+                    this.zipFileList=[]
+                    this.uploadZipFilePostfix=''
+                    }
+                }else{
+                    this.uploadZipLoading=false
+                    this.fai()}
+            })
+        }
+        }
         },
 
         //上传文件点击事件
@@ -755,6 +1040,7 @@ export default {
             removeFile(para).then(response=>{
                 if(20000 == response.code){
                     this.suc()
+                    this.choosebucket(this.bucket)
                 }else{
                     this.fai()
                 }
@@ -785,7 +1071,7 @@ export default {
                 para.bucketName=this.bucket
                 para.objectName=this.objectcurrentRow+value
                 this.createfolder(para)
-                this.fresh()
+                this.choosebucket(this.bucket)
             }).catch(() => {
                     });
         },
@@ -829,7 +1115,6 @@ export default {
             para.objectName=this.objectcurrentRow+this.delfolder
             this.removeobj(para)
             this.remFolderVisible=false
-            // this.fresh()
         },
         choofolder(){
             this.$message.error('该目录下不存在文件夹');
@@ -1224,7 +1509,7 @@ export default {
                 this.suc()
                 this.multipleCopySignal=0
                 this.multipleCopyVisible=false
-                const secounds = 100
+                const secounds = 150
 	            let num = 0
                 while(num<=secounds){num++}
                 this.fresh()
@@ -1462,7 +1747,7 @@ export default {
                 this.suc()
                 this.multipleMoveSignal=0
                 this.multipleMoveVisible=false
-                const secounds = 100
+                const secounds = 150
 	            let num = 0
                 while(num<=secounds){num++}
                 this.fresh()

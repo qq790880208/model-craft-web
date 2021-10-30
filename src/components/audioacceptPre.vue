@@ -340,12 +340,7 @@ export default {
     },
     readyupdate(){
       console.log("lastlabelArry",this.lastlabelArry)
-      // if(this.lastlabelArry==undefined) {
-      //   this.emitfather()
-      //   return
-      // }
       for (let i = 0; i < this.lastlabelArry.audio.length; i++){
-        console.log("i,i",i)
         this.findcolor(this.lastlabelArry.audio[i].speaker)
         let temregion = this.wavesurfer.addRegion({
           start:this.lastlabelArry.audio[i].start,
@@ -368,8 +363,8 @@ export default {
       //     text2: lastlabelArry.audio[i].text2,
       //   }
       // });
-      console.log("1jieshu")
       }
+      console.log("1jieshu")
       console.log("this.audioPointArry",this.audioPointArry)
       this.emitfather()
     },

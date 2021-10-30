@@ -91,6 +91,9 @@ export default {
       if (num === 3) {
         return 'pytorch-2D拉框'
       }
+      if (num === 5) {
+        return '3D'
+      }
     }
   },
   data() {
@@ -115,7 +118,9 @@ export default {
     sortChange(column) {
       console.log('排序', column.prop, column.order)
       this.colorder = column.prop
-      this.ordering = column.order
+      if (column.order != null) {
+        this.ordering = column.order
+      }
       this.getAcceptDataSet()
     },
     // 分页查询
@@ -178,7 +183,10 @@ export default {
         this.$router.push({ path: '/dataSet/polygonaccept' })
       }
       if (val.label_type === 2) {
-        this.$router.push({ path: '/label/voice' })
+        this.$router.push({ path: '/dataSet/audioaccept' })
+      }
+      if (val.label_type === 5) {
+        this.$router.push({ path: '/dataSet/3Daccept' })
       }
       // if(val.label_type === 3) {
       //   this.$router.push({path:'/label/voice'})

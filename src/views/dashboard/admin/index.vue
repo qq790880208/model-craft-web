@@ -24,7 +24,7 @@
         </el-row>
       </div>
     </el-card>
-    <el-row :gutter="32">
+    <!-- <el-row :gutter="32">
       <el-col :xs="24" :sm="24" :lg="8">
         <div class="chart-wrapper">
           <raddar-chart />
@@ -40,9 +40,9 @@
           <bar-chart />
         </div>
       </el-col>
-    </el-row>
+    </el-row> -->
 
-    <el-dialog
+    <!-- <el-dialog
       title="首次登录,请修改密码"
       :visible.sync="centerDialogVisible"
       width="45%"
@@ -51,7 +51,7 @@
       center
       :before-close="handleCloseChangePassword">
       <!-- <span>需要注意的是内容是默认不居中的</span> -->
-      <el-card class="box-card1">
+      <!-- <el-card class="box-card1">
         <el-form ref="form" :model="form" :rules="rules">
         <el-form-item label="新密码" prop="newPassword">
             <el-input v-model="form.newPassword" type="password" placeholder="请设置新密码" />
@@ -64,33 +64,7 @@
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="onSubmit()">确 定</el-button>
       </span>
-    </el-dialog>
-
-    <el-tag
-      v-for="tag in tags"
-      :key="tag.value"
-      :color="tag.color"
-      closable
-      :disable-transitions="false"
-      @close="handleClose(tag)"
-    >
-      {{ tag.value }}
-    </el-tag>
-    <!-- <template
-      v-if="inputVisible"
-      @keyup.enter.native="handleInputConfirm"
-      @blur="handleInputConfirm"
-    > -->
-    <el-input
-      v-if="inputVisible"
-      ref="saveTagInput"
-      v-model="inputValue"
-      class="input-new-tag"
-      size="small"
-    />
-    <el-color-picker v-if="inputVisible" v-model="color1" class="mycolor" show-alpha="true" size="small" />
-    <el-button v-if="inputVisible" type="primary" size="mini" icon="el-icon-finished" @keyup.enter.native="handleInputConfirm" @click="handleInputConfirm" />
-    <el-button v-else class="button-new-tag" size="small" @click="showInput">+ New Tag</el-button>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -144,10 +118,6 @@ export default {
       faceNum: Math.round(Math.random() * 10000),
       userCount: 100,
       activeUserCount: 100,
-      tags: [{
-        value: '西瓜',
-        color: 'rgba(255, 128, 255, 0.75)'
-      }],
       inputVisible: false,
       inputValue: '',
       color1: 'rgba(255, 128, 0, 0.75)',
@@ -172,8 +142,8 @@ export default {
     }
   },
   created() {
-    // this.getAllUserCount()
-    // this.getActiveUserCount()
+    this.getAllUserCount()
+    this.getActiveUserCount()
     this.changeDialog()
   },
   methods: {
@@ -181,12 +151,18 @@ export default {
       this.lineChartData = lineChartData[type]
     },
     getAllUserCount() {
-      getAllUserCountApi().then(res => {
+      const params = {
+        createBy: store.getters.name
+      }
+      getAllUserCountApi(params).then(res => {
         this.userCount = res.data.items
       })
     },
     getActiveUserCount() {
-      getActiveUserCountApi().then(res => {
+      const params = {
+        createBy: store.getters.name
+      }
+      getActiveUserCountApi(params).then(res => {
         this.activeUserCount = res.data.items
       })
     },
