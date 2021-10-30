@@ -316,7 +316,7 @@ export default {
       // });
       setTimeout(() => {
         this.updatelastdata();
-      },100)
+      },10)
     });
     
   },

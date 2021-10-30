@@ -47,7 +47,33 @@ export default {
       'name'
     ])
   },
+  data() {
+    return {
+      _beforeUnload_time: '',
+      _gap_time: 0
+    }
+  },
+  mounted() {
+    window.addEventListener('beforeunload', e => this.beforeunloadHandler(e))
+    window.addEventListener('unload', e => this.unloadHandler(e))
+  },
+  destroyed() {
+    window.removeEventListener('beforeunload', e => this.beforeunloadHandler(e))
+    window.removeEventListener('unload', e => this.unloadHandler(e))
+  },
   methods: {
+    beforeunloadHandler(e) {
+      this._beforeUnload_time=new Date().getTime();
+      console.log('关闭窗口之后')
+    },
+    unloadHandler(e){
+      this._gap_time=new Date().getTime()-this._beforeUnload_time;
+      console.log('关闭窗口之后--------')
+      if(this._gap_time<=5) {
+        this.$store.dispatch('user/logout')
+      }
+      
+    },
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar')
     },

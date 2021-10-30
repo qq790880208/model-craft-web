@@ -404,6 +404,7 @@ export default {
         }
         console.log(params)
         getLabelDataApi(params).then(function (response) {
+          console.log("response",response)
         _this.audioArry=[]
         _this.infoArry=[]
         _this.lastinfoArry=[]
@@ -418,7 +419,7 @@ export default {
           // _this.auditinfoArry[i]=response.data.items[i].audit_remark
           // _this.acceptinfoArry[i]=response.data.items[i].accept_remark
           if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
-          _this.lastinfoArry.push({})
+          _this.lastinfoArry.push({audio:[]})
           }
           //if(response.data.items[i].label_data!==undefined) {
           else{
