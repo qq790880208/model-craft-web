@@ -214,6 +214,9 @@ export default {
     window.nextimage = this.nextimage
     window.previousimage = this.previousimage
     window.skipimage = this.skipimage
+    window.pass=this.pass
+    window.rejectDialog=this.rejectDialog
+    window.reset=this.reset
     document.onkeydown = keyDownSearch
     this.starttimer = setInterval(() => {
       this.nowseconds++

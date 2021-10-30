@@ -102,6 +102,13 @@ export const constantRoutes = [
       hidden: true
     },
     {
+      path: '/dataSet/3Daccept',
+      component: () => import('@/views/dataSet/3Daccept'),
+      name: '3Daccept',
+      meta: { title: '3Daccept', resources: '3Daccept' },
+      hidden: true
+    },
+    {
       path: '/dataSet/2Daccept',
       component: () => import('@/views/dataSet/2Daccept'),
       name: '2Daccept',
@@ -212,19 +219,19 @@ export const asyncRoutes = [
         path: '/marking',
         component: () => import('@/views/dataSet/marking'),
         name: 'marking manage',
-        meta: { title: '标注数据集', resources: 'marking', icon: 'tree-table' }
+        meta: { title: '标注数据集', resources: 'marking', icon: 'list' }
       },
       {
         path: '/auditing',
         component: () => import('@/views/dataSet/auditing'),
         name: 'auditing manage',
-        meta: { title: '审核数据集', resources: 'auditing', icon: 'tree-table' }
+        meta: { title: '审核数据集', resources: 'auditing', icon: 'list' }
       },
       {
         path: '/accepting',
         component: () => import('@/views/dataSet/accepting'),
         name: 'accepting manage',
-        meta: { title: '验收数据集', resources: 'accepting', icon: 'tree-table' }
+        meta: { title: '验收数据集', resources: 'accepting', icon: 'skill' }
       },
       {
         path: '/oss',

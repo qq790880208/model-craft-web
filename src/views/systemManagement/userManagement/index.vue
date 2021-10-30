@@ -405,7 +405,8 @@ export default {
         type: this.filters.type,
         createTime: this.filters.createTime.toString(),
         colorder: this.colorder,
-        ordering: this.ordering
+        ordering: this.ordering,
+        createBy: store.getters.name
       }
       console.log(para)
       getUserListPage(para).then(res => {

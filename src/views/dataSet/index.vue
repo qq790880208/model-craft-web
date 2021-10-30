@@ -298,7 +298,10 @@ export default {
       }
       if (num === 3) {
         return 'pytorch-2D拉框'
-      }
+      } 
+      if (num === 5) {
+        return '3D'
+      } 
     }
   },
   data() {
@@ -374,7 +377,7 @@ export default {
         tagss: [
           { validator: validateTags, trigger: 'blur' }]
       },
-      // 0 tf2D拉框，1 tf像素级（多边形），2 语音, 3 py2D拉框, 4py像素级（多边形）
+      // 0 tf2D拉框，1 tf像素级（多边形），2 语音, 3 py2D拉框, 4py像素级（多边形）, 5 3D
       labels: [
         [0, 1, 3, 4],
         [2],
@@ -382,8 +385,10 @@ export default {
       ],
       labelName: ['tensorflow-2D拉框', 'tensorflow-像素级', '语音', 'pytorch-2D拉框', 'pytorch-像素级', '3D'],
       tags: [{
-        value: '西瓜',
-        color: 'rgba(255, 128, 255, 0.75)'
+        // value: '西瓜',
+        // color: 'rgba(255, 128, 255, 0.75)'
+        value: '',
+        color: ''
       }],
       color1: 'rgba(255, 128, 0, 0.75)'
     }
@@ -836,7 +841,7 @@ export default {
       console.log(val.labelType)
       store.dispatch('data/changeUuid', val.uuid)
       store.dispatch('data/changeType', val.label_type)
-      store.dispatch('data/changeDataSet', val)
+      store.dispatch('user/changeDataSet', val)
       if (type === 0 || type === 3) {
         this.$router.push('/label/d2imageview')
         // this.$router.push({path: '/dataSet/2DauditPre'})
@@ -847,6 +852,9 @@ export default {
       }
       if (type === 2) {
         this.$router.push({ path: '/label/voice' })
+      }
+      if (type === 5) {
+        this.$router.push('/label/d3')
       }
       // if(type === 3) {
       //   this.$router.push({path:'/label/voice'})

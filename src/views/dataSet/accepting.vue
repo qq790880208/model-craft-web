@@ -164,7 +164,7 @@ export default {
       console.log(val)
       store.dispatch('data/changeUuid', val.uuid)
       store.dispatch('data/changeType', val.label_type)
-      store.dispatch('data/changeDataSet', val)
+      store.dispatch('user/changeDataSet', val)
       // this.$router.push({path:'/dataSet/audit'})
       // this.$router.push({path: '/dataSet/polygonaudit'})
       // this.$router.push({path: '/dataSet/3Daudit'})
