@@ -94,6 +94,7 @@
                 :on-preview="handlePreview"
                 :on-remove="handleRemove"
                 multiple="multiple"
+                :show-file-list="true"
                 v-loading="uploadLoading"
                 element-loading-text="上传中"
                 element-loading-spinner="el-icon-loading">
@@ -105,6 +106,7 @@
             <template slot="append">{{uploadFilePostfix}}</template>
         </el-input>
         <h5> <font color="#e6a23c">*注：1个文件上传时可自定义命名</font></h5>
+            <el-progress :text-inside="true" :stroke-width="26" :percentage="uplProgess" :v-show="progessShow"></el-progress>
         <div slot="footer" class="dialog-footer">
             <el-button @click="uploadObjectNull">取 消</el-button>
             <el-button type="primary" @click="uploadObject">确 定</el-button>
@@ -456,8 +458,8 @@ export default {
             uploadZipFilePostfix:'',//上传的后缀名
             formZipData:"",
             uploadZipLoading:false,//文件上传加载
-
-
+            progessShow:false,//文件上传进度条
+            uplProgess:0,//文件上传初始进度
         }
     },
 
@@ -921,6 +923,7 @@ export default {
 
     uploadObject() {
         this.uploadLoading=true
+        this.progessShow=true
         let multFileList = this.fileList
         let multFileListLen = multFileList.length
         let s=0
@@ -942,8 +945,8 @@ export default {
             formData.append("dataset_id", store.getters.uuid)
             upload(formData).then(response=>{
                 if(response.code==20000){
-                    this.uploadLoading=false
                     this.suc()
+                    this.uploadLoading=false
                     this.uploadObjectVisible = false
                     this.choosebucket(this.bucket)
                     this.uploadBucketName=''
@@ -960,6 +963,7 @@ export default {
             })
         }else{
             for(let i=0;i<multFileListLen;i++){
+            console.log(Math.round(i/multFileListLen)*100)
             let formData = new FormData();
             formData.append("bucketName", this.uploadBucketName);
             console.log(this.uploadBucketName);
@@ -972,11 +976,20 @@ export default {
             console.log('sssssssssssssssssssssssss')
             console.log(store.getters.uuid)
             formData.append("dataset_id", store.getters.uuid)
+
+                if(parseFloat(i)<parseFloat(Math.round(multFileListLen/2))){
+                this.uplProgess=(i/(multFileListLen-1))*100
+                console.log("here1:"+i/(multFileListLen-1))
+                }else{
+                    this.uplProgess=((((i+s)/2))/(multFileListLen-1))*100
+                    console.log("here2:"+((i+s)/2)/(multFileListLen-1))
+                    }
             upload(formData).then(response=>{
                 if(response.code==20000){
                     s++
                     console.log(response);
                     if(s==multFileListLen-1){
+                        this.progessShow=false
                         this.uploadLoading=false
                         this.suc()
                         this.uploadObjectVisible = false
@@ -991,6 +1004,7 @@ export default {
                         this.uploadFilePostfix=''
                     }
                 }else{
+                    this.progessShow=false
                     this.uploadLoading=false
                     this.fai()}
             })
