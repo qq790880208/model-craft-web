@@ -46,6 +46,8 @@
       <wave ref='waveref' style="margin-top:20px"
         :premarktype="this.marktype" 
         :audioindex="this.nownum"
+        :auditremakeinfo="this.auditinfoArry[nownum]"
+        :acceptremakeinfo="this.acceptinfoArry[nownum]"
         :fatheraudioUrl="this.audioArry[nownum]"
         :lastlabelArry="this.lastinfoArry[nownum]"
       ></wave>
@@ -481,6 +483,8 @@ export default {
         _this.lastinfoArry = []
         _this.uuidArry = []
         _this.audiolargeArry = []
+        _this.auditinfoArry=[]
+        _this.acceptinfoArry=[]
         console.log('get图片结果', response)
         for (let i = 0; i < response.data.items.length; i++) {
           console.log("get items",[i],response.data.items[i]);
@@ -499,6 +503,8 @@ export default {
           // _this.auditinfoArry[i]=response.data.items[i].audit_remark
           // _this.acceptinfoArry[i]=response.data.items[i].accept_remark
           // if(response.data.items[i].is_label!=1) _this.isalllabeled=false;
+          _this.auditinfoArry[i]=response.data.items[i].audit_remark
+          _this.acceptinfoArry[i]=response.data.items[i].accept_remark
           if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
           _this.lastinfoArry.push({})
           }

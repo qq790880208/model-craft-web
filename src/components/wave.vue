@@ -90,6 +90,14 @@
 
           <!-- </el-card> -->
         </div>
+        <div id="remarkinfodiv" style="display: inline-block">
+          <div>
+            <p>驳回备注：{{ auditremakeinfo }}</p>
+          </div>
+          <div>
+            <p>验收备注：{{ acceptremakeinfo }}</p>
+          </div>
+        </div>
         <div style="max-height: 600px; overflow: auto">
           <div
             v-for="(items, index) in audioPointArry"
@@ -189,6 +197,7 @@ export default {
       type: Object,
       default: () => {},
     },
+
   },
   data() {
     return {
