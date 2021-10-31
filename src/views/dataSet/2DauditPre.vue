@@ -40,17 +40,18 @@
       <el-button @click="nextimage">下一张(N)</el-button>
       <el-button @click="previousimage">上一张(P)</el-button>
       <!-- <el-button @click="skipimage">跳过当前图片(Q)</el-button> -->
-      <el-button @click="pass">通过</el-button>
-      <el-button @click="rejectDialog">驳回</el-button>
-      <el-button @click="reset">重置</el-button>
-      <imageselect 
-        ref="imageselectref" 
-        style="margin-top:20px;"
+      <el-button @click="pass">通过(A)</el-button>
+      <el-button @click="rejectDialog">驳回(D)</el-button>
+      <el-button @click="reset">重置(G)</el-button>
+      <imageselect style="margin-top:20px;" ref='imageselectref' 
         :fatherimagesrc="this.imageArry[nownum]"
         :imageindex="this.nownum"
         :premarktype="this.marktype"
-        :lastlabel-arry="this.lastinfoArry[nownum]"
-      />
+        :auditremakeinfo="this.auditinfoArry[nownum]"
+        :acceptremakeinfo="this.acceptinfoArry[nownum]"
+        :lastlabelArry="this.lastinfoArry[nownum]"
+        @saveimageinfo="saveimageinfo"
+      ></imageselect>
     </div>
 
     <el-dialog
@@ -120,6 +121,15 @@ function keyDownSearch(e) {
   if (code === 81) { // 跳过
     console.log('qqqqqqqq!!!!!!!!!!!!!')
     this.skipimage()
+  }
+  if (code === 65) { // 通过  A
+    this.pass()
+  }
+  if (code === 68) { // 不通过 D
+    this.rejectDialog()
+  }
+  if (code === 71) { // 重置 G
+    this.reset()
   }
 }
 
@@ -205,6 +215,9 @@ export default {
     window.nextimage = this.nextimage
     window.previousimage = this.previousimage
     window.skipimage = this.skipimage
+    window.pass=this.pass
+    window.rejectDialog=this.rejectDialog
+    window.reset=this.reset
     document.onkeydown = keyDownSearch
     this.starttimer = setInterval(() => {
       this.nowseconds++
@@ -471,30 +484,38 @@ export default {
         _this.lastinfoArry = []
         _this.uuidArry = []
         _this.imagelargeArry = []
+        _this.auditinfoArry=[]
+        _this.acceptinfoArry=[]
         console.log('get图片结果', response)
         for (let i = 0; i < response.data.items.length; i++) {
-          console.log('testtttttttttt', JSON.parse(response.data.items[i].label_data).rectangle)
-          if (response.data.items[i].label_data == undefined || response.data.items[i].label_data === '[]') {
-            _this.lastinfoArry.push([])
+          console.log("get items",[i],response.data.items[i]);
+          //读取图片分辨率
+          // let image = new Image();
+          // image.src = response.data.items[i].file_path; 
+          // console.log("imagesize",image)       
+          // image.onload=() =>{
+          //   console.log("imageonloadsuccess",image.width,image.height)
+          //   let imagea={}
+          //   imagea["width"]=image.width
+          //   imagea["height"]=image.height
+          //   _this.imagesize.push(imagea)
+          // }
+          // console.log("ima",_this.imagesize)
+          _this.auditinfoArry[i]=response.data.items[i].audit_remark
+          _this.acceptinfoArry[i]=response.data.items[i].accept_remark
+          if(response.data.items[i].is_label!=1) _this.isalllabeled=false;
+          if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
+          _this.lastinfoArry.push({})
           }
-          // if(response.data.items[i].label_data!==undefined) {
-          else {
-            console.log('testtttttttttt', JSON.parse(response.data.items[i].label_data).rectangle)
-            let tempa = JSON.parse(response.data.items[i].label_data).rectangle
-            let len = eval(tempa).length
-            // console.log("len", len);
-            let arr = []
-            for (let i = 0; i < len; i++) {
-              arr[i] = [] // js中二维数组必须进行重复的声明，否则会undefind
-              arr[i].x1 = tempa[i].x1
-              arr[i].y1 = tempa[i].y1
-              arr[i].x2 = tempa[i].x2
-              arr[i].y2 = tempa[i].y2
-              arr[i].info = tempa[i].info
-            }
-            _this.lastinfoArry.push(arr)
-            console.log('lastinfoArry', response.data.items[i].is_label)
-          }
+          //if(response.data.items[i].label_data!==undefined) {
+          else{
+          let tempa = JSON.parse(response.data.items[i].label_data)
+          // let len = eval(tempa).length;
+          // console.log("len", len);
+          console.log("tempa",tempa)
+          _this.lastinfoArry.push(tempa)
+          console.log("lastinfoArry", _this.lastinfoArry[i]);
+        } 
           let a = {}
           a['url'] = response.data.items[i].file_path
           a['islabel'] = response.data.items[i].is_audit

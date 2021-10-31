@@ -114,7 +114,9 @@ export default {
     sortChange(column) {
       console.log('排序', column.prop, column.order)
       this.colorder = column.prop
-      this.ordering = column.order
+      if (column.order != null) {
+        this.ordering = column.order
+      }
       this.getAssignDataSet()
     },
     // 设置标注进度条
@@ -142,12 +144,13 @@ export default {
       console.log('vallllllllllllllllllllllllllll', val)
       store.dispatch('data/changeUuid', val.uuid)
       store.dispatch('data/changeType', val.label_type)
-      store.dispatch('data/changeDataSet', val)
+      store.dispatch('user/changeDataSet', val)
       console.log(store.getters.uuid)
       console.log(store.getters.type)
       console.log(store.getters.dataSet)
       if (val.role_type !== '标注员') {
-        this.$router.push({ path: '/dataSet/message', query: { dataName: val.name, key: this.activeName }})
+        // this.$router.push({ path: '/dataSet/message', query: { dataName: val.name, key: this.activeName }})
+        this.$router.push({ path: '/dataSet/message' })
       } else {
         console.log('898989')
         this.toStartLabel(val, val.label_type)
@@ -160,7 +163,7 @@ export default {
       console.log(val.labelType)
       store.dispatch('data/changeUuid', val.uuid)
       store.dispatch('data/changeType', val.label_type)
-      store.dispatch('data/changeDataSet', val)
+      store.dispatch('user/changeDataSet', val)
       if (type === 0 || type === 3) {
         this.$router.push('/label/d2imageview')
         // this.$router.push({path: '/dataSet/2DauditPre'})

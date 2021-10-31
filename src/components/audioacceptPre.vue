@@ -2,32 +2,6 @@
   <div style="display: flex">
     <div id="testwave">
     </div>
-    <el-dialog
-      title="提示"
-      :visible.sync="dialogVisible"
-      :close-on-click-modal="false"
-      :style="{
-        width:800+'px',
-        //marginLeft: dialogleft+'px',
-        //marginTop: dialogtop+'px'
-        marginLeft: 100+'px',
-        marginTop: 200+'px'
-        }"
-      >
-      <span>请选择标签</span>
-        <el-select v-model="markspeaker" @change="changeinfo2" filterable placeholder=" " style="width:100px" ref="selectref">
-          <el-option
-          v-for="item in premarktype"
-          :key="item.index"
-          :label="item.name"
-          :value="item">
-          </el-option>
-        </el-select>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="cancelmark">取 消</el-button>
-        <el-button type="primary" @click="makemark">确 定</el-button>
-      </span>
-    </el-dialog>
     <div class="leftdiv">
       <!-- <form role="form" name="edit" style="opacity: 0; transition: opacity 300ms linear; margin: 30px 0;">
                 <div class="form-group">
@@ -74,23 +48,13 @@
               min="1"
               max="200"
               value="0"
-              style="width: 30%;margin-left:20px"
+              style="width: 30%"
             />
-            <el-switch style="display: inline-block;margin-left:20px" 
-            v-model="markstyle"   
-            active-text="选择标签后标注" 
-            inactive-text="先标注后选标签"
-            active-color="#13ce66"
-            inactive-color="#ff4949"
-            @change="switchchange"
-            :disabled="islabeling"
-            >
-            </el-switch>
           </div>
 
           <!-- </el-card> -->
         </div>
-        <div id="remarkinfodiv" style="display: inline-block">
+          <div id="remarkinfodiv" style="display: inline-block">
           <div>
             <p>驳回备注：{{ auditremakeinfo }}</p>
           </div>
@@ -134,11 +98,10 @@
         >
           <el-button
             @click="changecolor(items, index)"
-            :disabled="!markstyle"
             :style="{
               width: 120 + 'px',
               marginBottom: 10 + 'px',
-              background:markstyle? buttonindex == index ? items.color : 'rgba(0,0,0,0)':items.color,
+              background: items.color ,
             }"
             >{{ items.name }}</el-button
           >
@@ -149,7 +112,7 @@
 </template>
 <script>
 import WaveSurfer from "wavesurfer.js";
-import labelinfo from "@/components/wavelabelinfo.vue";
+import labelinfo from "@/components/wavelabelinfoacc.vue";
 import Timeline from "wavesurfer.js/dist/plugin/wavesurfer.timeline.js";
 import Regions from "wavesurfer.js/dist/plugin/wavesurfer.regions.js";
 import Minimap from "wavesurfer.js/dist/plugin/wavesurfer.minimap.js";
@@ -197,7 +160,6 @@ export default {
       type: Object,
       default: () => {},
     },
-
   },
   data() {
     return {
@@ -214,15 +176,6 @@ export default {
       audioPointArry:[],
       audioInfoArry: [],
       highlight: [],
-
-      markstyle:true,
-      dialogVisible: false,//标注时是否弹出对话框
-      dialogleft:0,
-      dialogtop:0,
-      markcolor2: "rgba(0,128,128,0.5)", //标记颜色
-      markspeaker2: null, //标记信息
-      islabeling:false,
-      newcreated:false,
     };
   },
   components: {
@@ -286,8 +239,8 @@ export default {
             customStyle:{
               //position:"relative",
               height:"128px",
-              marginTop:"110px",
-              marginLeft:"120px",
+              marginTop:"50px",
+              marginLeft:"50px",
             },
             customShowTimeStyle: {
               "background-color": "#000",
@@ -328,10 +281,11 @@ export default {
       this.wavesurfer.on("ready", () => {
         //选中第一个标签的颜色
         this.changecolor(this.premarktype[0], 0);
-        this.wavesurfer.enableDragSelection({
-          //color: this.randomColor(0, 1),
-          //color: this.premarktype[0].color
-        });
+        // this.wavesurfer.enableDragSelection({
+        //   //color: this.randomColor(0, 1),
+        //   //color: this.premarktype[0].color
+        // });
+        this.wavesurfer.disableDragSelection()
       });
       //点击播放区域
       this.wavesurfer.on("region-click", (region, e) => {
@@ -371,8 +325,9 @@ export default {
       // });
       setTimeout(() => {
         this.updatelastdata();
-      },10)
+      },100)
     });
+    
   },
   watch: {
     audioUrl(){
@@ -385,40 +340,6 @@ export default {
     }
   },
   methods: {
-     makemark(){
-      if(this.markspeaker == null) {
-        this.cancelmark()
-        return
-      }
-      let regionId = this.audioPointArry[this.b_i].id;
-      console.log(this.wavesurfer.regions.list[regionId])
-      this.wavesurfer.regions.list[regionId].update({
-        color:this.markcolor
-      })
-      this.audioPointArry[this.b_i].speaker = this.markspeaker
-      this.switchchange();
-      //this.clearobj();
-      this.dialogVisible = false;
-    },
-    cancelmark(){
-      this.deletelabel(this.b_i)
-      this.switchchange();
-      this.dialogVisible = false;
-    },
-    switchchange(){
-      //切换取消标签
-      if(!this.markstyle){
-        this.buttonindex = -1;
-        this.markcolor = this.markcolor2;
-        this.markspeaker = null;
-      }
-      else{
-        this.changecolor(this.premarktype[0], 0);
-      }
-    },
-    deletemarkedbi(){
-      this.deletelabel(this.b_i)
-    },
     updatelastdata(){
       this.wavesurfer.load(this.fatheraudioUrl)
     },
@@ -428,12 +349,7 @@ export default {
     },
     readyupdate(){
       console.log("lastlabelArry",this.lastlabelArry)
-      // if(this.lastlabelArry==undefined) {
-      //   this.emitfather()
-      //   return
-      // }
       for (let i = 0; i < this.lastlabelArry.audio.length; i++){
-        console.log("i,i",i)
         this.findcolor(this.lastlabelArry.audio[i].speaker)
         let temregion = this.wavesurfer.addRegion({
           start:this.lastlabelArry.audio[i].start,
@@ -456,10 +372,14 @@ export default {
       //     text2: lastlabelArry.audio[i].text2,
       //   }
       // });
-      console.log("1jieshu")
+        temregion.update({
+          drag:false,
+          resize:false
+        })
       }
+      console.log("1jieshu")
       console.log("this.audioPointArry",this.audioPointArry)
-      this.emitfather()
+
     },
     saveinfo(infoFlag,changeFlag) {
       //保存标注信息时传递的信息
@@ -517,7 +437,6 @@ export default {
     createRegions(region) {
       this.b_i = -1;
       console.log("dsadsadadsadasdsadsadsadasdasdasdsadsadasdasdasd")
-      this.newcreated=true;
       region.color = this.markcolor;
       this.audioPointArry.push({
         id: region.id,
@@ -532,14 +451,7 @@ export default {
       //this.highlight.push(false);
     },
     changeRegions(region) {
-      if(!this.markstyle&&this.newcreated){
-        //console.log("dsadasdas",e)
-        // this.dialogleft = e.absolutePointer.x
-        // this.dialogtop = String(e.absolutePointer.y)
-        this.dialogVisible = true;
-      }
       let _this = this;
-      this.newcreated=false
       console.log(region.id, _this);
       let index;
       this.audioPointArry.forEach(function (item, id) {
@@ -569,13 +481,6 @@ export default {
       //切换标注颜色
       console.log("changecolor", i);
       this.buttonindex = i;
-      this.markcolor = item.color;
-      this.markspeaker = item.name;
-    },
-    changeinfo2(item) {
-      //切换标注类型（包括颜色）
-      console.log("changeinfo2", item);
-      // this.buttonindex = i;
       this.markcolor = item.color;
       this.markspeaker = item.name;
     },

@@ -387,7 +387,9 @@ export default {
     sortChange(column) {
       console.log('排序', column.prop, column.order)
       this.colorder = column.prop
-      this.ordering = column.order
+      if (column.order != null) {
+        this.ordering = column.order
+      }
       this.getUsers()
     },
 
@@ -403,7 +405,8 @@ export default {
         type: this.filters.type,
         createTime: this.filters.createTime.toString(),
         colorder: this.colorder,
-        ordering: this.ordering
+        ordering: this.ordering,
+        createBy: store.getters.name
       }
       console.log(para)
       getUserListPage(para).then(res => {
@@ -477,7 +480,8 @@ export default {
                 password: temppassword,
                 descr: temp.descr,
                 mobile: temp.mobile,
-                email: temp.email
+                email: temp.email,
+                create_by: store.getters.name
               }
               console.log(para)
               editUser(para).then(res => {
@@ -516,6 +520,7 @@ export default {
               const para = Object.assign({}, this.editForm)
               // md5 加密
               para.password = md5(para.password)
+              para.create_by = store.getters.name
               console.log(para)
               addUser(para).then(res => {
                 this.$message({

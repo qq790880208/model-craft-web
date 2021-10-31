@@ -47,7 +47,7 @@
    destroyed(){
     console.log("miniimageddddddddddddddddddddddddddddddddddddddddddddddddddddd")
    },
-    computed: {
+  computed: {
     imagesrc: function () {
       return this.fatherimagesrc;
     },
@@ -63,7 +63,7 @@
       else if(this.ismarked ===3) return '已重置'
       else return '未验收' 
     }
-    },
+  },
   methods:{
       kanurl(){
           console.log(this.imagesrc)

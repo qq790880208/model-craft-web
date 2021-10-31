@@ -27,18 +27,27 @@
               :data="sublist[String(scope.$index)]"
               v-loading="sublistLoading"
             >
-            <el-table-column label="来自训练作业" width="200">
-                <template slot-scope="scope0"> 
-                  {{ scope0.row.tj_name }}
-                </template>
-              </el-table-column>
-              <el-table-column label="版本" width="100">
+            <el-table-column label="模型版本" width="100">
                 <template slot-scope="scope0"> 
                   {{ scope0.row.version }}
                 </template>
               </el-table-column>
+            <el-table-column label="来自训练作业" width="150">
+                <template slot-scope="scope0"> 
+                  {{ scope0.row.tj_name }}
+                </template>
+              </el-table-column>
               <el-table-column
-                label="状态" width="100"> 
+                label="模型唯一标识号" width="127"> 
+                
+                <template slot-scope="scope0">
+                
+                  {{ scope0.row.uuid }}
+                  <el-tooltip effect="light" content="在边缘端预测接口中使用该标识号" placement="right-start">
+                  <i class="el-icon-question"/>
+                </el-tooltip>
+                </template>
+                
               </el-table-column>
               <!-- <el-table-column
                 label="部署类型"  width="100">
@@ -60,7 +69,7 @@
               </el-table-column>
               <el-table-column
                 show-overflow-tooltip
-                label="描述"><template slot-scope="scope0"> {{ scope0.row.descr }}</template>
+                label="描述" width="200"><template slot-scope="scope0"> {{ scope0.row.descr }}</template>
               </el-table-column>
       
               <!-- 子表格操作列 -->
