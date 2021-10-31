@@ -34,6 +34,8 @@
       <wave ref='waveref' style="margin-top:20px"
       :premarktype="this.marktype" 
       :audioindex="this.nownum"
+      :auditremakeinfo="this.auditinfoArry[nownum]"
+      :acceptremakeinfo="this.acceptinfoArry[nownum]"
       :fatheraudioUrl="this.audioArry[nownum]"
       :lastlabelArry="this.lastinfoArry[nownum]"
       @closebutton="closebutton"
@@ -429,13 +431,13 @@ export default {
         _this.uuidArry=[]
         _this.audiolargeArry=[]
         _this.audioislabelArry=[]
-        // _this.auditinfoArry=[]
-        // _this.acceptinfoArry=[]
+        _this.auditinfoArry=[]
+        _this.acceptinfoArry=[]
         console.log("get response.data.items",response.data.items);
         for (let i = 0; i < response.data.items.length; i++) {
           console.log(response.data.items[i]);
-          // _this.auditinfoArry[i]=response.data.items[i].audit_remark
-          // _this.acceptinfoArry[i]=response.data.items[i].accept_remark
+          _this.auditinfoArry[i]=response.data.items[i].audit_remark
+          _this.acceptinfoArry[i]=response.data.items[i].accept_remark
           if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
           _this.lastinfoArry.push({audio:[]})
           }
