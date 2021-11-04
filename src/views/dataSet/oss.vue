@@ -94,6 +94,7 @@
                 :on-preview="handlePreview"
                 :on-remove="handleRemove"
                 multiple="multiple"
+                :show-file-list="true"
                 v-loading="uploadLoading"
                 element-loading-text="上传中"
                 element-loading-spinner="el-icon-loading">
@@ -105,6 +106,7 @@
             <template slot="append">{{uploadFilePostfix}}</template>
         </el-input>
         <h5> <font color="#e6a23c">*注：1个文件上传时可自定义命名</font></h5>
+        <el-progress :text-inside="true" :stroke-width="26" :percentage="uplProgess" :v-show="progessShow"></el-progress>
         <div slot="footer" class="dialog-footer">
             <el-button @click="uploadObjectNull">取 消</el-button>
             <el-button type="primary" @click="uploadObject">确 定</el-button>
@@ -157,6 +159,7 @@
                 <el-button slot="trigger" size="small" type="primary" @click="delZipFile">选取ZIP文件</el-button>
             </el-upload>
         <el-divider></el-divider>
+        <el-progress :text-inside="true" :stroke-width="26" :percentage="uplZipProgess" :v-show="progessZipShow"></el-progress>
         <div slot="footer" class="dialog-footer">
             <el-button @click="uploadZipNull">取 消</el-button>
             <el-button type="primary" @click="uploadZip">确 定</el-button>
@@ -456,8 +459,10 @@ export default {
             uploadZipFilePostfix:'',//上传的后缀名
             formZipData:"",
             uploadZipLoading:false,//文件上传加载
-
-
+            progessShow:false,//文件上传进度条
+            uplProgess:0,//文件上传初始进度
+            progessZipShow:false,//Zip上传进度条
+            uplZipProgess:0,//Zip上传初始进度
         }
     },
 
@@ -755,6 +760,7 @@ export default {
             let multFileList = this.zipFileList
             let multFileListLen = multFileList.length
             let s=0
+            let f=0
             console.log(multFileList);
             console.log(multFileListLen);
         if(multFileListLen==1){
@@ -788,6 +794,7 @@ export default {
             })
         
         }else{
+            this.progessZipShow=true
             for(let i=0;i<multFileListLen;i++){
             let formData = new FormData();
             formData.append("bucketName", this.uploadZipBucketName);
@@ -800,6 +807,13 @@ export default {
             console.log('sssssssssssssssssssssssss')
             console.log(store.getters.uuid)
             formData.append("dataset_id", store.getters.uuid)
+            if(parseFloat(i)<parseFloat(Math.round(multFileListLen/2))){
+                this.uplZipProgess=(i/(multFileListLen-1))*100
+                console.log("here1:"+i/(multFileListLen-1))
+                }else{
+                    this.uplZipProgess=((((i+s)/2))/(multFileListLen-1))*100
+                    console.log("here2:"+((i+s)/2)/(multFileListLen-1))
+                    }
             uploadZip(formData).then(response=>{
                 if(response.code==20000){
                     s++
@@ -808,6 +822,8 @@ export default {
                     this.uploadZipLoading=false
                     this.suc()
                     this.uploadZipVisible=false
+                    this.progessZipShow=false
+                    this.uplZipProgess=0
                     this.choosebucket(this.bucket)//刷新
                     this.uploadZipBucketName=''
                     this.uploadZipFolder=''
@@ -820,6 +836,25 @@ export default {
                 }else{
                     this.uploadZipLoading=false
                     this.fai()}
+            }).catch(error=>{
+                f++
+                console.log(f)
+                if(f+s==multFileListLen-1){
+                    this.uploadZipLoading=false
+                    this.uplZipProgess=0
+                    this.uploadZipVisible=false
+                    this.progessZipShow=false
+                    this.failMessage(f+1)
+                    this.choosebucket(this.bucket)//刷新
+                    this.uploadZipBucketName=''
+                    this.uploadZipFolder=''
+                    this.uplZipbucket=''
+                    this.zipuplcurrentRow=''
+                    this.ZipuplData=[]
+                    this.zipFileList=[]
+                    this.uploadZipFilePostfix=''
+                }
+                console.log(error)
             })
         }
         }
@@ -924,6 +959,7 @@ export default {
         let multFileList = this.fileList
         let multFileListLen = multFileList.length
         let s=0
+        let f=0
         console.log(multFileList);
         console.log(multFileListLen);
         if(multFileListLen==1){
@@ -942,8 +978,8 @@ export default {
             formData.append("dataset_id", store.getters.uuid)
             upload(formData).then(response=>{
                 if(response.code==20000){
-                    this.uploadLoading=false
                     this.suc()
+                    this.uploadLoading=false
                     this.uploadObjectVisible = false
                     this.choosebucket(this.bucket)
                     this.uploadBucketName=''
@@ -959,6 +995,7 @@ export default {
                     this.fai()}
             })
         }else{
+            this.progessShow=true
             for(let i=0;i<multFileListLen;i++){
             let formData = new FormData();
             formData.append("bucketName", this.uploadBucketName);
@@ -969,14 +1006,22 @@ export default {
             console.log( multFileList[i].raw);
             formData.append("objectName", '');
             formData.append("userid", store.getters.userid)
-            console.log('sssssssssssssssssssssssss')
             console.log(store.getters.uuid)
             formData.append("dataset_id", store.getters.uuid)
+                if(parseFloat(i)<parseFloat(Math.round(multFileListLen/2))){
+                this.uplProgess=(i/(multFileListLen-1))*100
+                console.log("here1:"+i/(multFileListLen-1))
+                }else{
+                    this.uplProgess=((((i+s)/2))/(multFileListLen-1))*100
+                    console.log("here2:"+((i+s)/2)/(multFileListLen-1))
+                    }
             upload(formData).then(response=>{
                 if(response.code==20000){
                     s++
                     console.log(response);
                     if(s==multFileListLen-1){
+                        this.progessShow=false
+                        this.uplProgess=0
                         this.uploadLoading=false
                         this.suc()
                         this.uploadObjectVisible = false
@@ -991,11 +1036,38 @@ export default {
                         this.uploadFilePostfix=''
                     }
                 }else{
-                    this.uploadLoading=false
                     this.fai()}
+            }).catch(error=>{
+                f++
+                console.log(f)
+                if(f+s==multFileListLen-1){
+                    this.progessShow=false
+                    this.uploadLoading=false
+                    this.uplProgess=0
+                    this.uploadObjectVisible = false
+                    this.failMessage(f+1)
+                        this.choosebucket(this.bucket)
+                        this.uploadBucketName=''
+                        this.uploadObjectFolder=''
+                        this.uploadobjectName=''
+                        this.uplbucket=''
+                        this.objectuplcurrentRow=''
+                        this.objectuplData=[]
+                        this.fileList=[]
+                        this.uploadFilePostfix=''
+                }
+                console.log(error)
             })
         }
         }
+    },
+
+    failMessage(f){
+         this.$alert(f+'个文件上传失败', '上传结果', {
+          confirmButtonText: '确定',
+          callback: action => {
+          }
+        });
     },
 
     //上传文件的取消键
