@@ -89,6 +89,10 @@ export default {
         this.centerDialogVisible = false
       }
     },
+    async logout() {
+      await this.$store.dispatch('user/logout')
+      this.$router.push(`/login?redirect=${this.$route.fullPath}`)
+    },
     onSubmit() {
       this.$refs.form.validate(valid => {
         if (valid) {

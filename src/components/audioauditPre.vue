@@ -54,6 +54,14 @@
 
           <!-- </el-card> -->
         </div>
+        <div id="remarkinfodiv" style="display: inline-block">
+          <div>
+            <p>驳回备注：{{ auditremakeinfo }}</p>
+          </div>
+          <div>
+            <p>验收备注：{{ acceptremakeinfo }}</p>
+          </div>
+        </div>
         <div style="max-height: 600px; overflow: auto">
           <div
             v-for="(items, index) in audioPointArry"
@@ -93,7 +101,7 @@
             :style="{
               width: 120 + 'px',
               marginBottom: 10 + 'px',
-              background: buttonindex == index ? items.color : 'rgba(0,0,0,0)',
+              background: items.color ,
             }"
             >{{ items.name }}</el-button
           >
@@ -104,7 +112,7 @@
 </template>
 <script>
 import WaveSurfer from "wavesurfer.js";
-import labelinfo from "@/components/wavelabelinfo.vue";
+import labelinfo from "@/components/wavelabelinfoacc.vue";
 import Timeline from "wavesurfer.js/dist/plugin/wavesurfer.timeline.js";
 import Regions from "wavesurfer.js/dist/plugin/wavesurfer.regions.js";
 import Minimap from "wavesurfer.js/dist/plugin/wavesurfer.minimap.js";
@@ -273,10 +281,11 @@ export default {
       this.wavesurfer.on("ready", () => {
         //选中第一个标签的颜色
         this.changecolor(this.premarktype[0], 0);
-        this.wavesurfer.enableDragSelection({
-          //color: this.randomColor(0, 1),
-          //color: this.premarktype[0].color
-        });
+        // this.wavesurfer.enableDragSelection({
+        //   //color: this.randomColor(0, 1),
+        //   //color: this.premarktype[0].color
+        // });
+        this.wavesurfer.disableDragSelection()
       });
       //点击播放区域
       this.wavesurfer.on("region-click", (region, e) => {
@@ -363,6 +372,10 @@ export default {
       //     text2: lastlabelArry.audio[i].text2,
       //   }
       // });
+        temregion.update({
+          drag:false,
+          resize:false
+        })
       }
       console.log("1jieshu")
       console.log("this.audioPointArry",this.audioPointArry)

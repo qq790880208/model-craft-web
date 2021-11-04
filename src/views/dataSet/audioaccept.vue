@@ -46,10 +46,11 @@
       <wave ref='waveref' style="margin-top:20px"
         :premarktype="this.marktype" 
         :audioindex="this.nownum"
+        :auditremakeinfo="this.auditinfoArry[nownum]"
+        :acceptremakeinfo="this.acceptinfoArry[nownum]"
         :fatheraudioUrl="this.audioArry[nownum]"
         :lastlabelArry="this.lastinfoArry[nownum]"
-        >
-      </wave>
+      ></wave>
     </div>
     <el-dialog
       title="不通过备注"
@@ -202,6 +203,8 @@ export default {
     window.nextimage = this.nextimage
     window.previousimage = this.previousimage
     window.skipimage = this.skipimage
+    window.unAcceptDialog = this.unAcceptDialog
+    window.pass = this.pass
     document.onkeydown = keyDownSearch
     this.starttimer = setInterval(() => {
       this.nowseconds++
@@ -455,9 +458,11 @@ export default {
         _this.lastinfoArry = []
         _this.uuidArry = []
         _this.audiolargeArry = []
+        _this.auditinfoArry=[]
+        _this.acceptinfoArry=[]
         console.log('get语音结果', response)
         for (let i = 0; i < response.data.items.length; i++) {
-console.log("get items",[i],response.data.items[i]);
+          console.log("get items",[i],response.data.items[i]);
           //读取音频分辨率
           // let audio = new audio();
           // audio.src = response.data.items[i].file_path; 
@@ -473,8 +478,10 @@ console.log("get items",[i],response.data.items[i]);
           // _this.auditinfoArry[i]=response.data.items[i].audit_remark
           // _this.acceptinfoArry[i]=response.data.items[i].accept_remark
           // if(response.data.items[i].is_label!=1) _this.isalllabeled=false;
+          _this.auditinfoArry[i]=response.data.items[i].audit_remark
+          _this.acceptinfoArry[i]=response.data.items[i].accept_remark
           if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
-          _this.lastinfoArry.push({})
+          _this.lastinfoArry.push({audio:[]})
           }
           //if(response.data.items[i].label_data!==undefined) {
           else{

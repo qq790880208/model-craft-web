@@ -43,14 +43,14 @@
       <el-button @click="pass">通过(A)</el-button>
       <el-button @click="rejectDialog">驳回(D)</el-button>
       <el-button @click="reset">重置(G)</el-button>
-      <drawpolygon
-        ref="drawpolygonref"
-        style="margin-top:20px"
+      <drawpolygon style="margin-top:20px" ref='drawpolygonref'
         :fatherimagesrc="this.imageArry[nownum]"
         :imageindex="this.nownum"
         :premarktype="this.marktype"
-        :lastlabel-arry="this.lastinfoArry[nownum]"
-      />
+        :auditremakeinfo="this.auditinfoArry[nownum]"
+        :acceptremakeinfo="this.acceptinfoArry[nownum]"
+        :lastlabelArry="this.lastinfoArry[nownum]"
+      ></drawpolygon>
     <!-- <canvas id="canvas" width='800' height='800'></canvas> -->
     </div>
     <el-dialog
@@ -205,6 +205,9 @@ export default {
     window.nextimage = this.nextimage
     window.previousimage = this.previousimage
     window.skipimage = this.skipimage
+    window.pass=this.pass
+    window.rejectDialog=this.rejectDialog
+    window.reset=this.reset
     document.onkeydown = keyDownSearch
     this.starttimer = setInterval(() => {
       this.nowseconds++
@@ -460,16 +463,38 @@ export default {
         _this.lastinfoArry = []
         _this.uuidArry = []
         _this.imagelargeArry = []
+        _this.auditinfoArry=[]
+        _this.acceptinfoArry=[]
         console.log('get图片结果', response)
         for (let i = 0; i < response.data.items.length; i++) {
-          if (response.data.items[i].label_data == undefined || response.data.items[i].label_data === '[]') {
-            _this.lastinfoArry.push({})
-          } else {
-            console.log('testtttttttttt', response.data.items[i].label_data)
-            const tempa = JSON.parse(response.data.items[i].label_data)
-            _this.lastinfoArry.push(tempa)
-            console.log('lastinfoArry', response.data.items[i].is_label)
+          console.log("get items",[i],response.data.items[i]);
+          //读取图片分辨率
+          // let image = new Image();
+          // image.src = response.data.items[i].file_path; 
+          // console.log("imagesize",image)       
+          // image.onload=() =>{
+          //   console.log("imageonloadsuccess",image.width,image.height)
+          //   let imagea={}
+          //   imagea["width"]=image.width
+          //   imagea["height"]=image.height
+          //   _this.imagesize.push(imagea)
+          // }
+          // console.log("ima",_this.imagesize)
+          _this.auditinfoArry[i]=response.data.items[i].audit_remark
+          _this.acceptinfoArry[i]=response.data.items[i].accept_remark
+          if(response.data.items[i].is_label!=1) _this.isalllabeled=false;
+          if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
+          _this.lastinfoArry.push({})
           }
+          //if(response.data.items[i].label_data!==undefined) {
+          else{
+          let tempa = JSON.parse(response.data.items[i].label_data)
+          // let len = eval(tempa).length;
+          // console.log("len", len);
+          console.log("tempa",tempa)
+          _this.lastinfoArry.push(tempa)
+          console.log("lastinfoArry", _this.lastinfoArry[i]);
+        } 
           const a = {}
           a['url'] = response.data.items[i].file_path
           a['islabel'] = response.data.items[i].is_audit

@@ -163,7 +163,7 @@ export default {
       console.log(val.labelType)
       store.dispatch('data/changeUuid', val.uuid)
       store.dispatch('data/changeType', val.label_type)
-      store.dispatch('data/changeDataSet', val)
+      store.dispatch('user/changeDataSet', val)
       if (type === 0 || type === 3) {
         this.$router.push('/label/d2imageview')
         // this.$router.push({path: '/dataSet/2DauditPre'})
