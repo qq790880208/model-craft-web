@@ -155,7 +155,7 @@
       </span>
     </el-dialog>
     <!-- 创建任务对话框 -->
-    <el-dialog title="任务信息" :visible.sync="dialogFormVisible" :show-close="true" >
+    <el-dialog title="任务信息" :visible.sync="dialogFormVisible" :show-close="true" :close-on-click-modal="false">
       <el-form :model="taskForm" :rules="rules" ref="taskForm" label-width="100px" class="demo-taskForm" v-if="dialogFormVisible" >
         <el-form-item label="任务名称" prop="name">
           <el-input v-model="taskForm.name"></el-input>
