@@ -188,7 +188,8 @@ export const asyncRoutes = [
         path: '/label/voice',
         component: () => import ('@/views/label/voice/voiceview'),
         name: 'voice',
-        meta: { title: '语音标注', resources: 'voice' }
+        meta: { title: '语音标注', resources: 'voice' },
+        hidden: true
       },
       {
         path: '/label/d3',
@@ -237,7 +238,8 @@ export const asyncRoutes = [
         path: '/oss',
         component: () => import('@/views/dataSet/oss'),
         name: 'oss manage',
-        meta: { title: '对象存储', resources: 'oss', icon: 'tree' }
+        meta: { title: '对象存储', resources: 'oss', icon: 'tree' },
+        hidden: true
       }
     ]
   },
