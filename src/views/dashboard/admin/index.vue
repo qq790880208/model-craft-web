@@ -249,6 +249,7 @@ export default {
 <style rel="stylesheet/scss" lang="scss" scoped>
 .dashboard-editor-container {
   padding: 32px;
+  height: 660px;
   background-color: #EEF3FF;
   .chart-wrapper {
     background: #fff;

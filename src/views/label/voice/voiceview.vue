@@ -34,6 +34,8 @@
       <wave ref='waveref' style="margin-top:20px"
       :premarktype="this.marktype" 
       :audioindex="this.nownum"
+      :auditremakeinfo="this.auditinfoArry[nownum]"
+      :acceptremakeinfo="this.acceptinfoArry[nownum]"
       :fatheraudioUrl="this.audioArry[nownum]"
       :lastlabelArry="this.lastinfoArry[nownum]"
       @closebutton="closebutton"
@@ -79,6 +81,11 @@ function keyDownSearch(e){
   if(code == 71){ //无可标注下一张
     console.log("gggggggggg!!!!!!!!!!!!!")
     nomarkedaudio()
+  }
+  if(code == 46){ //删除快捷键
+    console.log("ddddddddddelete!!!!!!!!!!!!!")
+    deleteSelect();
+  //return true;
   }
 }
 export default {
@@ -146,7 +153,8 @@ export default {
     window.skipaudionext = this.skipaudionext;
     window.skipaudiopre = this.skipaudiopre;
     window.nomarkedaudio = this.nomarkedaudio;
-    window.undochild = this.undochild;
+    window.deleteSelect = this.deleteSelect;
+    //window.undochild = this.undochild;
     document.onkeydown = keyDownSearch;
     // this.starttimer = setInterval(()=>{
     //   this.nowseconds++;
@@ -183,6 +191,18 @@ export default {
     closebutton(){
       console.log("fatherdisbtnnnnnnnnnnnnnnnnnnnnnnnnnnnn")
       this.isdisablebutton=!this.isdisablebutton
+    },
+    deleteSelect(){
+      if(this.unable) return
+      if(this.isimageview) {
+        console.log("处于预览界面");
+        return
+        }
+      if(this.isdisablebutton) {
+        console.log("您现在正在修改图片")
+        return
+      }
+      this.$refs.waveref.deletemarkedbi();
     },
     //保存并下一个音频
     nextaudio() {
@@ -404,21 +424,22 @@ export default {
         }
         console.log(params)
         getLabelDataApi(params).then(function (response) {
+          console.log("response",response)
         _this.audioArry=[]
         _this.infoArry=[]
         _this.lastinfoArry=[]
         _this.uuidArry=[]
         _this.audiolargeArry=[]
         _this.audioislabelArry=[]
-        // _this.auditinfoArry=[]
-        // _this.acceptinfoArry=[]
+        _this.auditinfoArry=[]
+        _this.acceptinfoArry=[]
         console.log("get response.data.items",response.data.items);
         for (let i = 0; i < response.data.items.length; i++) {
           console.log(response.data.items[i]);
-          // _this.auditinfoArry[i]=response.data.items[i].audit_remark
-          // _this.acceptinfoArry[i]=response.data.items[i].accept_remark
+          _this.auditinfoArry[i]=response.data.items[i].audit_remark
+          _this.acceptinfoArry[i]=response.data.items[i].accept_remark
           if(response.data.items[i].label_data==undefined||response.data.items[i].label_data==="[]"){
-          _this.lastinfoArry.push({})
+          _this.lastinfoArry.push({audio:[]})
           }
           //if(response.data.items[i].label_data!==undefined) {
           else{
