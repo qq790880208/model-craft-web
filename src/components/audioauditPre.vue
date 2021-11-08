@@ -239,8 +239,8 @@ export default {
             customStyle:{
               //position:"relative",
               height:"128px",
-              marginTop:"50px",
-              marginLeft:"50px",
+              marginTop:"110px",
+              marginLeft:"120px",
             },
             customShowTimeStyle: {
               "background-color": "#000",
