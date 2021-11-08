@@ -128,17 +128,17 @@ export default {
       
           console.log(res)
 
-          this.textarea1 = "{\n  \"encode_pic\": \"" + res.predict_info + "\", " +
+          this.textarea1 = "{\n  \"encode_info\": \"" + res.predict_info + "\", " +
                             "\n  \"encode_predict_pic\": \"" + res.encode_predict_pic + "\" " + 
                             "\n }"
 
           this.is_predicting = false;
-          this.predict_pic = res.encode_predict_pic.substring(2, res.encode_predict_pic.length - 1);
+          // this.predict_pic = res.encode_predict_pic.substring(2, res.encode_predict_pic.length - 1);
+          this.predict_pic = res.encode_predict_pic;
         } else {
           this.$message.error("请求失败");
         }
-      });
-    },
+      }).finally(() => {this.is_predicting = false;})},
     delFile() {
       this.fileList = [];
     },
