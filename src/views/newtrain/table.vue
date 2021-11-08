@@ -90,6 +90,9 @@
           <!-- <el-button
             size="mini" v-if="scope.row.status!=0"
             @click="handleStart(scope.$index, scope.row) "  disabled>开始</el-button> -->
+          <!-- <el-button
+            size="mini" 
+            @click="handleConfig(scope.$index, scope)">参数配置</el-button> -->
           <el-button
             size="mini" 
             @click="handleStart(scope.$index, scope.row)">开始</el-button>
@@ -154,8 +157,34 @@
         <el-button type="primary" @click="closeShowLog()">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+        title="参数配置"
+        :visible.sync="parameterdialogVisible"
+        :close-on-click-modal="false"
+        :show-close="false"
+      >
+              <!-- :style="{
+          width: 800 + 'px',
+          marginLeft: dialogleft + 'px',
+          marginTop: dialogtop + 'px',
+        }" -->
+        <span style="display:block">请选择参数</span>
+        <span style="margin-left:30px;">
+        <el-button v-for="(item, index) in paraNameList" :key="index"
+        :style="{
+          background:findInList(item)? 'rgba(0,100,200,0.5)':'white',
+        }"
+        @click="changePara(item)"
+        >{{item}}
+        </el-button>
+        </span>
+        <span slot="footer" class="dialog-footer">
+          <!-- <el-button @click="closeparadialog">取 消</el-button> -->
+          <el-button type="primary" @click="closeparadialog">完 成</el-button>
+        </span>
+      </el-dialog>
     <!-- 创建任务对话框 -->
-    <el-dialog title="任务信息" :visible.sync="dialogFormVisible" :show-close="true" :close-on-click-modal="false">
+    <el-dialog title="任务信息" :visible.sync="dialogFormVisible" :show-close="false" :close-on-click-modal="false" >
       <el-form :model="taskForm" :rules="rules" ref="taskForm" label-width="100px" class="demo-taskForm" v-if="dialogFormVisible" >
         <el-form-item label="任务名称" prop="name">
           <el-input v-model="taskForm.name"></el-input>
@@ -228,15 +257,31 @@
             </el-form-item> -->
             <el-form-item >      
             
-              <div style="height:150px; " class="scrollbar">
+              <div style="height:200px; " class="scrollbar">
               <el-scrollbar style="height:100%; "> 
-                <el-form-item v-for="(item, index) in paraNameList[currentAlgorithm]" :key="index">
-                  <p sty autocomplete="off" style="width: 15%;display: inline-block" >{{item}}</p>
+                <!-- <el-form-item v-for="(item, index) in paraNameList[currentAlgorithm]" :key="index"> -->
+                <el-form-item v-for="(item, index) in showParaNameList" :key="index">
+                  <div v-if="item!='transferLearning'">
+                  <p sty autocomplete="off" style="width: 25%;display: inline-block" >{{item}}</p>
                   <b style="margin-left:15px;">=</b>
-                  <el-input autocomplete="off" style="width: 35%; margin-left:15px;"  v-model=paraValueList[currentAlgorithm][index]>
+                  <el-input autocomplete="off" style="width: 25%; margin-left:15px;"  v-model="showParaValueList[index]">
                   </el-input>
+                  <el-button type="danger" style="margin-left:30px;" icon="el-icon-delete" circle @click="deleteOneoption(index)"></el-button>
+                  </div>
+                  <div v-if="item=='transferLearning'">
+                  <p sty autocomplete="off" style="width: 25%;display: inline-block" >{{item}}</p>
+                  <b style="margin-left:15px;" >=</b>
+                  <el-select v-model="transferLearningValue" placeholder="请选择" style="width: 25%; margin-left:15px;" >
+                    <div style="height:150px;" class="scrollbar" >
+                        <el-option v-for="(item, index) in transferLearningList" :key="index"
+                        :label="item" :value="item">
+                        </el-option>
+                    </div>
+                  </el-select>
+                  <el-button type="danger" style="margin-left:30px;" icon="el-icon-delete" circle @click="deleteOneoption(index)"></el-button>
+                </div>
                 </el-form-item>
-                <div v-if="isdisplaytl">
+                <!-- <div v-if="isdisplaytl">
                   <p sty autocomplete="off" style="width: 15%;display: inline-block" >transferLearning</p>
                   <b style="margin-left:15px;" >=</b>
                   <el-select v-model="transferLearningValue" placeholder="请选择" style="width: 35%; margin-left:15px;" >
@@ -246,9 +291,13 @@
                         :label="item" :value="item">
                         </el-option>
                       </el-scrollbar>
+                      <el-button type="danger" icon="el-icon-delete" circle></el-button>
                     </div>
                   </el-select>
-                </div>
+                </div> -->   
+                <el-button type="primary" icon="el-icon-edit" circle v-if="editbutton" style="margin-top:10px;"
+                  @click="editOneoption"
+                  ></el-button>
               </el-scrollbar>
                 <!-- <el-form-item  v-for="(item, index) in list_model_para" :key="index">
                     <el-col :span="5">
@@ -263,7 +312,6 @@
                         <el-button icon="el-icon-minus" circle @click="deletepara(index)" size="small"></el-button>
                     </el-col>
                 </el-form-item> -->
-
               </div>
             </el-form-item>
           </el-form>
@@ -339,19 +387,6 @@ export default {
                     }
                 ],
                 value:'',
-
-
-
-
-
-
-
-
-
-
-
-
-
         //2021/07/08新增数据
         imageOssPath:"none",
         textOssPath:"none",
@@ -377,6 +412,8 @@ export default {
         },
         picVisible:false,//可视化窗口
         logdialogVisible:false,//日志可视化窗口
+        parameterdialogVisible:false,//参数配置可视化窗口
+        editbutton:false,//控制参数修改按钮的显示与否
         logText:'',//日志内容
         //创建任务部分数据
         dialogFormVisible:false,//创建任务窗口
@@ -412,19 +449,24 @@ export default {
           "Yolov3-Pytorch",
         ],
         paraNameList:[//算法的参数名称
-            ['epoch','batchsize'],
-            ['epoch','batchsize'],
+            ['epoch','batchsize','transferLearning','learningrate','imagesize'],
+            ['epoch','batch_size','crop_size','learning_rate_decay_factor','learning_power'],
             [],
-            ['epoch','batchsize'],
-            ['epoch','batchsize']
+            ['epoch','batchsize','learningrate','imagesize'],
+            ['epoch','batch_size','crop_size','learning_rate_decay_factor','learning_power']
           ],
+        //算法的参数名称
+        //paraNameList:[],
         paraValueList:[//算法的参数数值
-            ['100','2'],
-            ['100','2'],
+            ['100','2','none','0.001','416'],
+            ['100','2','321','0.1','0.9'],
             [],
-            ['100','2'],
-            ['100','2']
+            ['100','2','0.01','none'],
+            ['100','2','321','0.1','0.9']
         ],
+        //用于展示的算法的参数名称
+        showParaNameList:[],
+        showParaValueList:[],
         transferLearningList:[//transferLearning参数
           "none",
           "darknet",
@@ -442,7 +484,7 @@ export default {
           outpath:[],
         },//创建任务时从后台传入的数据源和输出路径
         currentAlgorithm:0,//创建任务时目前选中的代码
-        isdisplaytl:false,
+        //isdisplaytl:false,
 
         //和后台交互传递的各种参数
         selectPara:{//顶部下拉框传递的参数
@@ -486,27 +528,103 @@ export default {
 
     methods: {
       pathChange(index){
+        this.editbutton=true
+        this.showParaNameList = []
+        this.showParaValueList = []
+        this.paraNameList = []
+        this.paraValueList = []
         let data = this.initialPara.inputData.uuid[this.taskForm.dataset_index];
+        //console.log(this.initialPara.inputData.algorithmType[index])
+        if(this.initialPara.inputData.algorithmType[index]==0){//yolov3-TensorFlow参数
+          this.showParaNameList.push('epoch')
+          this.showParaNameList.push('batchsize')
+          this.showParaNameList.push('transferLearning')
+          this.showParaNameList.push('learningrate')
+          this.showParaNameList.push('imagesize')
+          this.showParaValueList.push('100')
+          this.showParaValueList.push('2')
+          this.showParaValueList.push('none')
+          this.showParaValueList.push('0.001')
+          this.showParaValueList.push('416')
+        }
+        if(this.initialPara.inputData.algorithmType[index]==3){//yolov3-Pytorch参数
+          this.showParaNameList.push('epoch')
+          this.showParaNameList.push('batchsize')
+          this.showParaNameList.push('learningrate')
+          this.showParaNameList.push('imagesize')
+          this.showParaValueList.push('100')
+          this.showParaValueList.push('2')
+          this.showParaValueList.push('0.01')
+          this.showParaValueList.push('none')
+        }
+        if(this.initialPara.inputData.algorithmType[index]==1||this.initialPara.inputData.algorithmType[index]==4){//Deeplab-TensorFlow参数
+          this.showParaNameList.push('epoch')
+          this.showParaNameList.push('batch_size')
+          this.showParaNameList.push('crop_size')
+          this.showParaNameList.push('learning_rate_decay_factor')
+          this.showParaNameList.push('learning_power')
+          this.showParaValueList.push('100')
+          this.showParaValueList.push('2')
+          this.showParaValueList.push('321')
+          this.showParaValueList.push('0.1')
+          this.showParaValueList.push('0.9')
+        }
+        console.log("this.showParaNameList",this.showParaNameList,"this.showParaValueList",this.showParaValueList)
+        this.paraNameList=JSON.parse(JSON.stringify(this.showParaNameList))
+        this.paraValueList=JSON.parse(JSON.stringify(this.showParaValueList))
+        console.log("this.paraNameList",this.paraNameList,"this.paraValueList",this.paraValueList)
+        //this.paraNameList=
         this.taskForm.data = data
         console.log("data",data)
         this.imageOssPath = "data/dataset/"+data+"/input/source/"
         this.textOssPath =  "data/dataset/"+data+"/input/annotation/"
         this.modelOssPath = "data/dataset/"+data+"/output/ckpt/"
-        this.useAlgorithm = this.initialPara.inputData.algorithmType[index]
+        
         // this.initialPara.inputData.uuid.forEach((item,index) => {
         //   //console.log("item",item,"index",index)
         //   if(data==item) this.useAlgorithm = this.initialPara.inputData.algorithmType[data];
         // })
         this.cachange(this.useAlgorithm)
       },
+      closeparadialog(){
+        this.parameterdialogVisible = false;
+      },
+      editOneoption(){
+        this.parameterdialogVisible = true;
+      },
+      findInList(item){
+        if(this.showParaNameList.indexOf(item)!=-1) {
+          return true;
+        }
+        else return false;
+      },
+      changePara(item){
+        console.log("item",item)
+        if(this.showParaNameList.indexOf(item)==-1){
+          this.showParaNameList.push(item)
+          this.showParaValueList.push(this.paraValueList[this.paraNameList.indexOf(item)])
+        }
+        else{
+          this.deleteOneoption(this.showParaNameList.indexOf(item))
+        }
+      },
+      deleteOneoption(index){
+        console.log("index",index)
+        this.showParaNameList.splice(index,1)
+        this.showParaValueList.splice(index,1)
+        console.log("showParaNameList",this.showParaNameList.length,"paraNameList",this.paraNameList.length)
+      },
+      addOneoption(){
+
+      },
       cachange(testdata){
         console.log("testdata",testdata)
         this.currentAlgorithm=testdata;
-        if(testdata==0) this.isdisplaytl=true;
-        else this.isdisplaytl=false;
+        // if(testdata==0) this.isdisplaytl=true;
+        // else this.isdisplaytl=false;
       },
       clearForm(){
-        this.isdisplaytl=false;
+        // this.isdisplaytl=false;
         this.$refs['taskForm'].resetFields()
       },
       resetSearch(){
@@ -598,13 +716,27 @@ export default {
             this.initialPara.inputData.uuid.push(res.data.items[i].uuid)
             this.initialPara.inputData.algorithmType.push(res.data.items[i].label_type)
           }
-          console.log(this.initialPara)
+          console.log("this.initialPara",this.initialPara)
         })
         // getinitialPara().then(res =>{
         //   this.initialPara.outpath = res.data.outpath
         // })
-        
+        this.showParaNameList = []
+        this.showParaValueList = []
+        this.paraNameList = []
+        this.paraValueList = []
+        this.editbutton = false
       }, 
+      handleConfig(index, row){
+        console.log("row",row)
+      },
+      handleShowlog(index, row){//日志可视化
+        this.commonPara.trainjob_id = row.uuid
+        this.logdialogVisible = true
+        clearInterval(this.timerLog)
+        this.timerLog = null
+        this.setTimerLog()
+      },
       handleStart(index, row) {//开始某行训练
         this.commonPara.trainjob_id = row.uuid
         startTask(this.commonPara).then(res=>{
@@ -613,7 +745,6 @@ export default {
           //==需要重新获取用户列表
           this.fetchData()
         })
-        
       },
       handleDelete(index, row) {//删除某行
         this.$confirm('此操作将永久删除该训练记录?', '提示', {
@@ -764,17 +895,35 @@ export default {
             return callback();
           }
         })
-        
-        let temlist1 = JSON.parse(JSON.stringify(this.paraNameList[this.useAlgorithm]))
-        let temlist2 = JSON.parse(JSON.stringify(this.paraValueList[this.useAlgorithm]))
-        if(this.isdisplaytl) {
-          temlist1.push("transferLearning")
-          temlist2.push(this.transferLearningValue)
+        this.editbutton = false
+        let temlist1 = JSON.parse(JSON.stringify(this.paraNameList))
+        let temlist2 = JSON.parse(JSON.stringify(this.paraValueList))
+        // if(this.isdisplaytl) {
+        //   temlist1.push("transferLearning")
+        //   temlist2.push(this.transferLearningValue)
+        // }
+        console.log(this.showParaNameList,"das",this.showParaValueList)
+        // this.taskForm.paras.push(this.paraNameList)
+        // this.taskForm.paras.push(this.paraValueList)
+        let transParaNameList = []
+        let transParaValueList = []
+        for(let i = 0;i<this.paraNameList.length;i++){
+          transParaNameList.push(this.paraNameList[i])
+          if(this.showParaNameList.indexOf(this.paraNameList[i])==-1){
+            transParaValueList.push(this.paraValueList[i])
+          }
+          else{
+            if(this.paraNameList[i]=="transferLearning"){
+              transParaValueList.push(this.transferLearningValue)
+            }
+            else{
+              transParaValueList.push(this.showParaValueList[this.showParaNameList.indexOf(this.paraNameList[i])])
+            }
+          }
         }
-        console.log(this.paraNameList[this.useAlgorithm],"das",this.paraValueList[this.useAlgorithm])
-        this.taskForm.paras.push(this.paraNameList[this.useAlgorithm])
-        this.taskForm.paras.push(this.paraValueList[this.useAlgorithm])
-
+        console.log('transParaNameList',transParaNameList,'transParaValueList',transParaValueList)
+        this.taskForm.paras.push(transParaNameList)
+        this.taskForm.paras.push(transParaValueList)
         this.taskPara.algo_id = this.useAlgorithm
         this.taskPara.args = JSON.stringify(this.taskForm.paras)
         this.taskPara.dataset_id = this.initialPara.inputData.uuid[this.taskForm.dataset_index]
@@ -788,7 +937,7 @@ export default {
         this.taskPara.source_oss_path = this.imageOssPath
         this.taskPara.annotation_oss_path = this.textOssPath
         this.taskPara.model_oss_path = this.modelOssPath
-        this.isdisplaytl=false
+        //this.isdisplaytl=false
         //console.log(this.isdisplaytl);
         console.log("this.taskPara",this.taskPara)
 
@@ -803,6 +952,7 @@ export default {
       },
       cancelbtn(taskForm){
         this.dialogFormVisible = false
+        this.editbutton = false
         this.$refs[taskForm].resetFields()
       },
      
