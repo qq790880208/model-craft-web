@@ -82,8 +82,8 @@ service.interceptors.response.use(
   },
   error => {
     // console.log(error.response.data)
-    // console.log(error)
-    if (error.response.data.status === 50021) {
+    console.log(error)
+    if (error.response.data&&error.response.data.status === 50021) {
       // Message({
       //   message: "用户已在其他设备登录！",
       //   type: 'error',
@@ -92,7 +92,7 @@ service.interceptors.response.use(
       // console.log('--------------8888888897979797')
       return Promise.reject('用户已在其他设备登录！')
     }
-    if (error.response.data.status === 50020) {
+    if (error.response.data&&error.response.data.status === 50020) {
       // Message({
       //   message: "用户已在其他设备登录！",
       //   type: 'error',
@@ -101,7 +101,7 @@ service.interceptors.response.use(
       // console.log('--------------8888888897979797')
       return Promise.reject('用户未登录！')
     }
-    console.log(error.response.data) // for debug
+    //console.log(error.response.data) // for debug
     console.log('err' + error) // for debug
     Message({
       message: error.message,

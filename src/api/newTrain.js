@@ -31,8 +31,10 @@ export function deleteTask(query) {
 
 export function showLog(train_id) {
   return request({
-    url:'/train/log?trainjob_id='+ train_id,
+    //url:'/train/log?trainjob_id='+ train_id,
+    url:'/train/log',
     method:'post',
+    params:train_id,
     //baseURL: 'http://localhost:9528/dev-api'
     baseURL: 'http://10.19.1.181:8084'
   })
