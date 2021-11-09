@@ -107,7 +107,7 @@
             @click="handleShow(scope.$index, scope.row)">可视化</el-button>
           <el-button
             size="mini" v-if="scope.row.status!=0"
-            @click="handleShowlog(scope.$index, scope)" >日志</el-button>
+            @click="handleShowlog(scope.$index, scope.row)" >日志</el-button>
           <el-button
             size="mini" v-if="scope.row.status==0"
             @click="handleShowlog(scope.$index, scope)"  disabled>日志</el-button>
@@ -731,11 +731,12 @@ export default {
         console.log("row",row)
       },
       handleShowlog(index, row){//日志可视化
+        console.log("row",row.uuid)
         this.commonPara.trainjob_id = row.uuid
         this.logdialogVisible = true
         clearInterval(this.timerLog)
         this.timerLog = null
-        this.setTimerLog()
+        this.setTimerLog(this.commonPara.trainjob_id)
       },
       handleStart(index, row) {//开始某行训练
         this.commonPara.trainjob_id = row.uuid
@@ -817,12 +818,13 @@ export default {
         })
       },
       
-      log(index, row){//日志可视化
-        this.logdialogVisible = true
-        clearInterval(this.timerLog)
-        this.timerLog = null
-        this.setTimerLog(row.row.uuid)
-      },
+      // log(index, row){//日志可视化
+      //   console.log("row",row)
+      //   this.logdialogVisible = true
+      //   clearInterval(this.timerLog)
+      //   this.timerLog = null
+      //   this.setTimerLog(row.row.uuid)
+      // },
       closeShowLog(){
         this.logdialogVisible = false
         clearInterval(this.timerLog)
@@ -997,16 +999,18 @@ export default {
         }
       },
       setTimerLog(train_id) {//读取日志的定时器
-        console.log("this.timerLog",this.timerLog)
+        console.log("this.timerLog",this.timerLog,"train_id",train_id)
         this.logText = ''
         let parm = {
           'trainjob_id' : train_id
         }
         if(this.timerLog == null) {
+          console.log("timerLognull111")
           this.timerLog = setInterval( () => {
               //console.log('开始定时...每过一秒执行一次')
+              console.log("timerLognull222")
               showLog(parm).then(res =>{
-                console.log(res)
+                console.log("res",res)
                 this.logText = res.data.content
                 const textarea = document.getElementById('textarea_id');
                 textarea.scrollTop = textarea.scrollHeight;
