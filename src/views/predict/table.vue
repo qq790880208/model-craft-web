@@ -426,7 +426,12 @@ export default {
       handleChangeModel() {
         let model_index = this.initialPara.model_ids[this.taskForm.model_path_index]
           //获取数据集
-        getTargetDataSets(model_index, store.getters.userid).then(res =>{//从后台读取数据来源的目录
+        let parm = {
+          'model_id' : model_index,
+          'user_id' :store.getters.userid
+        }
+        //getTargetDataSets(model_index, store.getters.userid).then(res =>{//从后台读取数据来源的目录
+        getTargetDataSets(parm).then(res =>{
           console.log(res)
           this.initialPara.inputData.name = []
           this.initialPara.inputData.uuid = []
@@ -617,7 +622,7 @@ export default {
           "size": this.queryInfo.pagesize 
         }
         getTableData1(tmp).then(res => { 
-          console.log(res)
+          // console.log(res)
           this.queryInfo.pagenum = res.data.items.current
           this.queryInfo.pagesize = res.data.items.size
           this.totalData = res.data.items.total
@@ -720,7 +725,7 @@ export default {
       setTimer() {//定时器
         if(this.timer == null) {
           this.timer = setInterval( () => {
-              console.log('开始定时...每过一秒执行一次,刷新页面')
+              // console.log('开始定时...每过一秒执行一次,刷新页面')
               if(!this.isSearchingFlag)  this.fetchData()
               
               // if (this.Mockprocess != 100){
@@ -732,9 +737,9 @@ export default {
       setTimerLog() {//读取日志的定时器
         if(this.timerLog == null) {
           this.timerLog = setInterval( () => {
-              console.log('开始定时...每过一秒执行一次')
+              // console.log('开始定时...每过一秒执行一次')
               showLog(this.commonPara.trainjob_id).then(res =>{
-                console.log(res)
+                // console.log(res)
                 this.logText = res.data.content
                 const textarea = document.getElementById('textarea_id');
                 textarea.scrollTop = textarea.scrollHeight;

@@ -118,13 +118,22 @@ export function getModels(params){
   })
 }
 
-export function getTargetDataSets(model_id) {//创建任务时获取数据集
-    return request({
-      url: '/model/getTargetDatasets?model_id='+model_id,
-      method: 'get',
-      baseURL: 'http://10.19.1.181:8081'
-    })
-  }
+// export function getTargetDataSets(model_id, user_id) {//创建任务时获取数据集
+//     return request({
+//       url: '/model/getTargetDatasets?model_id='+model_id+'&user_id='+user_id,
+//       method: 'get',
+//       baseURL: 'http://10.19.1.181:8081'
+//     })
+//   }
+
+export function getTargetDataSets(params) {//创建任务时获取数据集
+  return request({
+    url: '/model/getTargetDatasets',
+    method: 'get',
+    params:params,
+    baseURL: 'http://10.19.1.181:8081'
+  })
+}
 
 export function getDataByName(params) {//创建任务时获取数据集
     return request({

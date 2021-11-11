@@ -605,11 +605,12 @@ export default {
         });
         this.clearinfo();
         this.clearobj();
-        this.markinfo = null;
         if (this.isimagechange) this.Edit();
         //this.drawingObject.type == "roof"
         this.updatelastdata();
         this.huanyuan();
+        this.markinfo = null;
+        this.markcolor = this.markcolor2
         this.buttonindex = -1;
       }, 20);
       //this.fabricEvent();

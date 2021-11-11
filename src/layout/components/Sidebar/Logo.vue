@@ -24,7 +24,8 @@ export default {
   },
   data() {
     return {
-      title: 'AI标注平台'
+      title: 'AI标注平台',
+      logo: ''
       // logo: 'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png'
     }
   }
