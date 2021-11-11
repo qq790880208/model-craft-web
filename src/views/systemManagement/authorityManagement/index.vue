@@ -26,7 +26,7 @@
       <el-dialog title="分配权限" :visible.sync="dialogFormVisible" @close="handleDialogClose">
         <el-tree
           ref="menuTree"
-          :check-strictly="false"
+          :check-strictly="true"
           :data="menuTree"
           show-checkbox
           node-key="id"

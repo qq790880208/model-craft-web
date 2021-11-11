@@ -991,7 +991,7 @@ export default {
         if(this.timer == null) {
           this.timer = setInterval( () => {
               console.log('开始定时...每过一秒执行一次,刷新页面')
-              //if(!this.isSearchingFlag)  this.fetchData()
+              if(!this.isSearchingFlag)  this.fetchData()
               // if (this.Mockprocess != 100){
               //   this.Mockprocess = this.Mockprocess + 0.5
               // }

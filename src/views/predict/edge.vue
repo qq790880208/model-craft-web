@@ -72,8 +72,8 @@
       <div class="demo-image__placeholder">
           <div class="block">
             <span class="demonstration">预测结果</span>
-            <el-image :src="'data:image/png;base64,'+ predict_pic">
-              <div slot="placeholder" class="image-slot">
+            <el-image :src="'data:image/png;base64,'+ predict_pic" style="max-height:1200px;max-width:1200px">
+              <div slot="placeholder" >
                 加载中<span class="dot">...</span>
               </div>
             </el-image>
