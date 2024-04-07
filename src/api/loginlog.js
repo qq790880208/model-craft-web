@@ -1,22 +1,22 @@
 import request from '@/utils/request'
-/* api 
+/* api
 *
 *登录日志
 */
-export function getListByPage(params) {
+export async function getListByPage(params) {
   return request({
-    url: '/loginlog/findPage',
+    url: '/8083/loginlog/findPage',
     method: 'get',
     params: params,
-    baseURL: 'http://10.19.1.77:8083'
+    //baseURL: 'http://10.19.1.77:8083'
   })
 }
 
 export function batchRemoveList (params) {
     return request({
-        url: '/loginlog/delete',
+        url: '/8083/loginlog/delete',
         method: 'delete',
         params: params,
-        baseURL: 'http://10.19.1.77:8083'
+        //baseURL: 'http://10.19.1.77:8083'
     })
 }

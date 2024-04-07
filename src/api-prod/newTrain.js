@@ -61,6 +61,7 @@ export function searchStatus(data){//下拉框查询
     method:'get',
     data,
     baseURL: 'http://localhost:9528/dev-api'
+    //  baseURL: 'http://localhost:' 目前修改的
   })
 }
 
@@ -70,6 +71,7 @@ export function getVisualData(query){
     method:'get',
     params: query,
     baseURL: 'http://localhost:9528/dev-api'
+    // baseURL: 'http://localhost:'  目前修改的
   })
 }
 
@@ -88,6 +90,7 @@ export function getinitialPara(query){
     method:'get',
     params: query,
     baseURL: 'http://localhost:9528/dev-api'
+    // baseURL: 'http://localhost:' 目前修改的
   })
 }
 

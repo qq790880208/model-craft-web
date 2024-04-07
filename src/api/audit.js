@@ -2,81 +2,81 @@ import request from '@/utils/request'
 
 export function getAuditData(params) {
   return request({
-    url: '/userAudit/getAudits',
+    url: '/8085/userAudit/getAudits',
     method: 'get',
     params: params,
-    baseURL: 'http://10.19.1.77:8085'
+    //baseURL: 'http://10.19.1.77:8085'
   })
 }
 
 export function getAuditDatasByUserId(params) {
   return request({
-    url: '/userAudit/getAuditData',
+    url: '/8085/userAudit/getAuditData',
     method: 'get',
     params: params,
-    baseURL: 'http://10.19.1.77:8085'
+    //baseURL: 'http://10.19.1.77:8085'
   })
 }
 
 export function batchSaveApi(params) {
   return request({
-    url: '/userAudit/batchSave',
+    url: '/8085/userAudit/batchSave',
     method: 'put',
     params: params,
-    baseURL: 'http://10.19.1.77:8085'
+    //baseURL: 'http://10.19.1.77:8085'
   })
 }
 
 export function batchRejectApi(params) {
   return request({
-    url: '/userAudit/batchReject',
+    url: '/8085/userAudit/batchReject',
     method: 'put',
     params: params,
-    baseURL: 'http://10.19.1.77:8085'
+    //baseURL: 'http://10.19.1.77:8085'
   })
 }
 
 export function batchReSetApi(params) {
   return request({
-    url: '/userAudit/batchReSet',
+    url: '/8085/userAudit/batchReSet',
     method: 'put',
     params: params,
-    baseURL: 'http://10.19.1.77:8085'
+    //baseURL: 'http://10.19.1.77:8085'
   })
 }
 
 export function passApi(params) {
   return request({
-    url: '/userAudit/isAudit',
+    url: '/8085/userAudit/isAudit',
     method: 'put',
     params: params,
-    baseURL: 'http://10.19.1.77:8085'
+    //baseURL: 'http://10.19.1.77:8085'
   })
 }
 
 export function reSetApi(params) {
   return request({
-    url: '/userAudit/isReSet',
+    url: '/8085/userAudit/isReSet',
     method: 'put',
     params: params,
-    baseURL: 'http://10.19.1.77:8085'
+    //baseURL: 'http://10.19.1.77:8085'
   })
 }
 
 export function rejectApi(params) {
   return request({
-    url: '/userAudit/isReject',
+    url: '/8085/userAudit/isReject',
     method: 'put',
     params: params,
-    baseURL: 'http://10.19.1.77:8085'
+    //baseURL: 'http://10.19.1.77:8085'
   })
 }
 
 export function getIsAuditApi(params) {
   return request({
-    url: '/userAudit/getAudit',
+    url: '/8085/userAudit/getAudit',
     method: 'get',
     params: params,
-    baseURL: 'http://10.19.1.77:8085'
+    //baseURL: 'http://10.19.1.77:8085'
   })
 }

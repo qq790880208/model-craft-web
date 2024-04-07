@@ -36,9 +36,9 @@
           tabindex="2"
           auto-complete="on"
           @keyup.enter.native="handleLogin"
-          onpaste="return false" 
-          oncontextmenu="return false" 
-          oncopy="return false" 
+          onpaste="return false"
+          oncontextmenu="return false"
+          oncopy="return false"
           oncut="return false"
         />
         <span class="show-pwd" @click="showPwd">

@@ -7,6 +7,8 @@
     <el-button @click="huanyuan">还原图片大小</el-button>
     <el-button @click="saveinfo">保存 </el-button>
     <el-button @click="updatelastdata">查看上次标注数据</el-button>
+    <el-button @click="shangchuan">上传 </el-button>
+    <el-button @click="xaizai">下载 </el-button>
 
     <div class="content" id:contentfather>
       <div
@@ -27,7 +29,7 @@
                 : 'biaozhu'
             " @mousedown="handelClick(index)"
               @mousedown.stop="move(true,true,false, null, $event)"
-            v-for="(item, index) in boxArry" :key="'parallelogram1'+index" 
+            v-for="(item, index) in boxArry" :key="'parallelogram1'+index"
               :style="{
               width: item.width + 'px',
               height: item.long + 'px',
@@ -48,7 +50,7 @@
                 : 'biaozhu'
             " @mousedown="handelClick(index)"
               @mousedown.stop="move(true,true,false, null, $event)"
-              v-for="(item, index) in boxArry" :key="'parallelogram2'+index" 
+              v-for="(item, index) in boxArry" :key="'parallelogram2'+index"
               :style="{
               width: item.width + 'px',
               height: item.long + 'px',
@@ -68,14 +70,14 @@
                 : 'biaozhu'
             " @mousedown="handelClick(index)"
               @mousedown.stop="move(true,true,false, null, $event)"
-              v-for="(item, index) in boxArry" :key="'parallelogram3'+index" 
+              v-for="(item, index) in boxArry" :key="'parallelogram3'+index"
               :style="{
               width: Math.abs(item.long*Math.tan(item.transform* Math.PI / 180)) + 'px',
               height: item.height + 'px',
               position: 'absolute',
               //left: (item.left/Math.sin(transformx) + item.height*Math.sin(transformx)) + 'px',
               //left:(item.left-0.5*item.long*Math.tan(item.transform* Math.PI / 180))+'px',
-              left: (item.isdown)? 
+              left: (item.isdown)?
               (item.transform>0)?item.left+'px':item.left-Math.abs(item.long*Math.tan(item.transform* Math.PI / 180))+ 'px'
               :(item.transform>0)?item.left -Math.abs(item.long*Math.tan(item.transform* Math.PI / 180))+ 'px':item.left  +'px',
               //-0.5*item.height*Math.tan(transformx* Math.PI / 180)
@@ -93,14 +95,14 @@
                 : 'biaozhu'
             " @mousedown="handelClick(index)"
               @mousedown.stop="move(true,true,false, null, $event)"
-              v-for="(item, index) in boxArry" :key="'parallelogram4'+index" 
+              v-for="(item, index) in boxArry" :key="'parallelogram4'+index"
               :style="{
               width: Math.abs(item.long*Math.tan(item.transform* Math.PI / 180)) + 'px',
               height: item.height + 'px',
               position: 'absolute',
               //left: (item.left/Math.sin(transformx) + item.height*Math.sin(transformx)) + 'px',
               //left:(item.left-0.5*item.long*Math.tan(item.transform* Math.PI / 180))+'px',
-              left: (item.isdown)? 
+              left: (item.isdown)?
               (item.transform>0)?item.left+item.width +'px':item.left -Math.abs(item.long*Math.tan(item.transform* Math.PI / 180))+ item.width +'px'
               :(item.transform>0)?item.left -Math.abs(item.long*Math.tan(item.transform* Math.PI / 180))+ item.width +'px':item.left +item.width  +'px',
               //-0.5*item.height*Math.tan(transformx* Math.PI / 180)
@@ -118,7 +120,7 @@
                 : 'biaozhu'
             " @mousedown="handelClick(index)"
               @mousedown.stop="move(true,false,false, null, $event)"
-              v-for="(item, index) in boxArry" :key="'parallelogram5'+index" 
+              v-for="(item, index) in boxArry" :key="'parallelogram5'+index"
               :style="{
               width: item.width + 'px',
               height: item.height + 'px',
@@ -158,7 +160,7 @@
               //transform:'rotateX(90)',
             }"
           >
-          <!-- <div 
+          <!-- <div
               :style="{
               width: item.width + 'px',
               height: item.height + 'px',
@@ -723,7 +725,7 @@ export default {
       };
       console.log("box", this.boxArry);
       console.log("label", this.labelArry);
-      
+
     },
 
     // alter(e) {

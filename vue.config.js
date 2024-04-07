@@ -30,14 +30,82 @@ module.exports = {
   lintOnSave: process.env.NODE_ENV === 'development',
   productionSourceMap: false,
   devServer: {
+    // host: '127.0.0.1',
     port: port,
-    disableHostCheck: true,
+    // disableHostCheck: true,
     open: true,
-    overlay: {
-      warnings: false,
-      errors: true
-    },
-    before: require('./mock/mock-server.js')
+    // overlay: {
+    //   warnings: false,
+    //   errors: true
+    // },
+    proxy: {
+      [process.env.VUE_APP_BASE_API + '/8083']: {
+        target: 'http://127.0.0.1:8083', // 目标地址
+        changeOrigin: true, // 改变源
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API + '/8083']: '' // 将请求路径中的 '/dev-api/8083' 替换为 ''
+        }
+      },
+      [process.env.VUE_APP_BASE_API + '/8085']: {
+        target: 'http://127.0.0.1:8085', // 目标地址
+        changeOrigin: true, // 改变源
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API + '/8085']: '' // 将请求路径中的 '/dev-api/8085' 替换为 ''
+        }
+      },
+      [process.env.VUE_APP_BASE_API + '/8082']: {
+        target: 'http://127.0.0.1:8082', // 目标地址
+        changeOrigin: true, // 改变源
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API + '/8082']: '' // 将请求路径中的 '/dev-api/8082' 替换为 ''
+        }
+      },
+      [process.env.VUE_APP_BASE_API + '/8081']: {
+        target: 'http://127.0.0.1:8081', // 目标地址
+        changeOrigin: true, // 改变源
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API + '/8081']: '' // 将请求路径中的 '/dev-api/8081' 替换为 ''
+        }
+      },
+      [process.env.VUE_APP_BASE_API + '/8001']: {
+        target: 'http://127.0.0.1:8001', // 目标地址
+        changeOrigin: true, // 改变源
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API + '/8001']: '' // 将请求路径中的 '/dev-api/8001' 替换为 ''
+        }
+      },
+      [process.env.VUE_APP_BASE_API + '/8089']: {
+        target: 'http://127.0.0.1:8089', // 目标地址
+        changeOrigin: true, // 改变源
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API + '/8089']: '' // 将请求路径中的 '/dev-api/8089' 替换为 ''
+        }
+      },
+      [process.env.VUE_APP_BASE_API + '/8088']: {
+        target: 'http://127.0.0.1:8088', // 目标地址
+        changeOrigin: true, // 改变源
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API + '/8088']: '' // 将请求路径中的 '/dev-api/8088' 替换为 ''
+        }
+      },
+      [process.env.VUE_APP_BASE_API + '/8084']: {
+        target: 'http://127.0.0.1:8084', // 目标地址
+        changeOrigin: true, // 改变源
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API + '/8084']: '' // 将请求路径中的 '/dev-api/8084' 替换为 ''
+        }
+      },
+      // detail: https://cli.vuejs.org/config/#devserver-proxy
+      [process.env.VUE_APP_BASE_API ]: {
+        target: 'http://127.0.0.1:8088/',
+        changeOrigin: true,
+        secure: false,
+        pathRewrite: {
+          ['^' + process.env.VUE_APP_BASE_API]: ''
+        }
+      }
+    }
+    // before: require('./mock/mock-server.js')
   },
 
   configureWebpack: {
@@ -63,7 +131,7 @@ module.exports = {
     ])
 
     // when there are many pages, it will cause too many meaningless requests
-    config.plugins.delete('prefetch')
+    // config.plugins.delete('prefetch')
 
     // set svg-sprite-loader
     config.module
