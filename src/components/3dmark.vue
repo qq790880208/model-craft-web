@@ -6,7 +6,7 @@
     <el-button @click="suoxiao">缩小</el-button>
     <el-button @click="huanyuan">还原图片大小</el-button>
     <el-button @click="saveinfo">保存</el-button>
-    <el-upload
+    <!--el-upload
       class="upload"
       ref="upload"
       action=""
@@ -16,7 +16,7 @@
     >
       <el-button slot="trigger">上传</el-button>
     </el-upload>
-    <el-button @click="shotPic">下载</el-button>
+    <el-button @click="shotPic">下载</el-button-->
     <!-- <el-button @click="updatelastdata">查看上次标注数据</el-button> -->
 
     <div class="content" id="contentfather">

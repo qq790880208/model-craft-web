@@ -175,22 +175,22 @@ export const asyncRoutes = [
         path: '/label/d2imageview',
         component: () => import('@/views/label/d2/imageview'),
         name: 'd2view',
-        meta: { title: '2D拉框标注', resources: 'd2' },
-        hidden: true
+        meta: { title: '2D拉框标注', resources: 'd2' }
+        // hidden: true
       },
       {
         path: '/label/polygonimageview',
         component: () => import ('@/views/label/polygon/imageview'),
         name: 'polygon',
-        meta: { title: '像素级标注', resources: 'polygon' },
-        hidden: true
+        meta: { title: '像素级标注', resources: 'polygon' }
+        // hidden: true
       },
       {
         path: '/label/voice',
         component: () => import ('@/views/label/voice/voiceview'),
         name: 'voice',
-        meta: { title: '语音标注', resources: 'voice' },
-        hidden: true
+        meta: { title: '语音标注', resources: 'voice' }
+        // hidden: true
       },
       {
         path: '/label/d3',
@@ -239,8 +239,8 @@ export const asyncRoutes = [
         path: '/oss',
         component: () => import('@/views/dataSet/oss'),
         name: 'oss manage',
-        meta: { title: '对象存储', resources: 'oss', icon: 'tree' },
-        //hidden: true
+        meta: { title: '对象存储', resources: 'oss', icon: 'tree' }
+        // hidden: true
       }
     ]
   },
@@ -298,7 +298,7 @@ export const asyncRoutes = [
         component: () => import('@/views/predict/table'),
         name: 'predict admin',
         meta: { title: '预测数据集', resources: 'model', icon: 'people' }
-      },{
+      }, {
         path: '/predict_edge',
         component: () => import('@/views/predict/edge'),
         name: 'predict edge',
