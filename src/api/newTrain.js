@@ -93,14 +93,14 @@ export function getinitialPara(query){
   })
 }
 
-// export function getTableData1(query){
-//   return request({
-//     params:query,
-//     url:'/8084/train',
-//     method:'get',
-//     //baseURL: 'http://10.19.1.181:8084'
-//   })
-// }
+export function getTableData1(query){
+  return request({
+    params:query,
+    url:'/8084/train',
+    method:'get',
+    //baseURL: 'http://10.19.1.181:8084'
+  })
+}
 
 export function getDataByName(params) {//创建任务时获取数据集
     return request({

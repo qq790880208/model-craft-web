@@ -1,13 +1,13 @@
 import request from '@/utils/request'
 
-// export function getDataByName(params) {
-//   return request({
-//     url: '/8085/data/getdataSet',
-//     method: 'get',
-//     params: params,
-//     //baseURL: 'http://10.19.1.77:8085'
-//   })
-// }
+export function getDataByName(params) {
+  return request({
+    url: '/8085/data/getdataSet',
+    method: 'get',
+    params: params,
+    //baseURL: 'http://10.19.1.77:8085'
+  })
+}
 
 export function getAssignData(params) {
   return request({

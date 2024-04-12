@@ -21,7 +21,7 @@
                 <el-button plain type="mini" icon="el-icon-download" @click="downAnnotation">下载标注文件</el-button>
                 <el-button plain type="mini" icon="el-icon-delete" @click="delData()">删除数据</el-button>
                 <!-- <el-button plain type="mini" icon="el-icon-cloudy" style="right" @click="startLabel" :style="{ display: visible}">开始标注</el-button> -->
-                <el-button plain type="mini" icon="el-icon-cloudy" style="right" @click="startLabel">开始标注</el-button>
+                <el-button plain type="mini" icon="el-icon-cloudy" @click="startLabel">开始标注</el-button>
                 <el-button plain type="mini" icon="el-icon-refresh" @click="fresh()">同步数据源</el-button>
                 <el-button plain type="mini" icon="el-icon-refresh" @click="assign()">分配</el-button>
               </el-row>
@@ -46,7 +46,7 @@
                     @select="select(index)"
                     @childSelectList="fromChildList($event)"
                   />
-                </div> 
+                </div>
               </div>
               <div v-if="isVoice === 1">
                 <div
@@ -502,7 +502,7 @@ export default {
                   this.uploadLoading=false
                   this.suc()
                   this.getData()
-                  this.uploadObjectVisible = false 
+                  this.uploadObjectVisible = false
                   this.uploadBucketName=''
                   this.uploadObjectFolder=''
                   this.uploadobjectName=''
@@ -1101,6 +1101,7 @@ export default {
 
     startLabel: function() {
       const type = store.getters.type
+      console.info(store.getters.type)
       if (type == 0 || type == 3) {
         this.$router.push('/label/d2imageview')
       }
@@ -1110,8 +1111,8 @@ export default {
       if (type == 2) {
         this.$router.push({ path: '/label/voice' })
       }
-      // if(type == 3) {
-      //   this.$router.push({path:'/label/voice'})
+      // if(type == 5) {
+      //   this.$router.push({path:'/label/d3'})
       // }
     }
   }

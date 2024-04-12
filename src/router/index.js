@@ -175,28 +175,29 @@ export const asyncRoutes = [
         path: '/label/d2imageview',
         component: () => import('@/views/label/d2/imageview'),
         name: 'd2view',
-        meta: { title: '2D拉框标注', resources: 'd2' }
+        meta: { title: '2D拉框标注', resources: 'd2' },
         // hidden: true
       },
       {
         path: '/label/polygonimageview',
         component: () => import ('@/views/label/polygon/imageview'),
         name: 'polygon',
-        meta: { title: '像素级标注', resources: 'polygon' }
+        meta: { title: '像素级标注', resources: 'polygon' },
         // hidden: true
       },
       {
         path: '/label/voice',
         component: () => import ('@/views/label/voice/voiceview'),
         name: 'voice',
-        meta: { title: '语音标注', resources: 'voice' }
+        meta: { title: '语音标注', resources: 'voice' },
         // hidden: true
       },
       {
         path: '/label/d3',
         component: () => import ('@/views/label/d3/index'),
         name: 'd3',
-        meta: { title: '3D标注', resources: 'd3' }
+        meta: { title: '3D标注', resources: 'd3' },
+        // hidden: true
       }
     ]
   },

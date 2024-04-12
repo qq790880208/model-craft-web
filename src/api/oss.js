@@ -1,23 +1,23 @@
 import request from '@/utils/request'
 
-// export function listBucket() {
-//     return request({
-//         url: '/8089/minio-service/listBucketname',
-//         method: 'get',
-//       //  //baseURL: 'http://localhost:8089'
-//         //baseURL: 'http://10.19.1.77:8089'
-//     })
-// }
+export function listBucket() {
+    return request({
+        url: '/8089/minio-service/listBucketname',
+        method: 'get',
+      //  //baseURL: 'http://localhost:8089'
+        //baseURL: 'http://10.19.1.77:8089'
+    })
+}
 
-// export function listObject(params) {
-//     return request({
-//         url: '/8089/minio-service/listObjectByPrefix',
-//         method: 'get',
-//         params: params,
-//       //  //baseURL: 'http://localhost:8089'
-//         //baseURL: 'http://10.19.1.77:8089'
-//     })
-// }
+export function listObject(params) {
+    return request({
+        url: '/8089/minio-service/listObjectByPrefix',
+        method: 'get',
+        params: params,
+      //  //baseURL: 'http://localhost:8089'
+        //baseURL: 'http://10.19.1.77:8089'
+    })
+}
 
 export function listObjectByPrefix(params) {
     return request({

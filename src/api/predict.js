@@ -92,14 +92,14 @@ export function getinitialPara(query){
   })
 }
 
-// export function getTableData1(query){
-//   return request({
-//     params:query,
-//     url:'/8084/predict',
-//     method:'get',
-//     //baseURL: 'http://10.19.1.181:8084'
-//   })
-// }
+export function getTableData1(query){
+  return request({
+    params:query,
+    url:'/8084/predict',
+    method:'get',
+    //baseURL: 'http://10.19.1.181:8084'
+  })
+}
 
 export function getTableData2(params){
   return request({

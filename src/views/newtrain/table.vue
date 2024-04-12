@@ -4,7 +4,7 @@
     <!-- 头部 -->
     <el-row >
       <el-col :span="5">
-        <el-button  @click="createbtn" size="medium" >  
+        <el-button  @click="createbtn" size="medium" >
           创建训练任务
         </el-button>
       </el-col>
@@ -57,12 +57,12 @@
         </template>
       </el-table-column>
       <el-table-column label="运行时长" width="120">
-        
+
         <template slot-scope="scope" >
           <span  v-if="scope.row.cost_time != 0">{{ scope.row.cost_time }} 秒</span>
           <span v-if="scope.row.cost_time == 0">-</span>
         </template>
-          
+
       </el-table-column>
       <el-table-column label="创建时间" width="160">
         <template slot-scope="scope">
@@ -81,23 +81,23 @@
       </el-table-column> -->
       <!-- <el-table-column  label="进度" width="250">
         <template slot-scope="scope">
-          <el-progress v-if="scope.row.status === 0" :text-inside="true" 
+          <el-progress v-if="scope.row.status === 0" :text-inside="true"
           :stroke-width="26" :percentage="Mockprocess" status="success"></el-progress>
         </template>
       </el-table-column> -->
-      <el-table-column label="操作" width="400"> 
+      <el-table-column label="操作" width="400">
         <template slot-scope="scope">
           <!-- <el-button
             size="mini" v-if="scope.row.status!=0"
             @click="handleStart(scope.$index, scope.row) "  disabled>开始</el-button> -->
           <!-- <el-button
-            size="mini" 
+            size="mini"
             @click="handleConfig(scope.$index, scope)">参数配置</el-button> -->
           <el-button
-            size="mini" 
+            size="mini"
             @click="handleStart(scope.$index, scope.row)">开始</el-button>
           <el-button
-            size="mini" 
+            size="mini"
             @click="handleStop(scope.$index, scope.row)">终止</el-button>
           <!-- <el-button
             size="mini" v-if="scope.row.status==1"
@@ -234,7 +234,7 @@
         <!-- <el-form-item label="输出位置" prop="outpath">
           <el-select v-model="taskForm.outpath" placeholder="请选择">
             <div style="height:150px;" class="scrollbar">
-              <el-scrollbar style="height:100%;"> 
+              <el-scrollbar style="height:100%;">
                 <el-option v-for="(item, index) in initialPara.outpath" :key="index"
                 :label="item" :value="item">
                 </el-option>
@@ -255,10 +255,10 @@
                   </el-option>
                 </el-select>
             </el-form-item> -->
-            <el-form-item >      
-            
+            <el-form-item >
+
               <div style="height:200px; " class="scrollbar">
-              <el-scrollbar style="height:100%; "> 
+              <el-scrollbar style="height:100%; ">
                 <!-- <el-form-item v-for="(item, index) in paraNameList[currentAlgorithm]" :key="index"> -->
                 <el-form-item v-for="(item, index) in showParaNameList" :key="index">
                   <div v-if="item!='transferLearning'">
@@ -294,7 +294,7 @@
                       <el-button type="danger" icon="el-icon-delete" circle></el-button>
                     </div>
                   </el-select>
-                </div> -->   
+                </div> -->
                 <el-button type="primary" icon="el-icon-edit" circle v-if="editbutton" style="margin-top:10px;"
                   @click="editOneoption"
                   ></el-button>
@@ -307,7 +307,7 @@
                     <el-col :span="5">
                         <el-input v-model="item[1]"></el-input>
                     </el-col>
-                    <el-col :span="5" style="text-align:center;"> 
+                    <el-col :span="5" style="text-align:center;">
                         <el-button icon="el-icon-plus" circle @click="addpara" size="small"></el-button>
                         <el-button icon="el-icon-minus" circle @click="deletepara(index)" size="small"></el-button>
                     </el-col>
@@ -317,7 +317,7 @@
           </el-form>
 
         </el-form-item>
-        
+
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="cancelbtn('taskForm')">取 消</el-button>
@@ -325,7 +325,7 @@
       </div>
     </el-dialog>
   </div>
- 
+
 </template>
 
 <script>
@@ -342,7 +342,7 @@ function keyDownSearch(e){
   if(code == 13){ //保存并上一张
     console.log("enter!!!!!!!!!!!!!")
     searchTask()
-    //return false;     
+    //return false;
   }
 }
 
@@ -352,15 +352,15 @@ export default {
       return {
         all_list_model_para:
                 [
-                    ['epoch', 100], 
-                    ['size', 512], 
+                    ['epoch', 100],
+                    ['size', 512],
                     ['learning_rate', 0.01]
                 ],
-                    
+
                 list_model_para:
                 [
                     ['epoch', 100],
-                    ['size', 512], 
+                    ['size', 512],
                     ['learning_rate', 0.01]
                 ],
                 options:
@@ -579,7 +579,7 @@ export default {
         this.imageOssPath = "data/dataset/"+data+"/input/source/"
         this.textOssPath =  "data/dataset/"+data+"/input/annotation/"
         this.modelOssPath = "data/dataset/"+data+"/output/ckpt/"
-        
+
         // this.initialPara.inputData.uuid.forEach((item,index) => {
         //   //console.log("item",item,"index",index)
         //   if(data==item) this.useAlgorithm = this.initialPara.inputData.algorithmType[data];
@@ -659,14 +659,14 @@ export default {
           //   //obj.status = res.data.items[i].status
           //   obj.status = res.data.items.records[i].status
           //   obj.cost_time = res.data.items.records[i].cost_time
-          //   obj.create_time = this.formatDate(res.data.items.records[i].create_time) 
+          //   obj.create_time = this.formatDate(res.data.items.records[i].create_time)
           //   obj.descr = res.data.items.records[i].descr
           //   obj.userId = res.data.items.records[i].user_id
           //   this.tableData.push(obj)
           // }
         })
         //==重新获取表格数据
-        
+
       },
       searchStatusTask(){//下拉框排序查询
         this.selectPara.para = this.selectedstatus
@@ -726,7 +726,7 @@ export default {
         this.paraNameList = []
         this.paraValueList = []
         this.editbutton = false
-      }, 
+      },
       handleConfig(index, row){
         console.log("row",row)
       },
@@ -762,18 +762,18 @@ export default {
               this.$message({
               type: 'success',
               message: '删除成功!'
-              });  
+              });
             }
           })
         })
-        // .catch(() => { 
+        // .catch(() => {
         //   this.$message({
         //     type: 'info',
         //     message: '已取消删除'
-        //   });       
+        //   });
         // });
-        
-        
+
+
       },
       handleStop(index, row) {//终止某行训练
          this.$confirm('此操作将终止该任务训练, 是否继续?', '提示', {
@@ -790,18 +790,18 @@ export default {
           this.$message({
             type: 'success',
             message: '终止成功!'
-          });  
+          });
         })
         // .catch(() => {
         //   this.$message({
         //     type: 'info',
         //     message: '已取消终止'
-        //   });          
+        //   });
         // });
-        
-        
+
+
       },
-      handleShow(index, row) {//可视化某行 
+      handleShow(index, row) {//可视化某行
         console.log(this.showPara,index,row)
         this.picVisible = true
         this.showPara.trainjob_id = row.trainjob_id
@@ -817,7 +817,7 @@ export default {
           this.drawData.second.valAccuaccy = res.data.valAccuaccy
         })
       },
-      
+
       // log(index, row){//日志可视化
       //   console.log("row",row)
       //   this.logdialogVisible = true
@@ -858,30 +858,30 @@ export default {
         let tmp = {
           "user_id": store.getters.userid,
           "curr": this.queryInfo.pagenum,
-          "size": this.queryInfo.pagesize 
+          "size": this.queryInfo.pagesize
         }
-        getTableData1(tmp).then(res => { 
-          console.log("fetchData",res)
-          this.queryInfo.pagenum = res.data.items.current
-          this.queryInfo.pagesize = res.data.items.size
-          this.totalData = res.data.items.total
-          this.tableData = res.data.items.records
-          // this.tableData = []
-          // for(let i = 0;i < res.data.items.records.length;i++){
-          //   let obj = {}
-          //   obj.name = res.data.items.records[i].name
-          //   obj.train_algo_name = res.data.items.records[i].train_algo_name
-          //   //obj.status = res.data.items[i].status
-          //   obj.status = res.data.items.records[i].status
-          //   obj.cost_time = res.data.items.records[i].cost_time
-          //   obj.create_time = this.formatDate(res.data.items.records[i].create_time) 
-          //   obj.descr = res.data.items.records[i].descr
-          //   obj.userId = res.data.items.records[i].user_id
-            
-          //   this.tableData.push(obj)
-          // }
-        })
-        
+        // getTableData1(tmp).then(res => {
+        //   console.log("fetchData",res)
+        //   this.queryInfo.pagenum = res.data.items.current
+        //   this.queryInfo.pagesize = res.data.items.size
+        //   this.totalData = res.data.items.total
+        //   this.tableData = res.data.items.records
+        //   // this.tableData = []
+        //   // for(let i = 0;i < res.data.items.records.length;i++){
+        //   //   let obj = {}
+        //   //   obj.name = res.data.items.records[i].name
+        //   //   obj.train_algo_name = res.data.items.records[i].train_algo_name
+        //   //   //obj.status = res.data.items[i].status
+        //   //   obj.status = res.data.items.records[i].status
+        //   //   obj.cost_time = res.data.items.records[i].cost_time
+        //   //   obj.create_time = this.formatDate(res.data.items.records[i].create_time)
+        //   //   obj.descr = res.data.items.records[i].descr
+        //   //   obj.userId = res.data.items.records[i].user_id
+        //
+        //   //   this.tableData.push(obj)
+        //   // }
+        // })
+
       },
 
 
@@ -957,8 +957,8 @@ export default {
         this.editbutton = false
         this.$refs[taskForm].resetFields()
       },
-     
-       
+
+
       //分页的功能
       handleSizeChange(newSize) {
         this.queryInfo.pagesize = newSize
@@ -986,7 +986,7 @@ export default {
           this.fetchData()
         }
       },
-      
+
       setTimer() {//定时器
         if(this.timer == null) {
           this.timer = setInterval( () => {
@@ -1006,17 +1006,17 @@ export default {
         }
         if(this.timerLog == null) {
           console.log("timerLognull111")
-          this.timerLog = setInterval( () => {
-              //console.log('开始定时...每过一秒执行一次')
-              console.log("timerLognull222")
-              showLog(parm).then(res =>{
-                console.log("res",res)
-                this.logText = res.data.content
-                const textarea = document.getElementById('textarea_id');
-                textarea.scrollTop = textarea.scrollHeight;
-              })
-              //this.fetchData();
-          }, 1000)
+          // this.timerLog = setInterval( () => {
+          //     //console.log('开始定时...每过一秒执行一次')
+          //     console.log("timerLognull222")
+          //     showLog(parm).then(res =>{
+          //       console.log("res",res)
+          //       this.logText = res.data.content
+          //       const textarea = document.getElementById('textarea_id');
+          //       textarea.scrollTop = textarea.scrollHeight;
+          //     })
+          //     //this.fetchData();
+          // }, 1000)
         }
       },
 
@@ -1035,14 +1035,14 @@ export default {
       }
 
     },
-    
+
     mounted() {
       window.searchTask = this.searchTask;
       document.onkeydown = keyDownSearch;
-      this.fetchData()
+      // this.fetchData()
       // clearInterval(this.timer)
       // this.timer = null
-      this.setTimer()
+      // this.setTimer()
     },
     created(){
     if (store.getters.register == 1) {
@@ -1069,7 +1069,7 @@ export default {
   }
   .el-table{
     font-size: 12px;
-    width: 100%; 
+    width: 100%;
     margin-top:25px
   }
 

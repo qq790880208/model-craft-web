@@ -1,13 +1,13 @@
 import request from '@/utils/request'
 
-// export function getList(tmp) {
-//   return request({
-//     url: '/8081/model/group',
-//     method: 'get',
-//     params: tmp,
-//     //baseURL: 'http://10.19.1.181:8081'
-//   })
-// }
+export function getList(tmp) {
+  return request({
+    url: '/8081/model/group',
+    method: 'get',
+    params: tmp,
+    //baseURL: 'http://10.19.1.181:8081'
+  })
+}
 
 export function getListByName(tmp) {
   return request({
