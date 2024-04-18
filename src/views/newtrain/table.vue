@@ -128,7 +128,6 @@
           <el-button
             v-if="scope.row.status==0"
             size="mini"
-            disabled
             @click="handleShowlog(scope.$index, scope)"
           >日志</el-button>
           <el-button
